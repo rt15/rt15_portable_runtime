@@ -3,4 +3,6 @@
 *.gitignore text eol=lf
 *.md text eol=lf
 *.cbp text eol=lf
+*.c text eol=lf
+*.h text eol=lf
 *.workspace text eol=lf
