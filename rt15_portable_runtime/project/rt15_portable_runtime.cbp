@@ -4,14 +4,14 @@
 	<Project>
 		<Option title="rt15_portable_runtime" />
 		<Option pch_mode="2" />
-		<Option compiler="gcc" />
+		<Option compiler="gnu_gcc_compiler_x64" />
 		<Build>
 			<Target title="Win64Debug">
 				<Option output="../lib/rprd" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="../obj/debug/" />
 				<Option type="2" />
-				<Option compiler="gcc" />
+				<Option compiler="gnu_gcc_compiler_x64" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-Wall" />
@@ -24,7 +24,7 @@
 				<Option working_dir="" />
 				<Option object_output="../obj/release/" />
 				<Option type="2" />
-				<Option compiler="gcc" />
+				<Option compiler="gnu_gcc_compiler_x64" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-O2" />
@@ -37,13 +37,31 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-mno-stack-arg-probe -fno-stack-check -fno-stack-protector -finput-charset=cp1252 -Wno-long-long -Wno-misleading-indentation" />
 			<Add option="-DWIN32" />
 			<Add directory="../include" />
 		</Compiler>
 		<Unit filename="../include/layer000/rt_types.h" />
 		<Unit filename="../include/layer001/rt_memory.h" />
+		<Unit filename="../include/layer001/rt_os_headers.h" />
+		<Unit filename="../include/layer002/rt_error.h" />
+		<Unit filename="../include/layer003/rt_char8.h" />
 		<Unit filename="../include/rpr.h" />
+		<Unit filename="../include/rpr_main.h" />
+		<Unit filename="../include/rpr_mem.h" />
 		<Unit filename="../src/layer001/rt_memory.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer002/rt_error.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer003/rt_char8.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/rpr_internal.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/rpr_main.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>

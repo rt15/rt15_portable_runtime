@@ -1,15 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define RT_DEFINE_USE_CRT
-
 #include <rpr.h>
+#include <rpr_mem.h>
+#include <rpr_main.h>
+
+rt_s zz_test_char8();
 
 rt_s zz_test()
 {
 	rt_s ret;
 
-	printf("Testing...\n");
+	if (!zz_test_char8())
+		goto error;
 
 	ret = RT_OK;
 free:
@@ -19,7 +22,7 @@ error:
 	goto free;
 }
 
-int main()
+rt_un16 rpr_main(rt_n32 argc, rt_char *argv[])
 {
 	int ret;
 

@@ -38,8 +38,10 @@ All source files must end with an empty line.
 
 * No need to align variables names.
 * All variables must be declared at the beginning of functions, but they can be assigned.
+* The variable returned by a function is called ret.
 
 # Curly brackets
 
 * Only functions opening curly brackets are on a new line.
 * Curly brackets are optional for one line blocks.
+* It is OK to put a goto in the same line of a if statement (in case of multiple if/goto).

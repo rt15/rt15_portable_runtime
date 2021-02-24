@@ -126,9 +126,9 @@ void *__cdecl memset(void*, int, size_t);
 
 #define RT_MEMORY_ZERO(AREA, SIZE) memset(AREA, 0, SIZE)
 
-rt_n32 rt_memory_compare(void *area1, void *area2, rt_un size);
-void *rt_memory_copy(void *source, void *destination, rt_un size);
-void *rt_memory_move(void *source, void *destination, rt_un size);
+rt_n32 rt_memory_compare(const void *area1, const void *area2, rt_un size);
+void *rt_memory_copy(const void *source, void *destination, rt_un size);
+void *rt_memory_move(const void *source, void *destination, rt_un size);
 void *rt_memory_set(void *area, rt_n32 value, rt_un size);
 
 void *rt_memory_zero(void *area, rt_un size);

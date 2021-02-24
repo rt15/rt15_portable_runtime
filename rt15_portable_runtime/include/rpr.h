@@ -5,4 +5,8 @@
 
 #include "layer001/rt_memory.h"
 
+#include "layer002/rt_error.h"
+
+#include "layer003/rt_char8.h"
+
 #endif /* RT15_PORTABLE_RUNTIME_H */

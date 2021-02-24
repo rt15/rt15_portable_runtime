@@ -1,13 +1,13 @@
 #include "layer001/rt_memory.h"
 
-rt_n32 rt_memory_compare(void *area1, void *area2, rt_un size)
+rt_n32 rt_memory_compare(const void *area1, const void *area2, rt_un size)
 {
 	rt_un words_count;
-	rt_un *area1_words;
-	rt_un *area2_words;
+	const rt_un *area1_words;
+	const rt_un *area2_words;
 	rt_un remainder;
-	rt_uchar8 *area1_uchars;
-	rt_uchar8 *area2_uchars;
+	const rt_uchar8 *area1_uchars;
+	const rt_uchar8 *area2_uchars;
 	rt_un i;
 
 	words_count = size / sizeof(rt_un);
@@ -40,13 +40,13 @@ handle_remainder:
 	return area1_uchars[i] - area2_uchars[i];
 }
 
-void *rt_memory_copy(void *source, void *destination, rt_un size)
+void *rt_memory_copy(const void *source, void *destination, rt_un size)
 {
 	rt_un words_count;
-	rt_un *source_words;
+	const rt_un *source_words;
 	rt_un *destination_words;
 	rt_un remainder;
-	rt_char8 *source_chars;
+	const rt_char8 *source_chars;
 	rt_char8 *destination_chars;
 	rt_un i;
 
@@ -73,13 +73,13 @@ void *rt_memory_copy(void *source, void *destination, rt_un size)
 	return destination;
 }
 
-void *rt_memory_move(void *source, void *destination, rt_un size)
+void *rt_memory_move(const void *source, void *destination, rt_un size)
 {
 	rt_un words_count;
-	rt_un *source_words;
+	const rt_un *source_words;
 	rt_un *destination_words;
 	rt_un remainder;
-	rt_char8 *source_chars;
+	const rt_char8 *source_chars;
 	rt_char8 *destination_chars;
 	rt_un i;
 
