@@ -9,6 +9,7 @@ rt_n32 rt_memory_compare(const void *area1, const void *area2, rt_un size)
 	const rt_uchar8 *area1_uchars;
 	const rt_uchar8 *area2_uchars;
 	rt_un i;
+	rt_n32 ret;
 
 	words_count = size / sizeof(rt_un);
 	if (words_count) {
@@ -32,12 +33,17 @@ rt_n32 rt_memory_compare(const void *area1, const void *area2, rt_un size)
 	}
 
 handle_remainder:
-	i = 0;
-	while ((i < remainder) && (area1_uchars[i] == area2_uchars[i]))
-		i++;
-	if (i == remainder)
-		i--;
-	return area1_uchars[i] - area2_uchars[i];
+	if (size) {
+		i = 0;
+		while ((i < remainder) && (area1_uchars[i] == area2_uchars[i]))
+			i++;
+		if (i == remainder)
+			i--;
+		ret = area1_uchars[i] - area2_uchars[i];
+	} else {
+		ret = 0;
+	}
+	return ret;
 }
 
 void *rt_memory_copy(const void *source, void *destination, rt_un size)
