@@ -1,0 +1,6 @@
+# Text files using LF:
+*.gitattributes text eol=lf
+*.gitignore text eol=lf
+*.md text eol=lf
+*.cbp text eol=lf
+*.workspace text eol=lf
