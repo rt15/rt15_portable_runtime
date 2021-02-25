@@ -96,9 +96,19 @@ typedef rt_char8 rt_char;
 typedef rt_uchar8 rt_uchar;
 #endif
 
+/* Booleans. Never use RT_TRUE in comparisons. Non-zero means true. */
+typedef enum {
+	RT_FALSE,
+	RT_TRUE
+} rt_b;
+
+/* Function results. Never use RT_OK in comparisons. Non-zero means OK. */
+typedef enum {
+	RT_FAILED,
+	RT_OK
+} rt_s;
+
 /* Fixed size types */
-typedef int rt_b;                      /* BOOL.              */
-typedef int rt_s;                      /* Status.            */
 typedef int rt_n32;                    /* INT/INT32/LONG.    */
 #if defined(RT_DEFINE_WINDOWS) && defined(RT_DEFINE_64)
 typedef unsigned long int rt_un32;     /* DWORD, UINT.       */
@@ -133,12 +143,6 @@ typedef void* rt_h;                    /* HANDLE.  */
 /* Types equivalences:                             */
 /* rt_n = LRESULT, LONG_PTR, LPARAM.               */
 /* rt_un = UINT_PTR, ULONG_PTR, DWORD_PTR, WPARAM. */
-
-/* Never use RT_TRUE/RT_OK in comparisons. rt_b and rt_s are zero or non-zero values. */
-#define RT_FALSE 0
-#define RT_TRUE 1
-#define RT_FAILED RT_FALSE
-#define RT_OK RT_TRUE
 
 #ifdef __cplusplus
 #define RT_NULL 0

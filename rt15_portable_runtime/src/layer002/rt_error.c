@@ -11,7 +11,7 @@ const rt_un32 rt_error_os_errors[RT_ERROR_ERRORS_COUNT] = { ERROR_SUCCESS, ERROR
 const rt_n32 rt_error_os_errors[RT_ERROR_ERRORS_COUNT] = { 0, ERANGE, EINVAL, ENOMEM, EEXIST, EPERM, EOVERFLOW, EWOULDBLOCK, EWOULDBLOCK };
 #endif
 
-void rt_error_set_last(rt_un error)
+void rt_error_set_last(enum rt_error error)
 {
 	rt_un right_error;
 

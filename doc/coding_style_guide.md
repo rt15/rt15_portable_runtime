@@ -45,3 +45,7 @@ All source files must end with an empty line.
 * Only functions opening curly brackets are on a new line.
 * Curly brackets are optional for one line blocks.
 * It is OK to put a goto in the same line of a if statement (in case of multiple if/goto).
+
+# Best practices
+
+* Use enum instead of defines when possible.

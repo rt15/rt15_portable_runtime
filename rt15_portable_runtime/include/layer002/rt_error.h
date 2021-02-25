@@ -13,24 +13,27 @@
  * </p>
  */
 
-/* The operation completed successfully. */
-#define RT_ERROR_SUCCESS 0
-/* The data area passed to a system call is too small. */
-#define RT_ERROR_INSUFFICIENT_BUFFER 1
-/* One or more arguments are not correct. */
-#define RT_ERROR_BAD_ARGUMENTS 2
-/* Not enough memory or memory issue, but not buffer related. */
-#define RT_ERROR_NOT_ENOUGH_MEMORY 3
-/* The "thing" already exists. */
-#define RT_ERROR_ALREADY_EXISTS 4
-/* A function has failed. Avoid this generic error code if possible. */
-#define RT_ERROR_FUNCTION_FAILED 5
-/* A numerical type cannot contain given value. */
-#define RT_ERROR_ARITHMETIC_OVERFLOW 6
-/* The function call would have blocked if the descriptor was a blocking one. See also RT_ERROR_SOCKET_WOULD_BLOCK. */
-#define RT_ERROR_WOULD_BLOCK 7
-/* The function call would have blocked if the socket was a blocking one. See also RT_ERROR_WOULD_BLOCK. */
-#define RT_ERROR_SOCKET_WOULD_BLOCK 8
+enum rt_error {
+	/* The operation completed successfully. */
+	RT_ERROR_SUCCESS,
+	/* The data area passed to a system call is too small. */
+	RT_ERROR_INSUFFICIENT_BUFFER,
+	/* One or more arguments are not correct. */
+	RT_ERROR_BAD_ARGUMENTS,
+	/* Not enough memory or memory issue, but not buffer related. */
+	RT_ERROR_NOT_ENOUGH_MEMORY,
+	/* The "thing" already exists. */
+	RT_ERROR_ALREADY_EXISTS,
+	/* A function has failed. Avoid this generic error code if possible. */
+	RT_ERROR_FUNCTION_FAILED,
+	/* A numerical type cannot contain given value. */
+	RT_ERROR_ARITHMETIC_OVERFLOW,
+	/* The function call would have blocked if the descriptor was a blocking one. See also RT_ERROR_SOCKET_WOULD_BLOCK. */
+	RT_ERROR_WOULD_BLOCK,
+	/* The function call would have blocked if the socket was a blocking one. See also RT_ERROR_WOULD_BLOCK. */
+	RT_ERROR_SOCKET_WOULD_BLOCK
+};
+
 
 /**
  * Can be used to set the operating system last error code.
@@ -39,7 +42,7 @@
  *
  * @param error The rpr error code (RT_ERROR_XXXXX). If not known, RT_ERROR_BAD_ARGUMENTS is used.
  */
-void rt_error_set_last(rt_un error);
+void rt_error_set_last(enum rt_error error);
 
 /**
  * Returns <tt>RT_TRUE</tt> if the last error is a "would block" error.
