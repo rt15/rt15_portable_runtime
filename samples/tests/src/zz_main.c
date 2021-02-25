@@ -6,6 +6,7 @@
 #include <rpr_main.h>
 
 rt_s zz_test_char8();
+rt_s zz_test_sleep();
 
 rt_s zz_test()
 {
@@ -17,11 +18,11 @@ rt_s zz_test()
 		goto error;
 
 	output_stream = &io_device.output_stream;
-	if (!output_stream->write(output_stream, "Hello, world!\n", sizeof("Hello, world!\n")))
+	if (!output_stream->write(output_stream, "Hello, world!\n", rt_char8_get_size("Hello, world!\n")))
 		goto error;
 
-	if (!zz_test_char8())
-		goto error;
+	if (!zz_test_sleep()) goto error;
+	if (!zz_test_char8()) goto error;
 
 	ret = RT_OK;
 free:

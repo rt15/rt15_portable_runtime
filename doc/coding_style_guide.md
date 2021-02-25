@@ -49,3 +49,6 @@ All source files must end with an empty line.
 # Best practices
 
 * Use enum instead of defines when possible.
+* Functions should never return something bigger than the size of a pointer.
+* If a function can fail, then it must return rt_s. Also make sure that operating system last error is set.
+* Use typedef for functions only. There are some exceptions in rt_types.h though.
