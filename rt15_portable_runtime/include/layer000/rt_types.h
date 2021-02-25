@@ -97,13 +97,13 @@ typedef rt_uchar8 rt_uchar;
 #endif
 
 /* Booleans. Never use RT_TRUE in comparisons. Non-zero means true. */
-typedef enum {
+typedef enum _rt_b {
 	RT_FALSE,
 	RT_TRUE
 } rt_b;
 
 /* Function results. Never use RT_OK in comparisons. Non-zero means OK. */
-typedef enum {
+typedef enum _rt_s {
 	RT_FAILED,
 	RT_OK
 } rt_s;

@@ -10,6 +10,15 @@ rt_s zz_test_char8();
 rt_s zz_test()
 {
 	rt_s ret;
+	struct rt_io_device io_device;
+	struct rt_output_stream *output_stream;
+
+	if (!rt_io_device_create_from_std_output(&io_device))
+		goto error;
+
+	output_stream = &io_device.output_stream;
+	if (!output_stream->write(output_stream, "Hello, world!\n", sizeof("Hello, world!\n")))
+		goto error;
 
 	if (!zz_test_char8())
 		goto error;
