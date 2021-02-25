@@ -2,7 +2,7 @@
 
 It is a thin abstraction layer on top of Linux and Windows.
 
-The concept is similar to Apache Portable Runtime, but with different features and only three platforms (Linux x64, Windows x86 and x64).
+The concept is similar to Apache Portable Runtime, but with different features and only three supported platforms (Linux x64, Windows x86 and x64).
 
 It can help to easily:
 * Write portable C code (on Linux and Windows) without taking care of implementation details.
@@ -40,14 +40,14 @@ In case of static linking:
 ### Dynamic linking
 
 In case of dynamic linking, the corresponding dynamic library must exist on the system.
-On Linux, libc.so.6 is often assumed to exist.
+On Linux, libc.so.6 is usually assumed to be available.
 With Visual Studio, redistributable packages must be installed. Or you can try to link against msvcrt.dll but that is not easy.
-On Windows, MinGW links against msvcrt.dll.
+On Windows, MinGW links against msvcrt.dll though.
 
 ### No linking
 
 It is possible to write C programs without linking with the CRT.
-Resulting binaries are very small and does not need msvcrt.dll, libc.so.6 or another dynamic library.
+Resulting binaries are very small and do not need msvcrt.dll, libc.so.6 or another dynamic library.
 It also avoids the CRT execution overhead when the program starts and finishes.
 
 The RPR library supports programs without CRT only under Windows.
@@ -58,6 +58,6 @@ Many classic C runtime functions are dangerous, for example:
 * sprintf, strcat... do not know the buffer size.
 * strerror, strtok... are not thread safe.
 
-There are known alternatives but not always available and they can differ between Linux and Windows.
+There are known alternatives but not always available and they can differ between CRT implementations.
 
 The RPR functions are designed to be safer.

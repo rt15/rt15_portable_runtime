@@ -1,3 +1,11 @@
+# Summary
+
+This style guide is inspired from Linux kernel coding style:
+https://www.kernel.org/doc/html/v4.10/process/coding-style.html
+
+Some other style guides:
+https://devnull-cz.github.io/unix-linux-prog-in-c/cstyle.html
+
 # File names
 
 * No upper case characters.

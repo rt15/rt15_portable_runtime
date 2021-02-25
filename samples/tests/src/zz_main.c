@@ -7,8 +7,9 @@
 
 rt_s zz_test_char8();
 rt_s zz_test_sleep();
+rt_s zz_test_thread();
 
-rt_s zz_test()
+static rt_s zz_test()
 {
 	rt_s ret;
 	struct rt_io_device io_device;
@@ -23,6 +24,7 @@ rt_s zz_test()
 
 	if (!zz_test_sleep()) goto error;
 	if (!zz_test_char8()) goto error;
+	if (!zz_test_thread()) goto error;
 
 	ret = RT_OK;
 free:
