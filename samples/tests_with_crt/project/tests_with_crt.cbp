@@ -40,11 +40,32 @@
 			<Add option="-DWIN32" />
 			<Add option="-D_CONSOLE" />
 			<Add directory="../../../rt15_portable_runtime/include" />
+			<Add directory="../include" />
 		</Compiler>
 		<Linker>
 			<Add directory="../../../rt15_portable_runtime/lib" />
 		</Linker>
+		<Unit filename="../include/zz_resources.h" />
+		<Unit filename="../include/zz_utils.h" />
 		<Unit filename="../src/zz_main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/zz_test_memory_compare.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/zz_test_memory_copy.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/zz_test_memory_move.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/zz_test_memory_set.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/zz_test_memory_zero.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/zz_utils.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>
