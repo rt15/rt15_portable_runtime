@@ -42,4 +42,11 @@ rt_s rt_char8_copy(const rt_char8 *string, rt_un string_size, rt_char8 *buffer, 
 
 rt_un rt_char8_get_size(const rt_char8 *string);
 
+/**
+ * <p>
+ * Always write a null terminating character if <tt>buffer_size</tt> is greater than 0.
+ * </p>
+ */
+rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+
 #endif /* RT_CHAR8_H */

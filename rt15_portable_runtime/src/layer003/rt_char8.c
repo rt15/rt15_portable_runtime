@@ -92,3 +92,58 @@ rt_un rt_char8_get_size(const rt_char8 *string)
 
 	return ret;
 }
+
+rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	rt_n local_value;
+	rt_n previous_value;
+	rt_char8 tmp_char;
+	rt_un i, j;
+	rt_s ret;
+
+	if (base < 2 || base > 36)
+		goto error;
+
+	local_value = value;
+	i = *buffer_size;
+	j = *buffer_size;
+	while (i < buffer_capacity - 1) {
+		previous_value = local_value;
+		local_value = local_value / (rt_n)base;
+		buffer[i] = "ZYXWVUTSRQPONMLKJIHGFEDCBA9876543210123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" [35 + (previous_value - local_value * base)];
+		i++;
+		if (!local_value)
+			break;
+	}
+	if (local_value)
+		goto error;
+
+	if (value < 0) {
+		if (i >= buffer_capacity - 1)
+			goto error;
+		buffer[i] = '-';
+		i++;
+	}
+	buffer[i] = 0;
+	*buffer_size = i;
+	i--;
+	for (; j < i; j++) {
+		tmp_char = buffer[j];
+		buffer[j] = buffer[i];
+		buffer[i] = tmp_char;
+		i--;
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	/* Add a null terminating character if possible. */
+	if (buffer_capacity) {
+		if (*buffer_size >= buffer_capacity)
+			*buffer_size = buffer_capacity - 1;
+		buffer[*buffer_size] = 0;
+	}
+	ret = RT_FAILED;
+	goto free;
+}

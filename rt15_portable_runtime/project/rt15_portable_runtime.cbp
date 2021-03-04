@@ -14,7 +14,6 @@
 				<Option compiler="gnu_gcc_compiler_x64" />
 				<Option createDefFile="1" />
 				<Compiler>
-					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="-D_DEBUG" />
 				</Compiler>
@@ -28,7 +27,6 @@
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add option="-Wall" />
 					<Add option="-DNDEBUG" />
 				</Compiler>
 				<Linker>
@@ -37,6 +35,9 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-pedantic" />
+			<Add option="-Wall" />
+			<Add option="-ansi" />
 			<Add option="-mno-stack-arg-probe -fno-stack-check -fno-stack-protector -finput-charset=cp1252 -Wno-long-long -Wno-misleading-indentation" />
 			<Add option="-DWIN32" />
 			<Add directory="../include" />

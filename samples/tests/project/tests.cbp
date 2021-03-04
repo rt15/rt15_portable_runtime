@@ -41,7 +41,9 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-pedantic" />
 			<Add option="-Wall" />
+			<Add option="-ansi" />
 			<Add option="-mno-stack-arg-probe -fno-stack-check -fno-stack-protector -finput-charset=cp1252 -Wno-long-long -Wno-misleading-indentation" />
 			<Add option="-DWIN32" />
 			<Add option="-D_CONSOLE" />
