@@ -59,6 +59,12 @@
 		<Unit filename="../src/zz_test_char8.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/zz_test_io_device.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/zz_test_pipe.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/zz_test_sleep.c">
 			<Option compilerVar="CC" />
 		</Unit>

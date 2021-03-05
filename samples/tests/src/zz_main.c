@@ -5,9 +5,15 @@
 #include <rpr_mem.h>
 #include <rpr_main.h>
 
-rt_s zz_test_char8();
+/* Layer 002. */
+rt_s zz_test_io_device();
 rt_s zz_test_sleep();
+
+/* Layer 003. */
+rt_s zz_test_char8();
+rt_s zz_test_pipe();
 rt_s zz_test_thread();
+
 
 static rt_s zz_test()
 {
@@ -22,8 +28,13 @@ static rt_s zz_test()
 	if (!output_stream->write(output_stream, "Hello, world!\n", rt_char8_get_size("Hello, world!\n")))
 		goto error;
 
+	/* Layer 002. */
+	if (!zz_test_io_device()) goto error;
 	if (!zz_test_sleep()) goto error;
+
+	/* Layer 003. */
 	if (!zz_test_char8()) goto error;
+	if (!zz_test_pipe()) goto error;
 	if (!zz_test_thread()) goto error;
 
 	ret = RT_OK;

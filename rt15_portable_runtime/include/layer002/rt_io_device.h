@@ -64,7 +64,7 @@ rt_s rt_io_device_write(struct rt_output_stream *output_stream, const rt_char8 *
 rt_s rt_io_device_is_inheritable(struct rt_io_device *io_device, rt_b *inheritable);
 
 /**
- * Update inherability of given I/O Device if needed.
+ * Update inheritability of given I/O Device if needed.
  *
  * <p>
  * Beware that there can be a race condition with this function.<br>

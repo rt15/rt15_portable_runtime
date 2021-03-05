@@ -13,6 +13,7 @@
 #include "layer002/rt_sleep.h"
 
 #include "layer003/rt_char8.h"
+#include "layer003/rt_pipe.h"
 #include "layer003/rt_thread.h"
 
 #endif /* RPR_H */

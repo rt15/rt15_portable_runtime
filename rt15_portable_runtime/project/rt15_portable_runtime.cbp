@@ -52,6 +52,7 @@
 		<Unit filename="../include/layer002/rt_io_device.h" />
 		<Unit filename="../include/layer002/rt_sleep.h" />
 		<Unit filename="../include/layer003/rt_char8.h" />
+		<Unit filename="../include/layer003/rt_pipe.h" />
 		<Unit filename="../include/layer003/rt_thread.h" />
 		<Unit filename="../include/rpr.h" />
 		<Unit filename="../include/rpr_main.h" />
@@ -72,6 +73,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer003/rt_char8.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer003/rt_pipe.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer003/rt_thread.c">
