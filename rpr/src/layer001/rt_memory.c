@@ -1,5 +1,19 @@
 #include "layer001/rt_memory.h"
 
+
+#ifdef RT_DEFINE_VC
+rt_n32 rt_memory_bit_scan_forward(rt_un x)
+{
+	unsigned long result;
+#ifdef RT_DEFINE_32
+	_BitScanForward(&result, x);
+#else
+	_BitScanForward64(&result, x);
+#endif
+	return (rt_n32)result;
+}
+#endif
+
 rt_n32 rt_memory_compare(const void *area1, const void *area2, rt_un size)
 {
 	rt_un words_count;

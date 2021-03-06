@@ -55,19 +55,21 @@
 /* Can be used to check that a given value is power of two to be able to use RT_MEMORY_MODULO_POWER_OF_TWO later on. */
 #define RT_MEMORY_IS_POWER_OF_TWO(UINT) (UINT && ((UINT & (UINT - 1)) == 0))
 
-/* Compute the count of chunks given <tt>SIZE</tt> (The elements count) and the size of a chunk. */
-/* CHUNK_SIZE must be a power of 2. */
+/* Count the number of zero bits before the first set bit. */
+/* It is equivalent to the position of the first set bit.  */
 #ifdef RT_DEFINE_GCC
-#define RT_MEMORY_GET_CHUNKS_COUNT(SIZE, CHUNK_SIZE) ((SIZE >> __builtin_ctzl(CHUNK_SIZE)) + (RT_MEMORY_MODULO_POWER_OF_TWO(SIZE, CHUNK_SIZE) ? 1 : 0))
+#define RT_MEMORY_BIT_SCAN_FORWARD(CHUNK_SIZE) __builtin_ctzl(CHUNK_SIZE)
 #else
-#define RT_MEMORY_GET_CHUNKS_COUNT(SIZE, CHUNK_SIZE) ((SIZE >> __builtin_ctzll(CHUNK_SIZE)) + (RT_MEMORY_MODULO_POWER_OF_TWO(SIZE, CHUNK_SIZE) ? 1 : 0))
+rt_n32 rt_memory_bit_scan_forward(rt_un x);
+#define RT_MEMORY_BIT_SCAN_FORWARD(CHUNK_SIZE) rt_memory_bit_scan_forward(CHUNK_SIZE)
 #endif
 
+/* Compute the count of chunks given <tt>SIZE</tt> (The elements count) and the size of a chunk. */
+/* CHUNK_SIZE must be a power of 2. */
+#define RT_MEMORY_GET_CHUNKS_COUNT(SIZE, CHUNK_SIZE) ((SIZE >> RT_MEMORY_BIT_SCAN_FORWARD(CHUNK_SIZE)) + (RT_MEMORY_MODULO_POWER_OF_TWO(SIZE, CHUNK_SIZE) ? 1 : 0))
+
 #ifndef RT_DEFINE_USE_CRT
-#ifdef RT_DEFINE_VC
-/* memmove is not available as intrinsic for VC and not declared outside CRT. */
-void *__cdecl memmove(void*, const void*, size_t);
-#else
+#ifdef RT_DEFINE_GCC
 
 /* No CRT so we define built-ins. */
 int __cdecl memcmp(const void*, const void*, size_t);

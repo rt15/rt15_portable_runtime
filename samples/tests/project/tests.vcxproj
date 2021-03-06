@@ -26,6 +26,7 @@
     </ClCompile>
     <ClCompile Include="..\src\zz_test_char8.c" />
     <ClCompile Include="..\src\zz_test_io_device.c" />
+    <ClCompile Include="..\src\zz_test_memory.c" />
     <ClCompile Include="..\src\zz_test_pipe.c" />
     <ClCompile Include="..\src\zz_test_sleep.c" />
     <ClCompile Include="..\src\zz_test_thread.c" />

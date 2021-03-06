@@ -4,6 +4,9 @@
 #include <rpr.h>
 #include <rpr_main.h>
 
+/* Layer 001. */
+rt_s zz_test_memory();
+
 /* Layer 002. */
 rt_s zz_test_io_device();
 rt_s zz_test_sleep();
@@ -26,6 +29,9 @@ static rt_s zz_test()
 	output_stream = &io_device.output_stream;
 	if (!output_stream->write(output_stream, "Hello, world!\n", rt_char8_get_size("Hello, world!\n")))
 		goto error;
+
+	/* Layer 001. */
+	if (!zz_test_memory()) goto error;
 
 	/* Layer 002. */
 	if (!zz_test_io_device()) goto error;

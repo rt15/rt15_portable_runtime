@@ -3,6 +3,15 @@
 
 #include "layer000/rt_types.h"
 
+/* String size that can be used once in a function and avoid stack probe. */
+#define RT_CHAR8_BIG_STRING_SIZE 3840
+/* String size that can be used twice in a function and avoid stack probe. */
+#define RT_CHAR8_HALF_BIG_STRING_SIZE 1920
+/* String size that can be used three times in a function and avoid stack probe. */
+#define RT_CHAR8_THIRD_BIG_STRING_SIZE 1280
+/* String size that can be used four times in a function and avoid stack probe. */
+#define RT_CHAR8_QUARTER_BIG_STRING_SIZE 960
+
 /**
  * Test two strings for equality.
  *
