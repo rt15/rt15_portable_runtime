@@ -1,11 +1,11 @@
 #include <rpr.h>
 
-rt_s zz_test_pipe_with_close()
+static rt_s zz_test_pipe_with_close()
 {
 	rt_char8 buffer[8];
 	struct rt_pipe pipe;
-	struct rt_io_device *input_io_device;
-	struct rt_io_device *output_io_device;
+	struct rt_io_device *input_io_device = RT_NULL;
+	struct rt_io_device *output_io_device = RT_NULL;
 	rt_b input_created = RT_FALSE;
 	rt_b output_created = RT_FALSE;
 	struct rt_input_stream *input_stream;
@@ -55,7 +55,7 @@ error:
 
 }
 
-rt_s zz_test_pipe_with_fixed_size(struct rt_pipe *pipe)
+static rt_s zz_test_pipe_with_fixed_size(struct rt_pipe *pipe)
 {
 	struct rt_input_stream *input_stream;
 	struct rt_output_stream *output_stream;

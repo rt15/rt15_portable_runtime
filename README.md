@@ -26,6 +26,8 @@ For example, you may have to use:
 
 With RPR you can focus on coding your features, not on wasting your time searching for solutions on the web.
 
+RPR also helps you to support both GCC and MSVC compilers.
+
 ## Create Windows programs without CRT
 
 C programs are almost always either statically or dynamically linked with the CRT.

@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-static rt_un32 zz_test_thread_callback(void *parameter)
+static rt_un32 RT_STDCALL zz_test_thread_callback(void *parameter)
 {
 	rt_un32 exit_code;
 

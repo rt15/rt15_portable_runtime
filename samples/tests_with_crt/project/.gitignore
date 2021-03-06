@@ -1,3 +1,5 @@
 *.layout
 *.depend
-
+.vs
+*.filters
+*.user

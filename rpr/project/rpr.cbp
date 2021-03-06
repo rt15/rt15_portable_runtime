@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="rt15_portable_runtime" />
+		<Option title="rpr" />
 		<Option pch_mode="2" />
 		<Option compiler="gnu_gcc_compiler_x64" />
 		<Build>

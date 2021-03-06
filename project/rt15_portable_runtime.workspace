@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_workspace_file>
 	<Workspace title="Workspace">
-		<Project filename="../rt15_portable_runtime/project/rt15_portable_runtime.cbp" />
+		<Project filename="../rpr/project/rpr.cbp" />
 		<Project filename="../samples/tests_with_crt/project/tests_with_crt.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>

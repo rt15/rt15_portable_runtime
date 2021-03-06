@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include <rpr.h>
-#include <rpr_mem.h>
 #include <rpr_main.h>
 
 /* Layer 002. */

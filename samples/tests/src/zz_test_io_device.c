@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-rt_s zz_test_io_device_inheritance(struct rt_io_device *io_device)
+static rt_s zz_test_io_device_inheritance(struct rt_io_device *io_device)
 {
 	rt_b inheritable;
 	rt_s ret;

@@ -39,11 +39,11 @@
 			<Add option="-mno-stack-arg-probe -fno-stack-check -fno-stack-protector -finput-charset=cp1252 -Wno-long-long -Wno-misleading-indentation" />
 			<Add option="-DWIN32" />
 			<Add option="-D_CONSOLE" />
-			<Add directory="../../../rt15_portable_runtime/include" />
+			<Add directory="../../../rpr/include" />
 			<Add directory="../include" />
 		</Compiler>
 		<Linker>
-			<Add directory="../../../rt15_portable_runtime/lib" />
+			<Add directory="../../../rpr/lib" />
 		</Linker>
 		<Unit filename="../include/zz_resources.h" />
 		<Unit filename="../include/zz_utils.h" />

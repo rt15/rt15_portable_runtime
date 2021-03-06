@@ -3,7 +3,7 @@
 
 #include "layer000/rt_types.h"
 
-typedef rt_un32 (*rt_thread_callback_t)(void *parameter);
+typedef rt_un32 (RT_STDCALL *rt_thread_callback_t)(void *parameter);
 
 struct rt_thread {
 #ifdef RT_DEFINE_WINDOWS

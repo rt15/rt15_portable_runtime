@@ -28,8 +28,8 @@
 /* Allow to define memcmp, memcpy and memset while they are intrinsic and intrinsics are activated. */
 #ifdef RT_DEFINE_VC
 
-/* memmove is not available as intrinsic. */
-#pragma function(memcmp, memcpy, memset)
+/* Beware that memmove is not available as intrinsic in old MSVC compilers. */
+#pragma function(memcmp, memcpy, memmove, memset)
 
 #endif
 
