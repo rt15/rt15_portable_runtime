@@ -3,6 +3,7 @@
 
 #include "layer000/rt_types.h"
 
+#include "layer001/rt_atomic.h"
 #include "layer001/rt_input_stream.h"
 #include "layer001/rt_memory.h"
 #include "layer001/rt_output_stream.h"

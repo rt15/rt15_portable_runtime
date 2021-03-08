@@ -43,6 +43,7 @@
 			<Add directory="../include" />
 		</Compiler>
 		<Unit filename="../include/layer000/rt_types.h" />
+		<Unit filename="../include/layer001/rt_atomic.h" />
 		<Unit filename="../include/layer001/rt_input_stream.h" />
 		<Unit filename="../include/layer001/rt_memory.h" />
 		<Unit filename="../include/layer001/rt_os_headers.h" />

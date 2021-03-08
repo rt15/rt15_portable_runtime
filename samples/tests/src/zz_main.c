@@ -5,6 +5,7 @@
 #include <rpr_main.h>
 
 /* Layer 001. */
+rt_s zz_test_atomic();
 rt_s zz_test_memory();
 
 /* Layer 002. */
@@ -31,6 +32,7 @@ static rt_s zz_test()
 		goto error;
 
 	/* Layer 001. */
+	if (!zz_test_atomic()) goto error;
 	if (!zz_test_memory()) goto error;
 
 	/* Layer 002. */

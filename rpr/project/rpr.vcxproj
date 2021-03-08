@@ -32,6 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\layer000\rt_types.h" />
+    <ClInclude Include="..\include\layer001\rt_atomic.h" />
     <ClInclude Include="..\include\layer001\rt_input_stream.h" />
     <ClInclude Include="..\include\layer001\rt_memory.h" />
     <ClInclude Include="..\include\layer001\rt_os_headers.h" />
