@@ -84,6 +84,7 @@
 		<Unit filename="../include/layer002/rt_error.h" />
 		<Unit filename="../include/layer002/rt_io_device.h" />
 		<Unit filename="../include/layer002/rt_sleep.h" />
+		<Unit filename="../include/layer002/rt_virtual_memory.h" />
 		<Unit filename="../include/layer003/rt_char8.h" />
 		<Unit filename="../include/layer003/rt_pipe.h" />
 		<Unit filename="../include/layer003/rt_thread.h" />
@@ -103,6 +104,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer002/rt_sleep.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer002/rt_virtual_memory.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer003/rt_char8.c">

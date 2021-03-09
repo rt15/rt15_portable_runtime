@@ -150,6 +150,20 @@ typedef void* rt_h;                    /* HANDLE.  */
 /* rt_n = LRESULT, LONG_PTR, LPARAM.               */
 /* rt_un = UINT_PTR, ULONG_PTR, DWORD_PTR, WPARAM. */
 
+/* Convert pointers into integers and integers into pointers. */
+
+/* Can be used when the integer is 32 bits while targeting 32 bits. */
+#define RT_TYPE_MAKE_POINTER(x)    ((void*)(rt_n)(x))
+
+#ifdef RT_DEFINE_64
+#define RT_TYPE_MAKE_INTEGER(x)    ((rt_n)(x))
+#define RT_TYPE_MAKE_UINTEGER(x)   ((rt_un)(x))
+#else
+/* Convert to real 32 bits integer types (Not _W64 integers) because the pointers are 32 bits. */
+#define RT_TYPE_MAKE_INTEGER(x)    ((rt_n32)(rt_n)(x))
+#define RT_TYPE_MAKE_UINTEGER(x)   ((rt_un32)(rt_n)(x))
+#endif
+
 #ifdef __cplusplus
 #define RT_NULL 0
 #else

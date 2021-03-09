@@ -116,6 +116,9 @@
 		<Unit filename="../src/zz_test_thread.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/zz_test_virtual_memory.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

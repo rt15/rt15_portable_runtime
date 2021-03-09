@@ -12,6 +12,7 @@
 #include "layer002/rt_error.h"
 #include "layer002/rt_io_device.h"
 #include "layer002/rt_sleep.h"
+#include "layer002/rt_virtual_memory.h"
 
 #include "layer003/rt_char8.h"
 #include "layer003/rt_pipe.h"

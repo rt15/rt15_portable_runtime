@@ -11,6 +11,7 @@ rt_s zz_test_memory();
 /* Layer 002. */
 rt_s zz_test_io_device();
 rt_s zz_test_sleep();
+rt_s zz_test_virtual_memory();
 
 /* Layer 003. */
 rt_s zz_test_char8();
@@ -38,6 +39,7 @@ static rt_s zz_test()
 	/* Layer 002. */
 	if (!zz_test_io_device()) goto error;
 	if (!zz_test_sleep()) goto error;
+	if (!zz_test_virtual_memory()) goto error;
 
 	/* Layer 003. */
 	if (!zz_test_char8()) goto error;
