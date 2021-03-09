@@ -7,6 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Win64Debug">
+				<Option platforms="Windows;" />
 				<Option output="../bin/testsd" prefix_auto="1" extension_auto="1" />
 				<Option object_output="../obj/debug/" />
 				<Option type="1" />
@@ -25,6 +26,7 @@
 				</Linker>
 			</Target>
 			<Target title="Win64Release">
+				<Option platforms="Windows;" />
 				<Option output="../bin/tests" prefix_auto="1" extension_auto="1" />
 				<Option object_output="../obj/release/" />
 				<Option type="1" />
