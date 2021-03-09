@@ -2,6 +2,7 @@
 <CodeBlocks_workspace_file>
 	<Workspace title="Workspace">
 		<Project filename="../rpr/project/rpr.cbp" />
+		<Project filename="../samples/tests/project/tests.cbp" />
 		<Project filename="../samples/tests_with_crt/project/tests_with_crt.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
