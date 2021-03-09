@@ -61,6 +61,7 @@
 #endif
 
 /* Compilers related defines, mostly calling conventions. */
+#ifdef RT_DEFINE_32
 #ifdef RT_DEFINE_GCC
 #define RT_CDECL __attribute__((cdecl))
 #define RT_STDCALL __attribute__((stdcall))
@@ -68,6 +69,11 @@
 #define RT_CDECL __cdecl
 #define RT_STDCALL __stdcall
 #endif
+#else
+#define RT_CDECL
+#define RT_STDCALL
+#endif
+
 #define RT_EXPORT __declspec(dllexport)
 
 /* Use gcc __va_copy if va_copy is not available.                                    */

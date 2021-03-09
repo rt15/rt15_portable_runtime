@@ -15,8 +15,6 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-D_DEBUG" />
-					<Add option="-DWIN32" />
-					<Add option="-D_CONSOLE" />
 				</Compiler>
 				<Linker>
 					<Add library="rprd" />
@@ -45,6 +43,37 @@
 					<Add library="kernel32" />
 				</Linker>
 			</Target>
+			<Target title="Linux64Debug">
+				<Option platforms="Unix;" />
+				<Option output="../bin/testsd" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj/debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-D_DEBUG" />
+				</Compiler>
+				<Linker>
+					<Add library="rprd" />
+					<Add library="pthread" />
+				</Linker>
+			</Target>
+			<Target title="Linux64Release">
+				<Option platforms="Unix;" />
+				<Option output="../bin/tests" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj/release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DNDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="rpr" />
+					<Add library="pthread" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-pedantic" />
@@ -54,7 +83,6 @@
 			<Add directory="../../../rpr/include" />
 		</Compiler>
 		<Linker>
-			<Add option="-nostartfiles -nodefaultlibs -nostdlib -ffreestanding" />
 			<Add directory="../../../rpr/lib" />
 		</Linker>
 		<Unit filename="../src/zz_main.c">
@@ -86,6 +114,8 @@
 		</Unit>
 		<Extensions>
 			<lib_finder disable_auto="1" />
+			<code_completion />
+			<debugger />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
