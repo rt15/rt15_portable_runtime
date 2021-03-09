@@ -7,6 +7,8 @@
 
 /**
  * Wrapper callback for Linux that calls the user provided one.
+ *
+ * @param void_thread The rt_thread. It cannot be a custom struct allocated in rt_thread_create stack frame.
  */
 static void *RT_CDECL rt_thread_linux_callback(void *void_thread)
 {
@@ -78,8 +80,7 @@ rt_s rt_thread_join_and_check(struct rt_thread *thread)
 		goto error;
 	if (!rt_thread_get_exit_code(thread, &thread_exit_code))
 		goto error;
-	if (!thread_exit_code)
-	{
+	if (!thread_exit_code) {
 		/* Unknown error in the joined thread which cannot set last error for this thread. */
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
 		goto error;
