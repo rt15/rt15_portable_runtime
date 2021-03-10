@@ -21,10 +21,11 @@ struct rt_critical_section {
 	rt_h    lock_semaphore_handle;
 	rt_un   spin_count;
 #else
-	/* TODO: Fix
-	pthread_mutex_t rtCriticalSection;
-	*/
-	rt_char8 critical_section[200];
+#ifdef RT_DEFINE_32
+	rt_char8 data[32];
+#else
+	rt_char8 data[40];
+#endif
 #endif
 };
 

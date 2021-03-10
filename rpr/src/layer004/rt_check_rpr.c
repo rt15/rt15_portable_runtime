@@ -11,7 +11,7 @@ static rt_s rt_check_critical_section()
 #ifdef RT_DEFINE_WINDOWS
 	CRITICAL_SECTION ref_critical_section;
 #else
-
+	pthread_mutex_t ref_critical_section;
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
@@ -24,7 +24,9 @@ static rt_s rt_check_critical_section()
 
 	if (sizeof(struct rt_critical_section) != sizeof(CRITICAL_SECTION)) goto error;
 #else
-
+	/* __SIZEOF_PTHREAD_MUTEX_T from /usr/include/bits/pthreadtypes.h. */
+	if (sizeof(critical_section.data) != sizeof(ref_critical_section)) goto error;
+	if (sizeof(critical_section) != sizeof(pthread_mutex_t)) goto error;
 #endif
 
 	ret = RT_OK;

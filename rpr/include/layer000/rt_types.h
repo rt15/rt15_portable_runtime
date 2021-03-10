@@ -116,8 +116,12 @@ typedef enum _rt_s {
 
 /* Fixed size types */
 typedef int rt_n32;
-#if defined(RT_DEFINE_WINDOWS) && defined(RT_DEFINE_64)
+#ifdef RT_DEFINE_64
+#ifdef RT_DEFINE_WINDOWS
 typedef unsigned long int rt_un32;
+#else
+typedef unsigned int rt_un32;
+#endif
 #else
 typedef unsigned long rt_un32;
 #endif
