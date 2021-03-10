@@ -10,6 +10,7 @@
 
 #include "layer002/rt_chrono.h"
 #include "layer002/rt_error.h"
+#include "layer002/rt_event.h"
 #include "layer002/rt_io_device.h"
 #include "layer002/rt_sleep.h"
 #include "layer002/rt_virtual_memory.h"

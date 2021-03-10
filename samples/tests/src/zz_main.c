@@ -9,6 +9,7 @@ rt_s zz_test_atomic();
 rt_s zz_test_memory();
 
 /* Layer 002. */
+rt_s zz_test_event();
 rt_s zz_test_io_device();
 rt_s zz_test_sleep();
 rt_s zz_test_virtual_memory();
@@ -37,6 +38,7 @@ static rt_s zz_test()
 	if (!zz_test_memory()) goto error;
 
 	/* Layer 002. */
+	if (!zz_test_event()) goto error;
 	if (!zz_test_io_device()) goto error;
 	if (!zz_test_sleep()) goto error;
 	if (!zz_test_virtual_memory()) goto error;
