@@ -1,8 +1,64 @@
 #include "layer004/rt_check_rpr.h"
 
 #include "layer001/rt_os_headers.h"
+#include "layer002/rt_chrono.h"
 #include "layer002/rt_critical_section.h"
+#include "layer003/rt_thread.h"
 
+static rt_s rt_check_thread()
+{
+	rt_s ret;
+	struct rt_thread thread;
+#ifdef RT_DEFINE_WINDOWS
+	HANDLE ref_thread;
+#else
+	pthread_t ref_thread;
+#endif
+
+#ifdef RT_DEFINE_WINDOWS
+	if (sizeof(thread.thread_handle) != sizeof(ref_thread)) goto error;
+	if (sizeof(thread) != sizeof(HANDLE)) goto error;
+#else
+	if (sizeof(thread.thread_pointer) != sizeof(ref_thread)) goto error;
+	if (sizeof(thread.thread_pointer) != sizeof(pthread_t)) goto error;
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s rt_check_chrono()
+{
+	rt_s ret;
+	struct rt_chrono chrono;
+#ifdef RT_DEFINE_WINDOWS
+	LARGE_INTEGER ref_chrono;
+#else
+	struct timespec ref_chrono;
+#endif
+
+#ifdef RT_DEFINE_WINDOWS
+	if (sizeof(chrono.start_counter) != sizeof(ref_chrono)) goto error;
+	if (sizeof(chrono) != sizeof(LARGE_INTEGER)) goto error;
+#else
+	if (sizeof(chrono.seconds) != sizeof(ref_chrono.tv_sec)) goto error;
+	if (sizeof(chrono.nano_seconds) != sizeof(ref_chrono.tv_nsec)) goto error;
+	if (sizeof(chrono) != sizeof(struct timespec)) goto error;
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
 
 static rt_s rt_check_critical_section()
 {
@@ -92,6 +148,8 @@ static rt_s rt_check_types()
 	if (sizeof(rt_un32) != sizeof(UINT)) goto error;
 	if (sizeof(rt_un32) != sizeof(ULONG)) goto error;
 
+	if (sizeof(rt_un64) != sizeof(LARGE_INTEGER)) goto error;
+
 	if (sizeof(rt_n) != sizeof(LRESULT)) goto error;
 	if (sizeof(rt_n) != sizeof(LONG_PTR)) goto error;
 	if (sizeof(rt_n) != sizeof(LPARAM)) goto error;
@@ -107,6 +165,8 @@ static rt_s rt_check_types()
 	if (sizeof(rt_n64) != sizeof(off_t)) goto error;
 
 	if (sizeof(rt_n) != sizeof(ssize_t)) goto error;
+	if (sizeof(rt_n) != sizeof(time_t)) goto error;
+
 	if (sizeof(rt_un) != sizeof(size_t)) goto error;
 #endif
 
@@ -125,6 +185,8 @@ rt_s rt_check_rpr()
 
 	if (!rt_check_types()) goto error;
 	if (!rt_check_critical_section()) goto error;
+	if (!rt_check_chrono()) goto error;
+	if (!rt_check_thread()) goto error;
 
 	ret = RT_OK;
 free:

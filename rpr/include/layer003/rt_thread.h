@@ -19,7 +19,7 @@ struct rt_thread {
 	rt_h thread_handle;
 #else
 	/* pthread_t is in fact a pointer on a struct. */
-	unsigned long int thread_pointer;
+	rt_un thread_pointer;
 	/* User callback. */
 	rt_thread_callback_t thread_callback;
 	/* User parameter. */
