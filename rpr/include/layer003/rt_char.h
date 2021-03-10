@@ -1,16 +1,16 @@
-#ifndef RT_CHAR8_H
-#define RT_CHAR8_H
+#ifndef RT_CHAR_H
+#define RT_CHAR_H
 
 #include "layer000/rt_types.h"
 
 /* String size that can be used once in a function and avoid stack probe. */
-#define RT_CHAR8_BIG_STRING_SIZE 3840
+#define RT_CHAR_BIG_STRING_SIZE 1920
 /* String size that can be used twice in a function and avoid stack probe. */
-#define RT_CHAR8_HALF_BIG_STRING_SIZE 1920
+#define RT_CHAR_HALF_BIG_STRING_SIZE 960
 /* String size that can be used three times in a function and avoid stack probe. */
-#define RT_CHAR8_THIRD_BIG_STRING_SIZE 1280
+#define RT_CHAR_THIRD_BIG_STRING_SIZE 640
 /* String size that can be used four times in a function and avoid stack probe. */
-#define RT_CHAR8_QUARTER_BIG_STRING_SIZE 960
+#define RT_CHAR_QUARTER_BIG_STRING_SIZE 480
 
 /**
  * Test two strings for equality.
@@ -21,7 +21,7 @@
  * </p>
  *
  */
-rt_b rt_char8_equals(const rt_char8 *string1, rt_un string1_size, const rt_char8 *string2, rt_un string2_size);
+rt_b rt_char_equals(const rt_char *string1, rt_un string1_size, const rt_char *string2, rt_un string2_size);
 
 /**
  *
@@ -35,13 +35,13 @@ rt_b rt_char8_equals(const rt_char8 *string1, rt_un string1_size, const rt_char8
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
-rt_s rt_char8_append(const rt_char8 *suffix, rt_un suffix_size, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+rt_s rt_char_append(const rt_char *suffix, rt_un suffix_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
-rt_s rt_char8_append_char(rt_char8 character, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+rt_s rt_char_append_char(rt_char character, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  *
@@ -53,15 +53,15 @@ rt_s rt_char8_append_char(rt_char8 character, rt_char8 *buffer, rt_un buffer_cap
  * Null characters in <tt>string</tt> are ignored.
  * </p>
  */
-rt_s rt_char8_copy(const rt_char8 *string, rt_un string_size, rt_char8 *buffer, rt_un buffer_capacity);
+rt_s rt_char_copy(const rt_char *string, rt_un string_size, rt_char *buffer, rt_un buffer_capacity);
 
-rt_un rt_char8_get_size(const rt_char8 *string);
+rt_un rt_char_get_size(const rt_char *string);
 
 /**
  * <p>
  * Always write a null terminating character if <tt>buffer_size</tt> is greater than 0.
  * </p>
  */
-rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+rt_s rt_char_append_n(rt_n value, rt_un base, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
-#endif /* RT_CHAR8_H */
+#endif /* RT_CHAR_H */

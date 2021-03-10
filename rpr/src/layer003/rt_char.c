@@ -1,21 +1,28 @@
-#include "layer003/rt_char8.h"
+#include "layer003/rt_char.h"
 
 #include "layer001/rt_memory.h"
 #include "layer002/rt_error.h"
 
-rt_b rt_char8_equals(const rt_char8 *string1, rt_un string1_size, const rt_char8 *string2, rt_un string2_size)
+/* Copy from rt_char8.x. */
+/* Replace rt_char8 by rt_char. */
+/* Replace RT_CHAR8 by RT_CHAR. */
+/* Adjust RT_CHAR_XX_STRING_SIZE. */
+/* Add _R to 'x' and "xx" character and string litterals. */
+/* Replace RT_MEMORY_SET by RT_MEMORY_SET_CHAR. */
+
+rt_b rt_char_equals(const rt_char *string1, rt_un string1_size, const rt_char *string2, rt_un string2_size)
 {
 	rt_b ret;
 
 	if (string1_size != string2_size) {
 		ret = RT_FALSE;
 	} else {
-		ret = !RT_MEMORY_COMPARE(string1, string2, string1_size * sizeof(rt_char8));
+		ret = !RT_MEMORY_COMPARE(string1, string2, string1_size * sizeof(rt_char));
 	}
 	return ret;
 }
 
-rt_s rt_char8_append(const rt_char8 *suffix, rt_un suffix_size, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+rt_s rt_char_append(const rt_char *suffix, rt_un suffix_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
 	rt_un local_buffer_size = *buffer_size;
 	rt_un copy_size;
@@ -42,7 +49,7 @@ rt_s rt_char8_append(const rt_char8 *suffix, rt_un suffix_size, rt_char8 *buffer
 		}
 	}
 
-	RT_MEMORY_COPY(suffix, &buffer[local_buffer_size], copy_size * sizeof(rt_char8));
+	RT_MEMORY_COPY(suffix, &buffer[local_buffer_size], copy_size * sizeof(rt_char));
 	local_buffer_size += copy_size;
 	buffer[local_buffer_size] = 0;
 	*buffer_size = local_buffer_size;
@@ -51,7 +58,7 @@ end:
 	return ret;
 }
 
-rt_s rt_char8_append_char(rt_char8 character, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+rt_s rt_char_append_char(rt_char character, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
 	rt_un local_buffer_size = *buffer_size;
 	rt_s ret;
@@ -73,7 +80,7 @@ rt_s rt_char8_append_char(rt_char8 character, rt_char8 *buffer, rt_un buffer_cap
 	return ret;
 }
 
-rt_s rt_char8_copy(const rt_char8 *string, rt_un string_size, rt_char8 *buffer, rt_un buffer_capacity)
+rt_s rt_char_copy(const rt_char *string, rt_un string_size, rt_char *buffer, rt_un buffer_capacity)
 {
 	rt_un copy_size;
 	rt_s ret;
@@ -95,16 +102,16 @@ rt_s rt_char8_copy(const rt_char8 *string, rt_un string_size, rt_char8 *buffer, 
 		}
 	}
 
-	RT_MEMORY_COPY(string, buffer, copy_size * sizeof(rt_char8));
+	RT_MEMORY_COPY(string, buffer, copy_size * sizeof(rt_char));
 	buffer[copy_size] = 0;
 
 end:
 	return ret;
 }
 
-rt_un rt_char8_get_size(const rt_char8 *string)
+rt_un rt_char_get_size(const rt_char *string)
 {
-	const rt_char8 *in_string;
+	const rt_char *in_string;
 	rt_un ret;
 
 	in_string = string;
@@ -115,11 +122,11 @@ rt_un rt_char8_get_size(const rt_char8 *string)
 	return ret;
 }
 
-rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+rt_s rt_char_append_n(rt_n value, rt_un base, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
 	rt_n local_value;
 	rt_n previous_value;
-	rt_char8 tmp_char;
+	rt_char tmp_char;
 	rt_un i, j;
 	rt_s ret;
 
@@ -132,7 +139,7 @@ rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_ca
 	while (i < buffer_capacity - 1) {
 		previous_value = local_value;
 		local_value = local_value / (rt_n)base;
-		buffer[i] = "ZYXWVUTSRQPONMLKJIHGFEDCBA9876543210123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" [35 + (previous_value - local_value * base)];
+		buffer[i] = _R("ZYXWVUTSRQPONMLKJIHGFEDCBA9876543210123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ") [35 + (previous_value - local_value * base)];
 		i++;
 		if (!local_value)
 			break;

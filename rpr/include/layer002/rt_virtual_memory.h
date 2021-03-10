@@ -9,10 +9,10 @@
  * Heaps implementation (malloc...) are usually requesting pages internally.
  */
 
- /**
-  * Retrieve the size of a page, in bytes.<br>
-  * Usually 4096 on Windows.
-  */
+/**
+ * Retrieve the size of a page, in bytes.<br>
+ * Usually 4096 on Windows.
+ */
 rt_un rt_virtual_memory_get_page_size();
 
 /**

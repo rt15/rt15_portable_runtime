@@ -164,6 +164,26 @@ typedef void* rt_h;                    /* HANDLE.  */
 #define RT_TYPE_MAKE_UINTEGER(x)   ((rt_un32)(rt_n)(x))
 #endif
 
+/* Maximum and minimum values for types. */
+
+#define RT_TYPE_MAX_N16    32767
+#define RT_TYPE_MIN_N16    (-RT_TYPE_MAX_N16 - 1)
+#define RT_TYPE_MAX_UN16   ((rt_un16)-1)
+#define RT_TYPE_MAX_N32    2147483647
+#define RT_TYPE_MIN_N32    (-RT_TYPE_MAX_N32 - 1)
+#define RT_TYPE_MAX_UN32   ((rt_un32)-1)
+#define RT_TYPE_MAX_N64    9223372036854775807
+#define RT_TYPE_MIN_N64    (-RT_TYPE_MAX_N64 - 1)
+#define RT_TYPE_MAX_UN64   ((rt_un64)-1)
+#ifdef RT_DEFINE_32
+#define RT_TYPE_MAX_N    RT_TYPE_MAX_N32
+#define RT_TYPE_MIN_N    RT_TYPE_MIN_N32
+#else
+#define RT_TYPE_MAX_N    RT_TYPE_MAX_N64
+#define RT_TYPE_MIN_N    RT_TYPE_MIN_N64
+#endif
+#define RT_TYPE_MAX_UN     ((rt_un)-1)
+
 #ifdef __cplusplus
 #define RT_NULL 0
 #else

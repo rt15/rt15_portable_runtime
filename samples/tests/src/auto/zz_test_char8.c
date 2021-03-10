@@ -39,7 +39,7 @@ error:
 static rt_s zz_test_char8_append_ok(const rt_char8 *prefix, const rt_char8 *suffix, const rt_char8 *expected)
 {
 	rt_s ret;
-	char buffer[200];
+	rt_char8 buffer[200];
 	rt_un buffer_size = 0;
 
 	RT_MEMORY_SET(buffer, 'a', 200);
@@ -62,7 +62,7 @@ error:
 static rt_s zz_test_char8_append_failed(const rt_char8 *prefix, const rt_char8 *suffix, const rt_char8 *expected)
 {
 	rt_s ret;
-	char buffer[200];
+	rt_char8 buffer[200];
 	rt_un buffer_size = 0;
 
 	RT_MEMORY_SET(buffer, 'a', 200);
@@ -113,10 +113,57 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_char8_append_char_do(rt_s status, rt_un buffer_size, const rt_char8 *expected)
+{
+	rt_char8 buffer[10];
+	rt_un local_buffer_size = buffer_size;
+	rt_s ret;
+	rt_s result;
+
+	RT_MEMORY_SET(buffer, 'a', 10);
+
+	result = rt_char8_append_char('b', buffer, 10, &local_buffer_size);
+	if (!RT_MEMORY_XNOR(result, status))
+		goto error;
+
+	if (local_buffer_size != rt_char8_get_size(expected))
+		goto error;
+
+	if (!rt_char8_equals(buffer, local_buffer_size, expected, local_buffer_size))
+		goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_append_char()
+{
+	rt_s ret;
+
+	if (!zz_test_char8_append_char_do(RT_OK, 0, "b")) goto error;
+	if (!zz_test_char8_append_char_do(RT_OK, 6, "aaaaaab")) goto error;
+	if (!zz_test_char8_append_char_do(RT_OK, 7, "aaaaaaab")) goto error;
+	if (!zz_test_char8_append_char_do(RT_OK, 8, "aaaaaaaab")) goto error;
+	if (!zz_test_char8_append_char_do(RT_FAILED, 9, "aaaaaaaaa")) goto error;
+	if (!zz_test_char8_append_char_do(RT_FAILED, 10, "aaaaaaaaa")) goto error;
+	if (!zz_test_char8_append_char_do(RT_FAILED, 11, "aaaaaaaaa")) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 static rt_s zz_test_char8_copy_ok(const rt_char8 *string)
 {
 	rt_s ret;
-	char buffer[6];
+	rt_char8 buffer[6];
 	rt_un buffer_size = 0;
 
 	RT_MEMORY_SET(buffer, 'a', 6);
@@ -143,7 +190,7 @@ error:
 static rt_s zz_test_char8_copy_failed(const rt_char8 *string, const rt_char8 *expected)
 {
 	rt_s ret;
-	char buffer[6];
+	rt_char8 buffer[6];
 	rt_un buffer_size = 0;
 
 	RT_MEMORY_SET(buffer, 'a', 6);
@@ -198,7 +245,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_char8_append_n_ok(rt_n value, rt_un base, rt_un buffer_capacity, rt_un buffer_size, rt_char8 *expected)
+rt_s zz_test_char8_append_n_ok(rt_n value, rt_un base, rt_un buffer_capacity, rt_un buffer_size, const rt_char8 *expected)
 {
 	rt_char8 buffer[200];
 	rt_un local_buffer_size = buffer_size;
@@ -222,7 +269,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_char8_append_n_failed(rt_n value, rt_un base, rt_un buffer_capacity, rt_un buffer_size, rt_char8 *expected)
+rt_s zz_test_char8_append_n_failed(rt_n value, rt_un base, rt_un buffer_capacity, rt_un buffer_size, const rt_char8 *expected)
 {
 	rt_char8 buffer[200];
 	rt_un local_buffer_size = buffer_size;
@@ -292,6 +339,7 @@ rt_s zz_test_char8()
 	if (!zz_test_char8_get_size()) goto error;
 	if (!zz_test_char8_equals()) goto error;
 	if (!zz_test_char8_append()) goto error;
+	if (!zz_test_char8_append_char()) goto error;
 	if (!zz_test_char8_copy()) goto error;
 	if (!zz_test_char8_append_n()) goto error;
 

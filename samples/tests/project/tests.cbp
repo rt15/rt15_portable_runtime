@@ -85,44 +85,76 @@
 			<Add option="-ansi" />
 			<Add option="-mno-stack-arg-probe -fno-stack-check -fno-stack-protector -finput-charset=cp1252 -Wno-long-long" />
 			<Add directory="../../../rpr/include" />
+			<Add directory="../include" />
 		</Compiler>
 		<Linker>
 			<Add directory="../../../rpr/lib" />
 		</Linker>
+		<Unit filename="../include/zz_utils.h" />
+		<Unit filename="../src/auto/zz_auto_tests.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_atomic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_char.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_char8.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_critical_section.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_env_var.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_event.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_fast_initialization.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_file_path.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_file_system.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_io_device.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_memory.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_pipe.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_sleep.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_thread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_virtual_memory.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/manual/zz_manual_test_env_var.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/manual/zz_manual_test_file_path.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/manual/zz_manual_tests.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/utils/zz_utils.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/zz_main.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/zz_mem.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/zz_test_atomic.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/zz_test_char8.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/zz_test_critical_section.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/zz_test_event.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/zz_test_io_device.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/zz_test_memory.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/zz_test_pipe.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/zz_test_sleep.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/zz_test_thread.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/zz_test_virtual_memory.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>

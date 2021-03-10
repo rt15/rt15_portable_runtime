@@ -87,10 +87,17 @@
 		<Unit filename="../include/layer002/rt_io_device.h" />
 		<Unit filename="../include/layer002/rt_sleep.h" />
 		<Unit filename="../include/layer002/rt_virtual_memory.h" />
+		<Unit filename="../include/layer003/rt_char.h" />
 		<Unit filename="../include/layer003/rt_char8.h" />
+		<Unit filename="../include/layer003/rt_env_var.h" />
+		<Unit filename="../include/layer003/rt_fast_initialization.h" />
 		<Unit filename="../include/layer003/rt_pipe.h" />
 		<Unit filename="../include/layer003/rt_thread.h" />
 		<Unit filename="../include/layer004/rt_check_rpr.h" />
+		<Unit filename="../include/layer004/rt_console.h" />
+		<Unit filename="../include/layer004/rt_file_path.h" />
+		<Unit filename="../include/layer005/rt_file.h" />
+		<Unit filename="../include/layer006/rt_file_system.h" />
 		<Unit filename="../include/rpr.h" />
 		<Unit filename="../include/rpr_main.h" />
 		<Unit filename="../include/rpr_mem.h" />
@@ -118,7 +125,16 @@
 		<Unit filename="../src/layer002/rt_virtual_memory.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/layer003/rt_char.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/layer003/rt_char8.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer003/rt_env_var.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer003/rt_fast_initialization.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer003/rt_pipe.c">
@@ -128,6 +144,18 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer004/rt_check_rpr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer004/rt_console.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer004/rt_file_path.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer005/rt_file.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer006/rt_file_system.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/rpr_internal.c">

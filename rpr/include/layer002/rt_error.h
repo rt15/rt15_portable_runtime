@@ -22,6 +22,8 @@ enum rt_error {
 	RT_ERROR_BAD_ARGUMENTS,
 	/* Not enough memory or memory issue, but not buffer related. */
 	RT_ERROR_NOT_ENOUGH_MEMORY,
+	/* The file already exists. */
+	RT_ERROR_FILE_ALREADY_EXISTS,
 	/* The "thing" already exists. */
 	RT_ERROR_ALREADY_EXISTS,
 	/* A function has failed. Avoid this generic error code if possible. */

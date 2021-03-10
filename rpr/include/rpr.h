@@ -16,10 +16,19 @@
 #include "layer002/rt_sleep.h"
 #include "layer002/rt_virtual_memory.h"
 
+#include "layer003/rt_char.h"
 #include "layer003/rt_char8.h"
+#include "layer003/rt_env_var.h"
+#include "layer003/rt_fast_initialization.h"
 #include "layer003/rt_pipe.h"
 #include "layer003/rt_thread.h"
 
 #include "layer004/rt_check_rpr.h"
+#include "layer004/rt_console.h"
+#include "layer004/rt_file_path.h"
+
+#include "layer005/rt_file.h"
+
+#include "layer006/rt_file_system.h"
 
 #endif /* RPR_H */

@@ -45,11 +45,17 @@
 #if (!defined(_XOPEN_SOURCE)) || (_XOPEN_SOURCE < 600)
 #define _XOPEN_SOURCE 600
 #endif
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
+
 #ifndef __USE_GNU
 #define __USE_GNU
+#endif
+
+#ifndef __USE_BSD
+#define __USE_BSD
 #endif
 
 #endif

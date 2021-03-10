@@ -24,21 +24,27 @@
  */
 rt_s rt_critical_section_create(struct rt_critical_section *critical_section, rt_b recursive)
 {
-	rt_s ret;
 #ifndef RT_DEFINE_WINDOWS
 	pthread_mutexattr_t mutex_attributes;
 	pthread_mutexattr_t *mutex_attributes_pointer;
 	int error;
+	rt_s ret;
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
 	/* InitializeCriticalSection cannot fail. */
 	InitializeCriticalSection((PCRITICAL_SECTION)critical_section);
-	ret = RT_OK;
+	return RT_OK;
 #else
 	if (recursive) {
-		pthread_mutexattr_init(&mutex_attributes);
-		pthread_mutexattr_settype(&mutex_attributes, PTHREAD_MUTEX_RECURSIVE);
+		/* pthread_mutexattr_init returns an errno. */
+		error = pthread_mutexattr_init(&mutex_attributes);
+		if (error) goto error;
+
+		/* pthread_mutexattr_settype returns an errno. */
+		error = pthread_mutexattr_settype(&mutex_attributes, PTHREAD_MUTEX_RECURSIVE);
+		if (error) goto error;
+
 		mutex_attributes_pointer = &mutex_attributes;
 	} else {
 		mutex_attributes_pointer = RT_NULL;
@@ -46,14 +52,16 @@ rt_s rt_critical_section_create(struct rt_critical_section *critical_section, rt
 
 	/* pthread_mutex_init returns an errno. */
 	error = pthread_mutex_init((pthread_mutex_t*)critical_section, mutex_attributes_pointer);
-	if (!error) {
-		ret = RT_OK;
-	} else {
-		errno = error;
-		ret = RT_FAILED;
-	}
-#endif
+	if (error) goto error;
+
+	ret = RT_OK;
+free:
 	return ret;
+error:
+	errno = error;
+	ret = RT_FAILED;
+	goto free;
+#endif
 }
 
 rt_s rt_critical_section_enter(struct rt_critical_section *critical_section)

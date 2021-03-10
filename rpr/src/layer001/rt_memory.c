@@ -252,3 +252,41 @@ void rt_memory_swap(void *area1, void *area2, rt_un size)
 		}
 	}
 }
+
+void *rt_memory_set_char16(void *area, rt_n32 value, rt_un size)
+{
+	rt_un words_count;
+	rt_n *area_words;
+	rt_n word;
+	rt_un remainder;
+	rt_un16 *area_chars;
+	rt_un i;
+
+	words_count = (size * sizeof(rt_un16)) / sizeof(rt_n);
+	if (words_count) {
+		if (value) {
+#ifdef RT_DEFINE_64
+			word = 0x0001000100010001 * (rt_un16)value;
+#else
+			word = 0x00010001 * (rt_un16)value;
+#endif
+		} else
+			word = 0;
+
+		area_words = area;
+		for (i = 0; i < words_count; i++)
+			area_words[i] = word;
+		remainder = RT_MEMORY_MODULO_RT_UN_SIZE(size * sizeof(rt_un16)) / 2;
+		if (remainder) {
+			area_chars = (rt_un16*)&area_words[words_count];
+			for (i = 0; i < remainder; i++)
+				area_chars[i] = (rt_un16)value;
+		}
+	} else {
+		area_chars = area;
+		for (i = 0; i < size; i++)
+			area_chars[i] = (rt_un16)value;
+	}
+
+	return area;
+}

@@ -27,6 +27,9 @@
 
 #endif
 
+/* Equivalence gate. True in case of boolean equality. More like NXOR, logical complement of the Exclusive OR (XOR) gate. */
+#define RT_MEMORY_XNOR(BOOL1, BOOL2) (!(BOOL1) == !(BOOL2))
+
 /* Find the offset of given member in given structure. */
 #ifdef RT_DEFINE_VC
 /* __builtin_offsetof does not exist in VC 2005. It may exist in VC 2019. */
@@ -135,5 +138,18 @@ void *rt_memory_set(void *area, rt_n32 value, rt_un size);
 
 void *rt_memory_zero(void *area, rt_un size);
 void rt_memory_swap(void *area1, void *area2, rt_un size);
+
+/**
+ * Fill <tt>AREA</tt> with given <tt>VALUE</tt> as character.<br>
+ * Can be used to initialize a string with a specific character like space.<br>
+ * The size of the character is 8 ou 16 bits depending on the platform.
+ */
+#ifdef RT_DEFINE_WINDOWS
+#define RT_MEMORY_SET_CHAR(AREA, VALUE, SIZE) rt_memory_set_char16(AREA, VALUE, SIZE)
+#else
+#define RT_MEMORY_SET_CHAR(AREA, VALUE, SIZE) RT_MEMORY_SET(AREA, VALUE, SIZE)
+#endif
+
+void *rt_memory_set_char16(void *area, rt_n32 value, rt_un size);
 
 #endif /* RT_MEMORY_H */

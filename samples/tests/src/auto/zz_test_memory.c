@@ -128,7 +128,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_move_memory_do(rt_char8 *input, rt_un source_size, rt_un destination_index, rt_char8 *expected, rt_un size)
+static rt_s zz_test_move_memory_do(const rt_char8 *input, rt_un source_size, rt_un destination_index, const rt_char8 *expected, rt_un size)
 {
 	rt_char8 buffer[200];
 	void *result;
@@ -395,6 +395,111 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_memory_set_char16_do(rt_un size)
+{
+	rt_un16 buffer[32];
+	void *result;
+	rt_un i;
+	rt_s ret;
+
+	for (i = 0; i <= size; i++)
+		buffer[i] = L'à';
+
+	result = rt_memory_set_char16(buffer, L'é', size);
+	if (result != buffer) goto error;
+
+	for (i = 0; i < size; i++) {
+		if (buffer[i] != L'é')
+			goto error;
+	}
+	if (buffer[size] != L'à')
+		goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_memory_set_char16()
+{
+	rt_un i;
+	rt_s ret;
+
+	for (i = 1; i < 28; i++) {
+		if (!zz_test_memory_set_char16_do(i)) goto error;
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_memory_set_char()
+{
+	rt_char buffer[20];
+	void *result;
+	rt_un i;
+	rt_un size;
+	rt_s ret;
+
+	for (size = 1; size < 15; size++) {
+		for (i = 0; i < 20; i++)
+			buffer[i] = _R('b');
+
+		result = RT_MEMORY_SET_CHAR(buffer, _R('a'), 7);
+		if (result != buffer)
+			goto error;
+
+		for (i = 0; i < 7; i++)
+			if (buffer[i] != _R('a'))
+				goto error;
+
+		for (i = 7; i < 20; i++)
+			if (buffer[i] != _R('b'))
+				goto error;
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_memory_xnor()
+{
+	rt_b zero = 0;
+	rt_b one = 1;
+	rt_b two = 2;
+	rt_s ret;
+
+	if (!RT_MEMORY_XNOR(zero, zero)) goto error;
+	if (RT_MEMORY_XNOR(zero, one)) goto error;
+	if (RT_MEMORY_XNOR(zero, two)) goto error;
+
+	if (RT_MEMORY_XNOR(one, zero)) goto error;
+	if (!RT_MEMORY_XNOR(one, one)) goto error;
+	if (!RT_MEMORY_XNOR(one, two)) goto error;
+
+	if (RT_MEMORY_XNOR(two, zero)) goto error;
+	if (!RT_MEMORY_XNOR(two, one)) goto error;
+	if (!RT_MEMORY_XNOR(two, two)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s zz_test_memory()
 {
 	rt_s ret;
@@ -406,6 +511,9 @@ rt_s zz_test_memory()
 	if (!zz_test_memory_swap()) goto error;
 	if (!zz_test_memory_get_chunks_count()) goto error;
 	if (!zz_test_memory_modulo()) goto error;
+	if (!zz_test_memory_set_char16()) goto error;
+	if (!zz_test_memory_set_char()) goto error;
+	if (!zz_test_memory_xnor()) goto error;
 
 	ret = RT_OK;
 free:
