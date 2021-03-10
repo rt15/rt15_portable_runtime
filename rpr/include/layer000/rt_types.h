@@ -86,12 +86,12 @@
 
 /* On Visual C++ and GCC, char is most likely to be signed (But different from "signed char") however there are flags to make it unsigned. */
 typedef char rt_char8;
-typedef unsigned char rt_uchar8;       /* BYTE.              */
-typedef unsigned short rt_un16;        /* WORD.              */
+typedef unsigned char rt_uchar8;
+typedef unsigned short rt_un16;
 typedef short rt_n16;
 
 /* Use 16 bits characters under windows, 8 bits otherwise. */
-/* RT_CHAR is most likely to be "signed (or not) RT_CHAR8" under Linux and "unsigned RT_UN16" under Windows. */
+/* RT_CHAR is most likely to be "signed (or not) rt_char8" under Linux and "unsigned rt_un16" under Windows. */
 #ifdef RT_DEFINE_WINDOWS
 #define _R(x) L ## x
 typedef rt_un16 rt_char;
@@ -115,11 +115,11 @@ typedef enum _rt_s {
 } rt_s;
 
 /* Fixed size types */
-typedef int rt_n32;                    /* INT/INT32/LONG.    */
+typedef int rt_n32;
 #if defined(RT_DEFINE_WINDOWS) && defined(RT_DEFINE_64)
-typedef unsigned long int rt_un32;     /* DWORD, UINT.       */
+typedef unsigned long int rt_un32;
 #else
-typedef unsigned long rt_un32;         /* DWORD, ULONG.      */
+typedef unsigned long rt_un32;
 #endif
 
 #ifdef RT_DEFINE_GCC
@@ -130,7 +130,7 @@ typedef __int64 rt_n64;
 typedef unsigned __int64 rt_un64;
 #endif
 
-/* 32/64 bits dependent types. The size of RT_N and RT_UN must be the size of a pointer. */
+/* 32/64 bits dependent types. The size of rt_n and rt_un must be the size of a pointer. */
 #if defined(RT_DEFINE_WINDOWS) && defined(RT_DEFINE_64)
 typedef __int64 rt_n;                  /* long is 32 bits on msvc win 64. */
 typedef unsigned __int64 rt_un;
@@ -145,10 +145,6 @@ typedef _W64 unsigned long rt_un;
 #endif
 #endif
 typedef void* rt_h;                    /* HANDLE.  */
-
-/* Types equivalences:                             */
-/* rt_n = LRESULT, LONG_PTR, LPARAM.               */
-/* rt_un = UINT_PTR, ULONG_PTR, DWORD_PTR, WPARAM. */
 
 /* Convert pointers into integers and integers into pointers. */
 

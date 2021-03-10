@@ -27,6 +27,9 @@ static void *RT_CDECL rt_thread_linux_callback(void *void_thread)
 
 rt_s rt_thread_create(struct rt_thread *thread, rt_thread_callback_t thread_callback, void *parameter)
 {
+#ifdef RT_DEFINE_LINUX
+	int error;
+#endif
 	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
@@ -42,16 +45,23 @@ rt_s rt_thread_create(struct rt_thread *thread, rt_thread_callback_t thread_call
 	/* Initialize exit_code_set */
 	thread->exit_code_set = RT_FALSE;
 
-	/* Start the thread. The pthread_create function return -1 in case of failure and set errno. */
-	ret = !pthread_create((pthread_t*)&thread->thread_pointer, RT_NULL, &rt_thread_linux_callback, thread);
+	/* Start the thread. */
+	/* pthread_create returns an errno. */
+	error = pthread_create((pthread_t*)&thread->thread_pointer, RT_NULL, &rt_thread_linux_callback, thread);
+	if (!error) {
+		ret = RT_OK;
+	} else {
+		errno = error;
+		ret = RT_FAILED;
+	}
 #endif
 	return ret;
 }
 
 rt_s rt_thread_join(struct rt_thread *thread)
 {
-#ifndef RT_DEFINE_WINDOWS
-	int returned_value;
+#ifdef RT_DEFINE_LINUX
+	int error;
 #endif
 	rt_s ret;
 
@@ -60,12 +70,12 @@ rt_s rt_thread_join(struct rt_thread *thread)
 #else /* NOT RT_DEFINE_WINDOWS */
 
 	/* The pthread_join function returns an errno. */
-	returned_value = pthread_join(thread->thread_pointer, RT_NULL);
-	if (returned_value) {
-		errno = returned_value;
-		ret = RT_FAILED;
-	} else {
+	error = pthread_join(thread->thread_pointer, RT_NULL);
+	if (!error) {
 		ret = RT_OK;
+	} else {
+		errno = error;
+		ret = RT_FAILED;
 	}
 #endif
 	return ret;

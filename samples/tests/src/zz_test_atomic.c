@@ -73,7 +73,7 @@ free:
 	for (i = 0; i < ZZ_TEST_ATOMIC_THREADS_COUNT; i++) {
 		if (threads_created[i]) {
 			threads_created[i] = RT_FALSE;
-			if ((!rt_thread_free(&threads[i])) && ret)
+			if (!rt_thread_free(&threads[i]) && ret)
 				goto error;
 		}
 	}

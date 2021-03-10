@@ -1,10 +1,12 @@
 #include <rpr.h>
 
-#define ZZ_TEST_EVENT_THREAD_STATUS_INIT     0
-#define ZZ_TEST_EVENT_THREAD_STATUS_SIGNAL_1 1
-#define ZZ_TEST_EVENT_THREAD_STATUS_SIGNAL_2 2
+enum zz_thread_status {
+	ZZ_THREAD_STATUS_INIT,
+	ZZ_THREAD_STATUS_SIGNAL_1,
+	ZZ_THREAD_STATUS_SIGNAL_2
+};
 
-static rt_un zz_test_event_thread_status;
+static enum zz_thread_status thread_status;
 
 static rt_un32 zz_test_event_thread_callback(void *parameter)
 {
@@ -16,12 +18,12 @@ static rt_un32 zz_test_event_thread_callback(void *parameter)
 	if (!rt_event_wait_for(event))
 		goto error;
 
-	zz_test_event_thread_status = ZZ_TEST_EVENT_THREAD_STATUS_SIGNAL_1;
+	thread_status = ZZ_THREAD_STATUS_SIGNAL_1;
 
 	if (!rt_event_wait_for(event))
 		goto error;
 
-	zz_test_event_thread_status = ZZ_TEST_EVENT_THREAD_STATUS_SIGNAL_2;
+	thread_status = ZZ_THREAD_STATUS_SIGNAL_2;
 
 	result = RT_OK;
 free:
@@ -40,7 +42,7 @@ static rt_s zz_test_event_already_signaled()
 	struct rt_event event;
 	rt_s ret;
 
-	zz_test_event_thread_status = ZZ_TEST_EVENT_THREAD_STATUS_INIT;
+	thread_status = ZZ_THREAD_STATUS_INIT;
 
 	if (!rt_event_create(&event))
 		goto error;
@@ -50,7 +52,7 @@ static rt_s zz_test_event_already_signaled()
 	if (!rt_event_signal(&event))
 		goto error;
 
-	if (zz_test_event_thread_status != ZZ_TEST_EVENT_THREAD_STATUS_INIT)
+	if (thread_status != ZZ_THREAD_STATUS_INIT)
 		goto error;
 
 	if (!rt_thread_create(&thread, &zz_test_event_thread_callback, &event))
@@ -59,7 +61,7 @@ static rt_s zz_test_event_already_signaled()
 
 	/* Let other thread deals with the first event which is already set. */
 	rt_sleep_sleep(10);
-	if (zz_test_event_thread_status != ZZ_TEST_EVENT_THREAD_STATUS_SIGNAL_1)
+	if (thread_status != ZZ_THREAD_STATUS_SIGNAL_1)
 		goto error;
 
 	if (!rt_event_signal(&event))
@@ -67,7 +69,7 @@ static rt_s zz_test_event_already_signaled()
 
 	/* Wait for thread to set status flag. */
 	rt_sleep_sleep(10);
-	if (zz_test_event_thread_status != ZZ_TEST_EVENT_THREAD_STATUS_SIGNAL_2)
+	if (thread_status != ZZ_THREAD_STATUS_SIGNAL_2)
 		goto error;
 
 	if (!rt_thread_join_and_check(&thread))
@@ -100,7 +102,7 @@ static rt_s zz_test_event_not_signaled_yet()
 	struct rt_event event;
 	rt_s ret;
 
-	zz_test_event_thread_status = ZZ_TEST_EVENT_THREAD_STATUS_INIT;
+	thread_status = ZZ_THREAD_STATUS_INIT;
 
 	if (!rt_event_create(&event))
 		goto error;
@@ -113,7 +115,7 @@ static rt_s zz_test_event_not_signaled_yet()
 	/* Let other thread wait for the event. */
 	rt_sleep_sleep(10);
 
-	if (zz_test_event_thread_status != ZZ_TEST_EVENT_THREAD_STATUS_INIT)
+	if (thread_status != ZZ_THREAD_STATUS_INIT)
 		goto error;
 
 	if (!rt_event_signal(&event))
@@ -121,7 +123,7 @@ static rt_s zz_test_event_not_signaled_yet()
 
 	/* Wait for thread to set status flag. */
 	rt_sleep_sleep(10);
-	if (zz_test_event_thread_status != ZZ_TEST_EVENT_THREAD_STATUS_SIGNAL_1)
+	if (thread_status != ZZ_THREAD_STATUS_SIGNAL_1)
 		goto error;
 
 	if (!rt_event_signal(&event))
@@ -129,7 +131,7 @@ static rt_s zz_test_event_not_signaled_yet()
 
 	/* Wait for thread to set status flag. */
 	rt_sleep_sleep(10);
-	if (zz_test_event_thread_status != ZZ_TEST_EVENT_THREAD_STATUS_SIGNAL_2)
+	if (thread_status != ZZ_THREAD_STATUS_SIGNAL_2)
 		goto error;
 
 	if (!rt_thread_join_and_check(&thread))

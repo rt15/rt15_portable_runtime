@@ -48,7 +48,7 @@ rt_s zz_test_thread()
 free:
 	if (thread_created) {
 		thread_created = RT_FALSE;
-		if ((!rt_thread_free(&thread)) && ret)
+		if (!rt_thread_free(&thread) && ret)
 			goto error;
 	}
 	return ret;

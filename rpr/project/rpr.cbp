@@ -81,6 +81,7 @@
 		<Unit filename="../include/layer001/rt_os_headers.h" />
 		<Unit filename="../include/layer001/rt_output_stream.h" />
 		<Unit filename="../include/layer002/rt_chrono.h" />
+		<Unit filename="../include/layer002/rt_critical_section.h" />
 		<Unit filename="../include/layer002/rt_error.h" />
 		<Unit filename="../include/layer002/rt_event.h" />
 		<Unit filename="../include/layer002/rt_io_device.h" />
@@ -89,6 +90,7 @@
 		<Unit filename="../include/layer003/rt_char8.h" />
 		<Unit filename="../include/layer003/rt_pipe.h" />
 		<Unit filename="../include/layer003/rt_thread.h" />
+		<Unit filename="../include/layer004/rt_check_rpr.h" />
 		<Unit filename="../include/rpr.h" />
 		<Unit filename="../include/rpr_main.h" />
 		<Unit filename="../include/rpr_mem.h" />
@@ -96,6 +98,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer002/rt_chrono.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer002/rt_critical_section.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer002/rt_error.c">
@@ -120,6 +125,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer003/rt_thread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer004/rt_check_rpr.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/rpr_internal.c">
