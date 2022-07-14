@@ -3,6 +3,9 @@
 This style guide is inspired from Linux kernel coding style:
 https://www.kernel.org/doc/html/v4.10/process/coding-style.html
 
+One exception to this coding style is the indentation for goto keyword.
+They can remain on the same line that the if instead of requiring a new line.
+
 Some other style guides:
 https://devnull-cz.github.io/unix-linux-prog-in-c/cstyle.html
 
