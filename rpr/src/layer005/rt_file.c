@@ -24,41 +24,41 @@ rt_s rt_file_create(struct rt_file *file, const rt_char *file_path, enum rt_file
 
 	/* Flags determination. */
 	switch (mode) {
-		case RT_FILE_MODE_READ:
+	case RT_FILE_MODE_READ:
 #ifdef RT_DEFINE_WINDOWS
-			flags = GENERIC_READ;
-			creation_disposition = OPEN_EXISTING;
+		flags = GENERIC_READ;
+		creation_disposition = OPEN_EXISTING;
 #else
-			flags = O_CLOEXEC | O_RDONLY;
+		flags = O_CLOEXEC | O_RDONLY;
 #endif
-			break;
-		case RT_FILE_MODE_READ_WRITE:
+		break;
+	case RT_FILE_MODE_READ_WRITE:
 #ifdef RT_DEFINE_WINDOWS
-			flags = GENERIC_READ | GENERIC_WRITE;
-			creation_disposition = OPEN_ALWAYS;
+		flags = GENERIC_READ | GENERIC_WRITE;
+		creation_disposition = OPEN_ALWAYS;
 #else
-			flags = O_CLOEXEC | O_CREAT | O_RDWR;
+		flags = O_CLOEXEC | O_CREAT | O_RDWR;
 #endif
-			break;
-		case RT_FILE_MODE_TRUNCATE:
+		break;
+	case RT_FILE_MODE_TRUNCATE:
 #ifdef RT_DEFINE_WINDOWS
-			flags = GENERIC_READ | GENERIC_WRITE;
-			creation_disposition = CREATE_ALWAYS;
+		flags = GENERIC_READ | GENERIC_WRITE;
+		creation_disposition = CREATE_ALWAYS;
 #else
-			flags = O_CLOEXEC | O_CREAT | O_RDWR | O_TRUNC;
+		flags = O_CLOEXEC | O_CREAT | O_RDWR | O_TRUNC;
 #endif
-			break;
-		case RT_FILE_MODE_NEW:
+		break;
+	case RT_FILE_MODE_NEW:
 #ifdef RT_DEFINE_WINDOWS
-			flags = GENERIC_READ | GENERIC_WRITE;
-			creation_disposition = CREATE_NEW;
+		flags = GENERIC_READ | GENERIC_WRITE;
+		creation_disposition = CREATE_NEW;
 #else
-			flags = O_CLOEXEC | O_CREAT | O_EXCL | O_RDWR;
+		flags = O_CLOEXEC | O_CREAT | O_EXCL | O_RDWR;
 #endif
-			break;
-		default:
-			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+		break;
+	default:
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
 	}
 
 #ifdef RT_DEFINE_WINDOWS
@@ -141,15 +141,15 @@ rt_s rt_file_set_pointer(struct rt_file *file, rt_n64 offset, enum rt_file_posit
 		ret = RT_OK;
 #else
 	switch (position) {
-		case RT_FILE_POSITION_END:
-			flag = SEEK_END;
-			break;
-		case RT_FILE_POSITION_CURRENT:
-			flag = SEEK_CUR;
-			break;
-		default:
-			flag = SEEK_SET;
-			break;
+	case RT_FILE_POSITION_END:
+		flag = SEEK_END;
+		break;
+	case RT_FILE_POSITION_CURRENT:
+		flag = SEEK_CUR;
+		break;
+	default:
+		flag = SEEK_SET;
+		break;
 	}
 	/* In case of error, lseek returns -1 and set errno. */
 	if (lseek(file->io_device.file_descriptor, offset, flag) != -1)
