@@ -58,6 +58,183 @@ error:
 	goto free;
 }
 
+#ifdef RT_DEFINE_LINUX
+
+/**
+ * Utility function for <tt>rt_file_path_realpath</tt>.
+ *
+ * <p>
+ * The given <tt>path</tt> must meet some prerequisites:
+ * </p>
+ * <ul>
+ * <li>It must not be empty.</li>
+ * <li>It must start and end with a slash.</li>
+ * <li>It must not contain "." or "..".</li>
+ * <li>It must not contain duplicated slashes.</li>
+ * </ul>
+ *
+ * <p>
+ * The resulting path meets the same prerequisites.
+ * </p>
+ *
+ * <p>
+ * By Linux convention, the parent of slash is slash.
+ * </p>
+ *
+ * @param buffer_size The number of characters in the buffer (in/out parameter).
+ */
+static void rt_file_path_realpath_get_parent(rt_char *path, rt_un *buffer_size)
+{
+	rt_un i;
+
+	if (*buffer_size != 1) {
+		/* buffer_size - 1 is slash, buffer_size - 2 is not slash. */
+		i = *buffer_size - 3;
+		while (RT_TRUE) {
+			if (path[i] == _R('/')) {
+				/* Keep the slash. */
+				i++;
+				path[i] = 0;
+				*buffer_size = i;
+				break;
+			}
+			i--;
+		}
+	}
+}
+
+#define RT_FILE_PATH_REALPATH_SLASH 0
+#define RT_FILE_PATH_REALPATH_NAME 1
+#define RT_FILE_PATH_REALPATH_DOT 2
+#define RT_FILE_PATH_REALPATH_TWO_DOTS 3
+
+/**
+ * Similar to Linux <tt>realpath</tt> function, but works even if the directory or file does not exist.
+ * <p>
+ * Cleans up the path by resolving references to "." and "..", but does not resolve symbolic links.<br>
+ * Removes duplicated slashes.<br>
+ * No trailing slash, except if it is the root.
+ * </p>
+ *
+ * @param path Read-only path to resolve. Must be an absolute path, with a slash as first character.
+ * @param buffer_size The number of characters in the buffer (out parameter).
+ */
+static rt_s rt_file_path_realpath(const rt_char *path, rt_un path_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	rt_un state = RT_FILE_PATH_REALPATH_SLASH;
+	rt_char path_char;
+	rt_un i;
+	rt_s ret;
+
+	/* Make sure that given path looks absolute. */
+	if (!path_size || path[0] != _R('/')) {
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
+	}
+
+	/* Prepare the result with just a single slash. */
+	*buffer_size = 0;
+	if (!rt_char_append_char(_R('/'), buffer, buffer_capacity, buffer_size))
+		goto error;
+
+	/* Go through all input path characters, except the first one which is slash. */
+	for (i = 1; i < path_size; i++) {
+		path_char = path[i];
+		if (path_char == _R('/')) {
+			switch (state) {
+			case RT_FILE_PATH_REALPATH_SLASH:
+				/* We ignore consecutive slashes. */
+				break;
+			case RT_FILE_PATH_REALPATH_NAME:
+				/* End of a name, append the slash. */
+				if (!rt_char_append_char(_R('/'), buffer, buffer_capacity, buffer_size))
+					goto error;
+				break;
+			case RT_FILE_PATH_REALPATH_DOT:
+				/* "/./", we ignore that. */
+				break;
+			case RT_FILE_PATH_REALPATH_TWO_DOTS:
+				/* "/../", remove one level. */
+				rt_file_path_realpath_get_parent(buffer, buffer_size);
+				break;
+			}
+			state = RT_FILE_PATH_REALPATH_SLASH;
+		} else if (path_char == _R('.')) {
+			switch (state) {
+			case RT_FILE_PATH_REALPATH_SLASH:
+				/* "/.", one dot for now. */
+				state = RT_FILE_PATH_REALPATH_DOT;
+				break;
+			case RT_FILE_PATH_REALPATH_NAME:
+				/* "/x.", file name with a dot. */
+				if (!rt_char_append_char(_R('.'), buffer, buffer_capacity, buffer_size))
+					goto error;
+				break;
+			case RT_FILE_PATH_REALPATH_DOT:
+				/* "/..", two dots for now. */
+				state = RT_FILE_PATH_REALPATH_TWO_DOTS;
+				break;
+			case RT_FILE_PATH_REALPATH_TWO_DOTS:
+				/* "/...", it is a name. */
+				if (!rt_char_append(_R("..."), 3, buffer, buffer_capacity, buffer_size))
+					goto error;
+				state = RT_FILE_PATH_REALPATH_NAME;
+				break;
+			}
+		} else {
+			switch (state) {
+			case RT_FILE_PATH_REALPATH_SLASH:
+				/* "/x", beginning of file name. */
+				if (!rt_char_append_char(path_char, buffer, buffer_capacity, buffer_size))
+					goto error;
+				state = RT_FILE_PATH_REALPATH_NAME;
+				break;
+			case RT_FILE_PATH_REALPATH_NAME:
+				/* "/xx", file name. */
+				if (!rt_char_append_char(path_char, buffer, buffer_capacity, buffer_size))
+					goto error;
+				break;
+			case RT_FILE_PATH_REALPATH_DOT:
+				/* "/.x", hidden file. */
+				if (!rt_char_append_char(_R('.'), buffer, buffer_capacity, buffer_size))
+					goto error;
+				if (!rt_char_append_char(path_char, buffer, buffer_capacity, buffer_size))
+					goto error;
+				state = RT_FILE_PATH_REALPATH_NAME;
+				break;
+			case RT_FILE_PATH_REALPATH_TWO_DOTS:
+				/* "/..x", strange file name. */
+				if (!rt_char_append(_R(".."), 3, buffer, buffer_capacity, buffer_size))
+					goto error;
+				if (!rt_char_append_char(path_char, buffer, buffer_capacity, buffer_size))
+					goto error;
+				state = RT_FILE_PATH_REALPATH_NAME;
+				break;
+			}
+		}
+	}
+
+	/* If the path ends with "..", we have to remove one level. */
+	if (state == RT_FILE_PATH_REALPATH_TWO_DOTS) {
+		rt_file_path_realpath_get_parent(buffer, buffer_size);
+	}
+
+	/* Remove trailing slash if it is not root. */
+	if (*buffer_size > 1 && buffer[*buffer_size - 1] == _R('/')) {
+		(*buffer_size)--;
+		buffer[*buffer_size] = 0;
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+#endif
+
 rt_s rt_file_path_full(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size)
 {
 #ifdef RT_DEFINE_WINDOWS
@@ -86,12 +263,17 @@ rt_s rt_file_path_full(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size)
 		*buffer_size = local_buffer_size;
 #else
 		if (path[0] != '/') {
+			/* Append path to current directory into buffer. */
 			if (!rt_file_path_get_current_dir(buffer, RT_FILE_PATH_SIZE, &local_buffer_size)) goto error;
 			if (!rt_file_path_append_separator(buffer, RT_FILE_PATH_SIZE, &local_buffer_size)) goto error;
 			if (!rt_char_append(path, input_path_size, buffer, RT_FILE_PATH_SIZE, &local_buffer_size)) goto error;
-			if (!rt_char_copy(buffer, local_buffer_size, path, buffer_capacity)) goto error;
-			*buffer_size = local_buffer_size;
+		} else {
+			if (!rt_char_copy(path, input_path_size, buffer, RT_FILE_PATH_SIZE))
+				goto error;
+			local_buffer_size = input_path_size;
 		}
+		if (!rt_file_path_realpath(buffer, local_buffer_size, path, buffer_capacity, buffer_size))
+			goto error;
 #endif
 	} else {
 		/* Empty input path, return the current directory. */
@@ -305,9 +487,21 @@ rt_s rt_file_path_get_parent(rt_char *path, rt_un buffer_capacity, rt_un *buffer
 
 	last_separator_index = rt_file_path_get_last_separator_index(path, *buffer_size);
 	if (last_separator_index != RT_TYPE_MAX_UN) {
+#ifdef RT_DEFINE_WINDOWS
 		/* We cut the path at the right place. */
 		path[last_separator_index] = 0;
 		*buffer_size = last_separator_index;
+#else
+		if (last_separator_index != 0) {
+			/* We cut the path at the right place. */
+			path[last_separator_index] = 0;
+			*buffer_size = last_separator_index;
+		} else {
+			/* We only keep the slash. */
+			path[1] = 0;
+			*buffer_size = 1;
+		}
+#endif
 	}
 	ret = RT_OK;
 free:
@@ -323,10 +517,6 @@ rt_s rt_file_path_get_executable_path(rt_char *buffer, rt_un buffer_capacity, rt
 	rt_un written;
 	rt_s ret;
 
-#ifdef RT_DEFINE_LINUX
-	rt_un text_buffer_capacity;
-#endif
-
 #ifdef RT_DEFINE_WINDOWS
 	/* Returns zero and set last error in case of issue (except if the buffer is too small). */
 	written = GetModuleFileName(NULL, buffer, (DWORD)buffer_capacity);
@@ -337,22 +527,23 @@ rt_s rt_file_path_get_executable_path(rt_char *buffer, rt_un buffer_capacity, rt
 		goto error;
 	}
 #else
-	/* Keep space for NULL character because readlink does not write it. */
-	text_buffer_capacity = buffer_capacity - 1;
-
+	/* readlink does not add the NULL character. */
 	/* On error, -1 is returned and errno is set to indicate the error. */
-	written = readlink("/proc/self/exe", buffer, text_buffer_capacity);
+	written = readlink("/proc/self/exe", buffer, buffer_capacity);
 	if (written == -1) {
 		written = 0;
 		goto error;
 	}
-	/* Add null trailing character as readlink does not. */
-	buffer[written] = 0;
 
-	if (written == text_buffer_capacity) {
+	if (written >= buffer_capacity) {
+		/* There is no room for the NULL character. */
+		buffer[buffer_capacity - 1] = 0;
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 		goto error;
 	}
+
+	/* Add null trailing character. written is less than buffer_capacity at this point. */
+	buffer[written] = 0;
 #endif
 
 	ret = RT_OK;

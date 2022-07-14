@@ -207,7 +207,17 @@ static rt_s zz_test_full()
 	if (!rt_char_append(_R("foo"), 3, buffer, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
 	if (!zz_test_full_do(path, buffer)) goto error;
 #else
+	if (!zz_test_full_do(_R("/"), _R("/"))) goto error;
 	if (!zz_test_full_do(_R("/test"), _R("/test"))) goto error;
+	if (!zz_test_full_do(_R("/.."), _R("/"))) goto error;
+	if (!zz_test_full_do(_R("//test1//test2//.."), _R("/test1"))) goto error;
+	if (!zz_test_full_do(_R("//test1//test2//."), _R("/test1/test2"))) goto error;
+	if (!zz_test_full_do(_R("/test1/../test2/"), _R("/test2"))) goto error;
+	if (!zz_test_full_do(_R("/test1/.../test2/"), _R("/test1/.../test2"))) goto error;
+	if (!zz_test_full_do(_R("/test1/..../test2/"), _R("/test1/..../test2"))) goto error;
+	if (!zz_test_full_do(_R("/test1/.hidden/test2"), _R("/test1/.hidden/test2"))) goto error;
+	if (!zz_test_full_do(_R("/test1/./test2/"), _R("/test1/test2"))) goto error;
+	if (!zz_test_full_do(_R("/test1/..strange/"), _R("/test1/..strange"))) goto error;
 #endif
 	ret = RT_OK;
 free:
@@ -416,6 +426,8 @@ static rt_s zz_test_get_parent()
 	if (!zz_test_get_parent_do(_R("/data/"), _R("/"))) goto error;
 	if (!zz_test_get_parent_do(_R("/data/foo"), _R("/data"))) goto error;
 	if (!zz_test_get_parent_do(_R("/data/foo/"), _R("/data"))) goto error;
+	if (!zz_test_get_parent_do(_R("/data/foo/."), _R("/data"))) goto error;
+	if (!zz_test_get_parent_do(_R("/data/foo/.."), _R("/"))) goto error;
 #endif
 
 	ret = RT_OK;
