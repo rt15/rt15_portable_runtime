@@ -33,8 +33,7 @@ rt_s rt_env_var_get(const rt_char *name, rt_char *buffer, rt_un buffer_capacity,
 
 #else /* NOT RT_DEFINE_WINDOWS */
 	returned_value = getenv(name);
-	if (!returned_value)
-	{
+	if (!returned_value) {
 		/* The getenv function might not set errno. The only failure reason might be that the variable is not found. */
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto error;
