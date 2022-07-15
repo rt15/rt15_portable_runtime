@@ -124,7 +124,6 @@ rt_s rt_file_set_pointer(struct rt_file *file, rt_n64 offset, enum rt_file_posit
 {
 #ifdef RT_DEFINE_WINDOWS
 	LARGE_INTEGER large_offset;
-	DWORD return_value;
 #else
 	rt_n32 flag;
 #endif
@@ -134,10 +133,8 @@ rt_s rt_file_set_pointer(struct rt_file *file, rt_n64 offset, enum rt_file_posit
 
 #ifdef RT_DEFINE_WINDOWS
 	large_offset.QuadPart = offset;
-	return_value = SetFilePointer(file->io_device.handle, large_offset.LowPart, &large_offset.HighPart, (DWORD)position);
-	/* SetFilePointer returns the low-order of the new file pointer, or -1 in case of error. */
-	/* But as -1 could be a valid low-order, we must also check GetLastError. */
-	if (return_value != INVALID_SET_FILE_POINTER || GetLastError() == NO_ERROR)
+	/* If the function fails, the return value is zero and last error is set. */
+	if (SetFilePointerEx(file->io_device.handle, large_offset, RT_NULL, (DWORD)position))
 		ret = RT_OK;
 #else
 	switch (position) {
@@ -162,17 +159,18 @@ rt_s rt_file_set_pointer(struct rt_file *file, rt_n64 offset, enum rt_file_posit
 rt_s rt_file_get_pointer(struct rt_file *file, rt_un64 *offset)
 {
 #ifdef RT_DEFINE_WINDOWS
-	LARGE_INTEGER large_offset;
+	LARGE_INTEGER distance_to_move;
+	LARGE_INTEGER new_file_pointer;
 #else
 	off_t returned_value;
 #endif
 	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
-	large_offset.LowPart = SetFilePointer(file->io_device.handle, 0, &large_offset.HighPart, FILE_CURRENT);
-	if (large_offset.LowPart == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
-		goto error;
-	*offset = large_offset.QuadPart;
+	distance_to_move.QuadPart = 0;
+	/* If the function fails, the return value is zero and last error is set. */
+	if (!SetFilePointerEx(file->io_device.handle, distance_to_move, &new_file_pointer, FILE_CURRENT)) goto error;
+	*offset = new_file_pointer.QuadPart;
 #else
 	returned_value = lseek(file->io_device.file_descriptor, 0, SEEK_CUR);
 	if (returned_value < 0)

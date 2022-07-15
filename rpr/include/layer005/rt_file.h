@@ -17,7 +17,7 @@ struct rt_file
 enum rt_file_mode {
 	/* Open the file for read only access. Fails if the file does not exist. */
 	RT_FILE_MODE_READ,
-	/* Open an existing or create a new file for read/write access. */
+	/* Open an existing file (pointing at the beginning) or create a new file for read/write access. */
 	RT_FILE_MODE_READ_WRITE,
 	/* Remove an existing file if it exists and create a new one with read/write access. */
 	RT_FILE_MODE_TRUNCATE,

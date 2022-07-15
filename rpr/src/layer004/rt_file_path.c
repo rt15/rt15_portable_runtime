@@ -64,7 +64,7 @@ error:
  * Utility function for <tt>rt_file_path_realpath</tt>.
  *
  * <p>
- * The given <tt>path</tt> must meet some prerequisites:
+ * The given <tt>dir_path</tt> must meet some prerequisites:
  * </p>
  * <ul>
  * <li>It must not be empty.</li>
@@ -83,7 +83,7 @@ error:
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
-static void rt_file_path_realpath_get_parent(rt_char *path, rt_un *buffer_size)
+static void rt_file_path_realpath_get_parent(rt_char *dir_path, rt_un *buffer_size)
 {
 	rt_un i;
 
@@ -91,10 +91,10 @@ static void rt_file_path_realpath_get_parent(rt_char *path, rt_un *buffer_size)
 		/* buffer_size - 1 is slash, buffer_size - 2 is not slash. */
 		i = *buffer_size - 3;
 		while (RT_TRUE) {
-			if (path[i] == _R('/')) {
+			if (dir_path[i] == _R('/')) {
 				/* Keep the slash. */
 				i++;
-				path[i] = 0;
+				dir_path[i] = 0;
 				*buffer_size = i;
 				break;
 			}
@@ -204,7 +204,7 @@ static rt_s rt_file_path_realpath(const rt_char *path, rt_un path_size, rt_char 
 				break;
 			case RT_FILE_PATH_REALPATH_TWO_DOTS:
 				/* "/..x", strange file name. */
-				if (!rt_char_append(_R(".."), 3, buffer, buffer_capacity, buffer_size))
+				if (!rt_char_append(_R(".."), 2, buffer, buffer_capacity, buffer_size))
 					goto error;
 				if (!rt_char_append_char(path_char, buffer, buffer_capacity, buffer_size))
 					goto error;

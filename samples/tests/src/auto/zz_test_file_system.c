@@ -37,6 +37,10 @@ static rt_s zz_test_empty_dir(const rt_char *tmp_dir, rt_un tmp_dir_size)
 	if (!rt_file_system_create_dir(empty_dir)) goto error;
 	if (rt_file_system_create_dir(empty_dir)) goto error;
 
+	/* Delete files functions should not work. */
+	if (rt_file_system_delete_file(empty_dir)) goto error;
+	if (rt_file_system_delete_file_if_exists(empty_dir)) goto error;
+
 	/* Remove directory with delete_dir. */
 	if (!rt_file_path_get_type(empty_dir, &type)) goto error;
 	if (type != RT_FILE_PATH_TYPE_DIR) goto error;
@@ -66,6 +70,63 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_empty_file(const rt_char *tmp_dir, rt_un tmp_dir_size)
+{
+	rt_char empty_file[RT_FILE_PATH_SIZE];
+	rt_un empty_file_size;
+	enum rt_file_path_type type;
+	rt_s ret;
+
+	/* Create an empty_file file path. */
+	if (!rt_char_copy(tmp_dir, tmp_dir_size, empty_file, RT_FILE_PATH_SIZE)) goto error;
+	empty_file_size = tmp_dir_size;
+	if (!rt_file_path_append_separator(empty_file, RT_FILE_PATH_SIZE, &empty_file_size)) goto error;
+	if (!rt_char_append(_R("empty_file.txt"), 14, empty_file, RT_FILE_PATH_SIZE, &empty_file_size)) goto error;
+
+	/* Make sure the file does not exist. */
+	if (!rt_file_system_delete_file_if_exists(empty_file)) goto error;
+	if (!rt_file_path_get_type(empty_file, &type)) goto error;
+	if (type != RT_FILE_PATH_TYPE_NONE) goto error;
+
+	/* Create the file with truncate as false. */
+	if (!rt_file_system_create_empty_file(empty_file, RT_FALSE)) goto error;
+	if (!rt_file_path_get_type(empty_file, &type)) goto error;
+	if (type != RT_FILE_PATH_TYPE_FILE) goto error;
+
+	/* Fail to re-create the file as truncate is false. */
+	if (rt_file_system_create_empty_file(empty_file, RT_FALSE)) goto error;
+
+	/* Re-create the file. */
+	if (!rt_file_system_create_empty_file(empty_file, RT_TRUE)) goto error;
+
+	/* Delete directories functions should not work. */
+	if (rt_file_system_delete_dir(empty_file)) goto error;
+	if (rt_file_system_delete_dir_if_exists(empty_file)) goto error;
+
+	/* Delete the file. */
+	if (!rt_file_system_delete_file(empty_file)) goto error;
+	if (!rt_file_path_get_type(empty_file, &type)) goto error;
+	if (type != RT_FILE_PATH_TYPE_NONE) goto error;
+
+	/* Fail to delete non-existing file. */
+	if (rt_file_system_delete_file(empty_file)) goto error;
+
+	/* Should not fail even if the file does not exist. */
+	if (!rt_file_system_delete_file_if_exists(empty_file)) goto error;
+
+	/* Create the file with truncate as true. */
+	if (!rt_file_system_create_empty_file(empty_file, RT_TRUE)) goto error;
+	if (!rt_file_path_get_type(empty_file, &type)) goto error;
+	if (type != RT_FILE_PATH_TYPE_FILE) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s zz_test_file_system()
 {
 	rt_char tmp_dir[RT_FILE_PATH_SIZE];
@@ -75,6 +136,8 @@ rt_s zz_test_file_system()
 	if (!zz_get_tmp_dir(tmp_dir, RT_FILE_PATH_SIZE, &tmp_dir_size)) goto error;
 
 	if (!zz_test_empty_dir(tmp_dir, tmp_dir_size)) goto error;
+
+	if (!zz_test_empty_file(tmp_dir, tmp_dir_size)) goto error;
 
 	ret = RT_OK;
 free:

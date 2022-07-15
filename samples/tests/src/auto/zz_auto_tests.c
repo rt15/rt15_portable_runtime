@@ -22,6 +22,9 @@ rt_s zz_test_thread();
 /* Layer 004. */
 rt_s zz_test_file_path();
 
+/* Layer 005. */
+rt_s zz_test_file();
+
 /* Layer 006. */
 rt_s zz_test_file_system();
 
@@ -61,6 +64,9 @@ rt_s zz_auto_tests()
 
 	/* Layer 004. */
 	if (!zz_test_file_path()) goto error;
+
+	/* Layer 005. */
+	if (!zz_test_file()) goto error;
 
 	/* Layer 006. */
 	if (!zz_test_file_system()) goto error;

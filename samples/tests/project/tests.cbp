@@ -115,6 +115,9 @@
 		<Unit filename="../src/auto/zz_test_fast_initialization.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/auto/zz_test_file.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/auto/zz_test_file_path.c">
 			<Option compilerVar="CC" />
 		</Unit>
