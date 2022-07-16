@@ -228,3 +228,46 @@ error:
 	ret = RT_FAILED;
 	goto free;
 }
+
+static rt_s rt_file_system_delete_dir_recursively_callback(const rt_char *path, rt_un type, void *context)
+{
+	rt_s ret;
+
+	if (type == RT_FILE_PATH_TYPE_DIR) {
+		if (!rt_file_system_delete_dir(path))
+			goto error;
+	} else {
+		if (!rt_file_system_delete_file(path))
+			goto error;
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_file_system_delete_dir_recursively(const rt_char *dir_path)
+{
+	rt_s ret;
+
+	/* If the directory does not exist or is empty, then rt_file_system_delete_dir_if_exists should do the job. */
+	if (!rt_file_system_delete_dir_if_exists(dir_path)) {
+		/* The directory should exist and we failed to delete it, probably because it is not empty. */
+		if (!rt_file_path_browse(dir_path, rt_file_system_delete_dir_recursively_callback, RT_TRUE, RT_TRUE, RT_NULL)) goto error;
+
+		/* Finally, delete the directory that should be now empty. */
+		if (!rt_file_system_delete_dir(dir_path)) goto error;
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}

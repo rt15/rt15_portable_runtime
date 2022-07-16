@@ -28,19 +28,26 @@ enum rt_file_path_type {
 	RT_FILE_PATH_TYPE_FILE
 };
 
+typedef rt_s (*rt_file_path_browse_callback_t)(const rt_char *path, rt_un type, void *context);
+
+/**
+ * @param children_first If RT_TRUE, the callback is called with children first.
+ */
+rt_s rt_file_path_browse(const rt_char *dir_path, rt_file_path_browse_callback_t callback, rt_b recursively, rt_b children_first, void *context);
+
 /**
  * @param buffer_size The number of characters in the buffer (out parameter).
  */
 rt_s rt_file_path_get_current_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
- * Append a separator to <tt>path</tt> if there is not already one.<br>
+ * Append a separator to <tt>dir_path</tt> if there is not already one.<br>
  * Should always be used as "/" is a valid path.<br>
  * So we cannot blindly add a separator to a path.
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
-rt_s rt_file_path_append_separator(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size);
+rt_s rt_file_path_append_separator(rt_char *dir_path, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  * Convert input <tt>path</tt> into a full path.<br>

@@ -5,6 +5,153 @@
 #include "layer002/rt_error.h"
 #include "layer003/rt_env_var.h"
 
+rt_s rt_file_path_browse(const rt_char *dir_path, rt_file_path_browse_callback_t callback, rt_b recursively, rt_b children_first, void *context)
+{
+#ifdef RT_DEFINE_WINDOWS
+	WIN32_FIND_DATA find_file_data;
+	HANDLE find_handle = INVALID_HANDLE_VALUE;
+#else
+	DIR *dir;
+	struct dirent *dir_entry;
+#endif
+	rt_char child[RT_FILE_PATH_SIZE];
+	rt_un buffer_size;
+	rt_s ret;
+
+#ifdef RT_DEFINE_WINDOWS
+
+	buffer_size = rt_char_get_size(dir_path);
+	if (!rt_char_copy(dir_path, buffer_size, child, RT_FILE_PATH_SIZE)) goto error;
+	if (!rt_file_path_namespace(child, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
+	if (!rt_file_path_append_separator(child, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
+	if (!rt_char_append_char(_R('*'), child, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
+
+	find_handle = FindFirstFile(child, &find_file_data);
+	if (find_handle == INVALID_HANDLE_VALUE) {
+		if (GetLastError() == ERROR_FILE_NOT_FOUND) {
+			ret = RT_OK;
+			goto free;
+		} else {
+			goto error;
+		}
+	}
+
+	do {
+		if (lstrcmp(_R("."),  find_file_data.cFileName) &&
+		    lstrcmp(_R(".."), find_file_data.cFileName)) {
+
+			buffer_size = rt_char_get_size(dir_path);
+			if (!rt_char_copy(dir_path, buffer_size, child, RT_FILE_PATH_SIZE)) goto error;
+			if (!rt_file_path_append_separator(child, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
+			if (!rt_char_append(find_file_data.cFileName, rt_char_get_size(find_file_data.cFileName), child, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
+
+			if (find_file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+				if (!children_first) {
+					if (!callback(child, RT_FILE_PATH_TYPE_DIR, context))
+						goto error;
+				}
+
+				if (recursively) {
+					if (!rt_file_path_browse(child, callback, recursively, children_first, context))
+						goto error;
+				}
+
+				if (children_first) {
+					if (!callback(child, RT_FILE_PATH_TYPE_DIR, context))
+						goto error;
+				}
+			} else {
+				if (!callback(child, RT_FILE_PATH_TYPE_FILE, context))
+					goto error;
+			}
+		}
+	} while (FindNextFile(find_handle, &find_file_data));
+
+	/* Check that we have exited loop because there are no more files. */
+	if (GetLastError() != ERROR_NO_MORE_FILES)
+		goto error;
+
+	ret = RT_OK;
+free:
+	if (find_handle != INVALID_HANDLE_VALUE) {
+		if (!FindClose(find_handle) && ret) {
+			find_handle = INVALID_HANDLE_VALUE;
+			goto error;
+		}
+		find_handle = INVALID_HANDLE_VALUE;
+	}
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+
+#else /* NOT RT_DEFINE_WINDOWS */
+
+	dir = RT_NULL;
+
+	dir = opendir(dir_path);
+	if (!dir)
+		goto error;
+
+	while (RT_TRUE) {
+		errno = 0;
+		dir_entry = readdir(dir);
+		/* NULL is returned in case of error or if the the directory content has been read. */
+		if (!dir_entry) {
+			if (errno != 0)
+				goto error;
+			break;
+		} else {
+			if (strcmp(_R("."),  dir_entry->d_name) &&
+			    strcmp(_R(".."), dir_entry->d_name)) {
+
+				buffer_size = rt_char_get_size(dir_path);
+				if (!rt_char_copy(dir_path, buffer_size, child, RT_FILE_PATH_SIZE)) goto error;
+				if (!rt_file_path_append_separator(child, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
+				if (!rt_char_append(dir_entry->d_name, rt_char_get_size(dir_entry->d_name), child, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
+
+				if (dir_entry->d_type == DT_DIR) {
+					if (!children_first) {
+						if (!callback(child, RT_FILE_PATH_TYPE_DIR, context))
+							goto error;
+					}
+
+					if (recursively) {
+						if (!rt_file_path_browse(child, callback, recursively, children_first, context))
+							goto error;
+					}
+
+					if (children_first) {
+						if (!callback(child, RT_FILE_PATH_TYPE_DIR, context))
+							goto error;
+					}
+				} else {
+					if (!callback(child, RT_FILE_PATH_TYPE_FILE, context))
+						goto error;
+				}
+			}
+		}
+	}
+
+	ret = RT_OK;
+free:
+	if (dir) {
+		/* The closedir() function returns 0 on success. */
+		if (closedir(dir) && ret) {
+			dir = RT_NULL;
+			goto error;
+		}
+		dir = RT_NULL;
+	}
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+#endif
+}
+
 rt_s rt_file_path_get_current_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
 	rt_un written;
@@ -36,16 +183,16 @@ error:
 	goto free;
 }
 
-rt_s rt_file_path_append_separator(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size)
+rt_s rt_file_path_append_separator(rt_char *dir_path, rt_un buffer_capacity, rt_un *buffer_size)
 {
 	rt_un local_buffer_size = *buffer_size;
 	rt_char last_char;
 	rt_s ret;
 
 	if (local_buffer_size) {
-		last_char = path[local_buffer_size - 1];
+		last_char = dir_path[local_buffer_size - 1];
 		if (!RT_FILE_PATH_IS_SEPARATOR(last_char)) {
-			if (!rt_char_append_char(RT_FILE_PATH_SEPARATOR, path, buffer_capacity, buffer_size))
+			if (!rt_char_append_char(RT_FILE_PATH_SEPARATOR, dir_path, buffer_capacity, buffer_size))
 				goto error;
 		}
 	}

@@ -1,5 +1,7 @@
 #include <rpr.h>
 
+#include "zz_utils.h"
+
 static rt_s zz_test_get_current_dir()
 {
 	rt_char first_buffer[RT_FILE_PATH_SIZE];
@@ -438,9 +440,80 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_browse_callback(const rt_char *path, rt_un type, void *context)
+{
+	rt_un *paths_count;
+
+	paths_count = (rt_un*)context;
+	(*paths_count)++;
+
+	return RT_OK;
+}
+
+static rt_s zz_test_browse(const rt_char *tmp_dir, rt_un tmp_dir_size)
+{
+	rt_char path[RT_FILE_PATH_SIZE];
+	rt_un path_size;
+	rt_char sub_path[RT_FILE_PATH_SIZE];
+	rt_un sub_path_size;
+	rt_un paths_count;
+	enum rt_file_path_type type;
+	rt_s ret;
+
+	/* Create empty directory named browse. */
+	path_size = tmp_dir_size;
+	if (!rt_char_copy(tmp_dir, path_size, path, RT_FILE_PATH_SIZE)) goto error;
+	if (!rt_file_path_append_separator(path, RT_FILE_PATH_SIZE, &path_size)) goto error;
+	if (!rt_char_append(_R("browse"), 6, path, RT_FILE_PATH_SIZE, &path_size)) goto error;
+	if (!rt_file_system_delete_dir_recursively(path)) goto error;
+	if (!rt_file_system_create_dir(path)) goto error;
+
+	/* Create empty file named file.txt. */
+	sub_path_size = path_size;
+	if (!rt_char_copy(path, sub_path_size, sub_path, RT_FILE_PATH_SIZE)) goto error;
+	if (!rt_file_path_append_separator(sub_path, RT_FILE_PATH_SIZE, &sub_path_size)) goto error;
+	if (!rt_char_append(_R("file.txt"), 8, sub_path, RT_FILE_PATH_SIZE, &sub_path_size)) goto error;
+	if (!rt_file_system_create_empty_file(sub_path, RT_FALSE)) goto error;
+
+	/* Create empty directory named sub. */
+	sub_path_size = path_size;
+	if (!rt_char_copy(path, sub_path_size, sub_path, RT_FILE_PATH_SIZE)) goto error;
+	if (!rt_file_path_append_separator(sub_path, RT_FILE_PATH_SIZE, &sub_path_size)) goto error;
+	if (!rt_char_append(_R("sub"), 3, sub_path, RT_FILE_PATH_SIZE, &sub_path_size)) goto error;
+	if (!rt_file_system_create_dir(sub_path)) goto error;
+
+	/* Create empty file named sub_file.txt. */
+	if (!rt_file_path_append_separator(sub_path, RT_FILE_PATH_SIZE, &sub_path_size)) goto error;
+	if (!rt_char_append(_R("sub_file.txt"), 12, sub_path, RT_FILE_PATH_SIZE, &sub_path_size)) goto error;
+	if (!rt_file_system_create_empty_file(sub_path, RT_FALSE)) goto error;
+
+	paths_count = 0;
+	if (!rt_file_path_browse(path, &zz_test_browse_callback, RT_TRUE, RT_TRUE, &paths_count)) goto error;
+	if (paths_count != 3) goto error;
+
+	paths_count = 0;
+	if (!rt_file_path_browse(path, &zz_test_browse_callback, RT_FALSE, RT_TRUE, &paths_count)) goto error;
+	if (paths_count != 2) goto error;
+
+	if (!rt_file_system_delete_dir_recursively(path)) goto error;
+	if (!rt_file_path_get_type(path, &type)) goto error;
+	if (type != RT_FILE_PATH_TYPE_NONE) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s zz_test_file_path()
 {
+	rt_char tmp_dir[RT_FILE_PATH_SIZE];
+	rt_un tmp_dir_size;
 	rt_s ret;
+
+	if (!zz_get_tmp_dir(tmp_dir, RT_FILE_PATH_SIZE, &tmp_dir_size)) goto error;
 
 	if (!zz_test_get_current_dir()) goto error;
 	if (!zz_test_get_executable_path()) goto error;
@@ -451,6 +524,7 @@ rt_s zz_test_file_path()
 	if (!zz_test_get_type()) goto error;
 	if (!zz_test_get_last_separator_index()) goto error;
 	if (!zz_test_get_parent()) goto error;
+	if (!zz_test_browse(tmp_dir, tmp_dir_size)) goto error;
 
 	ret = RT_OK;
 free:

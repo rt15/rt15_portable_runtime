@@ -60,4 +60,13 @@ rt_s rt_file_system_delete_file_if_exists(const rt_char *file_path);
  */
 rt_s rt_file_system_create_empty_file(const rt_char *file_path, rt_b truncate);
 
+/**
+ * Delete given directory and its content, recursively.
+ *
+ * <p>
+ * The directory can exist or not.
+ * </p>
+ */
+rt_s rt_file_system_delete_dir_recursively(const rt_char *dir_path);
+
 #endif /* RT_FILE_SYSTEM_H */
