@@ -440,6 +440,66 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_get_name_do(const rt_char *path, const rt_char *expected)
+{
+	rt_char buffer[RT_FILE_PATH_SIZE];
+	rt_un buffer_size;
+	rt_s ret;
+
+	if (!rt_file_path_get_name(path, rt_char_get_size(path), buffer, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
+	if (rt_char_get_size(buffer) != buffer_size) goto error;
+	if (!rt_char_equals(buffer, buffer_size, expected, rt_char_get_size(expected))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_get_name()
+{
+	rt_s ret;
+
+#ifdef RT_DEFINE_WINDOWS
+	if (!zz_test_get_name_do(_R("c:\\foo\\bar"), _R("bar"))) goto error;
+	if (!zz_test_get_name_do(_R("c:\\bar"), _R("bar"))) goto error;
+	if (!zz_test_get_name_do(_R("c:\\"), _R("c:"))) goto error;
+	if (!zz_test_get_name_do(_R("\\"), _R("\\"))) goto error;
+	if (!zz_test_get_name_do(_R("\\\\"), _R("\\"))) goto error;
+#endif
+
+	/* From basename testing. */
+	if (!zz_test_get_name_do(_R("./data/foo.txt"), _R("foo.txt"))) goto error;
+	if (!zz_test_get_name_do(_R("./foo"), _R("foo"))) goto error;
+	if (!zz_test_get_name_do(_R("/foo"), _R("foo"))) goto error;
+	if (!zz_test_get_name_do(_R("foo/"), _R("foo"))) goto error;
+	if (!zz_test_get_name_do(_R("//foo"), _R("foo"))) goto error;
+	if (!zz_test_get_name_do(_R("foo//"), _R("foo"))) goto error;
+	if (!zz_test_get_name_do(_R("./"), _R("."))) goto error;
+	if (!zz_test_get_name_do(_R("/."), _R("."))) goto error;
+	if (!zz_test_get_name_do(_R("//"), _R("/"))) goto error;
+
+	/* From basename specification. */
+	if (!zz_test_get_name_do(_R(""), _R("."))) goto error;
+
+	/* From basename examples. */
+	if (!zz_test_get_name_do(_R("/usr/lib"), _R("lib"))) goto error;
+	if (!zz_test_get_name_do(_R("/usr/"), _R("usr"))) goto error;
+	if (!zz_test_get_name_do(_R("usr"), _R("usr"))) goto error;
+	if (!zz_test_get_name_do(_R("/"), _R("/"))) goto error;
+	if (!zz_test_get_name_do(_R("."), _R("."))) goto error;
+	if (!zz_test_get_name_do(_R(".."), _R(".."))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 static rt_s zz_test_browse_callback(const rt_char *path, rt_un type, void *context)
 {
 	rt_un *paths_count;
@@ -524,6 +584,7 @@ rt_s zz_test_file_path()
 	if (!zz_test_get_type()) goto error;
 	if (!zz_test_get_last_separator_index()) goto error;
 	if (!zz_test_get_parent()) goto error;
+	if (!zz_test_get_name()) goto error;
 	if (!zz_test_browse(tmp_dir, tmp_dir_size)) goto error;
 
 	ret = RT_OK;
