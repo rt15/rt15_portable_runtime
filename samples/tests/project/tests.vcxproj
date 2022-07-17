@@ -19,21 +19,35 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\auto\zz_auto_tests.c" />
+    <ClCompile Include="..\src\auto\zz_test_atomic.c" />
+    <ClCompile Include="..\src\auto\zz_test_char.c" />
+    <ClCompile Include="..\src\auto\zz_test_char8.c" />
+    <ClCompile Include="..\src\auto\zz_test_critical_section.c" />
+    <ClCompile Include="..\src\auto\zz_test_env_var.c" />
+    <ClCompile Include="..\src\auto\zz_test_event.c" />
+    <ClCompile Include="..\src\auto\zz_test_fast_initialization.c" />
+    <ClCompile Include="..\src\auto\zz_test_file.c" />
+    <ClCompile Include="..\src\auto\zz_test_file_path.c" />
+    <ClCompile Include="..\src\auto\zz_test_file_system.c" />
+    <ClCompile Include="..\src\auto\zz_test_io_device.c" />
+    <ClCompile Include="..\src\auto\zz_test_memory.c" />
+    <ClCompile Include="..\src\auto\zz_test_pipe.c" />
+    <ClCompile Include="..\src\auto\zz_test_sleep.c" />
+    <ClCompile Include="..\src\auto\zz_test_thread.c" />
+    <ClCompile Include="..\src\auto\zz_test_virtual_memory.c" />
+    <ClCompile Include="..\src\manual\zz_manual_tests.c" />
+    <ClCompile Include="..\src\manual\zz_manual_test_env_var.c" />
+    <ClCompile Include="..\src\manual\zz_manual_test_file_path.c" />
+    <ClCompile Include="..\src\utils\zz_utils.c" />
     <ClCompile Include="..\src\zz_main.c" />
     <ClCompile Include="..\src\zz_mem.c">
       <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</WholeProgramOptimization>
       <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</WholeProgramOptimization>
     </ClCompile>
-    <ClCompile Include="..\src\zz_test_atomic.c" />
-    <ClCompile Include="..\src\zz_test_char8.c" />
-    <ClCompile Include="..\src\zz_test_critical_section.c" />
-    <ClCompile Include="..\src\zz_test_event.c" />
-    <ClCompile Include="..\src\zz_test_io_device.c" />
-    <ClCompile Include="..\src\zz_test_memory.c" />
-    <ClCompile Include="..\src\zz_test_pipe.c" />
-    <ClCompile Include="..\src\zz_test_sleep.c" />
-    <ClCompile Include="..\src\zz_test_thread.c" />
-    <ClCompile Include="..\src\zz_test_virtual_memory.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\zz_utils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -115,7 +129,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\..\rpr\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\rpr\include;..\include</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <ExceptionHandling>false</ExceptionHandling>
       <CompileAs>CompileAsC</CompileAs>
@@ -139,7 +153,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\..\rpr\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\rpr\include;..\include</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
       <CompileAs>CompileAsC</CompileAs>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -160,7 +174,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\..\rpr\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\rpr\include;..\include</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <ExceptionHandling>false</ExceptionHandling>
       <CompileAs>CompileAsC</CompileAs>
@@ -184,7 +198,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\..\rpr\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\rpr\include;..\include</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
       <CompileAs>CompileAsC</CompileAs>
       <BufferSecurityCheck>false</BufferSecurityCheck>

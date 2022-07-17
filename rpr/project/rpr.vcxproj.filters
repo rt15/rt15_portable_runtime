@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\rpr_main.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\rpr_internal.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer001\rt_memory.c">
+      <Filter>src\layer001</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer002\rt_chrono.c">
+      <Filter>src\layer002</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer002\rt_critical_section.c">
+      <Filter>src\layer002</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer002\rt_error.c">
+      <Filter>src\layer002</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer002\rt_event.c">
+      <Filter>src\layer002</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer002\rt_io_device.c">
+      <Filter>src\layer002</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer002\rt_sleep.c">
+      <Filter>src\layer002</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer002\rt_virtual_memory.c">
+      <Filter>src\layer002</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer003\rt_char.c">
+      <Filter>src\layer003</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer003\rt_char8.c">
+      <Filter>src\layer003</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer003\rt_env_var.c">
+      <Filter>src\layer003</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer003\rt_fast_initialization.c">
+      <Filter>src\layer003</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer003\rt_pipe.c">
+      <Filter>src\layer003</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer003\rt_thread.c">
+      <Filter>src\layer003</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer004\rt_check_rpr.c">
+      <Filter>src\layer004</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer004\rt_console.c">
+      <Filter>src\layer004</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer004\rt_file_path.c">
+      <Filter>src\layer004</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer005\rt_file.c">
+      <Filter>src\layer005</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer006\rt_file_system.c">
+      <Filter>src\layer006</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\rpr.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rpr_main.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rpr_mem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer000\rt_types.h">
+      <Filter>include\layer000</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer001\rt_atomic.h">
+      <Filter>include\layer001</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer001\rt_input_stream.h">
+      <Filter>include\layer001</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer001\rt_memory.h">
+      <Filter>include\layer001</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer001\rt_os_headers.h">
+      <Filter>include\layer001</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer001\rt_output_stream.h">
+      <Filter>include\layer001</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer002\rt_chrono.h">
+      <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer002\rt_critical_section.h">
+      <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer002\rt_error.h">
+      <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer002\rt_event.h">
+      <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer002\rt_io_device.h">
+      <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer002\rt_sleep.h">
+      <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer002\rt_virtual_memory.h">
+      <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer003\rt_char.h">
+      <Filter>include\layer003</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer003\rt_char8.h">
+      <Filter>include\layer003</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer003\rt_env_var.h">
+      <Filter>include\layer003</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer003\rt_fast_initialization.h">
+      <Filter>include\layer003</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer003\rt_pipe.h">
+      <Filter>include\layer003</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer003\rt_thread.h">
+      <Filter>include\layer003</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer004\rt_check_rpr.h">
+      <Filter>include\layer004</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer004\rt_console.h">
+      <Filter>include\layer004</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer004\rt_file_path.h">
+      <Filter>include\layer004</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer005\rt_file.h">
+      <Filter>include\layer005</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer006\rt_file_system.h">
+      <Filter>include\layer006</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{8f6b92b6-4b17-4481-82cd-e5730c462a06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\layer000">
+      <UniqueIdentifier>{4327923f-e840-4d5b-a561-548252ca1186}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\layer001">
+      <UniqueIdentifier>{8eab21a5-6e26-41cf-8902-c049a099bbcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\layer002">
+      <UniqueIdentifier>{5bd8af7f-9d05-49da-a180-ffe6b1e878d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\layer003">
+      <UniqueIdentifier>{1f38c55e-db39-4a4d-b7e4-d4b0c020548a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\layer004">
+      <UniqueIdentifier>{a1ce83d5-56cc-4776-95e3-338edd2e14ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\layer005">
+      <UniqueIdentifier>{e555729b-e5b5-4ea4-aa2e-32f503933957}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\layer006">
+      <UniqueIdentifier>{de200300-1343-426b-8c18-709a33fb9113}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{d69b7acb-9ad9-45bb-b6c3-739bb3f1bffe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\layer001">
+      <UniqueIdentifier>{5b1c1eb9-74d7-4d0c-8a0b-8b1cc9c4096e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\layer002">
+      <UniqueIdentifier>{c881e6c3-cd1e-436f-90a9-cca6dcfe773f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\layer003">
+      <UniqueIdentifier>{25863da5-a7c4-4fef-9507-23ce3719bd63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\layer004">
+      <UniqueIdentifier>{0b8ed751-7619-4026-94b7-3eec732b97ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\layer005">
+      <UniqueIdentifier>{d399eacb-f0ec-4d93-82b2-10da397a8256}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\layer006">
+      <UniqueIdentifier>{d7c40e23-a080-48c7-9052-dc46306dd0d5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

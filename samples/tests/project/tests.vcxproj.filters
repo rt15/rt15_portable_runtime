@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\zz_main.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\zz_mem.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\utils\zz_utils.c">
+      <Filter>src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\manual\zz_manual_test_env_var.c">
+      <Filter>src\manual</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\manual\zz_manual_test_file_path.c">
+      <Filter>src\manual</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\manual\zz_manual_tests.c">
+      <Filter>src\manual</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_auto_tests.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_atomic.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_char.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_char8.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_critical_section.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_env_var.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_event.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_fast_initialization.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_file.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_file_path.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_file_system.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_io_device.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_memory.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_pipe.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_sleep.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_thread.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_virtual_memory.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{bf02578f-6aa0-4b06-8a31-1fe9cbe7a67e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{30969a3b-7443-4d6d-b573-5658f87d01b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\auto">
+      <UniqueIdentifier>{f017827d-a7c0-44ee-b3f0-ffb5fe6df349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\manual">
+      <UniqueIdentifier>{4457c6ce-156e-42c3-b275-585162740757}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\utils">
+      <UniqueIdentifier>{427d24f9-6629-4d05-ab85-81384e4de084}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\zz_utils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

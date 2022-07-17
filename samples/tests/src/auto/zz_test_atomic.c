@@ -113,7 +113,7 @@ rt_s zz_test_atomic_basics()
 	if (!RT_ATOMIC_TRY_TO_ACQUIRE32(var32)) goto error;
 	if (RT_ATOMIC_TRY_TO_ACQUIRE32(var32)) goto error;
 	if (RT_ATOMIC_TRY_TO_ACQUIRE32(var32)) goto error;
-	RT_ATOMIC_RELEASE(var32);
+	RT_ATOMIC_RELEASE32(var32);
 	if (!RT_ATOMIC_TRY_TO_ACQUIRE32(var32)) goto error;
 	if (RT_ATOMIC_TRY_TO_ACQUIRE32(var32)) goto error;
 	if (RT_ATOMIC_TRY_TO_ACQUIRE32(var32)) goto error;

@@ -10,7 +10,6 @@ rmdir /S /Q rpr\project\.vs
 del /Q rpr\project\*.layout
 del /Q rpr\project\*.depend
 del /Q rpr\project\*.user
-del /Q rpr\project\*.filters
 
 for /D %%I IN (tests tests_with_crt) DO call :clean_project %%I
 

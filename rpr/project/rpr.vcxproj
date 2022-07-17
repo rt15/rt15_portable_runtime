@@ -27,11 +27,17 @@
     <ClCompile Include="..\src\layer002\rt_io_device.c" />
     <ClCompile Include="..\src\layer002\rt_sleep.c" />
     <ClCompile Include="..\src\layer002\rt_virtual_memory.c" />
+    <ClCompile Include="..\src\layer003\rt_char.c" />
     <ClCompile Include="..\src\layer003\rt_char8.c" />
+    <ClCompile Include="..\src\layer003\rt_env_var.c" />
+    <ClCompile Include="..\src\layer003\rt_fast_initialization.c" />
     <ClCompile Include="..\src\layer003\rt_pipe.c" />
     <ClCompile Include="..\src\layer003\rt_thread.c" />
     <ClCompile Include="..\src\layer004\rt_check_rpr.c" />
+    <ClCompile Include="..\src\layer004\rt_console.c" />
     <ClCompile Include="..\src\layer004\rt_file_path.c" />
+    <ClCompile Include="..\src\layer005\rt_file.c" />
+    <ClCompile Include="..\src\layer006\rt_file_system.c" />
     <ClCompile Include="..\src\rpr_internal.c" />
     <ClCompile Include="..\src\rpr_main.c" />
   </ItemGroup>
@@ -49,11 +55,17 @@
     <ClInclude Include="..\include\layer002\rt_io_device.h" />
     <ClInclude Include="..\include\layer002\rt_sleep.h" />
     <ClInclude Include="..\include\layer002\rt_virtual_memory.h" />
+    <ClInclude Include="..\include\layer003\rt_char.h" />
     <ClInclude Include="..\include\layer003\rt_char8.h" />
+    <ClInclude Include="..\include\layer003\rt_env_var.h" />
+    <ClInclude Include="..\include\layer003\rt_fast_initialization.h" />
     <ClInclude Include="..\include\layer003\rt_pipe.h" />
     <ClInclude Include="..\include\layer003\rt_thread.h" />
     <ClInclude Include="..\include\layer004\rt_check_rpr.h" />
+    <ClInclude Include="..\include\layer004\rt_console.h" />
     <ClInclude Include="..\include\layer004\rt_file_path.h" />
+    <ClInclude Include="..\include\layer005\rt_file.h" />
+    <ClInclude Include="..\include\layer006\rt_file_system.h" />
     <ClInclude Include="..\include\rpr.h" />
     <ClInclude Include="..\include\rpr_main.h" />
     <ClInclude Include="..\include\rpr_mem.h" />
