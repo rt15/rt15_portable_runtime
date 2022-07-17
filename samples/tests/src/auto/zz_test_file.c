@@ -25,7 +25,8 @@ static rt_s zz_check_simple_file(const rt_char *file_path, const rt_char8 *expec
 free:
 	if (file_created) {
 		file_created = RT_FALSE;
-		if (!rt_io_device_free(&file.io_device) && ret) goto error;
+		if (!rt_io_device_free(&file.io_device) && ret)
+			goto error;
 	}
 	return ret;
 error:
@@ -69,7 +70,8 @@ static rt_s zz_test_no_existing_file(const rt_char *file_path, enum rt_file_mode
 free:
 	if (file_created) {
 		file_created = RT_FALSE;
-		if (!rt_io_device_free(&file.io_device) && ret) goto error;
+		if (!rt_io_device_free(&file.io_device) && ret)
+			goto error;
 	}
 	return ret;
 error:
@@ -158,7 +160,8 @@ static rt_s zz_test_simple_file(const rt_char *tmp_dir, rt_un tmp_dir_size)
 free:
 	if (file_created) {
 		file_created = RT_FALSE;
-		if (!rt_io_device_free(&file.io_device) && ret) goto error;
+		if (!rt_io_device_free(&file.io_device) && ret)
+			goto error;
 	}
 	return ret;
 error:

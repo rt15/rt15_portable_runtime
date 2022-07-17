@@ -220,7 +220,8 @@ rt_s rt_file_system_create_empty_file(const rt_char *file_path, rt_b truncate)
 free:
 	if (file_created) {
 		file_created = RT_FALSE;
-		if (!rt_io_device_free(&file.io_device) && ret) goto error;
+		if (!rt_io_device_free(&file.io_device) && ret)
+			goto error;
 	}
 	return ret;
 

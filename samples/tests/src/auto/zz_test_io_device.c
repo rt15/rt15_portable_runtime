@@ -54,7 +54,8 @@ rt_s zz_test_io_device()
 free:
 	if (pipe_created) {
 		pipe_created = RT_FALSE;
-		if (!rt_pipe_free(&pipe) && ret) goto error;
+		if (!rt_pipe_free(&pipe) && ret)
+			goto error;
 	}
 	return ret;
 
