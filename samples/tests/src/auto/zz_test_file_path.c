@@ -34,6 +34,68 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_set_current_dir_do(const rt_char *tmp_dir)
+{
+	rt_char current_dir_path[RT_FILE_PATH_SIZE];
+	rt_un current_dir_path_size;
+	enum rt_file_path_type type;
+	rt_s ret;
+
+	/* Trying to change to an unexisting directory. */
+	if (rt_file_path_set_current_dir(_R("unknown_dir"))) goto error;
+
+	/* Switching to tmp directory. */
+	if (!rt_file_path_set_current_dir(tmp_dir)) goto error;
+
+	/* Checking the directory. */
+	if (!rt_file_path_get_current_dir(current_dir_path, RT_FILE_PATH_SIZE, &current_dir_path_size)) goto error;
+	if (!rt_file_path_get_type(current_dir_path, &type)) goto error;
+	if (type != RT_FILE_PATH_TYPE_DIR) goto error;
+
+	/* The empty file should be in the current directory (tmp). */
+	if (!rt_file_path_get_type(_R("empty_file.txt"), &type)) goto error;
+	if (type != RT_FILE_PATH_TYPE_FILE) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_set_current_dir(const rt_char *tmp_dir, rt_un tmp_dir_size)
+{
+	rt_char current_dir_path[RT_FILE_PATH_SIZE];
+	rt_un current_dir_path_size;
+	rt_char empty_file_path[RT_FILE_PATH_SIZE];
+	rt_un empty_file_path_size;
+
+	rt_s ret;
+
+	/* Create an empty file in tmp directory. */
+	empty_file_path_size = tmp_dir_size;
+	if (!rt_char_copy(tmp_dir, empty_file_path_size, empty_file_path, RT_FILE_PATH_SIZE)) goto error;
+	if (!rt_file_path_append_separator(empty_file_path, RT_FILE_PATH_SIZE, &empty_file_path_size)) goto error;
+	if (!rt_char_append(_R("empty_file.txt"), 14, empty_file_path, RT_FILE_PATH_SIZE, &empty_file_path_size)) goto error;
+	if (!rt_file_system_create_empty_file(empty_file_path, RT_TRUE)) goto error;
+
+	/* Backup the current directory. */
+	if (!rt_file_path_get_current_dir(current_dir_path, RT_FILE_PATH_SIZE, &current_dir_path_size)) goto error;
+
+	if (!zz_test_set_current_dir_do(tmp_dir)) goto error;
+
+	/* Restore initial current directory. */
+	if (!rt_file_path_set_current_dir(current_dir_path)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 static rt_s zz_test_get_executable_path()
 {
 	rt_char first_buffer[RT_FILE_PATH_SIZE];
@@ -291,6 +353,48 @@ static rt_s zz_test_namespace()
 	if (!zz_test_namespace_do(_R("\\\\?\\c:\\foo\\bar"), _R("\\\\?\\c:\\foo\\bar"))) goto error;
 #else
 	if (!zz_test_namespace_do(_R("/foo"), _R("/foo"))) goto error;
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_strip_namespace_do(const rt_char *path, const rt_char *expected)
+{
+	rt_char buffer[RT_FILE_PATH_SIZE];
+	rt_un buffer_size;
+	rt_s ret;
+
+	buffer_size = rt_char_get_size(path);
+	if (!rt_char_copy(path, buffer_size, buffer, RT_FILE_PATH_SIZE)) goto error;
+	if (!rt_file_path_strip_namespace(buffer, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
+
+	if (buffer_size != rt_char_get_size(expected)) goto error;
+	if (!rt_char_equals(buffer, buffer_size, expected, buffer_size)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_strip_namespace()
+{
+	rt_s ret;
+
+#ifdef RT_DEFINE_WINDOWS
+	if (!zz_test_strip_namespace_do(_R("\\\\?\\c:\\foo\\bar"),           _R("c:\\foo\\bar"))) goto error;
+	if (!zz_test_strip_namespace_do(_R("\\\\?\\c:\\"),                   _R("c:\\"))) goto error;
+	if (!zz_test_strip_namespace_do(_R("\\\\?\\UNC\\server\\directory"), _R("\\\\server\\directory"))) goto error;
+	if (!zz_test_strip_namespace_do(_R("c:\\foo\\bar"),                  _R("c:\\foo\\bar"))) goto error;
+#else
+	if (!zz_test_strip_namespace_do(_R("/foo"), _R("/foo"))) goto error;
 #endif
 
 	ret = RT_OK;
@@ -576,11 +680,13 @@ rt_s zz_test_file_path()
 	if (!zz_get_tmp_dir(tmp_dir, RT_FILE_PATH_SIZE, &tmp_dir_size)) goto error;
 
 	if (!zz_test_get_current_dir()) goto error;
+	if (!zz_test_set_current_dir(tmp_dir, tmp_dir_size)) goto error;
 	if (!zz_test_get_executable_path()) goto error;
 	if (!zz_test_append_separator()) goto error;
 	if (!zz_test_full()) goto error;
 	if (!zz_test_is_namespaced()) goto error;
 	if (!zz_test_namespace()) goto error;
+	if (!zz_test_strip_namespace()) goto error;
 	if (!zz_test_get_type()) goto error;
 	if (!zz_test_get_last_separator_index()) goto error;
 	if (!zz_test_get_parent()) goto error;

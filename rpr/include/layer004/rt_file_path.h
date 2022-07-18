@@ -40,6 +40,8 @@ rt_s rt_file_path_browse(const rt_char *dir_path, rt_file_path_browse_callback_t
  */
 rt_s rt_file_path_get_current_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
+rt_s rt_file_path_set_current_dir(const rt_char *dir_path);
+
 /**
  * Append a separator to <tt>dir_path</tt> if there is not already one.<br>
  * Should always be used as "/" is a valid path.<br>
@@ -118,6 +120,9 @@ rt_b rt_file_path_is_namespaced(const rt_char *path);
  * @param buffer_size In/out parameter.
  */
 rt_s rt_file_path_namespace(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size);
+
+
+rt_s rt_file_path_strip_namespace(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  * Determine if <tt>path</tt> is referencing a file, a directory, or nothing.

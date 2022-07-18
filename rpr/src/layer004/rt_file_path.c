@@ -166,6 +166,9 @@ rt_s rt_file_path_get_current_dir(rt_char *buffer, rt_un buffer_capacity, rt_un 
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 		goto error;
 	}
+	if (!rt_file_path_strip_namespace(buffer, buffer_capacity, &written))
+		goto error;
+
 #else /* NOT RT_DEFINE_WINDOWS */
 
 	/* Returns NULL in case of error and set errno. Returns buffer in case of success. */
@@ -175,6 +178,28 @@ rt_s rt_file_path_get_current_dir(rt_char *buffer, rt_un buffer_capacity, rt_un 
 #endif
 
 	*buffer_size = written;
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_file_path_set_current_dir(const rt_char *dir_path)
+{
+	rt_s ret;
+
+#ifdef RT_DEFINE_WINDOWS
+	/* Returns zero if failed, set last error. */
+	/* Setting a namespaced path as current directory is kinda buggy. */
+	if (!SetCurrentDirectory(dir_path))
+		goto error;
+#else
+	/* Returns zero in case of success, set errno. */
+	if (chdir(dir_path))
+		goto error;
+#endif
 	ret = RT_OK;
 free:
 	return ret;
@@ -388,14 +413,14 @@ rt_s rt_file_path_full(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size)
 	DWORD result;
 	rt_char *file_part;
 #endif
-	rt_char buffer[RT_FILE_PATH_SIZE];
+	rt_char local_buffer[RT_FILE_PATH_SIZE];
 	rt_un input_path_size = *buffer_size;
 	rt_un local_buffer_size;
 	rt_s ret;
 
 	if (input_path_size) {
 #ifdef RT_DEFINE_WINDOWS
-		result = GetFullPathName(path, RT_FILE_PATH_SIZE, buffer, &file_part);
+		result = GetFullPathName(path, RT_FILE_PATH_SIZE, local_buffer, &file_part);
 		/* In case of error, GetFullPathName returns zero and set last error. */
 		if (result == 0)
 			goto error;
@@ -406,20 +431,22 @@ rt_s rt_file_path_full(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size)
 			goto error;
 		}
 		local_buffer_size = result;
-		if (!rt_char_copy(buffer, local_buffer_size, path, buffer_capacity)) goto error;
+		if (!rt_char_copy(local_buffer, local_buffer_size, path, buffer_capacity)) goto error;
 		*buffer_size = local_buffer_size;
+		/* GetFullPathName can return a namespaced path if current directory is namespaced. */
+		if (!rt_file_path_strip_namespace(path, buffer_capacity, buffer_size)) goto error;
 #else
 		if (path[0] != '/') {
 			/* Append path to current directory into buffer. */
-			if (!rt_file_path_get_current_dir(buffer, RT_FILE_PATH_SIZE, &local_buffer_size)) goto error;
-			if (!rt_file_path_append_separator(buffer, RT_FILE_PATH_SIZE, &local_buffer_size)) goto error;
-			if (!rt_char_append(path, input_path_size, buffer, RT_FILE_PATH_SIZE, &local_buffer_size)) goto error;
+			if (!rt_file_path_get_current_dir(local_buffer, RT_FILE_PATH_SIZE, &local_buffer_size)) goto error;
+			if (!rt_file_path_append_separator(local_buffer, RT_FILE_PATH_SIZE, &local_buffer_size)) goto error;
+			if (!rt_char_append(path, input_path_size, local_buffer, RT_FILE_PATH_SIZE, &local_buffer_size)) goto error;
 		} else {
-			if (!rt_char_copy(path, input_path_size, buffer, RT_FILE_PATH_SIZE))
+			if (!rt_char_copy(path, input_path_size, local_buffer, RT_FILE_PATH_SIZE))
 				goto error;
 			local_buffer_size = input_path_size;
 		}
-		if (!rt_file_path_realpath(buffer, local_buffer_size, path, buffer_capacity, buffer_size))
+		if (!rt_file_path_realpath(local_buffer, local_buffer_size, path, buffer_capacity, buffer_size))
 			goto error;
 #endif
 	} else {
@@ -535,6 +562,46 @@ error:
 #else
 	/* If someone calls this function from a portable code and does not want or cannot deal with conditional compilation. */
 	return rt_file_path_full(path, buffer_capacity, buffer_size);
+#endif
+}
+
+
+rt_s rt_file_path_strip_namespace(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size)
+{
+#ifdef RT_DEFINE_WINDOWS
+	rt_un local_buffer_size;
+#endif
+
+#ifdef RT_DEFINE_WINDOWS
+	/* If we hit the final null then we automatically stop iterating. */
+	if (path[0] == _R('\\') &&
+	    path[1] == _R('\\') &&
+	   (path[2] == _R('?') || path[2] == _R('.')) &&
+	    path[3] == _R('\\')) {
+
+		local_buffer_size = *buffer_size;
+
+		if (path[4] == _R('U') &&
+		    path[5] == _R('N') &&
+		    path[6] == _R('C') &&
+		    path[7] == _R('\\')) {
+			/* 8 characters to remove minus the two backslashes at positions 0 and 1. */
+			local_buffer_size -= 6;
+			/* Result minus two backslashes plus the trailing zero. */
+			RT_MEMORY_MOVE(&path[8], &path[2], (local_buffer_size - 1) * sizeof(rt_char));
+		} else {
+			local_buffer_size -= 4;
+			/* Buffer size plus trailing zero. */
+			RT_MEMORY_MOVE(&path[4], path, (local_buffer_size + 1) * sizeof(rt_char));
+		}
+
+		*buffer_size = local_buffer_size;
+	}
+
+	return RT_OK;
+#else
+	/* Nothing to strip. */
+	return RT_OK;
 #endif
 }
 
