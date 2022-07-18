@@ -38,7 +38,6 @@ rt_s rt_file_system_delete_dir(const rt_char *dir_path);
  */
 rt_s rt_file_system_delete_dir_if_exists(const rt_char *dir_path);
 
-
 /**
  * Delete a file (not a directory).
  *
@@ -68,5 +67,15 @@ rt_s rt_file_system_create_empty_file(const rt_char *file_path, rt_b truncate);
  * </p>
  */
 rt_s rt_file_system_delete_dir_recursively(const rt_char *dir_path);
+
+/**
+ * Find out the size of a file without opening it.
+ *
+ * <p>
+ * Under Windows, the size of a directory is zero.<br>
+ * Under Linux, the size of a directory is the size of its metadata, not the size of its content.
+ * </p>
+ */
+rt_s rt_file_system_get_file_size(const rt_char *file_path, rt_un64 *file_size);
 
 #endif /* RT_FILE_SYSTEM_H */

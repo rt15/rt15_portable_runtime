@@ -272,3 +272,53 @@ error:
 	ret = RT_FAILED;
 	goto free;
 }
+
+rt_s rt_file_system_get_file_size(const rt_char *file_path, rt_un64 *file_size)
+{
+#ifdef RT_DEFINE_WINDOWS
+	const rt_char *actual_path;
+	rt_char namespaced_path[RT_FILE_PATH_SIZE];
+	rt_un buffer_size;
+	WIN32_FILE_ATTRIBUTE_DATA file_info;
+	LARGE_INTEGER large_integer;
+#else
+	struct stat file_info;
+#endif
+	rt_s ret;
+
+#ifdef RT_DEFINE_WINDOWS
+
+	if (rt_file_path_is_namespaced(file_path)) {
+		actual_path = file_path;
+	} else {
+		buffer_size = rt_char_get_size(file_path);
+		if (!rt_char_copy(file_path, buffer_size, namespaced_path, RT_FILE_PATH_SIZE)) goto error;
+		if (!rt_file_path_namespace(namespaced_path, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
+		actual_path = namespaced_path;
+	}
+
+	/* GetFileAttributesEx returns 0 and use SetLastError in case of error. */
+	if (!GetFileAttributesEx(actual_path, GetFileExInfoStandard, &file_info))
+		goto error;
+
+	large_integer.HighPart = file_info.nFileSizeHigh;
+	large_integer.LowPart = file_info.nFileSizeLow;
+	*file_size = large_integer.QuadPart;
+
+#else /* RT_DEFINE_WINDOWS */
+
+	/* stat returns zero in case of success, -1 in case of failure and set errno. */
+	if (stat(file_path, &file_info))
+		goto error;
+	*file_size = file_info.st_size;
+
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}

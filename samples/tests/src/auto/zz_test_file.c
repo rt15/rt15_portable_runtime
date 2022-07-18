@@ -4,12 +4,16 @@
 
 static rt_s zz_check_simple_file(const rt_char *file_path, const rt_char8 *expected)
 {
+	rt_un64 file_size;
 	struct rt_file file;
 	rt_b file_created = RT_FALSE;
 	enum rt_file_path_type type;
 	rt_char8 buffer[256];
 	rt_un bytes_read;
 	rt_s ret;
+
+	if (!rt_file_system_get_file_size(file_path, &file_size)) goto error;
+	if (file_size != rt_char8_get_size(expected)) goto error;
 
 	if (!rt_file_path_get_type(file_path, &type)) goto error;
 	if (type != RT_FILE_PATH_TYPE_FILE) goto error;
