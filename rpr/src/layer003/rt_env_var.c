@@ -8,7 +8,7 @@ rt_s rt_env_var_get(const rt_char *name, rt_char *buffer, rt_un buffer_capacity,
 {
 #ifdef RT_DEFINE_WINDOWS
 	DWORD returned_value;
-#else /* NOT RT_DEFINE_WINDOWS */
+#else
 	char *returned_value;
 	size_t length;
 #endif
@@ -31,7 +31,7 @@ rt_s rt_env_var_get(const rt_char *name, rt_char *buffer, rt_un buffer_capacity,
 	}
 	*buffer_size = returned_value;
 
-#else /* NOT RT_DEFINE_WINDOWS */
+#else
 	returned_value = getenv(name);
 	if (!returned_value) {
 		/* The getenv function might not set errno. The only failure reason might be that the variable is not found. */

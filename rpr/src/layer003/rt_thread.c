@@ -36,7 +36,7 @@ rt_s rt_thread_create(struct rt_thread *thread, rt_thread_callback_t thread_call
 	rt_un32 thread_id;
 	thread->thread_handle = CreateThread(RT_NULL, 0, thread_callback, parameter, 0, &thread_id);
 	ret = (thread->thread_handle != RT_NULL);
-#else /* NOT RT_DEFINE_WINDOWS */
+#else
 
 	/* Save user callback and parameter. */
 	thread->thread_callback = thread_callback;
@@ -67,7 +67,7 @@ rt_s rt_thread_join(struct rt_thread *thread)
 
 #ifdef RT_DEFINE_WINDOWS
 	ret = (WaitForSingleObject(thread->thread_handle, INFINITE) != WAIT_FAILED);
-#else /* NOT RT_DEFINE_WINDOWS */
+#else
 
 	/* The pthread_join function returns an errno. */
 	error = pthread_join(thread->thread_pointer, RT_NULL);
@@ -111,7 +111,7 @@ rt_s rt_thread_get_exit_code(struct rt_thread *thread, rt_un32 *exit_code)
 
 #ifdef RT_DEFINE_WINDOWS
 	ret = GetExitCodeThread(thread->thread_handle, exit_code);
-#else /* NOT RT_DEFINE_WINDOWS */
+#else
 
 	ret = thread->exit_code_set;
 	if (ret)
@@ -128,7 +128,7 @@ rt_s rt_thread_free(struct rt_thread *thread)
 
 #ifdef RT_DEFINE_WINDOWS
 	ret = CloseHandle(thread->thread_handle);
-#else /* NOT RT_DEFINE_WINDOWS */
+#else
 	ret = RT_OK;
 #endif
 	return ret;

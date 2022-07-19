@@ -86,7 +86,7 @@ error:
 	ret = RT_FAILED;
 	goto free;
 
-#else /* NOT RT_DEFINE_WINDOWS */
+#else
 
 	dir = RT_NULL;
 
@@ -169,7 +169,7 @@ rt_s rt_file_path_get_current_dir(rt_char *buffer, rt_un buffer_capacity, rt_un 
 	if (!rt_file_path_strip_namespace(buffer, buffer_capacity, &written))
 		goto error;
 
-#else /* NOT RT_DEFINE_WINDOWS */
+#else
 
 	/* Returns NULL in case of error and set errno. Returns buffer in case of success. */
 	if (!getcwd(buffer, buffer_capacity))

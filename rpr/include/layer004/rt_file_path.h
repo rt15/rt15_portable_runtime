@@ -14,10 +14,16 @@
  */
 #define RT_FILE_PATH_SIZE RT_CHAR_HALF_BIG_STRING_SIZE
 
+/**
+ * Maximum length for a file or directory name (Without path).<br>
+ * The limit on an NTFS file system is 256.
+ */
+#define RT_FILE_PATH_NAME_SIZE 256
+
 #ifdef RT_DEFINE_WINDOWS
 #define RT_FILE_PATH_SEPARATOR L'\\'
 #define RT_FILE_PATH_IS_SEPARATOR(X) (X == L'\\' || X == L'/')
-#else /* NOT RT_DEFINE_WINDOWS */
+#else
 #define RT_FILE_PATH_SEPARATOR '/'
 #define RT_FILE_PATH_IS_SEPARATOR(X) (X == '/')
 #endif

@@ -60,7 +60,7 @@ void rpr_main_local_free(rt_char **argv);
  */
 rt_char **rpr_main_command_line_to_argv_w(rt_n32 *argc);
 
-#else /* NOT RT_DEFINE_WINDOWS */
+#else
 
 void rpr_main_set_locale();
 
@@ -92,7 +92,7 @@ int RT_CDECL mainCRTStartup()
 	/* Let CRT clean up. */
 	return ret;
 }
-#else /* NOT RT_DEFINE_WINDOWS */
+#else
 int RT_CDECL main(int argc, char* argv[])
 {
 	/* Default locale is "C". This call will align locale with system locale. */

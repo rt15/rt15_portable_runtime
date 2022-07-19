@@ -73,7 +73,7 @@ rt_s rt_file_create(struct rt_file *file, const rt_char *file_path, enum rt_file
 	if (file_handle == INVALID_HANDLE_VALUE)
 		goto error;
 
-#else /* NOT RT_DEFINE_WINDOWS */
+#else
 	file_descriptor = open(file_path, flags, RT_FILE_RIGHTS);
 	if (file_descriptor == -1)
 		goto error;

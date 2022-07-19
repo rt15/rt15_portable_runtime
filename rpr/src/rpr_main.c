@@ -46,7 +46,7 @@ rt_char **rpr_main_command_line_to_argv_w(rt_n32 *argc)
 	return CommandLineToArgvW(GetCommandLineW(), argc);
 }
 
-#else /* NOT RT_DEFINE_WINDOWS */
+#else
 
 void rpr_main_set_locale()
 {

@@ -2,42 +2,6 @@
 
 #include "zz_utils.h"
 
-static rt_s zz_check_simple_file(const rt_char *file_path, const rt_char8 *expected)
-{
-	rt_un64 file_size;
-	struct rt_file file;
-	rt_b file_created = RT_FALSE;
-	enum rt_file_path_type type;
-	rt_char8 buffer[256];
-	rt_un bytes_read;
-	rt_s ret;
-
-	if (!rt_file_system_get_file_size(file_path, &file_size)) goto error;
-	if (file_size != rt_char8_get_size(expected)) goto error;
-
-	if (!rt_file_path_get_type(file_path, &type)) goto error;
-	if (type != RT_FILE_PATH_TYPE_FILE) goto error;
-
-	/* RT_FILE_MODE_READ, existing file. */
-	if (!rt_file_create(&file, file_path, RT_FILE_MODE_READ)) goto error;
-	file_created = RT_TRUE;
-
-	if (!rt_io_device_read(&file.io_device.input_stream, buffer, 256, &bytes_read)) goto error;
-	if (!rt_char8_equals(buffer, rt_char8_get_size(expected), expected, bytes_read)) goto error;
-
-	ret = RT_OK;
-free:
-	if (file_created) {
-		file_created = RT_FALSE;
-		if (!rt_io_device_free(&file.io_device) && ret)
-			goto error;
-	}
-	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
-}
-
 static rt_s zz_write_simple_file(struct rt_file *file, const rt_char8 *string)
 {
 	rt_s ret;
@@ -68,7 +32,7 @@ static rt_s zz_test_no_existing_file(const rt_char *file_path, enum rt_file_mode
 	file_created = RT_FALSE;
 	if (!rt_io_device_free(&file.io_device)) goto error;
 
-	if (!zz_check_simple_file(file_path, "Hello, world!")) goto error;
+	if (!zz_check_file_content(file_path, "Hello, world!")) goto error;
 
 	ret = RT_OK;
 free:
@@ -141,7 +105,7 @@ static rt_s zz_test_simple_file(const rt_char *tmp_dir, rt_un tmp_dir_size)
 	file_created = RT_FALSE;
 	if (!rt_io_device_free(&file.io_device)) goto error;
 
-	if (!zz_check_simple_file(file_path, "Hello, World! Hello!")) goto error;
+	if (!zz_check_file_content(file_path, "Hello, World! Hello!")) goto error;
 
 	/* RT_FILE_MODE_TRUNCATE, no existing file. */
 	if (!zz_test_no_existing_file(file_path, RT_FILE_MODE_TRUNCATE)) goto error;
@@ -158,7 +122,7 @@ static rt_s zz_test_simple_file(const rt_char *tmp_dir, rt_un tmp_dir_size)
 	file_created = RT_FALSE;
 	if (!rt_io_device_free(&file.io_device)) goto error;
 
-	if (!zz_check_simple_file(file_path, "Hello, world!")) goto error;
+	if (!zz_check_file_content(file_path, "Hello, world!")) goto error;
 
 	ret = RT_OK;
 free:
