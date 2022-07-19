@@ -177,4 +177,14 @@ rt_s rt_file_path_get_executable_path(rt_char *buffer, rt_un buffer_capacity, rt
  */
 rt_s rt_file_path_get_name(const rt_char *path, rt_un path_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
+
+/**
+ *
+ * <p>
+ * Under Windows, GetTempPath, so TMP/TEMP/USERPROFILE environment variable or Windows directory.<br>
+ * Under Linux, TMPDIR environment variable, P_tmpdir macro or /tmp.
+ * </p>
+ */
+rt_s rt_file_path_get_temp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+
 #endif /* RT_FILE_PATH_H */

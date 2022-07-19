@@ -671,6 +671,38 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_get_temp_dir()
+{
+	rt_char first_buffer[RT_FILE_PATH_SIZE];
+	rt_un first_buffer_size;
+	rt_char second_buffer[RT_FILE_PATH_SIZE];
+	rt_un second_buffer_size;
+	enum rt_file_path_type type;
+	rt_s ret;
+
+	if (!rt_file_path_get_temp_dir(first_buffer, RT_FILE_PATH_SIZE, &first_buffer_size)) goto error;
+	if (!first_buffer_size) goto error;
+	if (first_buffer_size != rt_char_get_size(first_buffer)) goto error;
+
+	/* Trying a buffer too small. */
+	if (rt_file_path_get_temp_dir(second_buffer, first_buffer_size, &second_buffer_size)) goto error;
+
+	/* Trying exact buffer size. */
+	if (!rt_file_path_get_temp_dir(second_buffer, first_buffer_size + 1, &second_buffer_size)) goto error;
+	if (!rt_char_equals(first_buffer, first_buffer_size, second_buffer, second_buffer_size)) goto error;
+
+	/* Checking the directory. */
+	if (!rt_file_path_get_type(first_buffer, &type)) goto error;
+	if (type != RT_FILE_PATH_TYPE_DIR) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s zz_test_file_path()
 {
 	rt_char tmp_dir[RT_FILE_PATH_SIZE];
@@ -692,6 +724,7 @@ rt_s zz_test_file_path()
 	if (!zz_test_get_parent()) goto error;
 	if (!zz_test_get_name()) goto error;
 	if (!zz_test_browse(tmp_dir, tmp_dir_size)) goto error;
+	if (!zz_test_get_temp_dir()) goto error;
 
 	ret = RT_OK;
 free:

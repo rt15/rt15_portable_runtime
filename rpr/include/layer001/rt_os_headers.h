@@ -54,6 +54,10 @@
 #define __USE_GNU
 #endif
 
+#ifndef __USE_XOPEN
+#define __USE_XOPEN
+#endif
+
 #ifndef __USE_BSD
 #define __USE_BSD
 #endif

@@ -818,3 +818,52 @@ error:
 	ret = RT_FAILED;
 	goto free;
 }
+
+rt_s rt_file_path_get_temp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+#ifdef RT_DEFINE_WINDOWS
+	DWORD returned_value;
+#endif
+	rt_s ret;
+
+#ifdef RT_DEFINE_WINDOWS
+
+	/* Returns the characters copied to buffer, not including the null terminating character. */
+	returned_value = GetTempPath(buffer_capacity, buffer);
+	/* GetTempPath returns zero and set last error in case of error. */
+	if (!returned_value)
+		goto error;
+
+	/* If the buffer is too small GetTempPath returns the required buffer size. */
+	if (returned_value > buffer_capacity) {
+		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
+		goto error;
+	}
+	*buffer_size = returned_value;
+
+#else
+	if (!rt_env_var_get(_R("TMPDIR"), buffer, buffer_capacity, buffer_size)) {
+		if (errno != EINVAL)
+			goto error;
+#ifdef P_tmpdir
+		/* The variable has not be found. Use P_tmpdir macro instead. */
+		*buffer_size = rt_char_get_size(P_tmpdir);
+		if (!rt_char_copy(P_tmpdir, *buffer_size, buffer, buffer_capacity))
+			goto error;
+#else
+		/* The variable has not be found and P_tmpdir macro is not defined. Use /tmp. */
+		*buffer_size = 4;
+		if (!rt_char_copy(_R("/tmp"), *buffer_size, buffer, buffer_capacity))
+			goto error;
+#endif
+	}
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
