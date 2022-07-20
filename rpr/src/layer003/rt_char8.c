@@ -73,7 +73,7 @@ rt_s rt_char8_append_char(rt_char8 character, rt_char8 *buffer, rt_un buffer_cap
 	return ret;
 }
 
-rt_s rt_char8_copy(const rt_char8 *string, rt_un string_size, rt_char8 *buffer, rt_un buffer_capacity)
+rt_s rt_char8_copy(const rt_char8 *str, rt_un string_size, rt_char8 *buffer, rt_un buffer_capacity)
 {
 	rt_un copy_size;
 	rt_s ret;
@@ -95,22 +95,22 @@ rt_s rt_char8_copy(const rt_char8 *string, rt_un string_size, rt_char8 *buffer, 
 		}
 	}
 
-	RT_MEMORY_COPY(string, buffer, copy_size * sizeof(rt_char8));
+	RT_MEMORY_COPY(str, buffer, copy_size * sizeof(rt_char8));
 	buffer[copy_size] = 0;
 
 end:
 	return ret;
 }
 
-rt_un rt_char8_get_size(const rt_char8 *string)
+rt_un rt_char8_get_size(const rt_char8 *str)
 {
 	const rt_char8 *in_string;
 	rt_un ret;
 
-	in_string = string;
+	in_string = str;
 	while (*in_string++);
 
-	ret = (rt_un)(in_string - string - 1);
+	ret = (rt_un)(in_string - str - 1);
 
 	return ret;
 }
@@ -168,4 +168,36 @@ error:
 	}
 	ret = RT_FAILED;
 	goto free;
+}
+
+rt_un rt_char8_fast_lower(rt_char8 *str)
+{
+	rt_char8 current_char;
+	rt_un ret;
+
+	ret = 0;
+	while (str[ret]) {
+		current_char = str[ret];
+		if (current_char >= _R('A') && current_char <= _R('Z')) {
+			str[ret] = current_char + 32;
+		}
+		ret++;
+	}
+	return ret;
+}
+
+rt_un rt_char8_fast_upper(rt_char8 *str)
+{
+	rt_char8 current_char;
+	rt_un ret;
+
+	ret = 0;
+	while (str[ret]) {
+		current_char = str[ret];
+		if (current_char >= _R('a') && current_char <= _R('z')) {
+			str[ret] = current_char - 32;
+		}
+		ret++;
+	}
+	return ret;
 }

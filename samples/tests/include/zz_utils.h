@@ -11,7 +11,7 @@ rt_s zz_get_tmp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 /**
  * If the file already exists, it is truncated.
  */
-rt_s zz_create_file(const rt_char *file_path, const rt_char8 *string);
+rt_s zz_create_file(const rt_char *file_path, const rt_char8 *str);
 
 /**
  * <p>

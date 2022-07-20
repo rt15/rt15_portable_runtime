@@ -30,7 +30,7 @@ error:
 	goto free;
 }
 
-rt_s zz_create_file(const rt_char *file_path, const rt_char8 *string)
+rt_s zz_create_file(const rt_char *file_path, const rt_char8 *str)
 {
 	struct rt_file file;
 	rt_b file_created = RT_FALSE;
@@ -38,7 +38,7 @@ rt_s zz_create_file(const rt_char *file_path, const rt_char8 *string)
 
 	if (!rt_file_create(&file, file_path, RT_FILE_MODE_TRUNCATE)) goto error;
 	file_created = RT_TRUE;
-	if (!rt_io_device_write(&file.io_device.output_stream, string, rt_char8_get_size(string))) goto error;
+	if (!rt_io_device_write(&file.io_device.output_stream, str, rt_char8_get_size(str))) goto error;
 
 	ret = RT_OK;
 free:

@@ -2,11 +2,11 @@
 
 #include "zz_utils.h"
 
-static rt_s zz_write_simple_file(struct rt_file *file, const rt_char8 *string)
+static rt_s zz_write_simple_file(struct rt_file *file, const rt_char8 *str)
 {
 	rt_s ret;
 
-	if (!rt_io_device_write(&file->io_device.output_stream, string, rt_char8_get_size(string))) goto error;
+	if (!rt_io_device_write(&file->io_device.output_stream, str, rt_char8_get_size(str))) goto error;
 
 	ret = RT_OK;
 free:

@@ -12,6 +12,9 @@
 /* String size that can be used four times in a function and avoid stack probe. */
 #define RT_CHAR8_QUARTER_BIG_STRING_SIZE 960
 
+#define RT_CHAR8_FAST_LOWER_CHAR(CHARACTER) ((CHARACTER >= _R('A') && CHARACTER <= _R('Z')) ? CHARACTER + 32 : CHARACTER)
+#define RT_CHAR8_FAST_UPPER_CHAR(CHARACTER) ((CHARACTER >= _R('a') && CHARACTER <= _R('z')) ? CHARACTER - 32 : CHARACTER)
+
 /**
  * Test two strings for equality.
  *
@@ -50,12 +53,12 @@ rt_s rt_char8_append_char(rt_char8 character, rt_char8 *buffer, rt_un buffer_cap
  * </p>
  *
  * <p>
- * Null characters in <tt>string</tt> are ignored.
+ * Null characters in <tt>str</tt> are ignored.
  * </p>
  */
-rt_s rt_char8_copy(const rt_char8 *string, rt_un string_size, rt_char8 *buffer, rt_un buffer_capacity);
+rt_s rt_char8_copy(const rt_char8 *str, rt_un string_size, rt_char8 *buffer, rt_un buffer_capacity);
 
-rt_un rt_char8_get_size(const rt_char8 *string);
+rt_un rt_char8_get_size(const rt_char8 *str);
 
 /**
  * <p>
@@ -63,5 +66,21 @@ rt_un rt_char8_get_size(const rt_char8 *string);
  * </p>
  */
 rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+
+/**
+ * Manage only characters from 'A' to 'Z'.<br>
+ * Leave other characters unchanged.
+ *
+ * @return The size of the str.
+ */
+rt_un rt_char8_fast_lower(rt_char8 *str);
+
+/**
+ * Manage only characters from 'a' to 'z'.<br>
+ * Leave other characters unchanged.
+ *
+ * @return The size of the str.
+ */
+rt_un rt_char8_fast_upper(rt_char8 *str);
 
 #endif /* RT_CHAR8_H */

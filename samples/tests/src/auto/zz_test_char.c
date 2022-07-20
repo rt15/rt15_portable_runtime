@@ -160,7 +160,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char_copy_ok(const rt_char *string)
+static rt_s zz_test_char_copy_ok(const rt_char *str)
 {
 	rt_s ret;
 	rt_char buffer[6];
@@ -169,15 +169,15 @@ static rt_s zz_test_char_copy_ok(const rt_char *string)
 	RT_MEMORY_SET_CHAR(buffer, _R('a'), 6);
 
 	/* Test append without prefix. */
-	if (!rt_char_append(string, rt_char_get_size(string), buffer, 6, &buffer_size)) goto error;
-	if (buffer_size != rt_char_get_size(string)) goto error;
-	if (!rt_char_equals(buffer, rt_char_get_size(buffer), string, rt_char_get_size(string))) goto error;
+	if (!rt_char_append(str, rt_char_get_size(str), buffer, 6, &buffer_size)) goto error;
+	if (buffer_size != rt_char_get_size(str)) goto error;
+	if (!rt_char_equals(buffer, rt_char_get_size(buffer), str, rt_char_get_size(str))) goto error;
 
 	RT_MEMORY_SET_CHAR(buffer, _R('a'), 6);
 
 	/* Test copy. */
-	if (!rt_char_copy(string, rt_char_get_size(string), buffer, 6)) goto error;
-	if (!rt_char_equals(buffer, rt_char_get_size(buffer), string, rt_char_get_size(string))) goto error;
+	if (!rt_char_copy(str, rt_char_get_size(str), buffer, 6)) goto error;
+	if (!rt_char_equals(buffer, rt_char_get_size(buffer), str, rt_char_get_size(str))) goto error;
 
 	ret = RT_OK;
 free:
@@ -187,7 +187,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char_copy_failed(const rt_char *string, const rt_char *expected)
+static rt_s zz_test_char_copy_failed(const rt_char *str, const rt_char *expected)
 {
 	rt_s ret;
 	rt_char buffer[6];
@@ -196,14 +196,14 @@ static rt_s zz_test_char_copy_failed(const rt_char *string, const rt_char *expec
 	RT_MEMORY_SET_CHAR(buffer, _R('a'), 6);
 
 	/* Test append without prefix. */
-	if (rt_char_append(string, rt_char_get_size(string), buffer, 6, &buffer_size)) goto error;
+	if (rt_char_append(str, rt_char_get_size(str), buffer, 6, &buffer_size)) goto error;
 	if (buffer_size != rt_char_get_size(expected)) goto error;
 	if (!rt_char_equals(buffer, rt_char_get_size(buffer), expected, rt_char_get_size(expected))) goto error;
 
 	RT_MEMORY_SET_CHAR(buffer, _R('a'), 6);
 
 	/* Test copy. */
-	if (rt_char_copy(string, rt_char_get_size(string), buffer, 6)) goto error;
+	if (rt_char_copy(str, rt_char_get_size(str), buffer, 6)) goto error;
 	if (!rt_char_equals(buffer, rt_char_get_size(buffer), expected, rt_char_get_size(expected))) goto error;
 
 	ret = RT_OK;
@@ -332,6 +332,95 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_char_fast_lower_char()
+{
+	rt_s ret;
+
+	if (RT_CHAR_FAST_LOWER_CHAR(_R('@')) != _R('@')) goto error;
+	if (RT_CHAR_FAST_LOWER_CHAR(_R('A')) != _R('a')) goto error;
+	if (RT_CHAR_FAST_LOWER_CHAR(_R('Z')) != _R('z')) goto error;
+	if (RT_CHAR_FAST_LOWER_CHAR(_R('[')) != _R('[')) goto error;
+	if (RT_CHAR_FAST_LOWER_CHAR(_R('`')) != _R('`')) goto error;
+	if (RT_CHAR_FAST_LOWER_CHAR(_R('a')) != _R('a')) goto error;
+	if (RT_CHAR_FAST_LOWER_CHAR(_R('z')) != _R('z')) goto error;
+	if (RT_CHAR_FAST_LOWER_CHAR(_R('{')) != _R('{')) goto error;
+	if (RT_CHAR_FAST_LOWER_CHAR(_R('È')) != _R('È')) goto error;
+	if (RT_CHAR_FAST_LOWER_CHAR(_R('…')) != _R('…')) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char_fast_upper_char()
+{
+	rt_s ret;
+
+	if (RT_CHAR_FAST_UPPER_CHAR(_R('@')) != _R('@')) goto error;
+	if (RT_CHAR_FAST_UPPER_CHAR(_R('A')) != _R('A')) goto error;
+	if (RT_CHAR_FAST_UPPER_CHAR(_R('Z')) != _R('Z')) goto error;
+	if (RT_CHAR_FAST_UPPER_CHAR(_R('[')) != _R('[')) goto error;
+	if (RT_CHAR_FAST_UPPER_CHAR(_R('`')) != _R('`')) goto error;
+	if (RT_CHAR_FAST_UPPER_CHAR(_R('a')) != _R('A')) goto error;
+	if (RT_CHAR_FAST_UPPER_CHAR(_R('z')) != _R('Z')) goto error;
+	if (RT_CHAR_FAST_UPPER_CHAR(_R('{')) != _R('{')) goto error;
+	if (RT_CHAR_FAST_UPPER_CHAR(_R('È')) != _R('È')) goto error;
+	if (RT_CHAR_FAST_UPPER_CHAR(_R('…')) != _R('…')) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char_fast_lower_or_upper_do(const rt_char *str, const rt_char *expected, rt_b upper)
+{
+	rt_char buffer[RT_CHAR_HALF_BIG_STRING_SIZE];
+	rt_un result;
+	rt_s ret;
+
+	if (!rt_char_copy(str, rt_char_get_size(str), buffer, RT_CHAR_HALF_BIG_STRING_SIZE)) goto error;
+	if (upper) {
+		result = rt_char_fast_upper(buffer);
+	} else {
+		result = rt_char_fast_lower(buffer);
+	}
+	if (rt_char_get_size(buffer) != result) goto error;
+	if (rt_char_get_size(expected) != result) goto error;
+	if (!rt_char_equals(buffer, result, expected, result)) goto error;
+
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char_fast_lower_or_upper()
+{
+	rt_s ret;
+
+	if (!zz_test_char_fast_lower_or_upper_do(_R("@AZ[`az{È…"), _R("@az[`az{È…"), RT_FALSE)) goto error;
+	if (!zz_test_char_fast_lower_or_upper_do(_R("@AZ[`az{È…"), _R("@AZ[`AZ{È…"), RT_TRUE)) goto error;
+
+	if (!zz_test_char_fast_lower_or_upper_do(_R(""), _R(""), RT_FALSE)) goto error;
+	if (!zz_test_char_fast_lower_or_upper_do(_R(""), _R(""), RT_TRUE)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s zz_test_char()
 {
 	rt_s ret;
@@ -342,6 +431,9 @@ rt_s zz_test_char()
 	if (!zz_test_char_append_char()) goto error;
 	if (!zz_test_char_copy()) goto error;
 	if (!zz_test_char_append_n()) goto error;
+	if (!zz_test_char_fast_lower_char()) goto error;
+	if (!zz_test_char_fast_upper_char()) goto error;
+	if (!zz_test_char_fast_lower_or_upper()) goto error;
 
 	ret = RT_OK;
 free:
