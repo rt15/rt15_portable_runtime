@@ -128,6 +128,88 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_get_home_dir()
+{
+	rt_char first_buffer[RT_FILE_PATH_SIZE];
+	rt_un first_buffer_size;
+	rt_char second_buffer[RT_FILE_PATH_SIZE];
+	rt_un second_buffer_size;
+	enum rt_file_path_type type;
+	rt_s ret;
+
+	if (!rt_file_path_get_home_dir(first_buffer, RT_FILE_PATH_SIZE, &first_buffer_size)) goto error;
+	if (!first_buffer_size) goto error;
+	if (first_buffer_size != rt_char_get_size(first_buffer)) goto error;
+
+#ifdef RT_DEFINE_WINDOWS
+	/* Trying a buffer too small. */
+	if (rt_file_path_get_home_dir(second_buffer, 259, &second_buffer_size)) goto error;
+
+	/* Trying exact buffer size. */
+	if (!rt_file_path_get_home_dir(second_buffer, 260, &second_buffer_size)) goto error;
+	if (!rt_char_equals(first_buffer, first_buffer_size, second_buffer, second_buffer_size)) goto error;
+#else
+	/* Trying a buffer too small. */
+	if (rt_file_path_get_home_dir(second_buffer, first_buffer_size, &second_buffer_size)) goto error;
+
+	/* Trying exact buffer size. */
+	if (!rt_file_path_get_home_dir(second_buffer, first_buffer_size + 1, &second_buffer_size)) goto error;
+	if (!rt_char_equals(first_buffer, first_buffer_size, second_buffer, second_buffer_size)) goto error;
+#endif
+	/* Checking the directory. */
+	if (!rt_file_path_get_type(first_buffer, &type)) goto error;
+	if (type != RT_FILE_PATH_TYPE_DIR) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_get_application_data_dir()
+{
+	rt_char first_buffer[RT_FILE_PATH_SIZE];
+	rt_un first_buffer_size;
+	rt_char second_buffer[RT_FILE_PATH_SIZE];
+	rt_un second_buffer_size;
+	rt_s ret;
+
+	if (!rt_file_path_get_application_data_dir(_R("CodeBlocks"), first_buffer, RT_FILE_PATH_SIZE, &first_buffer_size)) goto error;
+	if (!first_buffer_size) goto error;
+	if (first_buffer_size != rt_char_get_size(first_buffer)) goto error;
+
+#ifdef RT_DEFINE_WINDOWS
+	/* Trying a buffer too small. */
+	if (rt_file_path_get_application_data_dir(_R("CodeBlocks"), second_buffer, 259, &second_buffer_size)) goto error;
+
+	/* Trying exact buffer size. */
+	if (!rt_file_path_get_application_data_dir(_R("CodeBlocks"), second_buffer, 260, &second_buffer_size)) goto error;
+	if (!rt_char_equals(first_buffer, first_buffer_size, second_buffer, second_buffer_size)) goto error;
+#else
+	/* Trying a buffer too small. */
+	if (rt_file_path_get_application_data_dir(_R("CodeBlocks"), second_buffer, first_buffer_size, &second_buffer_size)) goto error;
+
+	/* Trying exact buffer size. */
+	if (!rt_file_path_get_application_data_dir(_R("CodeBlocks"), second_buffer, first_buffer_size + 1, &second_buffer_size)) goto error;
+	if (!rt_char_equals(first_buffer, first_buffer_size, second_buffer, second_buffer_size)) goto error;
+#endif
+
+#ifdef RT_DEFINE_WINDOWS
+	if (!rt_char_equals(&first_buffer[first_buffer_size - 11], 11, _R("\\CodeBlocks"), 11)) goto error;
+#else
+	if (!rt_char_equals(&first_buffer[first_buffer_size - 12], 12, _R("/.codeblocks"), 12)) goto error;
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 static rt_s zz_test_append_separator_do(const rt_char *path, const rt_char *expected)
 {
 	rt_char buffer[RT_FILE_PATH_SIZE];
@@ -714,6 +796,8 @@ rt_s zz_test_file_path()
 	if (!zz_test_get_current_dir()) goto error;
 	if (!zz_test_set_current_dir(tmp_dir, tmp_dir_size)) goto error;
 	if (!zz_test_get_executable_path()) goto error;
+	if (!zz_test_get_home_dir()) goto error;
+	if (!zz_test_get_application_data_dir()) goto error;
 	if (!zz_test_append_separator()) goto error;
 	if (!zz_test_full()) goto error;
 	if (!zz_test_is_namespaced()) goto error;

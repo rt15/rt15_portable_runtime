@@ -867,3 +867,134 @@ error:
 	ret = RT_FAILED;
 	goto free;
 }
+
+#ifdef RT_DEFINE_WINDOWS
+
+static rt_s rt_file_path_sh_get_folder_path(int csidl, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	HRESULT result_handle;
+	rt_s ret;
+
+	/* SHGetFolderPath expect buffer length to be at least MAX_PATH. */
+	if (buffer_capacity < MAX_PATH) {
+		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
+		goto error;
+	}
+
+	result_handle = SHGetFolderPath(RT_NULL, csidl, RT_NULL, 0, buffer);
+	if (FAILED(result_handle)) {
+		SetLastError(HRESULT_CODE(result_handle));
+		goto error;
+	}
+	*buffer_size = rt_char_get_size(buffer);
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+#endif
+
+rt_s rt_file_path_get_home_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+#ifdef RT_DEFINE_WINDOWS
+	return rt_file_path_sh_get_folder_path(CSIDL_PROFILE, buffer, buffer_capacity, buffer_size);
+#else
+
+	uid_t user_id;
+	long int password_buffer_size;
+	char *password_buffer;
+	int returned_value;
+	struct passwd password_info_struct;
+	struct passwd *password_info;
+	rt_s ret;
+
+	/* Use folder pointer by HOME environment variable if available. */
+	if (!rt_env_var_get(_R("HOME"), buffer, buffer_capacity, buffer_size)) {
+		/* The getuid function is always successful. */
+		user_id = getuid();
+
+		/* Compute size for getpwuid_r buffer. */
+		password_buffer_size = sysconf(_SC_GETPW_R_SIZE_MAX);
+		if (password_buffer_size == -1) {
+			 /* Should be more than enough */
+			password_buffer_size = 16384;
+		}
+
+		/* Allocate buffer. */
+		password_buffer = malloc(password_buffer_size);
+		if (!password_buffer)
+			goto error;
+
+		/* The getpwuid_r function must be used in place of getpwuid in a multithreaded environment. */
+		returned_value = getpwuid_r(user_id, &password_info_struct, password_buffer, password_buffer_size, &password_info);
+		/* In case of issue (Error or no matching password), password_info is set to NULL. */
+		if (!password_info) {
+			if (returned_value) {
+				/* In case of error getpwuid_r return an error code. */
+				errno = returned_value;
+			} else {
+				/* No matching password found. */
+				rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+			}
+			free(password_buffer);
+			goto error;
+		}
+
+		*buffer_size = rt_char_get_size(password_info_struct.pw_dir);
+		if (!rt_char_copy(password_info_struct.pw_dir, *buffer_size, buffer, buffer_capacity)) {
+			free(password_buffer);
+			goto error;
+		}
+		free(password_buffer);
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+#endif
+}
+
+rt_s rt_file_path_get_application_data_dir(const rt_char *application_name, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+#ifdef RT_DEFINE_LINUX
+	rt_char local_application_name[RT_FILE_PATH_NAME_SIZE];
+	rt_un application_name_size;
+#endif
+	rt_s ret;
+
+#ifdef RT_DEFINE_WINDOWS
+
+	if (!rt_file_path_sh_get_folder_path(CSIDL_APPDATA, buffer, buffer_capacity, buffer_size)) goto error;
+	if (!rt_file_path_append_separator(buffer, buffer_capacity, buffer_size)) goto error;
+	if (!rt_char_append(application_name, rt_char_get_size(application_name), buffer, buffer_capacity, buffer_size)) goto error;
+
+#else
+
+	if (!rt_file_path_get_home_dir(buffer, buffer_capacity, buffer_size)) goto error;
+	if (!rt_file_path_append_separator(buffer, buffer_capacity, buffer_size)) goto error;
+	if (!rt_char_append_char(_R('.'), buffer, buffer_capacity, buffer_size)) goto error;
+
+	application_name_size = rt_char_get_size(application_name);
+	if (!rt_char_copy(application_name, application_name_size, local_application_name, RT_FILE_PATH_NAME_SIZE)) goto error;
+	rt_char_fast_lower(local_application_name);
+	if (!rt_char_append(local_application_name, application_name_size, buffer, buffer_capacity, buffer_size)) goto error;
+
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}

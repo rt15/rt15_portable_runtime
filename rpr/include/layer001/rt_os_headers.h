@@ -58,6 +58,10 @@
 #define __USE_XOPEN
 #endif
 
+#ifndef __USE_MISC
+#define __USE_MISC
+#endif
+
 #ifndef __USE_BSD
 #define __USE_BSD
 #endif

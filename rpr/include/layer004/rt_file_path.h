@@ -184,7 +184,45 @@ rt_s rt_file_path_get_name(const rt_char *path, rt_un path_size, rt_char *buffer
  * Under Windows, GetTempPath, so TMP/TEMP/USERPROFILE environment variable or Windows directory.<br>
  * Under Linux, TMPDIR environment variable, P_tmpdir macro or /tmp.
  * </p>
+ *
+ * @param buffer_size The number of characters in the buffer (out parameter).
  */
 rt_s rt_file_path_get_temp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+
+/**
+ *
+ * <p>
+ * Samples:
+ * <tt>/home/username</tt><br>
+ * <tt>C:\Users\UserName</tt>br>
+ * </p>
+ *
+ * @param buffer_capacity Under Windows, must be at least MAX_PATH (260).
+ * @param buffer_size The number of characters in the buffer (out parameter).
+ */
+rt_s rt_file_path_get_home_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+
+/**
+ *
+ * <p>
+ * The application name is used as is under Windows.<br>
+ * It is converted to lower case under Linux.
+ * </p>
+ *
+ * <p>
+ * Samples:
+ * <tt>/home/username/.codeblocks</tt><br>
+ * <tt>C:\Users\UserName\AppData\Roaming\CodeBlocks</tt><br>
+ * </p>
+ *
+ * <p>
+ * The returned directory should not exist if you have not created it already.
+ * </p>
+ *
+ * @param application_name Should be provided in CamelCase.
+ * @param buffer_capacity Under Windows, must be at least MAX_PATH (260).
+ * @param buffer_size The number of characters in the buffer (out parameter).
+ */
+rt_s rt_file_path_get_application_data_dir(const rt_char *application_name, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 #endif /* RT_FILE_PATH_H */
