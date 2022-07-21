@@ -56,7 +56,7 @@ rt_s rt_char8_append_char(rt_char8 character, rt_char8 *buffer, rt_un buffer_cap
  * Null characters in <tt>str</tt> are ignored.
  * </p>
  */
-rt_s rt_char8_copy(const rt_char8 *str, rt_un string_size, rt_char8 *buffer, rt_un buffer_capacity);
+rt_s rt_char8_copy(const rt_char8 *str, rt_un str_size, rt_char8 *buffer, rt_un buffer_capacity);
 
 rt_un rt_char8_get_size(const rt_char8 *str);
 
