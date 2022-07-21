@@ -344,8 +344,10 @@ static rt_s zz_test_char_fast_lower_char()
 	if (RT_CHAR_FAST_LOWER_CHAR(_R('a')) != _R('a')) goto error;
 	if (RT_CHAR_FAST_LOWER_CHAR(_R('z')) != _R('z')) goto error;
 	if (RT_CHAR_FAST_LOWER_CHAR(_R('{')) != _R('{')) goto error;
+#ifdef RT_DEFINE_WINDOWS
 	if (RT_CHAR_FAST_LOWER_CHAR(_R('é')) != _R('é')) goto error;
 	if (RT_CHAR_FAST_LOWER_CHAR(_R('É')) != _R('É')) goto error;
+#endif
 
 	ret = RT_OK;
 free:
@@ -367,8 +369,10 @@ static rt_s zz_test_char_fast_upper_char()
 	if (RT_CHAR_FAST_UPPER_CHAR(_R('a')) != _R('A')) goto error;
 	if (RT_CHAR_FAST_UPPER_CHAR(_R('z')) != _R('Z')) goto error;
 	if (RT_CHAR_FAST_UPPER_CHAR(_R('{')) != _R('{')) goto error;
+#ifdef RT_DEFINE_WINDOWS
 	if (RT_CHAR_FAST_UPPER_CHAR(_R('é')) != _R('é')) goto error;
 	if (RT_CHAR_FAST_UPPER_CHAR(_R('É')) != _R('É')) goto error;
+#endif
 
 	ret = RT_OK;
 free:
