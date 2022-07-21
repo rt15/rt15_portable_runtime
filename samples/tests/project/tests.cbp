@@ -97,6 +97,9 @@
 		<Unit filename="../src/auto/zz_test_atomic.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/auto/zz_test_base64.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/auto/zz_test_char.c">
 			<Option compilerVar="CC" />
 		</Unit>

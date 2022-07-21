@@ -23,6 +23,7 @@
 #include "layer003/rt_pipe.h"
 #include "layer003/rt_thread.h"
 
+#include "layer004/rt_base64.h"
 #include "layer004/rt_check_rpr.h"
 #include "layer004/rt_console.h"
 #include "layer004/rt_file_path.h"

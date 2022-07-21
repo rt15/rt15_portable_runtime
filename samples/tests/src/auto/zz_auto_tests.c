@@ -20,6 +20,7 @@ rt_s zz_test_pipe();
 rt_s zz_test_thread();
 
 /* Layer 004. */
+rt_s zz_test_base64();
 rt_s zz_test_file_path();
 
 /* Layer 005. */
@@ -63,6 +64,7 @@ rt_s zz_auto_tests()
 	if (!zz_test_thread()) goto error;
 
 	/* Layer 004. */
+	if (!zz_test_base64()) goto error;
 	if (!zz_test_file_path()) goto error;
 
 	/* Layer 005. */

@@ -93,6 +93,7 @@
 		<Unit filename="../include/layer003/rt_fast_initialization.h" />
 		<Unit filename="../include/layer003/rt_pipe.h" />
 		<Unit filename="../include/layer003/rt_thread.h" />
+		<Unit filename="../include/layer004/rt_base64.h" />
 		<Unit filename="../include/layer004/rt_check_rpr.h" />
 		<Unit filename="../include/layer004/rt_console.h" />
 		<Unit filename="../include/layer004/rt_file_path.h" />
@@ -141,6 +142,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer003/rt_thread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer004/rt_base64.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer004/rt_check_rpr.c">
