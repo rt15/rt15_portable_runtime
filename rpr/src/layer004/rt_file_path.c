@@ -829,7 +829,7 @@ rt_s rt_file_path_get_temp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *bu
 #ifdef RT_DEFINE_WINDOWS
 
 	/* Returns the characters copied to buffer, not including the null terminating character. */
-	returned_value = GetTempPath(buffer_capacity, buffer);
+	returned_value = GetTempPath((DWORD)buffer_capacity, buffer);
 	/* GetTempPath returns zero and set last error in case of error. */
 	if (!returned_value)
 		goto error;
