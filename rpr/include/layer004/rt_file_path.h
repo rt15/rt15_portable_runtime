@@ -34,7 +34,7 @@ enum rt_file_path_type {
 	RT_FILE_PATH_TYPE_FILE
 };
 
-typedef rt_s (*rt_file_path_browse_callback_t)(const rt_char *path, rt_un type, void *context);
+typedef rt_s (*rt_file_path_browse_callback_t)(const rt_char *path, enum rt_file_path_type type, void *context);
 
 /**
  * @param children_first If RT_TRUE, the callback is called with children first.

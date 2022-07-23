@@ -230,7 +230,7 @@ error:
 	goto free;
 }
 
-static rt_s rt_file_system_delete_dir_recursively_callback(const rt_char *path, rt_un type, void *context)
+static rt_s rt_file_system_delete_dir_recursively_callback(const rt_char *path, enum rt_file_path_type type, void *context)
 {
 	rt_s ret;
 
