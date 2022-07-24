@@ -95,6 +95,7 @@
 		<Unit filename="../include/layer003/rt_thread.h" />
 		<Unit filename="../include/layer004/rt_base64.h" />
 		<Unit filename="../include/layer004/rt_check_rpr.h" />
+		<Unit filename="../include/layer004/rt_command_line_args.h" />
 		<Unit filename="../include/layer004/rt_console.h" />
 		<Unit filename="../include/layer004/rt_file_path.h" />
 		<Unit filename="../include/layer005/rt_file.h" />
@@ -148,6 +149,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer004/rt_check_rpr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer004/rt_command_line_args.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer004/rt_console.c">

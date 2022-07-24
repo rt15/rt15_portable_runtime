@@ -33,7 +33,7 @@
  * @param argv Program arguments. <tt>argv[0]</tt> is the name of the program if <tt>argv</tt> is greater than zero.
  * @return Process exit code. Should be zero if the execution is a success.
  */
-rt_un16 rpr_main(rt_n32 argc, rt_char *argv[]);
+rt_un16 rpr_main(rt_un argc, const rt_char *argv[]);
 
 #ifdef RT_DEFINE_WINDOWS
 
@@ -82,7 +82,7 @@ int RT_CDECL mainCRTStartup()
 	rt_un32 ret;
 
 	argv = rpr_main_command_line_to_argv_w(&argc);
-	ret = rpr_main(argc, argv);
+	ret = rpr_main((rt_un)argc, (const rt_char**)argv);
 	rpr_main_local_free(argv);
 
 #ifndef RT_DEFINE_USE_CRT
@@ -97,7 +97,7 @@ int RT_CDECL main(int argc, char* argv[])
 {
 	/* Default locale is "C". This call will align locale with system locale. */
 	rpr_main_set_locale();
-	return rpr_main(argc, argv);
+	return rpr_main((rt_un)argc, (const rt_char**)argv);
 }
 #endif
 

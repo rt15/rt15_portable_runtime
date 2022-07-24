@@ -87,3 +87,25 @@ error:
 	ret = RT_FAILED;
 	goto free;
 }
+
+rt_b zz_char_equals_with_nulls(const rt_char *string1, const rt_char *string2)
+{
+	rt_b ret;
+
+	if (!string1) {
+		ret = (!string2);
+	} else {
+		if (!string2) {
+			ret = RT_FALSE;
+		} else {
+			while (!(ret = *(rt_uchar*)string1 - *(rt_uchar*)string2) && *string2)
+			{
+				string1++;
+				string2++;
+			}
+			ret = !ret;
+		}
+	}
+
+	return ret;
+}

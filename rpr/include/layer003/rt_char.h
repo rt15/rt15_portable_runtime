@@ -83,4 +83,10 @@ rt_un rt_char_fast_lower(rt_char *str);
  */
 rt_un rt_char_fast_upper(rt_char *str);
 
+/**
+ * Find <tt>searched</tt> character into <tt>str</tt>.
+ * @return index of <tt>searched</tt> in <tt>str</tt> or RT_TYPE_MAX_UN if not found.
+ */
+rt_un rt_char_search_char(const rt_char *str, rt_char searched);
+
 #endif /* RT_CHAR_H */

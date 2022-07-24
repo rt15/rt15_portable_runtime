@@ -24,6 +24,7 @@
     <ClCompile Include="..\src\auto\zz_test_base64.c" />
     <ClCompile Include="..\src\auto\zz_test_char.c" />
     <ClCompile Include="..\src\auto\zz_test_char8.c" />
+    <ClCompile Include="..\src\auto\zz_test_command_line_args.c" />
     <ClCompile Include="..\src\auto\zz_test_critical_section.c" />
     <ClCompile Include="..\src\auto\zz_test_env_var.c" />
     <ClCompile Include="..\src\auto\zz_test_event.c" />
@@ -46,6 +47,7 @@
       <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</WholeProgramOptimization>
       <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</WholeProgramOptimization>
     </ClCompile>
+    <ClCompile Include="..\src\zz_parse_args.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\zz_utils.h" />

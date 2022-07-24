@@ -201,3 +201,17 @@ rt_un rt_char8_fast_upper(rt_char8 *str)
 	}
 	return ret;
 }
+
+rt_un rt_char8_search_char(const rt_char8 *str, rt_char8 searched)
+{
+	rt_un result;
+
+	result = 0;
+	while (str[result] && str[result] != searched)
+		result++;
+	if (!str[result]) {
+		result = RT_TYPE_MAX_UN;
+	}
+
+	return result;
+}

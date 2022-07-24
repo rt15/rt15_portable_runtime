@@ -20,4 +20,9 @@ rt_s zz_create_file(const rt_char *file_path, const rt_char8 *str);
  */
 rt_s zz_check_file_content(const rt_char *file_path, const rt_char8 *expected);
 
+/**
+ *
+ */
+rt_b zz_char_equals_with_nulls(const rt_char *string1, const rt_char *string2);
+
 #endif /* ZZ_UTILS_H */

@@ -427,6 +427,25 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_char8_search_char()
+{
+	rt_s ret;
+
+	if (rt_char8_search_char("", 'a') != RT_TYPE_MAX_UN) goto error;
+	if (rt_char8_search_char("b", 'a') != RT_TYPE_MAX_UN) goto error;
+	if (rt_char8_search_char("a", 'a') != 0) goto error;
+	if (rt_char8_search_char("ab", 'a') != 0) goto error;
+	if (rt_char8_search_char("ba", 'a') != 1) goto error;
+	if (rt_char8_search_char("aba", 'a') != 0) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s zz_test_char8()
 {
 	rt_s ret;
@@ -440,6 +459,7 @@ rt_s zz_test_char8()
 	if (!zz_test_char8_fast_lower_char()) goto error;
 	if (!zz_test_char8_fast_upper_char()) goto error;
 	if (!zz_test_char8_fast_lower_or_upper()) goto error;
+	if (!zz_test_char8_search_char()) goto error;
 
 	ret = RT_OK;
 free:

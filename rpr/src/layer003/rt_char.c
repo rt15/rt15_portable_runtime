@@ -5,10 +5,11 @@
 
 /* Copy from rt_char8.x. */
 /* Replace rt_char8 by rt_char. */
+/* Replace test_char8 by test_char8. */
 /* Replace RT_CHAR8 by RT_CHAR. */
 /* Adjust RT_CHAR_XX_STRING_SIZE. */
-/* Add _R to 'x' and "xx" character and string litterals. */
 /* Replace RT_MEMORY_SET by RT_MEMORY_SET_CHAR. */
+/* Add _R to 'x' and "xx" character and string litterals. */
 
 rt_b rt_char_equals(const rt_char *string1, rt_un string1_size, const rt_char *string2, rt_un string2_size)
 {
@@ -207,4 +208,18 @@ rt_un rt_char_fast_upper(rt_char *str)
 		ret++;
 	}
 	return ret;
+}
+
+rt_un rt_char_search_char(const rt_char *str, rt_char searched)
+{
+	rt_un result;
+
+	result = 0;
+	while (str[result] && str[result] != searched)
+		result++;
+	if (!str[result]) {
+		result = RT_TYPE_MAX_UN;
+	}
+
+	return result;
 }
