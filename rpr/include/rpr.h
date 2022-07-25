@@ -20,6 +20,7 @@
 #include "layer003/rt_char8.h"
 #include "layer003/rt_env_var.h"
 #include "layer003/rt_fast_initialization.h"
+#include "layer003/rt_file.h"
 #include "layer003/rt_pipe.h"
 #include "layer003/rt_thread.h"
 
@@ -30,8 +31,7 @@
 #include "layer004/rt_file_path.h"
 #include "layer004/rt_random.h"
 
-#include "layer005/rt_file.h"
-
-#include "layer006/rt_file_system.h"
+#include "layer005/rt_file_system.h"
+#include "layer005/rt_temp_file.h"
 
 #endif /* RPR_H */

@@ -35,12 +35,14 @@
     <ClCompile Include="..\src\auto\zz_test_io_device.c" />
     <ClCompile Include="..\src\auto\zz_test_memory.c" />
     <ClCompile Include="..\src\auto\zz_test_pipe.c" />
+    <ClCompile Include="..\src\auto\zz_test_random.c" />
     <ClCompile Include="..\src\auto\zz_test_sleep.c" />
     <ClCompile Include="..\src\auto\zz_test_thread.c" />
     <ClCompile Include="..\src\auto\zz_test_virtual_memory.c" />
     <ClCompile Include="..\src\manual\zz_manual_tests.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_env_var.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_file_path.c" />
+    <ClCompile Include="..\src\manual\zz_manual_test_temp_file.c" />
     <ClCompile Include="..\src\utils\zz_utils.c" />
     <ClCompile Include="..\src\zz_main.c" />
     <ClCompile Include="..\src\zz_mem.c">

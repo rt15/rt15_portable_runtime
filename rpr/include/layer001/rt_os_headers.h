@@ -109,6 +109,10 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
+/* sudo apt-get install libssl-dev */
+/* sudo yum install openssl-devel */
+#include <openssl/rand.h>
+
 #endif
 
 

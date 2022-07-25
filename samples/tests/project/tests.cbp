@@ -60,6 +60,7 @@
 				<Linker>
 					<Add library="rprd" />
 					<Add library="pthread" />
+					<Add library="crypto" />
 				</Linker>
 			</Target>
 			<Target title="Linux64Release">
@@ -76,6 +77,7 @@
 					<Add option="-s" />
 					<Add library="rpr" />
 					<Add library="pthread" />
+					<Add library="crypto" />
 				</Linker>
 			</Target>
 		</Build>
@@ -157,6 +159,9 @@
 		<Unit filename="../src/manual/zz_manual_test_file_path.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/manual/zz_manual_test_temp_file.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/manual/zz_manual_tests.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -174,6 +179,8 @@
 		</Unit>
 		<Extensions>
 			<lib_finder disable_auto="1" />
+			<code_completion />
+			<debugger />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

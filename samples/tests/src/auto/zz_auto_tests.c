@@ -16,6 +16,7 @@ rt_s zz_test_char();
 rt_s zz_test_char8();
 rt_s zz_test_env_var();
 rt_s zz_test_fast_initialization();
+rt_s zz_test_file();
 rt_s zz_test_pipe();
 rt_s zz_test_thread();
 
@@ -26,9 +27,6 @@ rt_s zz_test_file_path();
 rt_s zz_test_random();
 
 /* Layer 005. */
-rt_s zz_test_file();
-
-/* Layer 006. */
 rt_s zz_test_file_system();
 
 rt_s zz_auto_tests()
@@ -62,6 +60,7 @@ rt_s zz_auto_tests()
 	if (!zz_test_char8()) goto error;
 	if (!zz_test_env_var()) goto error;
 	if (!zz_test_fast_initialization()) goto error;
+	if (!zz_test_file()) goto error;
 	if (!zz_test_pipe()) goto error;
 	if (!zz_test_thread()) goto error;
 
@@ -72,9 +71,6 @@ rt_s zz_auto_tests()
 	if (!zz_test_random()) goto error;
 
 	/* Layer 005. */
-	if (!zz_test_file()) goto error;
-
-	/* Layer 006. */
 	if (!zz_test_file_system()) goto error;
 
 	if (!output_stream->write(output_stream, "Tests successful!\n", rt_char8_get_size("Tests successful!\n")))

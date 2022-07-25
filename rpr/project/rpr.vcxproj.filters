@@ -58,17 +58,23 @@
     <ClCompile Include="..\src\layer004\rt_file_path.c">
       <Filter>src\layer004</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\layer005\rt_file.c">
-      <Filter>src\layer005</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\layer006\rt_file_system.c">
-      <Filter>src\layer006</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\layer004\rt_base64.c">
       <Filter>src\layer004</Filter>
     </ClCompile>
     <ClCompile Include="..\src\layer004\rt_command_line_args.c">
       <Filter>src\layer004</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer003\rt_file.c">
+      <Filter>src\layer003</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer004\rt_random.c">
+      <Filter>src\layer004</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer005\rt_file_system.c">
+      <Filter>src\layer005</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer005\rt_temp_file.c">
+      <Filter>src\layer005</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -147,17 +153,23 @@
     <ClInclude Include="..\include\layer004\rt_file_path.h">
       <Filter>include\layer004</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\layer005\rt_file.h">
-      <Filter>include\layer005</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\layer006\rt_file_system.h">
-      <Filter>include\layer006</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\layer004\rt_base64.h">
       <Filter>include\layer004</Filter>
     </ClInclude>
     <ClInclude Include="..\include\layer004\rt_command_line_args.h">
       <Filter>include\layer004</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer005\rt_temp_file.h">
+      <Filter>include\layer005</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer004\rt_random.h">
+      <Filter>include\layer004</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer003\rt_file.h">
+      <Filter>include\layer003</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer005\rt_file_system.h">
+      <Filter>include\layer005</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -182,9 +194,6 @@
     <Filter Include="include\layer005">
       <UniqueIdentifier>{e555729b-e5b5-4ea4-aa2e-32f503933957}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\layer006">
-      <UniqueIdentifier>{de200300-1343-426b-8c18-709a33fb9113}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{d69b7acb-9ad9-45bb-b6c3-739bb3f1bffe}</UniqueIdentifier>
     </Filter>
@@ -202,9 +211,6 @@
     </Filter>
     <Filter Include="src\layer005">
       <UniqueIdentifier>{d399eacb-f0ec-4d93-82b2-10da397a8256}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\layer006">
-      <UniqueIdentifier>{d7c40e23-a080-48c7-9052-dc46306dd0d5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

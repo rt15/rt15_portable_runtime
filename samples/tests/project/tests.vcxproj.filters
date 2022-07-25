@@ -79,6 +79,12 @@
     <ClCompile Include="..\src\zz_parse_args.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_random.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\manual\zz_manual_test_temp_file.c">
+      <Filter>src\manual</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
