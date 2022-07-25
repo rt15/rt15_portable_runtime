@@ -28,6 +28,7 @@
 #include "layer004/rt_command_line_args.h"
 #include "layer004/rt_console.h"
 #include "layer004/rt_file_path.h"
+#include "layer004/rt_random.h"
 
 #include "layer005/rt_file.h"
 
