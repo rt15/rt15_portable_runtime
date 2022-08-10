@@ -30,6 +30,7 @@
 #include "layer004/rt_console.h"
 #include "layer004/rt_file_path.h"
 #include "layer004/rt_random.h"
+#include "layer004/rt_static_heap.h"
 
 #include "layer005/rt_file_system.h"
 #include "layer005/rt_temp_file.h"

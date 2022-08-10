@@ -25,6 +25,7 @@ rt_s zz_test_base64();
 rt_s zz_test_command_line_args();
 rt_s zz_test_file_path();
 rt_s zz_test_random();
+rt_s zz_test_static_heap();
 
 /* Layer 005. */
 rt_s zz_test_file_system();
@@ -69,6 +70,7 @@ rt_s zz_auto_tests()
 	if (!zz_test_command_line_args()) goto error;
 	if (!zz_test_file_path()) goto error;
 	if (!zz_test_random()) goto error;
+	if (!zz_test_static_heap()) goto error;
 
 	/* Layer 005. */
 	if (!zz_test_file_system()) goto error;

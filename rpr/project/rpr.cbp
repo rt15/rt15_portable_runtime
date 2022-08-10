@@ -100,6 +100,7 @@
 		<Unit filename="../include/layer004/rt_console.h" />
 		<Unit filename="../include/layer004/rt_file_path.h" />
 		<Unit filename="../include/layer004/rt_random.h" />
+		<Unit filename="../include/layer004/rt_static_heap.h" />
 		<Unit filename="../include/layer005/rt_file_system.h" />
 		<Unit filename="../include/layer005/rt_temp_file.h" />
 		<Unit filename="../include/rpr.h" />
@@ -166,6 +167,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer004/rt_random.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer004/rt_static_heap.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer005/rt_file_system.c">

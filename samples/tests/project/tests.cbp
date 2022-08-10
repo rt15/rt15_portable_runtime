@@ -147,6 +147,9 @@
 		<Unit filename="../src/auto/zz_test_sleep.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/auto/zz_test_static_heap.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/auto/zz_test_thread.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -179,8 +182,6 @@
 		</Unit>
 		<Extensions>
 			<lib_finder disable_auto="1" />
-			<code_completion />
-			<debugger />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
