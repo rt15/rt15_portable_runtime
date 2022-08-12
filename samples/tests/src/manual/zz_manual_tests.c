@@ -5,6 +5,7 @@ rt_s zz_manual_test_env_var();
 
 /* Layer 004. */
 rt_s zz_manual_test_file_path();
+rt_s zz_manual_test_os_version();
 
 /* Layer 005. */
 rt_s zz_manual_test_temp_file();
@@ -18,6 +19,7 @@ rt_s zz_manual_tests()
 
 	/* Layer 004. */
 	if (!zz_manual_test_file_path()) goto error;
+	if (!zz_manual_test_os_version()) goto error;
 
 	/* Layer 005. */
 	if (!zz_manual_test_temp_file()) goto error;

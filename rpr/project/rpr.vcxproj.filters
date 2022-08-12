@@ -76,6 +76,12 @@
     <ClCompile Include="..\src\layer005\rt_temp_file.c">
       <Filter>src\layer005</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer004\rt_os_version.c">
+      <Filter>src\layer004</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer004\rt_static_heap.c">
+      <Filter>src\layer004</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -170,6 +176,12 @@
     </ClInclude>
     <ClInclude Include="..\include\layer005\rt_file_system.h">
       <Filter>include\layer005</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer004\rt_os_version.h">
+      <Filter>include\layer004</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer004\rt_static_heap.h">
+      <Filter>include\layer004</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

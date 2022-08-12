@@ -85,6 +85,15 @@
     <ClCompile Include="..\src\manual\zz_manual_test_temp_file.c">
       <Filter>src\manual</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\manual\zz_manual_test_os_version.c">
+      <Filter>src\manual</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_static_heap.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_os_version.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

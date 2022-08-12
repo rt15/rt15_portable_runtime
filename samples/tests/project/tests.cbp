@@ -138,6 +138,9 @@
 		<Unit filename="../src/auto/zz_test_memory.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/auto/zz_test_os_version.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/auto/zz_test_pipe.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -160,6 +163,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/manual/zz_manual_test_file_path.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/manual/zz_manual_test_os_version.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/manual/zz_manual_test_temp_file.c">

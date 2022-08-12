@@ -64,6 +64,9 @@ rt_un rt_char8_get_size(const rt_char8 *str);
  * <p>
  * Always write a null terminating character if <tt>buffer_size</tt> is greater than 0.
  * </p>
+ *
+ * @param base Between 2 and 36, both included.
+ * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
 rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 

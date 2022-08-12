@@ -99,6 +99,7 @@
 		<Unit filename="../include/layer004/rt_command_line_args.h" />
 		<Unit filename="../include/layer004/rt_console.h" />
 		<Unit filename="../include/layer004/rt_file_path.h" />
+		<Unit filename="../include/layer004/rt_os_version.h" />
 		<Unit filename="../include/layer004/rt_random.h" />
 		<Unit filename="../include/layer004/rt_static_heap.h" />
 		<Unit filename="../include/layer005/rt_file_system.h" />
@@ -164,6 +165,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer004/rt_file_path.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer004/rt_os_version.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer004/rt_random.c">
