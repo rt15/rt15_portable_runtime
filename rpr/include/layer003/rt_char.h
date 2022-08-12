@@ -89,4 +89,6 @@ rt_un rt_char_fast_upper(rt_char *str);
  */
 rt_un rt_char_search_char(const rt_char *str, rt_char searched);
 
+rt_s rt_char_convert_to_un(const rt_char* str, rt_un *result);
+
 #endif /* RT_CHAR_H */

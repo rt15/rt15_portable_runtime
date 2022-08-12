@@ -12,8 +12,8 @@
 /* String size that can be used four times in a function and avoid stack probe. */
 #define RT_CHAR8_QUARTER_BIG_STRING_SIZE 960
 
-#define RT_CHAR8_FAST_LOWER_CHAR(CHARACTER) ((CHARACTER >= _R('A') && CHARACTER <= _R('Z')) ? CHARACTER + 32 : CHARACTER)
-#define RT_CHAR8_FAST_UPPER_CHAR(CHARACTER) ((CHARACTER >= _R('a') && CHARACTER <= _R('z')) ? CHARACTER - 32 : CHARACTER)
+#define RT_CHAR8_FAST_LOWER_CHAR(CHARACTER) ((CHARACTER >= 'A' && CHARACTER <= 'Z') ? CHARACTER + 32 : CHARACTER)
+#define RT_CHAR8_FAST_UPPER_CHAR(CHARACTER) ((CHARACTER >= 'a' && CHARACTER <= 'z') ? CHARACTER - 32 : CHARACTER)
 
 /**
  * Test two strings for equality.
@@ -88,5 +88,7 @@ rt_un rt_char8_fast_upper(rt_char8 *str);
  * @return index of <tt>searched</tt> in <tt>str</tt> or RT_TYPE_MAX_UN if not found.
  */
 rt_un rt_char8_search_char(const rt_char8 *str, rt_char8 searched);
+
+rt_s rt_char8_convert_to_un(const rt_char8* str, rt_un *result);
 
 #endif /* RT_CHAR8_H */

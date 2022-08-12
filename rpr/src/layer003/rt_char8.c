@@ -178,7 +178,7 @@ rt_un rt_char8_fast_lower(rt_char8 *str)
 	ret = 0;
 	while (str[ret]) {
 		current_char = str[ret];
-		if (current_char >= _R('A') && current_char <= _R('Z')) {
+		if (current_char >= 'A' && current_char <= 'Z') {
 			str[ret] = current_char + 32;
 		}
 		ret++;
@@ -194,7 +194,7 @@ rt_un rt_char8_fast_upper(rt_char8 *str)
 	ret = 0;
 	while (str[ret]) {
 		current_char = str[ret];
-		if (current_char >= _R('a') && current_char <= _R('z')) {
+		if (current_char >= 'a' && current_char <= 'z') {
 			str[ret] = current_char - 32;
 		}
 		ret++;
@@ -214,4 +214,43 @@ rt_un rt_char8_search_char(const rt_char8 *str, rt_char8 searched)
 	}
 
 	return result;
+}
+
+/* TODO: Watch out for overflows!? Check i at the end then check characters if necessary. */
+rt_s rt_char8_convert_to_un(const rt_char8* str, rt_un *result)
+{
+	rt_char8 character;
+	rt_un i = 0;
+	rt_un local_result = 0;
+	rt_s ret;
+
+	while (RT_TRUE) {
+		character = str[i];
+		if (!character)
+			break;
+
+		if ((character < '0') || (character > '9')) {
+			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+			goto error;
+		} else {
+			local_result = local_result * 10 + character - '0';
+		}
+		i++;
+	}
+
+	if (!i) {
+		/* The string was empty. */
+		*result = 0;
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
+	}
+	*result = local_result;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
 }

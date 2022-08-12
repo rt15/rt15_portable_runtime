@@ -3,13 +3,14 @@
 #include "layer001/rt_memory.h"
 #include "layer002/rt_error.h"
 
-/* Copy from rt_char8.x. */
-/* Replace rt_char8 by rt_char. */
-/* Replace test_char8 by test_char8. */
-/* Replace RT_CHAR8 by RT_CHAR. */
-/* Adjust RT_CHAR_XX_STRING_SIZE. */
-/* Replace RT_MEMORY_SET by RT_MEMORY_SET_CHAR. */
-/* Add _R to 'x' and "xx" character and string litterals. */
+/* Copy to rt_char8.h, rt_char8.c, zz_test_char8.c. */
+/* Remove these instructions from rt_char8.c. */
+/* Replace rt_char by rt_char8. */
+/* Replace test_char by test_char8. */
+/* Replace RT_CHAR by RT_CHAR8. */
+/* Adjust RT_CHAR8_XX_STRING_SIZE. */
+/* Replace RT_MEMORY_SET_CHAR by RT_MEMORY_SET. */
+/* Remove macros from _R("XXX") and _R('X'). */
 
 rt_b rt_char_equals(const rt_char *string1, rt_un string1_size, const rt_char *string2, rt_un string2_size)
 {
@@ -222,4 +223,43 @@ rt_un rt_char_search_char(const rt_char *str, rt_char searched)
 	}
 
 	return result;
+}
+
+/* TODO: Watch out for overflows!? Check i at the end then check characters if necessary. */
+rt_s rt_char_convert_to_un(const rt_char* str, rt_un *result)
+{
+	rt_char character;
+	rt_un i = 0;
+	rt_un local_result = 0;
+	rt_s ret;
+
+	while (RT_TRUE) {
+		character = str[i];
+		if (!character)
+			break;
+
+		if ((character < _R('0')) || (character > _R('9'))) {
+			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+			goto error;
+		} else {
+			local_result = local_result * 10 + character - _R('0');
+		}
+		i++;
+	}
+
+	if (!i) {
+		/* The string was empty. */
+		*result = 0;
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
+	}
+	*result = local_result;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
 }
