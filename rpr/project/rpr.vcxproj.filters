@@ -52,9 +52,6 @@
     <ClCompile Include="..\src\layer004\rt_check_rpr.c">
       <Filter>src\layer004</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\layer004\rt_console.c">
-      <Filter>src\layer004</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\layer004\rt_file_path.c">
       <Filter>src\layer004</Filter>
     </ClCompile>
@@ -83,6 +80,9 @@
       <Filter>src\layer004</Filter>
     </ClCompile>
     <ClCompile Include="..\src\layer005\rt_env_vars.c">
+      <Filter>src\layer005</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer005\rt_console.c">
       <Filter>src\layer005</Filter>
     </ClCompile>
   </ItemGroup>
@@ -156,9 +156,6 @@
     <ClInclude Include="..\include\layer004\rt_check_rpr.h">
       <Filter>include\layer004</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\layer004\rt_console.h">
-      <Filter>include\layer004</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\layer004\rt_file_path.h">
       <Filter>include\layer004</Filter>
     </ClInclude>
@@ -187,6 +184,9 @@
       <Filter>include\layer004</Filter>
     </ClInclude>
     <ClInclude Include="..\include\layer005\rt_env_vars.h">
+      <Filter>include\layer005</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer005\rt_console.h">
       <Filter>include\layer005</Filter>
     </ClInclude>
   </ItemGroup>
