@@ -11,9 +11,9 @@
  * Arguments are:
  * </p>
  * <ul>
- *  <li>Short options (One letter like -a).</li>
- *  <li>Long options (Dash separated words like --block-size).</li>
- *  <li>Non-options like u+rx or /tmp.</li>
+ *   <li>Short options (One letter like -a).</li>
+ *   <li>Long options (Dash separated words like --block-size).</li>
+ *   <li>Non-options like u+rx or /tmp.</li>
  * </ul>
  *
  * <p>

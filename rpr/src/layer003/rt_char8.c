@@ -31,7 +31,7 @@ rt_s rt_char8_append(const rt_char8 *suffix, rt_un suffix_size, rt_char8 *buffer
 		if (buffer_capacity > local_buffer_size + 1) {
 			copy_size = buffer_capacity - (local_buffer_size + 1);
 		} else {
-			/* Add a final null terminating character just in case. */
+			/* Add a final zero terminating character just in case. */
 			if (buffer_capacity > 0) {
 				buffer[buffer_capacity - 1] = 0;
 				*buffer_size = buffer_capacity - 1;
@@ -64,7 +64,7 @@ rt_s rt_char8_append_char(rt_char8 character, rt_char8 *buffer, rt_un buffer_cap
 		ret = RT_OK;
 	} else {
 		if (buffer_capacity > 0) {
-			/* Make sure we put a null terminating character. */
+			/* Make sure we put a zero terminating character. */
 			buffer[buffer_capacity - 1] = 0;
 			*buffer_size = buffer_capacity - 1;
 		}
@@ -88,7 +88,7 @@ rt_s rt_char8_copy(const rt_char8 *str, rt_un str_size, rt_char8 *buffer, rt_un 
 		if (buffer_capacity > 1) {
 			copy_size = buffer_capacity - 1;
 		} else {
-			/* Add a final null terminating character just in case. */
+			/* Add a final zero terminating character just in case. */
 			if (buffer_capacity > 0)
 				buffer[0] = 0;
 			goto end;
@@ -160,7 +160,7 @@ rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_ca
 free:
 	return ret;
 error:
-	/* Add a null terminating character if possible. */
+	/* Add a zero terminating character if possible. */
 	if (buffer_capacity) {
 		if (*buffer_size >= buffer_capacity)
 			*buffer_size = buffer_capacity - 1;

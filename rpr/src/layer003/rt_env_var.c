@@ -46,7 +46,7 @@ rt_s rt_env_var_get(const rt_char *name, rt_char *buffer, rt_un buffer_capacity,
 		goto error;
 	}
 
-	/* Copy result to buffer, including null character. */
+	/* Copy result to buffer, including zero character. */
 	RT_MEMORY_COPY(returned_value, buffer, length + 1);
 	*buffer_size = length;
 #endif

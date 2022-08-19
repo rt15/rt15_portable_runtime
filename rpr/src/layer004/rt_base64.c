@@ -100,7 +100,7 @@ rt_s rt_base64_encode(const rt_char8 *data, rt_un data_size, rt_char8 *buffer, r
 		buffer[index_in_buffer++] = '=';
 	}
 
-	/* Null trailing character. */
+	/* Zero terminating character. */
 	if (index_in_buffer >= buffer_capacity) {
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 		goto error;
@@ -178,7 +178,7 @@ rt_s rt_base64_decode(const rt_char8 *base64, rt_un base64_size, rt_char8 *buffe
 		*(buffer++) = (rt_uchar8)((temp_buffer >> 4) & 255);
 	}
 
-	/* Null trailing character. */
+	/* Zero terminating character. */
 	if (output_size + 1 > buffer_capacity) {
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 		goto error;

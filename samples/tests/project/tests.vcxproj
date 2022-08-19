@@ -27,6 +27,7 @@
     <ClCompile Include="..\src\auto\zz_test_command_line_args.c" />
     <ClCompile Include="..\src\auto\zz_test_critical_section.c" />
     <ClCompile Include="..\src\auto\zz_test_env_var.c" />
+    <ClCompile Include="..\src\auto\zz_test_env_vars.c" />
     <ClCompile Include="..\src\auto\zz_test_event.c" />
     <ClCompile Include="..\src\auto\zz_test_fast_initialization.c" />
     <ClCompile Include="..\src\auto\zz_test_file.c" />

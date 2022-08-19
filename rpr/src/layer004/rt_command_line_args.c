@@ -10,7 +10,7 @@
  * Use sorted array and quicksort for large arrays.
  * </p>
  *
- * @param strings Null terminated array of null terminated strings. Can be RT_NULL.
+ * @param strings Null terminated array of zero terminated strings. Can be RT_NULL.
  * @return index of <tt>searched</tt> in <tt>strings</tt> or RT_TYPE_MAX_UN if not found.
  */
 static rt_un rt_command_line_args_search_string_in_strings(const rt_char *strings[], const rt_char *searched)

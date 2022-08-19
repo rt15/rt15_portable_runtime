@@ -29,11 +29,11 @@ rt_b rt_char_equals(const rt_char *string1, rt_un string1_size, const rt_char *s
 /**
  *
  * <p>
- * If the buffer is too small, the function writes as much characters as possible and a null terminating character.
+ * If the buffer is too small, the function writes as much characters as possible and a zero terminating character.
  * </p>
  *
  * <p>
- * Null characters in <tt>suffix</tt> are ignored.
+ * Zero characters in <tt>suffix</tt> are ignored.
  * </p>
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).
@@ -49,11 +49,11 @@ rt_s rt_char_append_char(rt_char character, rt_char *buffer, rt_un buffer_capaci
 /**
  *
  * <p>
- * If the buffer is too small, the function writes as much characters as possible and a null terminating character.
+ * If the buffer is too small, the function writes as much characters as possible and a zero terminating character.
  * </p>
  *
  * <p>
- * Null characters in <tt>str</tt> are ignored.
+ * Zero characters in <tt>str</tt> are ignored.
  * </p>
  */
 rt_s rt_char_copy(const rt_char *str, rt_un str_size, rt_char *buffer, rt_un buffer_capacity);
@@ -62,7 +62,7 @@ rt_un rt_char_get_size(const rt_char *str);
 
 /**
  * <p>
- * Always write a null terminating character if <tt>buffer_size</tt> is greater than 0.
+ * Always write a zero terminating character if <tt>buffer_size</tt> is greater than 0.
  * </p>
  *
  * @param base Between 2 and 36, both included.

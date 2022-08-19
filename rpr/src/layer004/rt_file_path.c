@@ -502,9 +502,9 @@ rt_s rt_file_path_namespace(rt_char *path, rt_un buffer_capacity, rt_un *buffer_
 	local_buffer_size = *buffer_size;
 	if (local_buffer_size >= 2) {
 		if (path[1] == _R(':')) {
-			/* Check that there is room for the 4 characters prefix and the null terminating character. */
+			/* Check that there is room for the 4 characters prefix and the zero terminating character. */
 			if (local_buffer_size + 5 <= buffer_capacity) {
-				/* Move the path plus the null character. */
+				/* Move the path plus the zero character. */
 				RT_MEMORY_MOVE(path, &path[4], (local_buffer_size + 1) * sizeof(rt_char));
 				local_buffer_size += 4;
 				/* Skip the 4 characters prefix plus the volume. */
@@ -519,9 +519,9 @@ rt_s rt_file_path_namespace(rt_char *path, rt_un buffer_capacity, rt_un *buffer_
 				goto error;
 			}
 		} else if (path[0] == _R('\\') && path[1] == _R('\\')) {
-			/* We are replacing "\" by "\\?\UNC" so we need 6 characters and the null terminating character. */
+			/* We are replacing "\" by "\\?\UNC" so we need 6 characters and the zero terminating character. */
 			if (local_buffer_size + 7 <= buffer_capacity) {
-				/* Move the path without the first backslash plus the null character. */
+				/* Move the path without the first backslash plus the zero character. */
 				RT_MEMORY_MOVE(&path[1], &path[7], local_buffer_size * sizeof(rt_char));
 				local_buffer_size += 6;
 				/* Skip "\\?\UNC\". */
@@ -587,11 +587,11 @@ rt_s rt_file_path_strip_namespace(rt_char *path, rt_un buffer_capacity, rt_un *b
 		    path[7] == _R('\\')) {
 			/* 8 characters to remove minus the two backslashes at positions 0 and 1. */
 			local_buffer_size -= 6;
-			/* Result minus two backslashes plus the trailing zero. */
+			/* Result minus two backslashes plus the terminating zero. */
 			RT_MEMORY_MOVE(&path[8], &path[2], (local_buffer_size - 1) * sizeof(rt_char));
 		} else {
 			local_buffer_size -= 4;
-			/* Buffer size plus trailing zero. */
+			/* Buffer size plus terminating zero. */
 			RT_MEMORY_MOVE(&path[4], path, (local_buffer_size + 1) * sizeof(rt_char));
 		}
 
@@ -741,7 +741,7 @@ rt_s rt_file_path_get_executable_path(rt_char *buffer, rt_un buffer_capacity, rt
 		goto error;
 	}
 #else
-	/* readlink does not add the NULL character. */
+	/* readlink does not add the zero character. */
 	/* On error, -1 is returned and errno is set to indicate the error. */
 	written = readlink("/proc/self/exe", buffer, buffer_capacity);
 	if (written == -1) {
@@ -750,13 +750,13 @@ rt_s rt_file_path_get_executable_path(rt_char *buffer, rt_un buffer_capacity, rt
 	}
 
 	if (written >= buffer_capacity) {
-		/* There is no room for the NULL character. */
+		/* There is no room for the zero character. */
 		buffer[buffer_capacity - 1] = 0;
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 		goto error;
 	}
 
-	/* Add null trailing character. written is less than buffer_capacity at this point. */
+	/* Add zero terminating character. written is less than buffer_capacity at this point. */
 	buffer[written] = 0;
 #endif
 
@@ -828,7 +828,7 @@ rt_s rt_file_path_get_temp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *bu
 
 #ifdef RT_DEFINE_WINDOWS
 
-	/* Returns the characters copied to buffer, not including the null terminating character. */
+	/* Returns the characters copied to buffer, not including the zero terminating character. */
 	returned_value = GetTempPath((DWORD)buffer_capacity, buffer);
 	/* GetTempPath returns zero and set last error in case of error. */
 	if (!returned_value)
