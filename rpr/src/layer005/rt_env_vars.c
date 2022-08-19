@@ -75,6 +75,7 @@ rt_s rt_env_vars_create(struct rt_env_vars *env_vars)
 		rt_memory_copy(windows_env_vars_block, library_env_vars_block, block_size * sizeof(rt_char));
 
 		/* We just replaced the Windows environment block in the struct, so it is now our responsibility to free it. */
+		/* Returns zero and set last error in case of issue. */
 		if (!FreeEnvironmentStrings(windows_env_vars_block)) {
 			/* The library environment block will be free by rt_env_vars_free in the error handler. */
 			goto error;
@@ -350,6 +351,7 @@ rt_s rt_env_vars_get_env_var(struct rt_env_vars *env_vars, const rt_char *env_va
 		goto error;
 	if (!env_var) {
 		/* Variable not found. */
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto error;
 	}
 
@@ -366,6 +368,9 @@ free:
 	return ret;
 
 error:
+	if (buffer_capacity)
+		buffer[0] = 0;
+	*buffer_size = 0;
 	ret = RT_FAILED;
 	goto free;
 }
@@ -506,6 +511,7 @@ rt_s rt_env_vars_add_env_var(struct rt_env_vars *env_vars, const rt_char *env_va
 		env_vars->windows_block = RT_FALSE;
 
 		/* Free Windows block. */
+		/* Returns zero and set last error in case of issue. */
 		if (!FreeEnvironmentStrings(env_vars->env_vars_block)) {
 			env_vars->env_vars_block = RT_NULL;
 			goto error;
@@ -562,6 +568,7 @@ rt_s rt_env_vars_free(struct rt_env_vars *env_vars)
 	if (env_vars->windows_block) {
 		/* env_vars_block allocated by Windows */
 		if (env_vars->env_vars_block) {
+			/* Returns zero and set last error in case of issue. */
 			if (!FreeEnvironmentStrings(env_vars->env_vars_block))
 				ret = RT_FAILED;
 			env_vars->env_vars_block = RT_NULL;

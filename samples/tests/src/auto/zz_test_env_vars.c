@@ -76,6 +76,11 @@ rt_s zz_test_env_vars()
 
 	if (!rt_env_vars_contains_env_var(&env_vars1, _R("RT_VAR_NAME"), &contains)) goto error;
 	if (contains) goto error;
+	buffer[0] = _R('a');
+	buffer[1] = 0;
+	if (rt_env_vars_get_env_var(&env_vars1, _R("RT_VAR_NAME"), buffer, 256, &buffer_size)) goto error;
+	if (buffer_size) goto error;
+	if (buffer[0]) goto error;
 
 	/* Add a variable to process environment. */
 	if (!rt_env_var_set(_R("RT_VAR_NAME"), _R("VALUE"))) goto error;

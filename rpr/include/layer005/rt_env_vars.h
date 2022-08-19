@@ -69,6 +69,11 @@ rt_s rt_env_vars_contains_env_var(struct rt_env_vars *env_vars, const rt_char *e
 /**
  * Return the value of <tt>env_var_name</tt>.
  *
+ * <p>
+ * Fails if the variable does not exist.<br>
+ * In case of error, buffer starts with a zero character.
+ * </p>
+ *
  * @param buffer_size Out parameter.
  */
 rt_s rt_env_vars_get_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
