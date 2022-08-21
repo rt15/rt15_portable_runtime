@@ -92,6 +92,13 @@ rt_un rt_char8_fast_upper(rt_char8 *str);
  */
 rt_un rt_char8_search_char(const rt_char8 *str, rt_char8 searched);
 
-rt_s rt_char8_convert_to_un(const rt_char8* str, rt_un *result);
+rt_s rt_char8_convert_to_un(const rt_char8 *str, rt_un *result);
+
+/**
+ * Remove trailing characters <= ' '.
+ *
+ * @param buffer_size The number of characters in the buffer (in/out parameter).
+ */
+void rt_char8_right_trim(rt_char8 *buffer, rt_un *buffer_size);
 
 #endif /* RT_CHAR8_H */

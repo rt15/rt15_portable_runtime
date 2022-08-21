@@ -217,7 +217,7 @@ rt_un rt_char8_search_char(const rt_char8 *str, rt_char8 searched)
 }
 
 /* TODO: Watch out for overflows!? Check i at the end then check characters if necessary. */
-rt_s rt_char8_convert_to_un(const rt_char8* str, rt_un *result)
+rt_s rt_char8_convert_to_un(const rt_char8 *str, rt_un *result)
 {
 	rt_char8 character;
 	rt_un i = 0;
@@ -253,4 +253,18 @@ free:
 error:
 	ret = RT_FAILED;
 	goto free;
+}
+
+void rt_char8_right_trim(rt_char8 *buffer, rt_un *buffer_size)
+{
+	rt_un local_buffer_size = *buffer_size;
+
+	while (local_buffer_size) {
+		if (buffer[local_buffer_size - 1] > ' ')
+			break;
+		local_buffer_size--;
+		buffer[local_buffer_size] = 0;
+	}
+
+	*buffer_size = local_buffer_size;
 }

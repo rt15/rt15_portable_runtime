@@ -444,7 +444,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_successful_char_convert_to_un(const rt_char* str, rt_un expected)
+static rt_s zz_test_successful_char_convert_to_un(const rt_char *str, rt_un expected)
 {
 	rt_un result;
 	rt_s ret;
@@ -460,7 +460,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_failed_char_convert_to_un(const rt_char* str)
+static rt_s zz_test_failed_char_convert_to_un(const rt_char *str)
 {
 	rt_un result;
 	rt_s ret;
@@ -499,6 +499,50 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_char_right_trim_do(const rt_char *str, const rt_char *expected)
+{
+	rt_char buffer[200];
+	rt_un buffer_size;
+	rt_s ret;
+
+	buffer_size = rt_char_get_size(str);
+	if (!rt_char_copy(str, buffer_size, buffer, 200)) goto error;
+	rt_char_right_trim(buffer, &buffer_size);
+	if (rt_char_get_size(buffer) != buffer_size) goto error;
+	if (!rt_char_equals(buffer, buffer_size, expected, rt_char_get_size(expected))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char_right_trim()
+{
+	rt_s ret;
+
+	if (!zz_test_char_right_trim_do(_R("foo"),     _R("foo"))) goto error;
+	if (!zz_test_char_right_trim_do(_R("foo "),    _R("foo"))) goto error;
+	if (!zz_test_char_right_trim_do(_R("foo\t"),   _R("foo"))) goto error;
+	if (!zz_test_char_right_trim_do(_R("foo  "),   _R("foo"))) goto error;
+	if (!zz_test_char_right_trim_do(_R("foo\t\t"), _R("foo"))) goto error;
+	if (!zz_test_char_right_trim_do(_R(" foo"),    _R(" foo"))) goto error;
+	if (!zz_test_char_right_trim_do(_R(""),        _R(""))) goto error;
+	if (!zz_test_char_right_trim_do(_R(" "),       _R(""))) goto error;
+	if (!zz_test_char_right_trim_do(_R("\t"),      _R(""))) goto error;
+	if (!zz_test_char_right_trim_do(_R("  "),      _R(""))) goto error;
+	if (!zz_test_char_right_trim_do(_R("\t\t"),    _R(""))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s zz_test_char()
 {
 	rt_s ret;
@@ -514,6 +558,7 @@ rt_s zz_test_char()
 	if (!zz_test_char_fast_lower_or_upper()) goto error;
 	if (!zz_test_char_search_char()) goto error;
 	if (!zz_test_char_convert_to_un()) goto error;
+	if (!zz_test_char_right_trim()) goto error;
 
 	ret = RT_OK;
 free:

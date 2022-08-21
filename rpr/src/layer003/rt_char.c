@@ -5,11 +5,11 @@
 
 /* Copy to rt_char8.h, rt_char8.c, zz_test_char8.c. */
 /* Remove these instructions from rt_char8.c. */
-/* Replace rt_char by rt_char8. */
-/* Replace test_char by test_char8. */
-/* Replace RT_CHAR by RT_CHAR8. */
-/* Adjust RT_CHAR8_XX_STRING_SIZE. */
+/* Replace rt_char by rt_char8 (matching case but not whole word). */
+/* Replace test_char by test_char8 (matching case but not whole word). */
+/* Replace RT_CHAR by RT_CHAR8 (matching case but not whole word). */
 /* Replace RT_MEMORY_SET_CHAR by RT_MEMORY_SET. */
+/* Adjust RT_CHAR8_XX_STRING_SIZE. */
 /* Remove macros from _R("XXX") and _R('X'). */
 
 rt_b rt_char_equals(const rt_char *string1, rt_un string1_size, const rt_char *string2, rt_un string2_size)
@@ -226,7 +226,7 @@ rt_un rt_char_search_char(const rt_char *str, rt_char searched)
 }
 
 /* TODO: Watch out for overflows!? Check i at the end then check characters if necessary. */
-rt_s rt_char_convert_to_un(const rt_char* str, rt_un *result)
+rt_s rt_char_convert_to_un(const rt_char *str, rt_un *result)
 {
 	rt_char character;
 	rt_un i = 0;
@@ -262,4 +262,18 @@ free:
 error:
 	ret = RT_FAILED;
 	goto free;
+}
+
+void rt_char_right_trim(rt_char *buffer, rt_un *buffer_size)
+{
+	rt_un local_buffer_size = *buffer_size;
+
+	while (local_buffer_size) {
+		if (buffer[local_buffer_size - 1] > _R(' '))
+			break;
+		local_buffer_size--;
+		buffer[local_buffer_size] = 0;
+	}
+
+	*buffer_size = local_buffer_size;
 }
