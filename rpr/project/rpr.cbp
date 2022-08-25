@@ -105,6 +105,7 @@
 		<Unit filename="../include/layer005/rt_env_vars.h" />
 		<Unit filename="../include/layer005/rt_file_system.h" />
 		<Unit filename="../include/layer005/rt_temp_file.h" />
+		<Unit filename="../include/layer006/rt_error_message.h" />
 		<Unit filename="../include/rpr.h" />
 		<Unit filename="../include/rpr_main.h" />
 		<Unit filename="../include/rpr_mem.h" />
@@ -184,6 +185,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer005/rt_temp_file.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer006/rt_error_message.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/rpr_internal.c">

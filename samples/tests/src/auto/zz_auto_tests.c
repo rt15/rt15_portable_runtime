@@ -32,6 +32,9 @@ rt_s zz_test_static_heap();
 rt_s zz_test_env_vars();
 rt_s zz_test_file_system();
 
+/* Layer 006. */
+rt_s zz_test_error_message();
+
 rt_s zz_auto_tests()
 {
 	rt_s ret;
@@ -78,6 +81,9 @@ rt_s zz_auto_tests()
 	/* Layer 005. */
 	if (!zz_test_env_vars()) goto error;
 	if (!zz_test_file_system()) goto error;
+
+	/* Layer 006. */
+	if (!zz_test_error_message()) goto error;
 
 	if (!output_stream->write(output_stream, "Tests successful!\n", rt_char8_get_size("Tests successful!\n")))
 		goto error;

@@ -45,6 +45,7 @@
     <ClCompile Include="..\src\layer005\rt_env_vars.c" />
     <ClCompile Include="..\src\layer005\rt_file_system.c" />
     <ClCompile Include="..\src\layer005\rt_temp_file.c" />
+    <ClCompile Include="..\src\layer006\rt_error_message.c" />
     <ClCompile Include="..\src\rpr_internal.c" />
     <ClCompile Include="..\src\rpr_main.c" />
   </ItemGroup>
@@ -80,6 +81,7 @@
     <ClInclude Include="..\include\layer005\rt_env_vars.h" />
     <ClInclude Include="..\include\layer005\rt_file_system.h" />
     <ClInclude Include="..\include\layer005\rt_temp_file.h" />
+    <ClInclude Include="..\include\layer006\rt_error_message.h" />
     <ClInclude Include="..\include\rpr.h" />
     <ClInclude Include="..\include\rpr_main.h" />
     <ClInclude Include="..\include\rpr_mem.h" />

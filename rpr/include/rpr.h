@@ -37,4 +37,6 @@
 #include "layer005/rt_file_system.h"
 #include "layer005/rt_temp_file.h"
 
+#include "layer006/rt_error_message.h"
+
 #endif /* RPR_H */

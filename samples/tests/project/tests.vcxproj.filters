@@ -97,6 +97,12 @@
     <ClCompile Include="..\src\auto\zz_test_env_vars.c">
       <Filter>src\auto</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\manual\zz_manual_test_error_message.c">
+      <Filter>src\manual</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_error_message.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
