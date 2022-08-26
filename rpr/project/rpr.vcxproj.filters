@@ -88,6 +88,9 @@
     <ClCompile Include="..\src\layer006\rt_error_message.c">
       <Filter>src\layer006</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer007\rt_process.c">
+      <Filter>src\layer007</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -195,6 +198,9 @@
     <ClInclude Include="..\include\layer006\rt_error_message.h">
       <Filter>include\layer006</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\layer007\rt_process.h">
+      <Filter>include\layer007</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -241,6 +247,12 @@
     </Filter>
     <Filter Include="src\layer006">
       <UniqueIdentifier>{b597bb26-312e-4b35-be7e-699186a9ba4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\layer007">
+      <UniqueIdentifier>{040ff065-aea2-4eb5-a432-301a37278fcd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\layer007">
+      <UniqueIdentifier>{5955379e-633f-44b5-b27a-858d9a4ac93e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

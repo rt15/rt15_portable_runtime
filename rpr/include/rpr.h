@@ -39,4 +39,6 @@
 
 #include "layer006/rt_error_message.h"
 
+#include "layer007/rt_process.h"
+
 #endif /* RPR_H */
