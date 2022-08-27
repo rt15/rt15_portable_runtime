@@ -83,13 +83,13 @@ rt_s rt_static_heap_free(void **area)
 	return ret;
 }
 
-void *rt_static_heap_alloc_if_needed(void *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_size, void **area, rt_un size)
+void *rt_static_heap_alloc_if_needed(void *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, void **area, rt_un size)
 {
 	if (size <= buffer_capacity) {
 		/* The buffer is enough, no need to allocate anything. */
 		*area = buffer;
 	} else {
-		if (heap_buffer_size && (size <= (rt_un)*heap_buffer_size)) {
+		if (heap_buffer_capacity && (size <= (rt_un)*heap_buffer_capacity)) {
 			/* The heap buffer is enough, no need to realloc. */
 			*area = *heap_buffer;
 		} else {
@@ -99,7 +99,7 @@ void *rt_static_heap_alloc_if_needed(void *buffer, rt_un buffer_capacity, void *
 			} else {
 				*area = rt_static_heap_alloc(heap_buffer, size);
 			}
-			*heap_buffer_size = size;
+			*heap_buffer_capacity = size;
 		}
 	}
 	return *area;

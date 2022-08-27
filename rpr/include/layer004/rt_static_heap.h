@@ -33,8 +33,8 @@ rt_s rt_static_heap_free(void **area);
 /**
  * Perform an heap allocation only if <tt>buffer</tt> is too small.
  *
- * @param heap_buffer_size If not RT_NULL, must be initialized with zero or the size of heap buffer.
+ * @param heap_buffer_capacity If not RT_NULL, must be initialized with zero or the size of heap buffer.
  */
-void *rt_static_heap_alloc_if_needed(void *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_size, void **area, rt_un size);
+void *rt_static_heap_alloc_if_needed(void *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, void **area, rt_un size);
 
 #endif /* RT_STATIC_HEAP_H */
