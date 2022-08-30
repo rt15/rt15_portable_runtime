@@ -138,6 +138,9 @@
 		<Unit filename="../src/auto/zz_test_file_system.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/auto/zz_test_heap.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/auto/zz_test_io_device.c">
 			<Option compilerVar="CC" />
 		</Unit>

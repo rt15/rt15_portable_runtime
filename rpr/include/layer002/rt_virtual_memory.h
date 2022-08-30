@@ -17,6 +17,8 @@ rt_un rt_virtual_memory_get_page_size();
 
 /**
  * The resulting memory is page aligned.
+ *
+ * @param area RT_NULL in case of error.
  */
 void *rt_virtual_memory_alloc(void **area, rt_un size);
 

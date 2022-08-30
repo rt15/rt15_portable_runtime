@@ -2,6 +2,7 @@
 
 /* Layer 001. */
 rt_s zz_test_atomic();
+rt_s zz_test_heap();
 rt_s zz_test_memory();
 
 /* Layer 002. */
@@ -53,6 +54,7 @@ rt_s zz_auto_tests()
 
 	/* Layer 001. */
 	if (!zz_test_atomic()) goto error;
+	if (!zz_test_heap()) goto error;
 	if (!zz_test_memory()) goto error;
 
 	/* Layer 002. */

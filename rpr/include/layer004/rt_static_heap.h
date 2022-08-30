@@ -10,8 +10,9 @@
  * <p>
  * Thread safe if process heap/malloc is which should be the case.
  * </p>
+ *
+ * @param area RT_NULL in case of error.
  */
-
 void *rt_static_heap_alloc(void **area, rt_un size);
 
 /**
