@@ -4,7 +4,6 @@
 #include "layer000/rt_types.h"
 
 #include "layer001/rt_atomic.h"
-#include "layer001/rt_heap.h"
 #include "layer001/rt_input_stream.h"
 #include "layer001/rt_memory.h"
 #include "layer001/rt_output_stream.h"
@@ -23,7 +22,7 @@
 #include "layer003/rt_env_var.h"
 #include "layer003/rt_fast_initialization.h"
 #include "layer003/rt_file.h"
-#include "layer003/rt_page_heap.h"
+#include "layer003/rt_heap.h"
 #include "layer003/rt_pipe.h"
 #include "layer003/rt_thread.h"
 
@@ -32,6 +31,7 @@
 #include "layer004/rt_command_line_args.h"
 #include "layer004/rt_file_path.h"
 #include "layer004/rt_os_version.h"
+#include "layer004/rt_page_heap.h"
 #include "layer004/rt_random.h"
 #include "layer004/rt_static_heap.h"
 

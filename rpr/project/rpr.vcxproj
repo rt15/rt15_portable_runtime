@@ -33,7 +33,7 @@
     <ClCompile Include="..\src\layer003\rt_env_var.c" />
     <ClCompile Include="..\src\layer003\rt_fast_initialization.c" />
     <ClCompile Include="..\src\layer003\rt_file.c" />
-    <ClCompile Include="..\src\layer003\rt_page_heap.c" />
+    <ClCompile Include="..\src\layer003\rt_heap.c" />
     <ClCompile Include="..\src\layer003\rt_pipe.c" />
     <ClCompile Include="..\src\layer003\rt_thread.c" />
     <ClCompile Include="..\src\layer004\rt_base64.c" />
@@ -41,6 +41,7 @@
     <ClCompile Include="..\src\layer004\rt_command_line_args.c" />
     <ClCompile Include="..\src\layer004\rt_file_path.c" />
     <ClCompile Include="..\src\layer004\rt_os_version.c" />
+    <ClCompile Include="..\src\layer004\rt_page_heap.c" />
     <ClCompile Include="..\src\layer004\rt_random.c" />
     <ClCompile Include="..\src\layer004\rt_static_heap.c" />
     <ClCompile Include="..\src\layer005\rt_console.c" />
@@ -56,7 +57,6 @@
   <ItemGroup>
     <ClInclude Include="..\include\layer000\rt_types.h" />
     <ClInclude Include="..\include\layer001\rt_atomic.h" />
-    <ClInclude Include="..\include\layer001\rt_heap.h" />
     <ClInclude Include="..\include\layer001\rt_input_stream.h" />
     <ClInclude Include="..\include\layer001\rt_memory.h" />
     <ClInclude Include="..\include\layer001\rt_os_headers.h" />
@@ -74,7 +74,7 @@
     <ClInclude Include="..\include\layer003\rt_env_var.h" />
     <ClInclude Include="..\include\layer003\rt_fast_initialization.h" />
     <ClInclude Include="..\include\layer003\rt_file.h" />
-    <ClInclude Include="..\include\layer003\rt_page_heap.h" />
+    <ClInclude Include="..\include\layer003\rt_heap.h" />
     <ClInclude Include="..\include\layer003\rt_pipe.h" />
     <ClInclude Include="..\include\layer003\rt_thread.h" />
     <ClInclude Include="..\include\layer004\rt_base64.h" />
@@ -82,6 +82,7 @@
     <ClInclude Include="..\include\layer004\rt_command_line_args.h" />
     <ClInclude Include="..\include\layer004\rt_file_path.h" />
     <ClInclude Include="..\include\layer004\rt_os_version.h" />
+    <ClInclude Include="..\include\layer004\rt_page_heap.h" />
     <ClInclude Include="..\include\layer004\rt_random.h" />
     <ClInclude Include="..\include\layer004\rt_static_heap.h" />
     <ClInclude Include="..\include\layer005\rt_console.h" />

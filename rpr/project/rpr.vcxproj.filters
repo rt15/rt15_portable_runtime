@@ -94,11 +94,14 @@
     <ClCompile Include="..\src\layer002\rt_memory_input_stream.c">
       <Filter>src\layer002</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\layer003\rt_page_heap.c">
-      <Filter>src\layer003</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\layer005\rt_runtime_heap.c">
       <Filter>src\layer005</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer004\rt_page_heap.c">
+      <Filter>src\layer004</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer003\rt_heap.c">
+      <Filter>src\layer003</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -213,14 +216,14 @@
     <ClInclude Include="..\include\layer002\rt_memory_input_stream.h">
       <Filter>include\layer002</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\layer001\rt_heap.h">
-      <Filter>include\layer001</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\layer003\rt_page_heap.h">
-      <Filter>include\layer003</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\layer005\rt_runtime_heap.h">
       <Filter>include\layer005</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer003\rt_heap.h">
+      <Filter>include\layer003</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer004\rt_page_heap.h">
+      <Filter>include\layer004</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

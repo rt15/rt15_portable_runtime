@@ -66,6 +66,71 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_alloc_if_needed(struct rt_heap *heap)
+{
+	rt_char8 buffer[50];
+	rt_char8 *area;
+	void *heap_buffer = RT_NULL;
+	void *previous_heap_buffer;
+	rt_un heap_buffer_capacity = 0;
+	rt_un i;
+	void* result;
+	rt_s ret;
+
+	/* Nothing provided, so failure. */
+	if (rt_heap_alloc_if_needed(RT_NULL, 0, RT_NULL, RT_NULL, (void**)&area, 1, RT_NULL))
+		goto error;
+
+	/* Buffer is too small. */
+	if (rt_heap_alloc_if_needed(buffer, 50, RT_NULL, RT_NULL, (void**)&area, 51, RT_NULL))
+		goto error;
+
+	/* Buffer is good. */
+	result = rt_heap_alloc_if_needed(buffer, 50, RT_NULL, RT_NULL, (void**)&area, 50, RT_NULL);
+	if (!result) goto error;
+	if (area != buffer) goto error;
+	for (i = 0; i < 50; i++)
+		area[i] = 'a';
+
+	/* Allocate with heap. */
+	result = rt_heap_alloc_if_needed(buffer, 50, &heap_buffer, &heap_buffer_capacity, (void**)&area, 100, heap);
+	if (!result) goto error;
+	if (area != heap_buffer) goto error;
+	if (heap_buffer_capacity != 100) goto error;
+	previous_heap_buffer = heap_buffer;
+	for (i = 0; i < 100; i++)
+		area[i] = 'a';
+
+	/* Heap buffer is enough. */
+	result = rt_heap_alloc_if_needed(buffer, 50, &heap_buffer, &heap_buffer_capacity, (void**)&area, 75, heap);
+	if (!result) goto error;
+	if (area != heap_buffer) goto error;
+	if (heap_buffer_capacity != 100) goto error;
+	if (heap_buffer != previous_heap_buffer) goto error;
+	for (i = 0; i < 75; i++)
+		area[i] = 'a';
+
+	/* Heap buffer is not enough. */
+	result = rt_heap_alloc_if_needed(buffer, 50, &heap_buffer, &heap_buffer_capacity, (void**)&area, 150, heap);
+	if (!result) goto error;
+	if (area != heap_buffer) goto error;
+	if (heap_buffer_capacity != 150) goto error;
+	for (i = 0; i < 150; i++)
+		area[i] = 'a';
+
+	ret = RT_OK;
+free:
+	if (heap_buffer) {
+		if (!heap->free(heap, &heap_buffer) && ret)
+			goto error;
+	}
+
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 static rt_s zz_test_runtime_heap()
 {
 	struct rt_runtime_heap runtime_heap;
@@ -76,8 +141,8 @@ static rt_s zz_test_runtime_heap()
 		goto error;
 	runtime_heap_created = RT_TRUE;
 
-	if (!zz_test_heap_do(&runtime_heap.heap))
-		goto error;
+	if (!zz_test_heap_do(&runtime_heap.heap)) goto error;
+	if (!zz_test_alloc_if_needed(&runtime_heap.heap)) goto error;
 
 	ret = RT_OK;
 free:
@@ -102,8 +167,8 @@ static rt_s zz_test_page_heap()
 		goto error;
 	page_heap_created = RT_TRUE;
 
-	if (!zz_test_heap_do(&page_heap.heap))
-		goto error;
+	if (!zz_test_heap_do(&page_heap.heap)) goto error;
+	if (!zz_test_alloc_if_needed(&page_heap.heap)) goto error;
 
 	ret = RT_OK;
 free:

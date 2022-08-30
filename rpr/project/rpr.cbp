@@ -76,7 +76,6 @@
 		</Compiler>
 		<Unit filename="../include/layer000/rt_types.h" />
 		<Unit filename="../include/layer001/rt_atomic.h" />
-		<Unit filename="../include/layer001/rt_heap.h" />
 		<Unit filename="../include/layer001/rt_input_stream.h" />
 		<Unit filename="../include/layer001/rt_memory.h" />
 		<Unit filename="../include/layer001/rt_os_headers.h" />
@@ -94,7 +93,7 @@
 		<Unit filename="../include/layer003/rt_env_var.h" />
 		<Unit filename="../include/layer003/rt_fast_initialization.h" />
 		<Unit filename="../include/layer003/rt_file.h" />
-		<Unit filename="../include/layer003/rt_page_heap.h" />
+		<Unit filename="../include/layer003/rt_heap.h" />
 		<Unit filename="../include/layer003/rt_pipe.h" />
 		<Unit filename="../include/layer003/rt_thread.h" />
 		<Unit filename="../include/layer004/rt_base64.h" />
@@ -102,6 +101,7 @@
 		<Unit filename="../include/layer004/rt_command_line_args.h" />
 		<Unit filename="../include/layer004/rt_file_path.h" />
 		<Unit filename="../include/layer004/rt_os_version.h" />
+		<Unit filename="../include/layer004/rt_page_heap.h" />
 		<Unit filename="../include/layer004/rt_random.h" />
 		<Unit filename="../include/layer004/rt_static_heap.h" />
 		<Unit filename="../include/layer005/rt_console.h" />
@@ -156,7 +156,7 @@
 		<Unit filename="../src/layer003/rt_file.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/layer003/rt_page_heap.c">
+		<Unit filename="../src/layer003/rt_heap.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer003/rt_pipe.c">
@@ -178,6 +178,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer004/rt_os_version.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer004/rt_page_heap.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer004/rt_random.c">

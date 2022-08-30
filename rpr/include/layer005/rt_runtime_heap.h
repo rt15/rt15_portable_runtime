@@ -2,7 +2,7 @@
 #define RT_RUNTIME_HEAP_H
 
 #include "layer000/rt_types.h"
-#include "layer001/rt_heap.h"
+#include "layer003/rt_heap.h"
 
 /**
  * Multithreaded heap based on the process heap on Windows and runtime heap on Linux.

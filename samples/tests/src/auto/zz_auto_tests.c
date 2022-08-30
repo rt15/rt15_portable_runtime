@@ -2,7 +2,6 @@
 
 /* Layer 001. */
 rt_s zz_test_atomic();
-rt_s zz_test_heap();
 rt_s zz_test_memory();
 
 /* Layer 002. */
@@ -19,6 +18,7 @@ rt_s zz_test_char8();
 rt_s zz_test_env_var();
 rt_s zz_test_fast_initialization();
 rt_s zz_test_file();
+rt_s zz_test_heap();
 rt_s zz_test_pipe();
 rt_s zz_test_thread();
 
@@ -54,7 +54,6 @@ rt_s zz_auto_tests()
 
 	/* Layer 001. */
 	if (!zz_test_atomic()) goto error;
-	if (!zz_test_heap()) goto error;
 	if (!zz_test_memory()) goto error;
 
 	/* Layer 002. */
@@ -71,6 +70,7 @@ rt_s zz_auto_tests()
 	if (!zz_test_env_var()) goto error;
 	if (!zz_test_fast_initialization()) goto error;
 	if (!zz_test_file()) goto error;
+	if (!zz_test_heap()) goto error;
 	if (!zz_test_pipe()) goto error;
 	if (!zz_test_thread()) goto error;
 

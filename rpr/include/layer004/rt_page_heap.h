@@ -2,7 +2,7 @@
 #define RT_PAGE_HEAP_H
 
 #include "layer000/rt_types.h"
-#include "layer001/rt_heap.h"
+#include "layer003/rt_heap.h"
 
 /**
  * @file
@@ -35,7 +35,6 @@ void *rt_page_heap_alloc(void **area, rt_un size);
  * @return Allocated area of RT_NULL in case of error.
  */
 void *rt_page_heap_realloc(void **area, rt_un size);
-
 
 rt_s rt_page_heap_free(void **area);
 
