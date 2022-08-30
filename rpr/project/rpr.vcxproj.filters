@@ -91,6 +91,9 @@
     <ClCompile Include="..\src\layer007\rt_process.c">
       <Filter>src\layer007</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer002\rt_memory_input_stream.c">
+      <Filter>src\layer002</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -200,6 +203,9 @@
     </ClInclude>
     <ClInclude Include="..\include\layer007\rt_process.h">
       <Filter>include\layer007</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer002\rt_memory_input_stream.h">
+      <Filter>include\layer002</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -5,6 +5,9 @@
 
 struct rt_input_stream;
 
+/**
+ * @param bytes_read Out parameter.
+ */
 typedef rt_s (*rt_input_stream_read_t)(struct rt_input_stream *input_stream, rt_char8 *buffer, rt_un bytes_to_read, rt_un *bytes_read);
 
 struct rt_input_stream {

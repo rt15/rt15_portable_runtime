@@ -13,6 +13,7 @@
 #include "layer002/rt_error.h"
 #include "layer002/rt_event.h"
 #include "layer002/rt_io_device.h"
+#include "layer002/rt_memory_input_stream.h"
 #include "layer002/rt_sleep.h"
 #include "layer002/rt_virtual_memory.h"
 

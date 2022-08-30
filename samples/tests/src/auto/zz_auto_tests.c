@@ -8,6 +8,7 @@ rt_s zz_test_memory();
 rt_s zz_test_critical_section();
 rt_s zz_test_event();
 rt_s zz_test_io_device();
+rt_s zz_test_memory_input_stream();
 rt_s zz_test_sleep();
 rt_s zz_test_virtual_memory();
 
@@ -58,6 +59,7 @@ rt_s zz_auto_tests()
 	if (!zz_test_critical_section()) goto error;
 	if (!zz_test_event()) goto error;
 	if (!zz_test_io_device()) goto error;
+	if (!zz_test_memory_input_stream()) goto error;
 	if (!zz_test_sleep()) goto error;
 	if (!zz_test_virtual_memory()) goto error;
 
