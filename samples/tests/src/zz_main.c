@@ -4,10 +4,15 @@
 rt_s zz_auto_tests();
 rt_s zz_manual_tests();
 rt_s zz_parse_args(rt_un argc, const rt_char *argv[]);
+rt_s zz_display_args(rt_un argc, const rt_char *argv[]);
 
 rt_s zz_display_help(rt_s ret)
 {
-	if (!rt_console_write_string(_R("tests [\"--parse-args\"|-p]\n")))
+	if (!rt_console_write_string(_R("tests\n")))
+		ret = RT_FAILED;
+	if (!rt_console_write_string(_R("tests <\"--parse-args\"|-p> ARGS...\n")))
+		ret = RT_FAILED;
+	if (!rt_console_write_string(_R("tests <\"--display-args\"|-d> ARGS...\n")))
 		ret = RT_FAILED;
 
 	return ret;
@@ -42,6 +47,12 @@ rt_s zz_main_do(rt_un argc, const rt_char *argv[])
 		    rt_char_equals(argv[1], arg_size, _R("-p"), 2)) {
 
 			if (!zz_parse_args(argc - 1, &argv[1]))
+				goto error;
+
+		} else if (rt_char_equals(argv[1], arg_size, _R("--display-args"), 14) ||
+			   rt_char_equals(argv[1], arg_size, _R("-d"), 2)) {
+
+			if (!zz_display_args(argc - 2, &argv[2]))
 				goto error;
 
 		} else if (argc == 2) {
