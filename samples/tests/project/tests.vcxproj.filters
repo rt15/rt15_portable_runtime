@@ -112,6 +112,9 @@
     <ClCompile Include="..\src\auto\zz_test_heap.c">
       <Filter>src\auto</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_memory_output_stream.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

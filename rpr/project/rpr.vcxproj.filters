@@ -103,6 +103,9 @@
     <ClCompile Include="..\src\layer003\rt_heap.c">
       <Filter>src\layer003</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer004\rt_memory_output_stream.c">
+      <Filter>src\layer004</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -223,6 +226,9 @@
       <Filter>include\layer003</Filter>
     </ClInclude>
     <ClInclude Include="..\include\layer004\rt_page_heap.h">
+      <Filter>include\layer004</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer004\rt_memory_output_stream.h">
       <Filter>include\layer004</Filter>
     </ClInclude>
   </ItemGroup>

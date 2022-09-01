@@ -38,6 +38,7 @@
     <ClCompile Include="..\src\auto\zz_test_io_device.c" />
     <ClCompile Include="..\src\auto\zz_test_memory.c" />
     <ClCompile Include="..\src\auto\zz_test_memory_input_stream.c" />
+    <ClCompile Include="..\src\auto\zz_test_memory_output_stream.c" />
     <ClCompile Include="..\src\auto\zz_test_os_version.c" />
     <ClCompile Include="..\src\auto\zz_test_pipe.c" />
     <ClCompile Include="..\src\auto\zz_test_random.c" />
