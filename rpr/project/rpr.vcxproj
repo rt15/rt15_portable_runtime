@@ -40,6 +40,7 @@
     <ClCompile Include="..\src\layer004\rt_base64.c" />
     <ClCompile Include="..\src\layer004\rt_check_rpr.c" />
     <ClCompile Include="..\src\layer004\rt_command_line_args.c" />
+    <ClCompile Include="..\src\layer004\rt_encoding.c" />
     <ClCompile Include="..\src\layer004\rt_file_path.c" />
     <ClCompile Include="..\src\layer004\rt_memory_output_stream.c" />
     <ClCompile Include="..\src\layer004\rt_os_version.c" />
@@ -83,6 +84,7 @@
     <ClInclude Include="..\include\layer004\rt_base64.h" />
     <ClInclude Include="..\include\layer004\rt_check_rpr.h" />
     <ClInclude Include="..\include\layer004\rt_command_line_args.h" />
+    <ClInclude Include="..\include\layer004\rt_encoding.h" />
     <ClInclude Include="..\include\layer004\rt_file_path.h" />
     <ClInclude Include="..\include\layer004\rt_memory_output_stream.h" />
     <ClInclude Include="..\include\layer004\rt_os_version.h" />

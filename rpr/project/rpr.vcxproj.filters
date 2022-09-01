@@ -109,6 +109,9 @@
     <ClCompile Include="..\src\layer002\rt_slurp.c">
       <Filter>src\layer002</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer004\rt_encoding.c">
+      <Filter>src\layer004</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -236,6 +239,9 @@
     </ClInclude>
     <ClInclude Include="..\include\layer002\rt_slurp.h">
       <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer004\rt_encoding.h">
+      <Filter>include\layer004</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -26,6 +26,7 @@ rt_s zz_test_thread();
 /* Layer 004. */
 rt_s zz_test_base64();
 rt_s zz_test_command_line_args();
+rt_s zz_test_encoding();
 rt_s zz_test_file_path();
 rt_s zz_test_memory_output_stream();
 rt_s zz_test_os_version();
@@ -80,6 +81,7 @@ rt_s zz_auto_tests()
 	/* Layer 004. */
 	if (!zz_test_base64()) goto error;
 	if (!zz_test_command_line_args()) goto error;
+	if (!zz_test_encoding()) goto error;
 	if (!zz_test_file_path()) goto error;
 	if (!zz_test_memory_output_stream()) goto error;
 	if (!zz_test_os_version()) goto error;

@@ -4,6 +4,7 @@
 rt_s zz_manual_test_env_var();
 
 /* Layer 004. */
+rt_s zz_manual_test_encoding();
 rt_s zz_manual_test_file_path();
 rt_s zz_manual_test_os_version();
 
@@ -21,6 +22,7 @@ rt_s zz_manual_tests()
 	if (!zz_manual_test_env_var()) goto error;
 
 	/* Layer 004. */
+	if (!zz_manual_test_encoding()) goto error;
 	if (!zz_manual_test_file_path()) goto error;
 	if (!zz_manual_test_os_version()) goto error;
 

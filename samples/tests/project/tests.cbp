@@ -114,6 +114,9 @@
 		<Unit filename="../src/auto/zz_test_critical_section.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/auto/zz_test_encoding.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/auto/zz_test_env_var.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -175,6 +178,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/auto/zz_test_virtual_memory.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/manual/zz_manual_test_encoding.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/manual/zz_manual_test_env_var.c">
