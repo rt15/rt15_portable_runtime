@@ -10,6 +10,7 @@ rt_s zz_test_event();
 rt_s zz_test_io_device();
 rt_s zz_test_memory_input_stream();
 rt_s zz_test_sleep();
+rt_s zz_test_slurp();
 rt_s zz_test_virtual_memory();
 
 /* Layer 003. */
@@ -63,6 +64,7 @@ rt_s zz_auto_tests()
 	if (!zz_test_io_device()) goto error;
 	if (!zz_test_memory_input_stream()) goto error;
 	if (!zz_test_sleep()) goto error;
+	if (!zz_test_slurp()) goto error;
 	if (!zz_test_virtual_memory()) goto error;
 
 	/* Layer 003. */

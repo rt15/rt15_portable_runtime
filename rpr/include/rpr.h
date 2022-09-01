@@ -15,6 +15,7 @@
 #include "layer002/rt_io_device.h"
 #include "layer002/rt_memory_input_stream.h"
 #include "layer002/rt_sleep.h"
+#include "layer002/rt_slurp.h"
 #include "layer002/rt_virtual_memory.h"
 
 #include "layer003/rt_char.h"
