@@ -112,7 +112,8 @@ struct rt_encoding_info {
  * Find out the system default encoding.
  *
  * <p>
- * Fails if the system encoding is not supported by this library (which is quite possible).
+ * Fails if the system encoding is not supported by this library (which is quite possible).<br>
+ * In this case, the returned encoding is zero (RT_ENCODING_SYSTEM_DEFAULT).
  * </p>
  */
 rt_s rt_encoding_get_system(enum rt_encoding *encoding);

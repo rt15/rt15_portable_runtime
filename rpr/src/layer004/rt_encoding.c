@@ -266,51 +266,47 @@ static const rt_un rt_encoding_max_char_sizes[RT_ENCODING_ENCODINGS_COUNT] = {
 	4  /* RT_ENCODING_UTF_8.		*/
 };
 
-#ifdef RT_DEFINE_LINUX
-
 static struct rt_fast_initialization rt_encoding_system_initialization = RT_FAST_INITIALIZATION_STATIC_INIT;
 
-static rt_char rt_encoding_system_buffer[64];
-
-static rt_char *rt_encoding_system;
-
-#endif
+static enum rt_encoding rt_encoding_system = 0;
 
 #ifdef RT_DEFINE_LINUX
 /**
  * Retrieve the Linux system encoding.<br>
- * Call setlocale(LC_ALL, "") to avoid "C" locale.
- *
- * Return RT_NULL in case of error.
+ * Make sure to call setlocale(LC_ALL, "") before this function to avoid "C" locale.
  */
-static rt_s rt_encoding_get_linux_system(rt_char **encoding)
+static rt_s rt_encoding_get_linux_system(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
 	rt_char *encoding_name;
 	rt_un encoding_name_size;
+	rt_s ret;
 
-	if (rt_fast_initialization_is_required(&rt_encoding_system_initialization)) {
-		rt_encoding_system = RT_NULL;
-
-		encoding_name = nl_langinfo(CODESET);
-		/* There are very few chances that nl_langinfo failed. */
-		if (encoding_name) {
-			encoding_name_size = rt_char_get_size(encoding_name);
-			/* There are very few chances that encoding_name is empty. */
-			if (encoding_name_size) {
-				/* The pointer nl_langinfo is not thread safe so we make a copy quickly. */
-				if (rt_char_copy(encoding_name, encoding_name_size, rt_encoding_system_buffer, 64))
-					rt_encoding_system = rt_encoding_system_buffer;
-			}
+	encoding_name = nl_langinfo(CODESET);
+	/* There are very few chances that nl_langinfo failed. */
+	/* It may not set errno. */
+	if (encoding_name) {
+		encoding_name_size = rt_char_get_size(encoding_name);
+		/* There are very few chances that encoding_name is empty. */
+		if (encoding_name_size) {
+			/* The pointer nl_langinfo is not thread safe so we make a copy really quick. */
+			if (!rt_char_copy(encoding_name, encoding_name_size, buffer, buffer_capacity))
+				goto error;
+			*buffer_size = encoding_name_size;
+		} else {
+			rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
+			goto error;
 		}
-
-		rt_fast_initialization_notify_done(&rt_encoding_system_initialization);
-	}
-	if (!rt_encoding_system) {
-		/* The initialization has failed now or in the past. */
+	} else {
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
+		goto error;
 	}
-	*encoding = rt_encoding_system;
-	return (rt_encoding_system != RT_NULL);
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
 }
 
 #endif
@@ -320,46 +316,55 @@ rt_s rt_encoding_get_system(enum rt_encoding *encoding)
 #ifdef RT_DEFINE_WINDOWS
 	UINT code_page;
 #else
-	rt_char* linux_system_encoding;
-	rt_un linux_system_encoding_size;
+	rt_char system_encoding_name[64];
+	rt_un system_encoding_name_size;
 	const rt_char* current_encoding;
-	rt_s ret;
 #endif
-	rt_un result = RT_TYPE_MAX_UN;
 	rt_un i;
+	rt_s ret;
+
+	if (rt_fast_initialization_is_required(&rt_encoding_system_initialization)) {
 
 #ifdef RT_DEFINE_WINDOWS
-	code_page = GetACP();
-	for (i = 1; i < RT_ENCODING_ENCODINGS_COUNT; i++) {
-		if (rt_encoding_code_pages[i] == code_page) {
-			result = i;
-			break;
+		code_page = GetACP();
+		for (i = 1; i < RT_ENCODING_ENCODINGS_COUNT; i++) {
+			if (rt_encoding_code_pages[i] == code_page) {
+				rt_encoding_system = i;
+				break;
+			}
 		}
-	}
-	*encoding = result;
-	return (result != RT_TYPE_MAX_UN);
 #else
-	if (!rt_encoding_get_linux_system(&linux_system_encoding))
-		goto error;
-	linux_system_encoding_size = rt_char_get_size(linux_system_encoding);
+		/* Retrieve the encoding name as a string. */
+		if (!rt_encoding_get_linux_system(system_encoding_name, 64, &system_encoding_name_size))
+			goto error;
 
-	for (i = 1; i < RT_ENCODING_ENCODINGS_COUNT; i++) {
-		current_encoding = rt_encoding_code_names[i];
-		if (rt_char_equals(linux_system_encoding, linux_system_encoding_size, current_encoding, rt_char_get_size(current_encoding))) {
-			result = i;
-			break;
+		for (i = 1; i < RT_ENCODING_ENCODINGS_COUNT; i++) {
+			current_encoding = rt_encoding_code_names[i];
+			if (rt_char_equals(system_encoding_name, system_encoding_name_size, current_encoding, rt_char_get_size(current_encoding))) {
+				rt_encoding_system = i;
+				break;
+			}
 		}
+#endif
+
+		rt_fast_initialization_notify_done(&rt_encoding_system_initialization);
 	}
 
-	*encoding = result;
-	ret = (result != RT_TYPE_MAX_UN);
+	*encoding = rt_encoding_system;
+
+	/* At this point rt_encoding_system is either zero (its initial value) or the correct encoding. */
+	if (!rt_encoding_system) {
+		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
+		goto error;
+	}
+
+	ret = RT_OK;
 free:
 	return ret;
 
 error:
 	ret = RT_FAILED;
 	goto free;
-#endif
 }
 
 rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *encoding_info)
