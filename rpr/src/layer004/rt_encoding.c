@@ -179,7 +179,94 @@ static const rt_char *const rt_encoding_code_names[RT_ENCODING_ENCODINGS_COUNT] 
 	_R("UTF-8")		/* RT_ENCODING_UTF_8.		*/
 };
 
-static const rt_un rt_encoding_max_char_sizes[RT_ENCODING_ENCODINGS_COUNT] = {
+static const rt_un rt_encoding_code_unit_sizes[RT_ENCODING_ENCODINGS_COUNT] = {
+	0, /* RT_ENCODING_SYSTEM_DEFAULT.	*/
+	1, /* RT_ENCODING_IBM037.		*/
+	1, /* RT_ENCODING_IBM437.		*/
+	1, /* RT_ENCODING_IBM500.		*/
+	1, /* RT_ENCODING_ASMO_708.		*/
+	1, /* RT_ENCODING_IBM737.		*/
+	1, /* RT_ENCODING_IBM775.		*/
+	1, /* RT_ENCODING_IBM850.		*/
+	1, /* RT_ENCODING_IBM852.		*/
+	1, /* RT_ENCODING_IBM855.		*/
+	1, /* RT_ENCODING_IBM857.		*/
+	1, /* RT_ENCODING_IBM860.		*/
+	1, /* RT_ENCODING_IBM861.		*/
+	1, /* RT_ENCODING_IBM863.		*/
+	1, /* RT_ENCODING_IBM864.		*/
+	1, /* RT_ENCODING_IBM865.		*/
+	1, /* RT_ENCODING_CP866.		*/
+	1, /* RT_ENCODING_IBM869.		*/
+	1, /* RT_ENCODING_IBM870.		*/
+	1, /* RT_ENCODING_WINDOWS_874.		*/
+	1, /* RT_ENCODING_CP875.		*/
+	1, /* RT_ENCODING_SHIFT_JIS.		*/
+	1, /* RT_ENCODING_GB2312.		*/
+	1, /* RT_ENCODING_CP949.		*/
+	1, /* RT_ENCODING_BIG5.			*/
+	1, /* RT_ENCODING_IBM1026.		*/
+	1, /* RT_ENCODING_IBM1047.		*/
+	2, /* RT_ENCODING_UTF_16.		*/
+	2, /* RT_ENCODING_UTF_16LE.		*/
+	2, /* RT_ENCODING_UTF_16BE.		*/
+	1, /* RT_ENCODING_WINDOWS_1250.		*/
+	1, /* RT_ENCODING_WINDOWS_1251.		*/
+	1, /* RT_ENCODING_WINDOWS_1252.		*/
+	1, /* RT_ENCODING_WINDOWS_1253.		*/
+	1, /* RT_ENCODING_WINDOWS_1254.		*/
+	1, /* RT_ENCODING_WINDOWS_1255.		*/
+	1, /* RT_ENCODING_WINDOWS_1256.		*/
+	1, /* RT_ENCODING_WINDOWS_1257.		*/
+	1, /* RT_ENCODING_WINDOWS_1258.		*/
+	1, /* RT_ENCODING_CP1361.		*/
+	1, /* RT_ENCODING_MAC.			*/
+	4, /* RT_ENCODING_UTF_32.		*/
+	4, /* RT_ENCODING_UTF_32LE.		*/
+	4, /* RT_ENCODING_UTF_32BE.		*/
+	1, /* RT_ENCODING_US_ASCII.		*/
+	1, /* RT_ENCODING_T_61.			*/
+	1, /* RT_ENCODING_ISO_6937.		*/
+	1, /* RT_ENCODING_IBM273.		*/
+	1, /* RT_ENCODING_IBM277.		*/
+	1, /* RT_ENCODING_IBM278.		*/
+	1, /* RT_ENCODING_IBM280.		*/
+	1, /* RT_ENCODING_IBM284.		*/
+	1, /* RT_ENCODING_IBM285.		*/
+	1, /* RT_ENCODING_IBM290.		*/
+	1, /* RT_ENCODING_IBM297.		*/
+	1, /* RT_ENCODING_IBM420.		*/
+	1, /* RT_ENCODING_IBM423.		*/
+	1, /* RT_ENCODING_IBM424.		*/
+	1, /* RT_ENCODING_KOI8_R.		*/
+	1, /* RT_ENCODING_IBM871.		*/
+	1, /* RT_ENCODING_IBM880.		*/
+	1, /* RT_ENCODING_IBM905.		*/
+	1, /* RT_ENCODING_KOI8_U.		*/
+	1, /* RT_ENCODING_ISO_8859_1.		*/
+	1, /* RT_ENCODING_ISO_8859_2.		*/
+	1, /* RT_ENCODING_ISO_8859_3.		*/
+	1, /* RT_ENCODING_ISO_8859_4.		*/
+	1, /* RT_ENCODING_ISO_8859_5.		*/
+	1, /* RT_ENCODING_ISO_8859_6.		*/
+	1, /* RT_ENCODING_ISO_8859_7.		*/
+	1, /* RT_ENCODING_ISO_8859_8.		*/
+	1, /* RT_ENCODING_ISO_8859_9.		*/
+	1, /* RT_ENCODING_ISO_8859_13.		*/
+	1, /* RT_ENCODING_ISO_8859_15.		*/
+	1, /* RT_ENCODING_ISO_2022_JP.		*/
+	1, /* RT_ENCODING_CS_ISO_2022_JP.	*/
+	1, /* RT_ENCODING_ISO_2022_KR.		*/
+	1, /* RT_ENCODING_EUC_JP.		*/
+	1, /* RT_ENCODING_EUC_CN.		*/
+	1, /* RT_ENCODING_EUC_KR.		*/
+	1, /* RT_ENCODING_HZ_GB2312.		*/
+	1, /* RT_ENCODING_GB18030.		*/
+	1, /* RT_ENCODING_UTF_7.		*/
+	1  /* RT_ENCODING_UTF_8.		*/
+};
+
+static const rt_un rt_encoding_max_code_point_sizes[RT_ENCODING_ENCODINGS_COUNT] = {
 	0, /* RT_ENCODING_SYSTEM_DEFAULT.	*/
 	1, /* RT_ENCODING_IBM037.		*/
 	1, /* RT_ENCODING_IBM437.		*/
@@ -387,7 +474,8 @@ rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *en
 
 	encoding_info->code_page = rt_encoding_code_pages[actual_encoding];
 	encoding_info->name = rt_encoding_code_names[actual_encoding];
-	encoding_info->max_char_size = rt_encoding_max_char_sizes[actual_encoding];
+	encoding_info->code_unit_size = rt_encoding_code_unit_sizes[actual_encoding];
+	encoding_info->max_code_point_size = rt_encoding_max_code_point_sizes[actual_encoding];
 
 #ifdef RT_DEFINE_WINDOWS
 	switch (actual_encoding) {

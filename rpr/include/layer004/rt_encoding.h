@@ -103,7 +103,8 @@ enum rt_encoding {
 struct rt_encoding_info {
 	const rt_char *name;
 	rt_un32 code_page;
-	rt_un max_char_size;
+	rt_un code_unit_size;
+	rt_un max_code_point_size;
 	/* Under Windows, CPINFOEX CodePageName is MAX_PATH. Under Linux the name is used as label. */
 	rt_char label[RT_ENCODING_LABEL_SIZE];
 };
