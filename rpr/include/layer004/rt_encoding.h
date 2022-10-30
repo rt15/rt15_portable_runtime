@@ -129,4 +129,21 @@ rt_s rt_encoding_get_system(enum rt_encoding *encoding);
  */
 rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *encoding_info);
 
+/**
+ * Retrieve the number of code units in <tt>data</tt>.
+ *
+ * <p>
+ * The UTF-16 encoding terminates with 2 zero bytes and the UTF-32 encoding terminates with 4 zero bytes.<br>
+ * </p>
+ *
+ * <p>
+ * Terminating zeros have to be aligned.<br>
+ * For UTF-32, it is by design as each character is 4 bytes.<br>
+ * For UTF-16, a character is either 2 or 4 bytes. If the character is 4 bytes, both bytes couples are never zeros.
+ * </p>
+ *
+ * @return The size of the buffer in code units, not including the terminating zero bytes.
+ */
+rt_un rt_encoding_get_size(const rt_char8 *data, rt_un code_unit_size);
+
 #endif /* RT_ENCODING_H */

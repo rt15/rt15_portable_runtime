@@ -535,3 +535,26 @@ error:
 	ret = RT_FAILED;
 	goto free;
 }
+
+rt_un rt_encoding_get_size(const rt_char8 *data, rt_un code_unit_size)
+{
+	const rt_char8 *chars;
+	const rt_un16 *wide_chars;
+	const rt_un32 *very_wide_chars;
+	rt_un result;
+
+	if (code_unit_size == 2) {
+		wide_chars = (rt_un16*)data;
+		while (*wide_chars++);
+		result = (rt_un)(wide_chars - (rt_un16*)data - 1);
+	} else if (code_unit_size == 4) {
+		very_wide_chars = (rt_un32*)data;
+		while (*very_wide_chars++);
+		result = (rt_un)(very_wide_chars - (rt_un32*)data - 1);
+	} else {
+		chars = data;
+		while (*chars++);
+		result = (rt_un)(chars - data - 1);
+	}
+	return result;
+}
