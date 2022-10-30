@@ -1,6 +1,5 @@
 #include "layer001/rt_memory.h"
 
-
 #ifdef RT_DEFINE_VC
 rt_n32 rt_memory_bit_scan_forward(rt_un x)
 {
@@ -289,4 +288,24 @@ void *rt_memory_set_char16(void *area, rt_n32 value, rt_un size)
 	}
 
 	return area;
+}
+
+rt_un16 *rt_memory_swap_bytes16(const rt_un16 *source, rt_un16 *destination, rt_un size)
+{
+	rt_un i;
+
+	for (i = 0; i < size; i++)
+		destination[i] = RT_MEMORY_SWAP_BYTES16(source[i]);
+
+	return destination;
+}
+
+rt_un32 *rt_memory_swap_bytes32(const rt_un32 *source, rt_un32 *destination, rt_un size)
+{
+	rt_un i;
+
+	for (i = 0; i < size; i++)
+		destination[i] = RT_MEMORY_SWAP_BYTES32(source[i]);
+
+	return destination;
 }

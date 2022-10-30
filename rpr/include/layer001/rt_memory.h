@@ -152,4 +152,28 @@ void rt_memory_swap(void *area1, void *area2, rt_un size);
 
 void *rt_memory_set_char16(void *area, rt_n32 value, rt_un size);
 
+/**
+ * Copy from source to destination, swapping bytes.
+ *
+ * <p>
+ * Useful to convert 16 bits words between big endian and little endian.
+ * </p>
+ *
+ * @param size Size in 16 bits words.
+ * @return The destination in all cases.
+ */
+rt_un16 *rt_memory_swap_bytes16(const rt_un16 *source, rt_un16 *destination, rt_un size);
+
+/**
+ * Copy from source to destination, swapping bytes.
+ *
+ * <p>
+ * Useful to convert 32 bits words between big endian and little endian.
+ * </p>
+ *
+ * @param size Size in 32 bits words.
+ * @return The destination in all cases.
+ */
+rt_un32 *rt_memory_swap_bytes32(const rt_un32 *source, rt_un32 *destination, rt_un size);
+
 #endif /* RT_MEMORY_H */

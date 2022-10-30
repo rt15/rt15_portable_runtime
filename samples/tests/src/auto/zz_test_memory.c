@@ -499,6 +499,54 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_memory_swap_bytes16()
+{
+	rt_char8 data[4] = { 0x02, 0x01, 0x04, 0x03 };
+	rt_un16 *source = (rt_un16*)data;
+	rt_un16 *result;
+	rt_un i;
+	rt_s ret;
+
+	result = rt_memory_swap_bytes16(source, source, 2);
+	if (result != source)
+		goto error;
+
+	for (i = 0; i < 4; i++)
+		if (data[i] != i + 1)
+			goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_memory_swap_bytes32()
+{
+	rt_char8 data[8] = { 0x04, 0x03, 0x02, 0x01, 0x08, 0x07, 0x06, 0x05 };
+	rt_un32 *source = (rt_un32*)data;
+	rt_un32 *result;
+	rt_un i;
+	rt_s ret;
+
+	result = rt_memory_swap_bytes32(source, source, 2);
+	if (result != source)
+		goto error;
+
+	for (i = 0; i < 8; i++)
+		if (data[i] != i + 1)
+			goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s zz_test_memory()
 {
 	rt_s ret;
@@ -513,6 +561,8 @@ rt_s zz_test_memory()
 	if (!zz_test_memory_set_char16()) goto error;
 	if (!zz_test_memory_set_char()) goto error;
 	if (!zz_test_memory_xnor()) goto error;
+	if (!zz_test_memory_swap_bytes16()) goto error;
+	if (!zz_test_memory_swap_bytes32()) goto error;
 
 	ret = RT_OK;
 free:
