@@ -102,6 +102,7 @@ static rt_s zz_test_encoding_get_info()
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_IBM871,		_R("RT_ENCODING_IBM871")))		goto error;
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_IBM880,		_R("RT_ENCODING_IBM880")))		goto error;
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_IBM905,		_R("RT_ENCODING_IBM905")))		goto error;
+	if (!zz_test_encoding_get_info_do(RT_ENCODING_EUC_JP,		_R("RT_ENCODING_EUC_JP")))		goto error;
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_KOI8_U,		_R("RT_ENCODING_KOI8_U")))		goto error;
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_ISO_8859_1,	_R("RT_ENCODING_ISO_8859_1")))		goto error;
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_ISO_8859_2,	_R("RT_ENCODING_ISO_8859_2")))		goto error;
@@ -117,8 +118,6 @@ static rt_s zz_test_encoding_get_info()
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_ISO_2022_JP,	_R("RT_ENCODING_ISO_2022_JP")))		goto error;
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_CS_ISO_2022_JP,	_R("RT_ENCODING_CS_ISO_2022_JP")))	goto error;
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_ISO_2022_KR,	_R("RT_ENCODING_ISO_2022_KR")))		goto error;
-	if (!zz_test_encoding_get_info_do(RT_ENCODING_EUC_JP,		_R("RT_ENCODING_EUC_JP")))		goto error;
-	if (!zz_test_encoding_get_info_do(RT_ENCODING_EUC_CN,		_R("RT_ENCODING_EUC_CN")))		goto error;
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_EUC_KR,		_R("RT_ENCODING_EUC_KR")))		goto error;
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_HZ_GB2312,	_R("RT_ENCODING_HZ_GB2312")))		goto error;
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_GB18030,		_R("RT_ENCODING_GB18030")))		goto error;

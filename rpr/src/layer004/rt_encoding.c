@@ -1,11 +1,55 @@
 #include "layer004/rt_encoding.h"
 
+#include "layer001/rt_memory.h"
 #include "layer001/rt_os_headers.h"
 #include "layer002/rt_error.h"
 #include "layer003/rt_char.h"
 #include "layer003/rt_fast_initialization.h"
 
-static const rt_un32 rt_encoding_code_pages[RT_ENCODING_ENCODINGS_COUNT] = {
+/**
+ * @file
+ *
+ * <p>
+ * It would be pretty hard to implement a input/output encoding streams.<br>
+ * For example an issue is that multiple UTF-8 characters (actually code points) can be equivalent to one character in the other encoding.<br>
+ * For example, "é" can be encoded as 0xC3, 0xA9, one code point and two bytes.<br>
+ * But it can also be encoded as e + acute accent, 0x65, 0xCC, 0x81, two code points, the first of one byte, the second of two bytes.<br>
+ * This can cause issue while encoding from UTF-16 or UTF-8 to ISO-8859-1 because the 'e' can be sent to the output stream alone and the accent later on.<br>
+ * But it may not that much of an issue because it is already how WideCharToMultiByte/MultiByteToWideChar work today.<br>
+ * They do not correctly handle this case of further accent.
+ * </p>
+ *
+ * <p>
+ * Unlike iconv, WideCharToMultiByte/MultiByteToWideChar are not detecting if the input ends with an incomplete character.<br>
+ * As a result, the input must be cut before the incomplete character.<br>
+ * IsDBCSLeadByteEx is a function that would help to do so, but it supports only some DBCS (Double Byte Char String) encodings, so not UTF-8 and some others.
+ * IsDBCSLeadByteEx returns TRUE if a second byte is expected after the given one.<br>
+ * IsDBCSLeadByteEx should work on encodings for which LeadByte field of CPINFOEX structure returned by GetCPInfoEx is set:<br>
+ * RT_ENCODING_SHIFT_JIS<br>
+ * RT_ENCODING_GB2312<br>
+ * RT_ENCODING_CP949<br>
+ * RT_ENCODING_BIG5<br>
+ * RT_ENCODING_CP1361<br>
+ * RT_ENCODING_T_61<br>
+ * RT_ENCODING_EUC_JP<br>
+ * RT_ENCODING_EUC_KR<br>
+ * Notice that as explained in the documentation, all these encodings have a maximum of two bytes per character.
+ * </p>
+ *
+ * <p>
+ * Following encodings are not supported by IsDBCSLeadByteEx:<br>
+ * RT_ENCODING_ISO_2022_JP<br>
+ * RT_ENCODING_CS_ISO_2022_JP<br>
+ * RT_ENCODING_ISO_2022_KR<br>
+ * RT_ENCODING_HZ_GB2312<br>
+ * RT_ENCODING_GB18030<br>
+ * RT_ENCODING_UTF_7<br>
+ * IsDBCSLeadByteEx should returns FALSE regardless of the given character.<br>
+ * A custom implementation would have to be made for UTF-8/16/32, also taking into account the BOM.
+ * </p>
+ */
+
+static const rt_un16 rt_encoding_code_pages[RT_ENCODING_ENCODINGS_COUNT] = {
 	0,      /* System ANSI code page (CP_ACP).	*/
 	37,     /* RT_ENCODING_IBM037.			*/
 	437,    /* RT_ENCODING_IBM437.			*/
@@ -68,6 +112,7 @@ static const rt_un32 rt_encoding_code_pages[RT_ENCODING_ENCODINGS_COUNT] = {
 	20871,  /* RT_ENCODING_IBM871.			*/
 	20880,  /* RT_ENCODING_IBM880.			*/
 	20905,  /* RT_ENCODING_IBM905.			*/
+	20932,  /* RT_ENCODING_EUC_JP.			*/
 	21866,  /* RT_ENCODING_KOI8_U.			*/
 	28591,  /* RT_ENCODING_ISO_8859_1.		*/
 	28592,  /* RT_ENCODING_ISO_8859_2.		*/
@@ -83,8 +128,6 @@ static const rt_un32 rt_encoding_code_pages[RT_ENCODING_ENCODINGS_COUNT] = {
 	50220,  /* RT_ENCODING_ISO_2022_JP.		*/
 	50221,  /* RT_ENCODING_CS_ISO_2022_JP.		*/
 	50225,  /* RT_ENCODING_ISO_2022_KR.		*/
-	51932,  /* RT_ENCODING_EUC_JP.			*/
-	51936,  /* RT_ENCODING_EUC_CN.			*/
 	51949,  /* RT_ENCODING_EUC_KR.			*/
 	52936,  /* RT_ENCODING_HZ_GB2312.		*/
 	54936,  /* RT_ENCODING_GB18030.			*/
@@ -155,6 +198,7 @@ static const rt_char *const rt_encoding_code_names[RT_ENCODING_ENCODINGS_COUNT] 
 	_R("IBM871"),		/* RT_ENCODING_IBM871.		*/
 	_R("IBM880"),		/* RT_ENCODING_IBM880.		*/
 	_R("IBM905"),		/* RT_ENCODING_IBM905.		*/
+	_R("EUC-JP"),		/* RT_ENCODING_EUC_JP.		*/
 	_R("KOI8-U"),		/* RT_ENCODING_KOI8_U.		*/
 	_R("ISO-8859-1"),	/* RT_ENCODING_ISO_8859_1.	*/
 	_R("ISO-8859-2"),	/* RT_ENCODING_ISO_8859_2.	*/
@@ -170,8 +214,6 @@ static const rt_char *const rt_encoding_code_names[RT_ENCODING_ENCODINGS_COUNT] 
 	_R("ISO-2022-JP"),	/* RT_ENCODING_ISO_2022_JP.	*/
 	_R("CSISO2022JP"),	/* RT_ENCODING_CS_ISO_2022_JP.	*/
 	_R("ISO-2022-KR"),	/* RT_ENCODING_ISO_2022_KR.	*/
-	_R("EUC-JP"),		/* RT_ENCODING_EUC_JP.		*/
-	_R("EUC-CN"),		/* RT_ENCODING_EUC_CN.		*/
 	_R("EUC-KR"),		/* RT_ENCODING_EUC_KR.		*/
 	_R("GB2312"),		/* RT_ENCODING_HZ_GB2312.	*/
 	_R("GB18030"),		/* RT_ENCODING_GB18030.		*/
@@ -179,7 +221,7 @@ static const rt_char *const rt_encoding_code_names[RT_ENCODING_ENCODINGS_COUNT] 
 	_R("UTF-8")		/* RT_ENCODING_UTF_8.		*/
 };
 
-static const rt_un rt_encoding_code_unit_sizes[RT_ENCODING_ENCODINGS_COUNT] = {
+static const rt_uchar8 rt_encoding_code_unit_sizes[RT_ENCODING_ENCODINGS_COUNT] = {
 	0, /* RT_ENCODING_SYSTEM_DEFAULT.	*/
 	1, /* RT_ENCODING_IBM037.		*/
 	1, /* RT_ENCODING_IBM437.		*/
@@ -242,6 +284,7 @@ static const rt_un rt_encoding_code_unit_sizes[RT_ENCODING_ENCODINGS_COUNT] = {
 	1, /* RT_ENCODING_IBM871.		*/
 	1, /* RT_ENCODING_IBM880.		*/
 	1, /* RT_ENCODING_IBM905.		*/
+	1, /* RT_ENCODING_EUC_JP.		*/
 	1, /* RT_ENCODING_KOI8_U.		*/
 	1, /* RT_ENCODING_ISO_8859_1.		*/
 	1, /* RT_ENCODING_ISO_8859_2.		*/
@@ -257,8 +300,6 @@ static const rt_un rt_encoding_code_unit_sizes[RT_ENCODING_ENCODINGS_COUNT] = {
 	1, /* RT_ENCODING_ISO_2022_JP.		*/
 	1, /* RT_ENCODING_CS_ISO_2022_JP.	*/
 	1, /* RT_ENCODING_ISO_2022_KR.		*/
-	1, /* RT_ENCODING_EUC_JP.		*/
-	1, /* RT_ENCODING_EUC_CN.		*/
 	1, /* RT_ENCODING_EUC_KR.		*/
 	1, /* RT_ENCODING_HZ_GB2312.		*/
 	1, /* RT_ENCODING_GB18030.		*/
@@ -266,7 +307,7 @@ static const rt_un rt_encoding_code_unit_sizes[RT_ENCODING_ENCODINGS_COUNT] = {
 	1  /* RT_ENCODING_UTF_8.		*/
 };
 
-static const rt_un rt_encoding_max_code_point_sizes[RT_ENCODING_ENCODINGS_COUNT] = {
+static const rt_uchar8 rt_encoding_max_code_point_sizes[RT_ENCODING_ENCODINGS_COUNT] = {
 	0, /* RT_ENCODING_SYSTEM_DEFAULT.	*/
 	1, /* RT_ENCODING_IBM037.		*/
 	1, /* RT_ENCODING_IBM437.		*/
@@ -329,6 +370,7 @@ static const rt_un rt_encoding_max_code_point_sizes[RT_ENCODING_ENCODINGS_COUNT]
 	1, /* RT_ENCODING_IBM871.		*/
 	1, /* RT_ENCODING_IBM880.		*/
 	1, /* RT_ENCODING_IBM905.		*/
+	2, /* RT_ENCODING_EUC_JP.		*/
 	1, /* RT_ENCODING_KOI8_U.		*/
 	1, /* RT_ENCODING_ISO_8859_1.		*/
 	1, /* RT_ENCODING_ISO_8859_2.		*/
@@ -344,8 +386,6 @@ static const rt_un rt_encoding_max_code_point_sizes[RT_ENCODING_ENCODINGS_COUNT]
 	5, /* RT_ENCODING_ISO_2022_JP.		*/
 	5, /* RT_ENCODING_CS_ISO_2022_JP.	*/
 	5, /* RT_ENCODING_ISO_2022_KR.		*/
-	3, /* RT_ENCODING_EUC_JP.		*/
-	2, /* RT_ENCODING_EUC_CN.		*/
 	2, /* RT_ENCODING_EUC_KR.		*/
 	5, /* RT_ENCODING_HZ_GB2312.		*/
 	4, /* RT_ENCODING_GB18030.		*/
@@ -454,6 +494,32 @@ error:
 	goto free;
 }
 
+/**
+ * Returns actual encoding if <tt>encoding</tt> is <tt>RT_ENCODING_SYSTEM_DEFAULT</tt>.
+ */
+static rt_s rt_encoding_get_actual(enum rt_encoding encoding, enum rt_encoding *actual_encoding)
+{
+	rt_s ret;
+
+	if (encoding == RT_ENCODING_SYSTEM_DEFAULT) {
+		if (!rt_encoding_get_system(actual_encoding))
+			goto error;
+	} else if (encoding < RT_ENCODING_ENCODINGS_COUNT) {
+		*actual_encoding = encoding;
+	} else {
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *encoding_info)
 {
 #ifdef RT_DEFINE_WINDOWS
@@ -462,15 +528,8 @@ rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *en
 	enum rt_encoding actual_encoding;
 	rt_s ret;
 
-	if (encoding == RT_ENCODING_SYSTEM_DEFAULT) {
-		if (!rt_encoding_get_system(&actual_encoding))
-			goto error;
-	} else if (encoding < RT_ENCODING_ENCODINGS_COUNT) {
-		actual_encoding = encoding;
-	} else {
-		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+	if (!rt_encoding_get_actual(encoding, &actual_encoding))
 		goto error;
-	}
 
 	encoding_info->code_page = rt_encoding_code_pages[actual_encoding];
 	encoding_info->name = rt_encoding_code_names[actual_encoding];
@@ -501,14 +560,6 @@ rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *en
 		break;
 	case RT_ENCODING_UTF_32BE:
 		if (!rt_char_copy(_R("12001 (UTF-32 big-endian)"), 25, encoding_info->label, RT_ENCODING_LABEL_SIZE))
-			goto error;
-		break;
-	case RT_ENCODING_EUC_JP:
-		if (!rt_char_copy(_R("51932 (EUC-japanese)"), 20, encoding_info->label, RT_ENCODING_LABEL_SIZE))
-			goto error;
-		break;
-	case RT_ENCODING_EUC_CN:
-		if (!rt_char_copy(_R("51936 (EUC-chinese)"), 19, encoding_info->label, RT_ENCODING_LABEL_SIZE))
 			goto error;
 		break;
 	default:
@@ -557,4 +608,632 @@ rt_un rt_encoding_get_size(const rt_char8 *data, rt_un code_unit_size)
 		result = (rt_un)(chars - data - 1);
 	}
 	return result;
+}
+
+#ifdef RT_DEFINE_WINDOWS
+
+/**
+ * Simple affectation, "1 2" -> "0 0 1 2".
+ */
+static void rt_encoding_copy_16_le_to_32_le(const rt_un16 *source, rt_un32 *destination, rt_un size)
+{
+	rt_un i;
+
+	for (i = 0; i < size; i++)
+		destination[i] = source[i];
+}
+
+/**
+ * Affectation then 32 bits swap, "1 2" -> "2 1 0 0".
+ */
+static void rt_encoding_copy_16_le_to_32_be(const rt_un16 *source, rt_un32 *destination, rt_un size)
+{
+	rt_un i;
+
+	for (i = 0; i < size; i++)
+		destination[i] = RT_MEMORY_SWAP_BYTES32((rt_un32)source[i]);
+}
+
+/**
+ * Swap then affectation, "2 1" -> "0 0 1 2".
+ */
+static void rt_encoding_copy_16_be_to_32_le(const rt_un16 *source, rt_un32 *destination, rt_un size)
+{
+	rt_un i;
+
+	for (i = 0; i < size; i++)
+		destination[i] = RT_MEMORY_SWAP_BYTES16(source[i]);
+}
+
+/**
+ * Affect to high bytes, "2 1" -> "2 1 0 0".
+ */
+static void rt_encoding_copy_16_be_to_32_be(const rt_un16 *source, rt_un32 *destination, rt_un size)
+{
+	rt_un i;
+
+	for (i = 0; i < size; i++)
+		((rt_un16*)(&destination[i]))[1] = source[i];
+}
+
+/**
+ * Simple affectation, "0 0 1 2" -> "1 2".
+ */
+static void rt_encoding_copy_32_le_to_16_le(const rt_un32 *source, rt_un16 *destination, rt_un size)
+{
+	rt_un i;
+
+	for (i = 0; i < size; i++)
+		destination[i] = (rt_un16)source[i];
+}
+
+/**
+ * Affectation then swap, "0 0 1 2" -> "2 1".
+ */
+static void rt_encoding_copy_32_le_to_16_be(const rt_un32 *source, rt_un16 *destination, rt_un size)
+{
+	rt_un i;
+
+	for (i = 0; i < size; i++)
+		destination[i] = RT_MEMORY_SWAP_BYTES16((rt_un16)source[i]);
+}
+
+/**
+ * Swap then affectation, "2 1 0 0" -> "1 2".
+ */
+static void rt_encoding_copy_32_be_to_16_le(const rt_un32 *source, rt_un16 *destination, rt_un size)
+{
+	rt_un i;
+
+	for (i = 0; i < size; i++)
+		destination[i] = (rt_un16)RT_MEMORY_SWAP_BYTES32(source[i]);
+}
+
+/**
+ * Affect from high bytes, "2 1 0 0" -> "2 1".
+ */
+static void rt_encoding_copy_32_be_to_16_be(const rt_un32 *source, rt_un16 *destination, rt_un size)
+{
+	rt_un i;
+
+	for (i = 0; i < size; i++)
+		destination[i] = ((rt_un16*)&source[i])[1];
+}
+
+static rt_s rt_encoding_encode_using_windows(const rt_char *input, rt_un input_size, enum rt_encoding output_encoding, rt_char8 *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char8 **output, rt_un *output_size, struct rt_heap *heap)
+{
+	UINT code_page;
+	rt_b use_heap = RT_FALSE;
+	int actual_buffer_capacity;
+	rt_un heap_buffer_size;
+	int length;
+	rt_s ret;
+
+	/* If the default encoding is used, then the code page is CP_ACP (0) which is supported by WideCharToMultiByte. */
+	code_page = rt_encoding_code_pages[output_encoding];
+
+	if (buffer) {
+
+		/* WideCharToMultiByte will not write the terminating zero, so we must save space for it. */
+		actual_buffer_capacity = (int)buffer_capacity - 1;
+
+		length = WideCharToMultiByte(code_page, 0, input, (int)input_size, buffer, actual_buffer_capacity, RT_NULL, RT_NULL);
+		/* In case of issue, WideCharToMultiByte returns zero and set last error. */
+		if (length) {
+			*output_size = length;
+			/* WideCharToMultiByte does not write a zero terminating character. */
+			/* WideCharToMultiByte only supports encodings with 1 zero terminating character (not UTF-16 and not UTF-32). */
+			buffer[length] = 0;
+
+			/* Provided buffer was good enough. */
+			*output = buffer;
+		} else {
+			if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+				/* The provided buffer was not enough, use the heap. */
+				use_heap = RT_TRUE;
+			} else {
+				goto error;
+			}
+		}
+	} else {
+		/* No buffer has been provided, use the heap. */
+		use_heap = RT_TRUE;
+	}
+
+	if (use_heap) {
+
+		/* The provided buffer was not enough, use the heap if available. */
+		if (heap) {
+			/* Compute the required buffer size. */
+			length = WideCharToMultiByte(code_page, 0, input, (int)input_size, RT_NULL, 0, RT_NULL, RT_NULL);
+			if (!length) {
+				goto error;
+			} else {
+
+				/* We need space for the terminating zero. */
+				heap_buffer_size = length + 1;
+
+				if (rt_heap_alloc_if_needed(RT_NULL, 0, heap_buffer, heap_buffer_capacity, (void**)output, heap_buffer_size, heap)) {
+
+					length = WideCharToMultiByte(code_page, 0, input, (int)input_size, *output, length, RT_NULL, RT_NULL);
+					if (!length)
+						goto error;
+					/* Output size is the size of the buffer minus the terminating zero. */
+					*output_size = heap_buffer_size - 1;
+
+					/* WideCharToMultiByte does not write a zero terminating character. */
+					/* WideCharToMultiByte only supports encodings with 1 zero terminating character (not UTF-16 and not UTF-32). */
+					(*output)[length] = 0;
+
+				} else {
+					/* Allocation failed. */
+					goto error;
+				}
+			}
+		} else {
+			/* Buffer was too small and no heap has been provided. */
+			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
+			goto error;
+		}
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s rt_encoding_decode_using_windows(const rt_char8 *input, rt_un input_size, enum rt_encoding input_encoding, rt_char *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char **output, rt_un *output_size, struct rt_heap *heap)
+{
+	UINT code_page;
+	rt_b use_heap = RT_FALSE;
+	int actual_buffer_capacity;
+	rt_un heap_buffer_size;
+	int length;
+	rt_s ret;
+
+	/* If the default encoding is used, then the code page is CP_ACP (0) which is supported by MultiByteToWideChar. */
+	code_page = rt_encoding_code_pages[input_encoding];
+
+	if (buffer) {
+
+		/* MultiByteToWideChar will not write the terminating zero, so we must save space for it. */
+		actual_buffer_capacity = (int)buffer_capacity - 1;
+
+		length = MultiByteToWideChar(code_page, 0, input, (int)input_size, buffer, actual_buffer_capacity);
+		/* In case of issue, MultiByteToWideChar returns zero and set last error. */
+		if (length) {
+
+			*output_size = length;
+			/* MultiByteToWideChar does not write a zero terminating character. */
+			buffer[length] = 0;
+
+			/* Provided buffer was good enough. */
+			*output = buffer;
+		} else {
+			if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+				/* The provided buffer was not enough, use the heap. */
+				use_heap = RT_TRUE;
+			} else {
+				goto error;
+			}
+		}
+	} else {
+		/* No buffer has been provided, use the heap. */
+		use_heap = RT_TRUE;
+	}
+
+	if (use_heap) {
+
+		/* The provided buffer was not enough, use the heap if available. */
+		if (heap) {
+			/* Compute the required buffer size. */
+			length = MultiByteToWideChar(code_page, 0, input, (int)input_size, RT_NULL, 0);
+			if (!length) {
+				goto error;
+			} else {
+
+				/* We need space for the terminating zero. */
+				heap_buffer_size = length + 1;
+
+				if (rt_heap_alloc_if_needed(RT_NULL, 0, heap_buffer, heap_buffer_capacity, (void**)output, heap_buffer_size * sizeof(rt_char), heap)) {
+
+					length = MultiByteToWideChar(code_page, 0, input, (int)input_size, *output, length);
+					if (!length)
+						goto error;
+					/* Output size is the size of the buffer minus the terminating zero. */
+					*output_size = heap_buffer_size - 1;
+
+					/* MultiByteToWideChar does not write a zero terminating character. */
+					(*output)[length] = 0;
+
+				} else {
+					/* Allocation failed. */
+					goto error;
+				}
+			}
+		} else {
+			/* Buffer was too small and no heap has been provided. */
+			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
+			goto error;
+		}
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+/**
+ * Windows WideCharToMultiByte/MultiByteToWideChar does not manage UTF-16/UTF-32 conversions.<br>
+ * This is done by this function.
+ *
+ * @param input Input without BOM. Must not be considered zero terminated.
+ * @param input_size Input size in characters.
+ * @param input_encoding Input encoding (with endianness).
+ * @param input_code_unit_size Size of input characters.
+ * @param output_encoding Output encoding (with optional endianess).
+ * @param output_code_unit_size Size of output characters.
+ * @param buffer_capacity Size of the buffer, in bytes.
+ * @param output_size Receive the output size, in bytes, including the BOM if any.
+ */
+static rt_un rt_encoding_encode_or_decode_unicode_without_bom(const rt_char8 *input, rt_un input_size, enum rt_encoding input_encoding, rt_un input_code_unit_size, enum rt_encoding output_encoding, rt_un output_code_unit_size, rt_char8 *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char8 **output, rt_un *output_size, struct rt_heap *heap)
+{
+	rt_un local_output_size;
+	rt_char8 *output_payload; /* Pointer on output after optional BOM. */
+	rt_un i;
+	rt_s ret;
+
+	if ((output_encoding == RT_ENCODING_UTF_16) ||
+	    (output_encoding == RT_ENCODING_UTF_32)) {
+		/* There is no more BOM in input, but we need space for one in output. */
+		local_output_size = input_size + 1;
+	} else {
+		local_output_size = input_size;
+	}
+
+	/* Allocate resulting buffer, adding one for zero terminating character. */
+	if (!rt_heap_alloc_if_needed(buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, (void**)output, (local_output_size + 1) * output_code_unit_size, heap))
+		goto error;
+
+	/* Add little endian BOM if needed and set output payload pointer. */
+	if (output_encoding == RT_ENCODING_UTF_16) {
+		/* Always assume little endian on Windows. */
+		(*output)[0] = (rt_char8)0xFF;
+		(*output)[1] = (rt_char8)0xFE;
+		output_payload = &(*output)[2];
+	} else if (output_encoding == RT_ENCODING_UTF_32) {
+		/* Always assume little endian on Windows. */
+		(*output)[0] = (rt_char8)0xFF;
+		(*output)[1] = (rt_char8)0xFE;
+		(*output)[2] = (rt_char8)0x00;
+		(*output)[3] = (rt_char8)0x00;
+		output_payload = &(*output)[4];
+	} else {
+		output_payload = *output;
+	}
+
+	switch (input_encoding) {
+	case RT_ENCODING_UTF_16LE:
+		switch (output_encoding) {
+		case RT_ENCODING_UTF_16:
+		case RT_ENCODING_UTF_16LE:
+			/* No transformation. */
+			RT_MEMORY_COPY(input, output_payload, input_size * input_code_unit_size);
+			break;
+		case RT_ENCODING_UTF_16BE:
+			/* Swap 16. */
+			rt_memory_swap_bytes16((rt_un16*)input, (rt_un16*)output_payload, input_size);
+			break;
+		case RT_ENCODING_UTF_32:
+		case RT_ENCODING_UTF_32LE:
+			rt_encoding_copy_16_le_to_32_le((rt_un16*)input, (rt_un32*)output_payload, input_size);
+			break;
+		case RT_ENCODING_UTF_32BE:
+			rt_encoding_copy_16_le_to_32_be((rt_un16*)input, (rt_un32*)output_payload, input_size);
+			break;
+		default:
+			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+			goto error;
+		}
+		break;
+	case RT_ENCODING_UTF_16BE:
+		switch (output_encoding) {
+		case RT_ENCODING_UTF_16:
+		case RT_ENCODING_UTF_16LE:
+			/* Swap 16. */
+			rt_memory_swap_bytes16((rt_un16*)input, (rt_un16*)output_payload, input_size);
+			break;
+		case RT_ENCODING_UTF_16BE:
+			/* No transformation. */
+			RT_MEMORY_COPY(input, output_payload, input_size * input_code_unit_size);
+			break;
+		case RT_ENCODING_UTF_32:
+		case RT_ENCODING_UTF_32LE:
+			rt_encoding_copy_16_be_to_32_le((rt_un16*)input, (rt_un32*)output_payload, input_size);
+			break;
+		case RT_ENCODING_UTF_32BE:
+			rt_encoding_copy_16_be_to_32_be((rt_un16*)input, (rt_un32*)output_payload, input_size);
+			break;
+		default:
+			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+			goto error;
+		}
+		break;
+	case RT_ENCODING_UTF_32LE:
+		switch (output_encoding) {
+		case RT_ENCODING_UTF_16:
+		case RT_ENCODING_UTF_16LE:
+			rt_encoding_copy_32_le_to_16_le((rt_un32*)input, (rt_un16*)output_payload, input_size);
+			break;
+		case RT_ENCODING_UTF_16BE:
+			rt_encoding_copy_32_le_to_16_be((rt_un32*)input, (rt_un16*)output_payload, input_size);
+			break;
+		case RT_ENCODING_UTF_32:
+		case RT_ENCODING_UTF_32LE:
+			/* No transformation. */
+			RT_MEMORY_COPY(input, output_payload, input_size * input_code_unit_size);
+			break;
+		case RT_ENCODING_UTF_32BE:
+			/* Swap 32. */
+			rt_memory_swap_bytes32((rt_un32*)input, (rt_un32*)output_payload, input_size);
+			break;
+		default:
+			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+			goto error;
+		}
+		break;
+	case RT_ENCODING_UTF_32BE:
+		switch (output_encoding) {
+		case RT_ENCODING_UTF_16:
+		case RT_ENCODING_UTF_16LE:
+			rt_encoding_copy_32_be_to_16_le((rt_un32*)input, (rt_un16*)output_payload, input_size);
+			break;
+		case RT_ENCODING_UTF_16BE:
+			rt_encoding_copy_32_be_to_16_be((rt_un32*)input, (rt_un16*)output_payload, input_size);
+			break;
+		case RT_ENCODING_UTF_32:
+		case RT_ENCODING_UTF_32LE:
+			/* Swap 32. */
+			rt_memory_swap_bytes32((rt_un32*)input, (rt_un32*)output_payload, input_size);
+			break;
+		case RT_ENCODING_UTF_32BE:
+			/* No transformation. */
+			RT_MEMORY_COPY(input, output_payload, input_size * input_code_unit_size);
+			break;
+		default:
+			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+			goto error;
+		}
+		break;
+	default:
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
+	}
+
+	/* Returned output size is the size in bytes without counting the zero terminating bytes. */
+	local_output_size = local_output_size * output_code_unit_size;
+	*output_size = local_output_size;
+
+	/* Add terminating zero bytes. */
+	for (i = 0; i < output_code_unit_size; i++)
+		(*output)[local_output_size + i] = 0;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+/**
+ * Windows WideCharToMultiByte/MultiByteToWideChar does not manage UTF-16/UTF-32 conversions.<br>
+ * This is done by this function that manages input BOM (if needed) and call <tt>rt_encoding_encode_or_decode_unicode_without_bom</tt>.
+ *
+ * @param input Input with or without BOM. Must not be considered zero terminated.
+ * @param input_size Input size in characters.
+ * @param input_encoding Input encoding (with optional endianness).
+ * @param input_code_unit_size Size of input characters.
+ * @param output_encoding Output encoding (with optional endianess).
+ * @param output_code_unit_size Size of output characters.
+ * @param buffer_capacity Size of the buffer, in bytes.
+ * @param output_size Receive the output size, in bytes, including the BOM if any.
+ */
+static rt_un rt_encoding_encode_or_decode_unicode(const rt_char8 *input, rt_un input_size, enum rt_encoding input_encoding, rt_un input_code_unit_size, enum rt_encoding output_encoding, rt_un output_code_unit_size, rt_char8 *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char8 **output, rt_un *output_size, struct rt_heap *heap)
+{
+	const rt_char8 *input_payload; /* Pointer on input after optional BOM. */
+	rt_un input_payload_size;
+	rt_un input_payload_encoding; /* Input encoding with endianness. */
+	rt_s ret;
+
+	if (input_encoding == RT_ENCODING_UTF_16) {
+		/* We already checked that size is > 0. */
+		if (((rt_uchar8)input[0] == 0xFF) && ((rt_uchar8)input[1] == 0xFE)) {
+			input_payload_encoding = RT_ENCODING_UTF_16LE;
+		} else if (((rt_uchar8)input[0] == 0xFE) && ((rt_uchar8)input[1] == 0xFF)) {
+			input_payload_encoding = RT_ENCODING_UTF_16BE;
+		} else {
+			/* Invalid BOM. */
+			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+			goto error;
+		}
+
+		/* Skip BOM. */
+		input_payload = &input[2];
+
+		/* Remove BOM from size. */
+		input_payload_size = input_size - 1;
+	} else if (input_encoding == RT_ENCODING_UTF_32) {
+		/* We already checked that size is > 0. */
+		if (((rt_uchar8)input[0] == 0xFF) && ((rt_uchar8)input[1] == 0xFE) && ((rt_uchar8)input[2] == 0x00) && ((rt_uchar8)input[3] == 0x00)) {
+			input_payload_encoding = RT_ENCODING_UTF_32LE;
+		} else if (((rt_uchar8)input[0] == 0x00) && ((rt_uchar8)input[1] == 0x00) && ((rt_uchar8)input[2] == 0xFE) && ((rt_uchar8)input[3] == 0xFF)) {
+			input_payload_encoding = RT_ENCODING_UTF_32BE;
+		} else {
+			/* Invalid BOM. */
+			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+			goto error;
+		}
+
+		/* Skip BOM. */
+		input_payload = &input[4];
+
+		/* Remove BOM from size. */
+		input_payload_size = input_size - 1;
+	} else {
+		/* No BOM for given encoding. */
+		input_payload_encoding = input_encoding;
+		input_payload = input;
+		input_payload_size = input_size;
+	}
+
+	if (!rt_encoding_encode_or_decode_unicode_without_bom(input_payload, input_payload_size, input_payload_encoding, input_code_unit_size, output_encoding, output_code_unit_size, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap))
+		goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+#endif
+
+rt_s rt_encoding_encode(const rt_char *input, rt_un input_size, enum rt_encoding output_encoding, rt_char8 *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char8 **output, rt_un *output_size, struct rt_heap *heap)
+{
+	rt_un output_code_unit_size;
+	rt_un empty_size;
+	rt_s ret;
+
+	if (input_size) {
+		if ((output_encoding == RT_ENCODING_UTF_16)   ||
+		    (output_encoding == RT_ENCODING_UTF_16LE) ||
+		    (output_encoding == RT_ENCODING_UTF_16BE) ||
+		    (output_encoding == RT_ENCODING_UTF_32)   ||
+		    (output_encoding == RT_ENCODING_UTF_32LE) ||
+		    (output_encoding == RT_ENCODING_UTF_32BE)) {
+
+				output_code_unit_size = rt_encoding_code_unit_sizes[output_encoding];
+
+				if (!rt_encoding_encode_or_decode_unicode((rt_char8*)input, input_size, RT_ENCODING_UTF_16LE, sizeof(rt_char), output_encoding, output_code_unit_size, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap))
+					goto error;
+		} else {
+			if (!rt_encoding_encode_using_windows(input, input_size, output_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap))
+				goto error;
+		}
+	} else {
+		if (output_encoding == RT_ENCODING_UTF_16)
+			empty_size = 4;
+		else if (output_encoding == RT_ENCODING_UTF_32)
+			empty_size = 8;
+		else if (output_encoding == RT_ENCODING_UTF_16LE ||
+			 output_encoding == RT_ENCODING_UTF_16BE)
+			empty_size = 2;
+		else if (output_encoding == RT_ENCODING_UTF_32LE ||
+			 output_encoding == RT_ENCODING_UTF_32BE)
+			empty_size = 4;
+		else
+			empty_size = 1;
+
+		/* Empty input, just write the terminating zero. */
+		if (!rt_heap_alloc_if_needed(buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, (void**)output, empty_size, heap))
+			goto error;
+
+		if (output_encoding == RT_ENCODING_UTF_16) {
+			(*output)[0] = (rt_char8)0xFF;
+			(*output)[1] = (rt_char8)0xFE;
+			(*output)[2] = (rt_char8)0x00;
+			(*output)[3] = (rt_char8)0x00;
+			*output_size = 2;
+		} else if (output_encoding == RT_ENCODING_UTF_32) {
+			(*output)[0] = (rt_char8)0xFF;
+			(*output)[1] = (rt_char8)0xFE;
+			(*output)[2] = (rt_char8)0x00;
+			(*output)[3] = (rt_char8)0x00;
+			(*output)[4] = (rt_char8)0x00;
+			(*output)[5] = (rt_char8)0x00;
+			(*output)[6] = (rt_char8)0x00;
+			(*output)[7] = (rt_char8)0x00;
+			*output_size = 4;
+		} else if (output_encoding == RT_ENCODING_UTF_16LE ||
+			   output_encoding == RT_ENCODING_UTF_16BE) {
+			(*output)[0] = 0;
+			(*output)[1] = 0;
+			*output_size = 0;
+		} else if (output_encoding == RT_ENCODING_UTF_32LE ||
+			   output_encoding == RT_ENCODING_UTF_32BE) {
+			(*output)[0] = 0;
+			(*output)[1] = 0;
+			(*output)[2] = 0;
+			(*output)[3] = 0;
+			*output_size = 0;
+		} else {
+			(*output)[0] = 0;
+			*output_size = 0;
+		}
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_encoding_decode(const rt_char8 *input, rt_un input_size, enum rt_encoding input_encoding, rt_char *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char **output, rt_un *output_size, struct rt_heap *heap)
+{
+	rt_un input_code_unit_size;
+	rt_un actual_input_size;
+	rt_s ret;
+
+	if (input_size) {
+		if ((input_encoding == RT_ENCODING_UTF_16)   ||
+		    (input_encoding == RT_ENCODING_UTF_16LE) ||
+		    (input_encoding == RT_ENCODING_UTF_16BE) ||
+		    (input_encoding == RT_ENCODING_UTF_32)   ||
+		    (input_encoding == RT_ENCODING_UTF_32LE) ||
+		    (input_encoding == RT_ENCODING_UTF_32BE)) {
+
+			input_code_unit_size = rt_encoding_code_unit_sizes[input_encoding];
+
+			actual_input_size = input_size / input_code_unit_size;
+
+			if (!rt_encoding_encode_or_decode_unicode(input, actual_input_size, input_encoding, input_code_unit_size, RT_ENCODING_UTF_16LE, sizeof(rt_char), (rt_char8*)buffer, buffer_capacity * sizeof(rt_char), heap_buffer, heap_buffer_capacity, (rt_char8**)output, output_size, heap))
+				goto error;
+
+			(*output_size) /= sizeof(rt_char);
+
+		} else {
+			if (!rt_encoding_decode_using_windows(input, input_size, input_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap))
+				goto error;
+		}
+	} else {
+		/* Empty input, just write the terminating zero. */
+		if (!rt_heap_alloc_if_needed(buffer, buffer_capacity * sizeof(rt_char), heap_buffer, heap_buffer_capacity, (void**)output, sizeof(rt_char), heap))
+			goto error;
+
+		(*output)[0] = 0;
+		*output_size = 0;
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
 }

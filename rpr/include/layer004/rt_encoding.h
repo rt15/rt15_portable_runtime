@@ -2,11 +2,13 @@
 #define RT_ENCODING_H
 
 #include "layer000/rt_types.h"
+#include "layer003/rt_heap.h"
 
-#define RT_ENCODING_ENCODINGS_COUNT 84
+#define RT_ENCODING_ENCODINGS_COUNT 83
 #define RT_ENCODING_LABEL_SIZE 260
 
 /**
+ * Enumeration of supported encodings.
  *
  * <p>
  * Enumeration names are based on Windows code page names.
@@ -75,6 +77,7 @@ enum rt_encoding {
 	RT_ENCODING_IBM871,		/* IBM EBCDIC (Icelandic).					*/
 	RT_ENCODING_IBM880,		/* IBM EBCDIC (Cyrillic Russian).				*/
 	RT_ENCODING_IBM905,		/* IBM EBCDIC (Turkish).					*/
+	RT_ENCODING_EUC_JP,		/* Japanese (JIS 0208-1990 and 0212-1990).			*/
 	RT_ENCODING_KOI8_U,		/* Cyrillic (KOI8-U).						*/
 	RT_ENCODING_ISO_8859_1,		/* Western European (ISO).					*/
 	RT_ENCODING_ISO_8859_2,		/* Central European (ISO).					*/
@@ -90,15 +93,12 @@ enum rt_encoding {
 	RT_ENCODING_ISO_2022_JP,	/* Japanese (JIS).						*/
 	RT_ENCODING_CS_ISO_2022_JP,	/* Japanese (JIS-Allow 1 byte Kana).				*/
 	RT_ENCODING_ISO_2022_KR,	/* Korean (ISO).						*/
-	RT_ENCODING_EUC_JP,		/* Japanese (EUC).						*/
-	RT_ENCODING_EUC_CN,		/* Chinese Simplified (EUC).					*/
 	RT_ENCODING_EUC_KR,		/* Korean (EUC).						*/
 	RT_ENCODING_HZ_GB2312,		/* Chinese Simplified (HZ).					*/
 	RT_ENCODING_GB18030,		/* Chinese Simplified (GB18030).				*/
 	RT_ENCODING_UTF_7,		/* Unicode (UTF-7).						*/
 	RT_ENCODING_UTF_8		/* Unicode (UTF-8 without BOM).					*/
 };
-
 
 struct rt_encoding_info {
 	const rt_char *name;
@@ -145,5 +145,33 @@ rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *en
  * @return The size of the buffer in code units, not including the terminating zero bytes.
  */
 rt_un rt_encoding_get_size(const rt_char8 *data, rt_un code_unit_size);
+
+/**
+ * Encode given <tt>input</tt> string into given <tt>output_encoding</tt>.
+ *
+ * <p>
+ * This function ensures that the result is zero terminated.
+ * </p>
+ *
+ * @param input_size Input size, in characters.
+ * @param buffer_capacity Buffer capacity, in bytes.
+ * @param heap_buffer_capacity Heap buffer capacity, in bytes.
+ * @param output_size Output size, in bytes, not including the zero terminating character.
+ */
+rt_s rt_encoding_encode(const rt_char *input, rt_un input_size, enum rt_encoding output_encoding, rt_char8 *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char8 **output, rt_un *output_size, struct rt_heap *heap);
+
+/**
+ * Decode given <tt>input</tt> encoded as <tt>input_encoding</tt> into a string.
+ *
+ * <p>
+ * This function ensures that the result is zero terminated.
+ * </p>
+ *
+ * @param input_size Input size, in bytes.
+ * @param buffer_capacity Buffer capacity, in characters.
+ * @param heap_buffer_capacity Heap buffer capacity, in bytes.
+ * @param output_size Output size, in characters, not including the zero terminating character.
+ */
+rt_s rt_encoding_decode(const rt_char8 *input, rt_un input_size, enum rt_encoding input_encoding, rt_char *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char **output, rt_un *output_size, struct rt_heap *heap);
 
 #endif /* RT_ENCODING_H */
