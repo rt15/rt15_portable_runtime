@@ -1,18 +1,25 @@
 #include <rpr.h>
 
-static rt_char *zz_string_0 = _R("ea");
-static rt_uchar8 zz_ascii[3] = { 0x65, 0x61, 0x00 };
-static rt_uchar8 zz_ebcdic[3] = { 0x85, 0x81, 0x00 };
-static rt_uchar8 zz_japanese_ebcdic[3] = { 0x66, 0x62, 0x00 };
+static rt_char *zz_string_0 = _R("eaeaeaeaeaeaeaea");
+static rt_uchar8 zz_ascii[17] = { 0x65, 0x61, 0x65, 0x61, 0x65, 0x61, 0x65, 0x61, 0x65, 0x61, 0x65, 0x61, 0x65, 0x61, 0x65, 0x61, 0x00 };
+static rt_uchar8 zz_ebcdic[17] = { 0x85, 0x81, 0x85, 0x81, 0x85, 0x81, 0x85, 0x81, 0x85, 0x81, 0x85, 0x81, 0x85, 0x81, 0x85, 0x81, 0x00 };
+#ifdef RT_DEFINE_LINUX
+/* icconv includes shif out and shift in characters at the beginning of the line. */
+static rt_uchar8 zz_iso_2022_kr[21] = { 0x1B, '$', ')', 'C', 0x65, 0x61, 0x65, 0x61, 0x65, 0x61, 0x65, 0x61, 0x65, 0x61, 0x65, 0x61, 0x65, 0x61, 0x65, 0x61, 0x00 };
+#endif
 
 static rt_char *zz_string_1 = _R("ιθ");
 static rt_uchar8 zz_iso_88591_1[3] = { 0xE9, 0xE8, 0x00 };
 static rt_uchar8 zz_utf8_1[5] = { 0xC3, 0xA9, 0xC3, 0xA8, 0x00 };
+
 /* e then acute accent, e then grave accent. */
+/* iconv does not support decomposed characters under Linux. */
+#ifdef RT_DEFINE_WINDOWS
 static rt_char zz_string_2[5] = { _R('e'), 0x0301, _R('e'), 0x0300, 0x0000 };
 /* "e?e`"; */
 static rt_uchar8 zz_iso_88591_2[5] = { 0x65, 0x3F, 0x65, 0x60, 0x00 };
 static rt_uchar8 zz_utf8_2[7] = { 0x65, 0xCC, 0x81, 0x65, 0xCC, 0x80, 0x00 };
+#endif
 
 static rt_uchar8 zz_utf16_bom_only[4] = { 0xFF, 0xFE, 0x00, 0x00 };
 static rt_uchar8 zz_utf32_bom_only[8] = { 0xFF, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
@@ -112,7 +119,7 @@ static rt_s zz_test_encoding_encode(const rt_char *input, rt_un input_size, cons
 
 	/* Makes sure the output buffer is clean. */
 	for (i = 0; i < 200; i++)
-		encoded_buffer[i] = 'a';
+		encoded_buffer[i] = 'z';
 
 	if (!rt_encoding_encode(input, input_size, encoding, encoded_buffer, encoded_buffer_size, RT_NULL, RT_NULL, &output, &output_size, RT_NULL)) goto error;
 	if (output != encoded_buffer) goto error;
@@ -127,19 +134,24 @@ static rt_s zz_test_encoding_encode(const rt_char *input, rt_un input_size, cons
 	if (output != heap_buffer) goto error;
 	if (rt_encoding_get_size(output, code_unit_size) * code_unit_size != output_size) goto error;
 	if (!rt_char8_equals(output, output_size, encoded, encoded_size)) goto error;
+#ifdef RT_DEFINE_WINDOWS
 	if (heap_buffer_capacity != output_size + code_unit_size) goto error;
+#endif
 
 	/* Makes sure the heap buffer is clean. */
 	for (i = 0; i < output_size + 1; i++)
-		output[i] = 'a';
+		output[i] = 'z';
 
 	/* Try again, without buffer. */
+	heap_buffer_capacity = 1;
 	if (!rt_encoding_encode(input, input_size, encoding, RT_NULL, 0, &heap_buffer, &heap_buffer_capacity, &output, &output_size, heap)) goto error;
 	if (!heap_buffer) goto error;
 	if (output != heap_buffer) goto error;
 	if (rt_encoding_get_size(output, code_unit_size) * code_unit_size != output_size) goto error;
 	if (!rt_char8_equals(output, output_size, encoded, encoded_size)) goto error;
+#ifdef RT_DEFINE_WINDOWS
 	if (heap_buffer_capacity != output_size + code_unit_size) goto error;
+#endif
 
 	ret = RT_OK;
 free:
@@ -168,7 +180,7 @@ static rt_s zz_test_encoding_decode(const rt_char8 *input, rt_un input_size, con
 
 	/* Makes sure the output buffer is clean. */
 	for (i = 0; i < 200; i++)
-		decoded_buffer[i] = _R('a');
+		decoded_buffer[i] = _R('z');
 
 	if (!rt_encoding_decode(input, input_size, encoding, decoded_buffer, decoded_buffer_size, RT_NULL, RT_NULL, &output, &output_size, RT_NULL)) goto error;
 	if (output != decoded_buffer) goto error;
@@ -183,19 +195,24 @@ static rt_s zz_test_encoding_decode(const rt_char8 *input, rt_un input_size, con
 	if (output != heap_buffer) goto error;
 	if (rt_char_get_size(output) != output_size) goto error;
 	if (!rt_char_equals(output, output_size, decoded, decoded_size)) goto error;
+#ifdef RT_DEFINE_WINDOWS
 	if (heap_buffer_capacity != (output_size + 1) * sizeof(rt_char)) goto error;
+#endif
 
 	/* Makes sure the heap buffer is clean. */
 	for (i = 0; i < output_size + 1; i++)
-		output[i] = _R('a');
+		output[i] = _R('z');
 
 	/* Try again, without buffer. */
+	heap_buffer_capacity = 1;
 	if (!rt_encoding_decode(input, input_size, encoding, RT_NULL, 0, &heap_buffer, &heap_buffer_capacity, &output, &output_size, heap)) goto error;
 	if (!heap_buffer) goto error;
 	if (output != heap_buffer) goto error;
 	if (rt_char_get_size(output) != output_size) goto error;
 	if (!rt_char_equals(output, output_size, decoded, decoded_size)) goto error;
+#ifdef RT_DEFINE_WINDOWS
 	if (heap_buffer_capacity != (output_size + 1) * sizeof(rt_char)) goto error;
+#endif
 
 	ret = RT_OK;
 free:
@@ -246,10 +263,10 @@ static rt_s zz_test_encoding_encode_decode()
 		goto error;
 	runtime_heap_created = RT_TRUE;
 
-	if (!zz_test_encoding_encode_decode_do(_R(""),                 "",                   RT_ENCODING_US_ASCII,   1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap)) goto error;
-	if (!zz_test_encoding_encode_decode_do(_R(""),                 "",                   RT_ENCODING_ISO_8859_1, 1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap)) goto error;
-	if (!zz_test_encoding_encode_decode_do(_R(""),                 "",                   RT_ENCODING_UTF_8,      1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap)) goto error;
-	if (!zz_test_encoding_encode_decode_do(_R(""),                 "\0",                 RT_ENCODING_UTF_16LE,   2, RT_TRUE,  RT_TRUE,  &runtime_heap.heap)) goto error;
+	if (!zz_test_encoding_encode_decode_do(_R(""),      "",                              RT_ENCODING_US_ASCII,   1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap)) goto error;
+	if (!zz_test_encoding_encode_decode_do(_R(""),      "",                              RT_ENCODING_ISO_8859_1, 1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap)) goto error;
+	if (!zz_test_encoding_encode_decode_do(_R(""),      "",                              RT_ENCODING_UTF_8,      1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap)) goto error;
+	if (!zz_test_encoding_encode_decode_do(_R(""),      "\0",                            RT_ENCODING_UTF_16LE,   2, RT_TRUE,  RT_TRUE,  &runtime_heap.heap)) goto error;
 	if (!zz_test_encoding_encode_decode_do(_R(""),      (rt_char8*)zz_utf16_bom_only,    RT_ENCODING_UTF_16,     2, RT_TRUE,  RT_TRUE,  &runtime_heap.heap)) goto error;
 	if (!zz_test_encoding_encode_decode_do(_R(""),      (rt_char8*)zz_utf32_bom_only,    RT_ENCODING_UTF_32,     4, RT_TRUE,  RT_TRUE,  &runtime_heap.heap)) goto error;
 
@@ -263,8 +280,10 @@ static rt_s zz_test_encoding_encode_decode()
 	if (!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf32_be_with_bom, RT_ENCODING_UTF_32,     4, RT_FALSE, RT_TRUE,  &runtime_heap.heap)) goto error;
 	if (!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf32_le,          RT_ENCODING_UTF_32LE,   4, RT_TRUE,  RT_TRUE,  &runtime_heap.heap)) goto error;
 	if (!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf32_be,          RT_ENCODING_UTF_32BE,   4, RT_TRUE,  RT_TRUE,  &runtime_heap.heap)) goto error;
+#ifdef RT_DEFINE_WINDOWS
 	if (!zz_test_encoding_encode_decode_do(zz_string_2, (rt_char8*)zz_iso_88591_2,       RT_ENCODING_ISO_8859_1, 1, RT_TRUE,  RT_FALSE, &runtime_heap.heap)) goto error;
 	if (!zz_test_encoding_encode_decode_do(zz_string_2, (rt_char8*)zz_utf8_2,            RT_ENCODING_UTF_8,      1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap)) goto error;
+#endif
 	if (!zz_test_encoding_encode_decode_do(zz_string_3, (rt_char8*)zz_iso_88592,         RT_ENCODING_ISO_8859_2, 1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap)) goto error;
 	if (!zz_test_encoding_encode_decode_do(zz_string_3, (rt_char8*)zz_utf8_3,            RT_ENCODING_UTF_8,      1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap)) goto error;
 
@@ -303,9 +322,11 @@ static rt_s zz_test_encoding_encode_decode()
 		case RT_ENCODING_IBM905:
 			encoded = zz_ebcdic;
 			break;
-		case RT_ENCODING_IBM290:
-			encoded = zz_japanese_ebcdic;
+#ifdef RT_DEFINE_LINUX
+		case RT_ENCODING_ISO_2022_KR:
+			encoded = zz_iso_2022_kr;
 			break;
+#endif
 		default:
 			encoded = zz_ascii;
 		}

@@ -4,8 +4,31 @@
 #include "layer000/rt_types.h"
 #include "layer003/rt_heap.h"
 
-#define RT_ENCODING_ENCODINGS_COUNT 83
+#define RT_ENCODING_ENCODINGS_COUNT 82
 #define RT_ENCODING_LABEL_SIZE 260
+
+/**
+ * @file
+ * Encode from rt_char to any encoding and decode from any encoding to rt_char.
+ *
+ * <p>
+ * Unicode BOMs:
+ * </p>
+ * <table>
+ *   <tr><th>Unicode encoding</th><th>BOM</th></tr>
+ *   <tr><td>UTF-16, little-endian</td><td>0xFF, 0xFE</td></tr>
+ *   <tr><td>UTF-16, big-endian</td><td>0xFE, 0xFF</td></tr>
+ *   <tr><td>UTF-32, little-endian</td><td>0xFF, 0xFE, 0x00, 0x00</td></tr>
+ *   <tr><td>UTF-32, big-endian</td><td>0x00, 0x00, 0xFE, 0xFF</td></tr>
+ *   <tr><td>UTF-8</td><td>0xEF, 0xBB, 0xBF</td></tr>
+ * </table>
+ *
+ * <p>
+ * Unfortunately, iconv does not support decomposed characters under Linux.<br>
+ * If there are decomposed characters in the input then the call simply fails with errno set to EILSEQ.
+ * </p>
+ *
+ */
 
 /**
  * Enumeration of supported encodings.
@@ -68,7 +91,6 @@ enum rt_encoding {
 	RT_ENCODING_IBM280,		/* IBM EBCDIC (Italy).						*/
 	RT_ENCODING_IBM284,		/* IBM EBCDIC (Spain).						*/
 	RT_ENCODING_IBM285,		/* IBM EBCDIC (UK).						*/
-	RT_ENCODING_IBM290,		/* IBM EBCDIC (Japanese katakana).				*/
 	RT_ENCODING_IBM297,		/* IBM EBCDIC (France).						*/
 	RT_ENCODING_IBM420,		/* IBM EBCDIC (Arabic).						*/
 	RT_ENCODING_IBM423,		/* IBM EBCDIC (Greek).						*/
@@ -102,8 +124,12 @@ enum rt_encoding {
 
 struct rt_encoding_info {
 	const rt_char *name;
+	/* Windows code page. */
 	rt_un32 code_page;
+	/* A code unit is the "word size" of the character encoding scheme (1 for UTF-8, 2 for UTF-16). A code point can be made of several code units. */
+	/* This is also the size of the zero terminating character. */
 	rt_un code_unit_size;
+	/*  A code point is a numerical value that maps to a specific character (The max is 4 for UTF-8 and UTF-16, 1 for ISO-8859-1). */
 	rt_un max_code_point_size;
 	/* Under Windows, CPINFOEX CodePageName is MAX_PATH. Under Linux the name is used as label. */
 	rt_char label[RT_ENCODING_LABEL_SIZE];
@@ -147,10 +173,23 @@ rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *en
 rt_un rt_encoding_get_size(const rt_char8 *data, rt_un code_unit_size);
 
 /**
- * Encode given <tt>input</tt> string into given <tt>output_encoding</tt>.
+ * Encode given <tt>input</tt> string into given encoded <tt>output_encoding</tt>.
  *
  * <p>
  * This function ensures that the result is zero terminated.
+ * </p>
+ * <p>
+ *
+ * If <tt>output_encoding</tt> is RT_ENCODING_SYSTEM_DEFAULT then:
+ * </p>
+ * <ul>
+ *   <li>Under Windows, system ANSI output encoding is assumed.</li>
+ *   <li>Under Linux, no encoding conversion is made between the input and the result.</li>
+ * </ul>
+ *
+ * <p>
+ * Under Windows, the encoding of <tt>input</tt> is UTF-16LE.<br>
+ * Under Linux the encoding of <tt>input</tt> is system encoding.
  * </p>
  *
  * @param input_size Input size, in characters.
@@ -165,6 +204,19 @@ rt_s rt_encoding_encode(const rt_char *input, rt_un input_size, enum rt_encoding
  *
  * <p>
  * This function ensures that the result is zero terminated.
+ * </p>
+ *
+ * <p>
+ * If <tt>input_encoding</tt> is RT_ENCODING_SYSTEM_DEFAULT then:
+ * </p>
+ * <ul>
+ *   <li>Under Windows, system ANSI input encoding is assumed.</li>
+ *   <li>Under Linux, no encoding conversion is made between the input and the result.</li>
+ * </ul>
+ *
+ * <p>
+ * Under Windows, the encoding of <tt>output</tt> is UTF-16LE.<br>
+ * Under Linux the encoding of <tt>output</tt> is the system encoding.
  * </p>
  *
  * @param input_size Input size, in bytes.

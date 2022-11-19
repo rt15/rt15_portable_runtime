@@ -93,7 +93,6 @@ static rt_s zz_test_encoding_get_info()
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_IBM280,		_R("RT_ENCODING_IBM280")))		goto error;
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_IBM284,		_R("RT_ENCODING_IBM284")))		goto error;
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_IBM285,		_R("RT_ENCODING_IBM285")))		goto error;
-	if (!zz_test_encoding_get_info_do(RT_ENCODING_IBM290,		_R("RT_ENCODING_IBM290")))		goto error;
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_IBM297,		_R("RT_ENCODING_IBM297")))		goto error;
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_IBM420,		_R("RT_ENCODING_IBM420")))		goto error;
 	if (!zz_test_encoding_get_info_do(RT_ENCODING_IBM423,		_R("RT_ENCODING_IBM423")))		goto error;

@@ -15,8 +15,8 @@
  * For example, "é" can be encoded as 0xC3, 0xA9, one code point and two bytes.<br>
  * But it can also be encoded as e + acute accent, 0x65, 0xCC, 0x81, two code points, the first of one byte, the second of two bytes.<br>
  * This can cause issue while encoding from UTF-16 or UTF-8 to ISO-8859-1 because the 'e' can be sent to the output stream alone and the accent later on.<br>
- * But it may not that much of an issue because it is already how WideCharToMultiByte/MultiByteToWideChar work today.<br>
- * They do not correctly handle this case of further accent.
+ * But it may not that much of an issue because it is already how WideCharToMultiByte and MultiByteToWideChar work today.<br>
+ * They do not correctly handle this case of further accent. And iconv is even worst: it fails in case of decomposed characters.
  * </p>
  *
  * <p>
@@ -103,7 +103,6 @@ static const rt_un16 rt_encoding_code_pages[RT_ENCODING_ENCODINGS_COUNT] = {
 	20280,  /* RT_ENCODING_IBM280.			*/
 	20284,  /* RT_ENCODING_IBM284.			*/
 	20285,  /* RT_ENCODING_IBM285.			*/
-	20290,  /* RT_ENCODING_IBM290.			*/
 	20297,  /* RT_ENCODING_IBM297.			*/
 	20420,  /* RT_ENCODING_IBM420.			*/
 	20423,  /* RT_ENCODING_IBM423.			*/
@@ -189,7 +188,6 @@ static const rt_char *const rt_encoding_code_names[RT_ENCODING_ENCODINGS_COUNT] 
 	_R("IBM280"),		/* RT_ENCODING_IBM280.		*/
 	_R("IBM284"),		/* RT_ENCODING_IBM284.		*/
 	_R("IBM285"),		/* RT_ENCODING_IBM285.		*/
-	_R("IBM290"),		/* RT_ENCODING_IBM290.		*/
 	_R("IBM297"),		/* RT_ENCODING_IBM297.		*/
 	_R("IBM420"),		/* RT_ENCODING_IBM420.		*/
 	_R("IBM423"),		/* RT_ENCODING_IBM423.		*/
@@ -222,7 +220,7 @@ static const rt_char *const rt_encoding_code_names[RT_ENCODING_ENCODINGS_COUNT] 
 };
 
 static const rt_uchar8 rt_encoding_code_unit_sizes[RT_ENCODING_ENCODINGS_COUNT] = {
-	0, /* RT_ENCODING_SYSTEM_DEFAULT.	*/
+	1, /* RT_ENCODING_SYSTEM_DEFAULT.	*/
 	1, /* RT_ENCODING_IBM037.		*/
 	1, /* RT_ENCODING_IBM437.		*/
 	1, /* RT_ENCODING_IBM500.		*/
@@ -275,7 +273,6 @@ static const rt_uchar8 rt_encoding_code_unit_sizes[RT_ENCODING_ENCODINGS_COUNT] 
 	1, /* RT_ENCODING_IBM280.		*/
 	1, /* RT_ENCODING_IBM284.		*/
 	1, /* RT_ENCODING_IBM285.		*/
-	1, /* RT_ENCODING_IBM290.		*/
 	1, /* RT_ENCODING_IBM297.		*/
 	1, /* RT_ENCODING_IBM420.		*/
 	1, /* RT_ENCODING_IBM423.		*/
@@ -361,7 +358,6 @@ static const rt_uchar8 rt_encoding_max_code_point_sizes[RT_ENCODING_ENCODINGS_CO
 	1, /* RT_ENCODING_IBM280.		*/
 	1, /* RT_ENCODING_IBM284.		*/
 	1, /* RT_ENCODING_IBM285.		*/
-	1, /* RT_ENCODING_IBM290.		*/
 	1, /* RT_ENCODING_IBM297.		*/
 	1, /* RT_ENCODING_IBM420.		*/
 	1, /* RT_ENCODING_IBM423.		*/
@@ -398,6 +394,7 @@ static struct rt_fast_initialization rt_encoding_system_initialization = RT_FAST
 static enum rt_encoding rt_encoding_system = 0;
 
 #ifdef RT_DEFINE_LINUX
+
 /**
  * Retrieve the Linux system encoding.<br>
  * Make sure to call setlocale(LC_ALL, "") before this function to avoid "C" locale.
@@ -1108,15 +1105,231 @@ error:
 	goto free;
 }
 
+#else
+
+/**
+ * Call Linux iconv to perform the encoding/decoding.
+ *
+ * @param input_size Input size, in bytes.
+ * @param buffer_capacity Buffer capacity, in bytes.
+ * @param heap_buffer_capacity Heap buffer capacity, in bytes.
+ * @param output_size Output size, in bytes.
+ */
+static rt_s rt_encoding_iconv_with_descriptor(const rt_char8 *input, rt_un input_size, iconv_t conversion_descriptor, enum rt_encoding output_encoding, rt_char8 *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char8 **output, rt_un *output_size, struct rt_heap *heap)
+{
+	rt_char8 *iconv_input = (rt_char8*)input;
+	size_t iconv_input_size = input_size;
+	rt_char8 *iconv_buffer = buffer;
+	rt_char8 *previous_iconv_buffer;
+	rt_un iconv_buffer_capacity;
+	rt_un output_code_unit_size;
+	rt_b flush = RT_FALSE;
+	size_t result;
+	rt_b use_heap;
+	rt_un i;
+	rt_s ret;
+
+	output_code_unit_size = rt_encoding_code_unit_sizes[output_encoding];
+
+	/* Makes sure that the buffer is enough for the terminating zero. */
+	if (buffer_capacity >= output_code_unit_size) {
+
+		/* Save some room for the terminating zero. */
+		iconv_buffer_capacity = buffer_capacity - output_code_unit_size;
+
+buffer_flush:
+		if (flush) {
+			result = iconv(conversion_descriptor, RT_NULL, RT_NULL, &iconv_buffer, &iconv_buffer_capacity);
+		} else {
+			result = iconv(conversion_descriptor, &iconv_input, &iconv_input_size, &iconv_buffer, &iconv_buffer_capacity);
+		}
+		if (result == (size_t)-1) {
+			/* Something went wrong. */
+			/* Output buffer too small. errno == E2BIG. */
+			/* Invalid character sequence. errno == EILSEQ. */
+			/* Incomplete character sequence. errno == EINVAL. */
+			if (errno == E2BIG) {
+				/* Buffer was too small. */
+				use_heap = RT_TRUE;
+
+				/* Make sure a first heap buffer is ready. */
+				if (!rt_heap_alloc_if_needed(RT_NULL, 0, heap_buffer, heap_buffer_capacity, (void**)output, buffer_capacity * 2, heap))
+					goto error;
+
+				/* Copy from the stack buffer to the heap buffer as we will resume the encoding in there. */
+				RT_MEMORY_COPY(buffer, *heap_buffer, buffer_capacity);
+
+				/* Adjust iconv_buffer and iconv_buffer_capacity for next iconv call. */
+				*output_size = iconv_buffer - buffer;
+				iconv_buffer = &((rt_char8*)*heap_buffer)[*output_size];
+				iconv_buffer_capacity = *heap_buffer_capacity - *output_size - output_code_unit_size;
+
+			} else {
+				/* Invalid/incomplete character sequence. */
+				goto error;
+			}
+		} else {
+			if (flush) {
+				/* Conversion was successful and the buffer was enough. */
+				use_heap = RT_FALSE;
+
+				*output = buffer;
+				*output_size = iconv_buffer - buffer;
+			} else {
+				flush = RT_TRUE;
+				goto buffer_flush;
+			}
+		}
+	} else {
+		/* The buffer was way too small. */
+		use_heap = RT_TRUE;
+
+		/* Allocate an heap buffer twice as big as the input. */
+		if (!rt_heap_alloc_if_needed(RT_NULL, 0, heap_buffer, heap_buffer_capacity, (void**)output, input_size * 2, heap))
+			goto error;
+
+		/* Adjust iconv_buffer and iconv_buffer_capacity for next iconv call. */
+		iconv_buffer = *heap_buffer;
+		iconv_buffer_capacity = *heap_buffer_capacity - output_code_unit_size;
+
+		*output_size = 0;
+	}
+
+	/* If buffer was not enough. */
+	if (use_heap) {
+		if (heap) {
+			while (RT_TRUE) {
+heap_buffer_flush:
+				previous_iconv_buffer = iconv_buffer;
+				if (flush) {
+					result = iconv(conversion_descriptor, RT_NULL, RT_NULL, &iconv_buffer, &iconv_buffer_capacity);
+				} else {
+					result = iconv(conversion_descriptor, &iconv_input, &iconv_input_size, &iconv_buffer, &iconv_buffer_capacity);
+				}
+				if (result == (size_t)-1) {
+					/* Something went wrong. */
+					/* Output buffer too small. errno == E2BIG. */
+					/* Invalid character sequence. errno == EILSEQ. */
+					/* Incomplete character sequence. errno == EINVAL. */
+					if (errno != E2BIG) {
+						/* Invalid/incomplete character sequence. */
+						goto error;
+					}
+				} else {
+					*output_size += iconv_buffer - previous_iconv_buffer;
+					if (flush) {
+						/* Point on reallocated area. */
+						*output = *heap_buffer;
+
+						/* Conversion was successful. Exit the infinite loop. */
+						break;
+					} else {
+						flush = RT_TRUE;
+						goto heap_buffer_flush;
+					}
+				}
+
+				*output_size += iconv_buffer - previous_iconv_buffer;
+
+				/* Allocate a bigger heap buffer then the loop will try again. */
+				if (!heap->realloc(heap, heap_buffer, *heap_buffer_capacity * 2))
+					goto error;
+
+				/* Adjust iconv_buffer and iconv_buffer_capacity for next iconv call. */
+				iconv_buffer = &((rt_char8*)*heap_buffer)[*output_size];
+				iconv_buffer_capacity += *heap_buffer_capacity;
+
+				/* Specify new heap buffer size. */
+				*heap_buffer_capacity *= 2;
+			}
+		} else {
+			/* Buffer was too small and no heap has been provided. */
+			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
+			goto error;
+		}
+	}
+
+	/* Add the terminating zero. We know that we have enough space at this point. */
+	for (i = 0; i < output_code_unit_size; i++)
+		(*output)[*output_size + i] = 0;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+/**
+ * Build and iconv conversion descriptor from <tt>input_encoding</tt> and <tt>output_encoding</tt> then call <tt>rt_encoding_iconv_with_descriptor</tt>.
+ */
+static rt_s rt_encoding_iconv_with_encoding(const rt_char8 *input, rt_un input_size, enum rt_encoding input_encoding, enum rt_encoding output_encoding, rt_char8 *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char8 **output, rt_un *output_size, struct rt_heap *heap)
+{
+	rt_char system_encoding_name[64];
+	rt_un system_encoding_name_size;
+	const rt_char8 *input_encoding_name;
+	const rt_char8 *output_encoding_name;
+	rt_b conversion_descriptor_open = RT_FALSE;
+	iconv_t conversion_descriptor;
+	rt_s ret;
+
+	/* Retrieve the encoding name as a string. */
+	/* Either input_encoding or output_encoding is RT_ENCODING_SYSTEM_DEFAULT so we will use the result of this function call. */
+	if (!rt_encoding_get_linux_system(system_encoding_name, 64, &system_encoding_name_size))
+		goto error;
+
+	if (input_encoding == RT_ENCODING_SYSTEM_DEFAULT) {
+		input_encoding_name = system_encoding_name;
+	} else {
+		input_encoding_name = rt_encoding_code_names[input_encoding];
+	}
+	if (output_encoding == RT_ENCODING_SYSTEM_DEFAULT) {
+		output_encoding_name = system_encoding_name;
+	} else {
+		output_encoding_name = rt_encoding_code_names[output_encoding];
+	}
+
+	/* In case of error, iconv_open sets errno and returns (iconv_t)-1. */
+	conversion_descriptor = iconv_open(output_encoding_name, input_encoding_name);
+	if (conversion_descriptor == (iconv_t)-1) {
+		goto error;
+	}
+	conversion_descriptor_open = RT_TRUE;
+
+	if (!rt_encoding_iconv_with_descriptor(input, input_size, conversion_descriptor, output_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap))
+		goto error;
+
+	ret = RT_OK;
+free:
+	if (conversion_descriptor_open) {
+		 /* In case of error, iconv_close sets errno and returns -1. */
+		if ((iconv_close(conversion_descriptor) == -1) && ret) {
+			conversion_descriptor_open = RT_FALSE;
+			goto error;
+		}
+		conversion_descriptor_open = RT_FALSE;
+	}
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
 #endif
 
 rt_s rt_encoding_encode(const rt_char *input, rt_un input_size, enum rt_encoding output_encoding, rt_char8 *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char8 **output, rt_un *output_size, struct rt_heap *heap)
 {
+#ifdef RT_DEFINE_WINDOWS
 	rt_un output_code_unit_size;
+#endif
 	rt_un empty_size;
 	rt_s ret;
 
 	if (input_size) {
+
+#ifdef RT_DEFINE_WINDOWS
 		if ((output_encoding == RT_ENCODING_UTF_16)   ||
 		    (output_encoding == RT_ENCODING_UTF_16LE) ||
 		    (output_encoding == RT_ENCODING_UTF_16BE) ||
@@ -1132,6 +1345,14 @@ rt_s rt_encoding_encode(const rt_char *input, rt_un input_size, enum rt_encoding
 			if (!rt_encoding_encode_using_windows(input, input_size, output_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap))
 				goto error;
 		}
+
+#else
+
+		if (!rt_encoding_iconv_with_encoding(input, input_size, RT_ENCODING_SYSTEM_DEFAULT, output_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap))
+			goto error;
+
+#endif
+
 	} else {
 		if (output_encoding == RT_ENCODING_UTF_16)
 			empty_size = 4;
@@ -1195,11 +1416,15 @@ error:
 
 rt_s rt_encoding_decode(const rt_char8 *input, rt_un input_size, enum rt_encoding input_encoding, rt_char *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char **output, rt_un *output_size, struct rt_heap *heap)
 {
+#ifdef RT_DEFINE_WINDOWS
 	rt_un input_code_unit_size;
 	rt_un actual_input_size;
+#endif
 	rt_s ret;
 
 	if (input_size) {
+
+#ifdef RT_DEFINE_WINDOWS
 		if ((input_encoding == RT_ENCODING_UTF_16)   ||
 		    (input_encoding == RT_ENCODING_UTF_16LE) ||
 		    (input_encoding == RT_ENCODING_UTF_16BE) ||
@@ -1220,6 +1445,13 @@ rt_s rt_encoding_decode(const rt_char8 *input, rt_un input_size, enum rt_encodin
 			if (!rt_encoding_decode_using_windows(input, input_size, input_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap))
 				goto error;
 		}
+
+#else
+
+		if (!rt_encoding_iconv_with_encoding(input, input_size, input_encoding, RT_ENCODING_SYSTEM_DEFAULT, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap))
+			goto error;
+
+#endif
 	} else {
 		/* Empty input, just write the terminating zero. */
 		if (!rt_heap_alloc_if_needed(buffer, buffer_capacity * sizeof(rt_char), heap_buffer, heap_buffer_capacity, (void**)output, sizeof(rt_char), heap))
