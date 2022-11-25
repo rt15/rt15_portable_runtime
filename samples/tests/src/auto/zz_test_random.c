@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-rt_s static zz_test_random_get_unsigned_integer_with_boundaries_do(rt_un lower_bound, rt_un upper_bound, rt_b check_boundaries)
+static rt_s zz_test_random_get_unsigned_integer_with_boundaries_do(rt_un lower_bound, rt_un upper_bound, rt_b check_boundaries)
 {
 	rt_un unsigned_integer;
 	rt_un i;
@@ -60,7 +60,7 @@ error:
 	goto free;
 }
 
-rt_s static zz_test_random_get_integer_with_boundaries_do(rt_n lower_bound, rt_n upper_bound, rt_b check_boundaries)
+static rt_s zz_test_random_get_integer_with_boundaries_do(rt_n lower_bound, rt_n upper_bound, rt_b check_boundaries)
 {
 	rt_n integer;
 	rt_un i;

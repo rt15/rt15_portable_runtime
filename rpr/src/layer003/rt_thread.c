@@ -122,7 +122,7 @@ rt_s rt_thread_get_exit_code(struct rt_thread *thread, rt_un32 *exit_code)
 	return ret;
 }
 
-rt_s rt_thread_free(struct rt_thread *thread)
+rt_s rt_thread_free(RT_LINUX_UNUSED struct rt_thread *thread)
 {
 	rt_s ret;
 

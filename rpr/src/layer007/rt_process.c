@@ -608,7 +608,7 @@ error:
 
 #endif
 
-rt_s rt_process_create_with_redirections(struct rt_process *process, rt_b child, const rt_char *current_dir, struct rt_env_vars *env_vars,
+rt_s rt_process_create_with_redirections(struct rt_process *process, RT_WINDOWS_UNUSED rt_b child, const rt_char *current_dir, struct rt_env_vars *env_vars,
 					 struct rt_io_device *std_input, struct rt_io_device *std_output, struct rt_io_device *std_error,
 					 const rt_char *const *application_path_and_args)
 {
@@ -842,7 +842,7 @@ error:
 #endif
 }
 
-rt_s rt_process_free(struct rt_process *process)
+rt_s rt_process_free(RT_LINUX_UNUSED struct rt_process *process)
 {
 	rt_s ret;
 

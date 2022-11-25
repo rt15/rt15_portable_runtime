@@ -5,7 +5,7 @@ static struct rt_event event;
 
 static rt_b thread_finished = RT_FALSE;
 
-static rt_un32 RT_STDCALL zz_test_fast_initialization_thread_callback(void *parameter)
+static rt_un32 RT_STDCALL zz_test_fast_initialization_thread_callback(RT_UNUSED void *parameter)
 {
 	rt_s ret;
 

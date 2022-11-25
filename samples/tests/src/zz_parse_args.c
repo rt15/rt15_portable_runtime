@@ -1,7 +1,7 @@
 #include <rpr.h>
 
 static rt_s zz_parse_args_callback(enum rt_command_line_args_type arg_type, rt_b valid, rt_char short_option, const rt_char *long_option,
-				   enum rt_command_line_args_value_cardinality value_cardinality, const rt_char *value, void *context)
+				   enum rt_command_line_args_value_cardinality value_cardinality, const rt_char *value, RT_UNUSED void *context)
 {
 	rt_char message[RT_CHAR_BIG_STRING_SIZE];
 	rt_un message_size;

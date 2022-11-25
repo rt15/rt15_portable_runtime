@@ -2,22 +2,22 @@
 
 #include "layer004/rt_static_heap.h"
 
-static void *rt_runtime_heap_alloc(struct rt_heap *heap, void **area, rt_un size)
+static void *rt_runtime_heap_alloc(RT_UNUSED struct rt_heap *heap, void **area, rt_un size)
 {
 	return rt_static_heap_alloc(area, size);
 }
 
-static void *rt_runtime_heap_realloc(struct rt_heap *heap, void **area, rt_un size)
+static void *rt_runtime_heap_realloc(RT_UNUSED struct rt_heap *heap, void **area, rt_un size)
 {
 	return rt_static_heap_realloc(area, size);
 }
 
-static rt_s rt_runtime_heap_free(struct rt_heap *heap, void **area)
+static rt_s rt_runtime_heap_free(RT_UNUSED struct rt_heap *heap, void **area)
 {
 	return rt_static_heap_free(area);
 }
 
-static rt_s rt_runtime_heap_close(struct rt_heap *heap)
+static rt_s rt_runtime_heap_close(RT_UNUSED struct rt_heap *heap)
 {
 	return RT_OK;
 }

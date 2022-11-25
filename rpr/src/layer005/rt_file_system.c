@@ -230,7 +230,7 @@ error:
 	goto free;
 }
 
-static rt_s rt_file_system_delete_dir_recursively_callback(const rt_char *path, enum rt_file_path_type type, void *context)
+static rt_s rt_file_system_delete_dir_recursively_callback(const rt_char *path, enum rt_file_path_type type, RT_UNUSED void *context)
 {
 	rt_s ret;
 
@@ -334,7 +334,7 @@ rt_s rt_file_system_copy_file(const rt_char *source_file_path, const rt_char *de
 	const rt_char *destination_actual_path;
 #else
 	rt_char8 buffer[BUFSIZ];
-	size_t read_bytes;
+	ssize_t read_bytes;
 	int source_file_descriptor;
 	int destination_file_descriptor;
 	rt_b source_open = RT_FALSE;
@@ -419,7 +419,7 @@ error:
 #endif
 }
 
-static rt_s rt_file_system_move_or_rename_file(const rt_char *source_file_path, const rt_char *destination_file_path, rt_b rename_operation)
+static rt_s rt_file_system_move_or_rename_file(const rt_char *source_file_path, const rt_char *destination_file_path, RT_WINDOWS_UNUSED rt_b rename_operation)
 {
 #ifdef RT_DEFINE_WINDOWS
 	rt_char source_namespaced_path[RT_FILE_PATH_SIZE];

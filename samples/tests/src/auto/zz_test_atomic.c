@@ -5,7 +5,7 @@
 static rt_un counter = 0;
 static rt_un lock = 0;
 
-static rt_un32 RT_STDCALL zz_test_atomic_callback(void *parameter)
+static rt_un32 RT_STDCALL zz_test_atomic_callback(RT_UNUSED void *parameter)
 {
 	rt_un counter_value;
 	rt_s ret;

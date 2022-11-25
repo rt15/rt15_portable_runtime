@@ -36,7 +36,7 @@ void *rt_virtual_memory_alloc(void **area, rt_un size)
 	return *area;
 }
 
-rt_s rt_virtual_memory_free(void **area, rt_un size)
+rt_s rt_virtual_memory_free(void **area, RT_WINDOWS_UNUSED rt_un size)
 {
 	rt_s ret;
 

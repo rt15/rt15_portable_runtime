@@ -22,7 +22,7 @@
  * EnterCriticalSection/pthread_mutex_lock should already use equivalent user mode strategies before calling the kernel.
  * </p>
  */
-rt_s rt_critical_section_create(struct rt_critical_section *critical_section, rt_b recursive)
+rt_s rt_critical_section_create(struct rt_critical_section *critical_section, RT_WINDOWS_UNUSED rt_b recursive)
 {
 #ifndef RT_DEFINE_WINDOWS
 	pthread_mutexattr_t mutex_attributes;

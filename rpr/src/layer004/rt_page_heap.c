@@ -3,22 +3,22 @@
 #include "layer001/rt_memory.h"
 #include "layer002/rt_virtual_memory.h"
 
-static void *rt_page_heap_alloc_method(struct rt_heap *heap, void **area, rt_un size)
+static void *rt_page_heap_alloc_method(RT_UNUSED struct rt_heap *heap, void **area, rt_un size)
 {
 	return rt_page_heap_alloc(area, size);
 }
 
-static void *rt_page_heap_realloc_method(struct rt_heap *heap, void **area, rt_un size)
+static void *rt_page_heap_realloc_method(RT_UNUSED struct rt_heap *heap, void **area, rt_un size)
 {
 	return rt_page_heap_realloc(area, size);
 }
 
-static rt_s rt_page_heap_free_method(struct rt_heap *heap, void **area)
+static rt_s rt_page_heap_free_method(RT_UNUSED struct rt_heap *heap, void **area)
 {
 	return rt_page_heap_free(area);
 }
 
-static rt_s rt_page_heap_close_method(struct rt_heap *heap)
+static rt_s rt_page_heap_close_method(RT_UNUSED struct rt_heap *heap)
 {
 	/* Nothing to do. */
 	return RT_OK;

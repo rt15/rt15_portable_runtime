@@ -46,7 +46,13 @@ static rt_s rt_random_initialize()
 	library_handle = LoadLibrary(_R("advapi32.dll"));
 	if (!library_handle)
 		goto error;
+#ifdef RT_DEFINE_GCC
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+#endif
 	rt_random_rtl_gen_random = (rt_random_rtl_gen_random_t)GetProcAddress(library_handle, "SystemFunction036");
+#ifdef RT_DEFINE_GCC
+#pragma GCC diagnostic pop
+#endif
 	if (!rt_random_rtl_gen_random)
 		goto error;
 

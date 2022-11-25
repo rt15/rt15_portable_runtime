@@ -246,7 +246,7 @@ rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_l
 			if (non_options == RT_TYPE_MAX_UN) {
 				/* We must find the last option. */
 
-				last_option = -1;
+				last_option = RT_TYPE_MAX_UN;
 				for (k = i + 1; k < *argc; k++) {
 					if (!rt_command_line_args_analyze(argv[k], &arg_type,
 									  options_buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &options_buffer_size,
@@ -294,7 +294,7 @@ rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_l
 				}
 
 				/* If there is no last option. */
-				if (last_option == -1) {
+				if (last_option == RT_TYPE_MAX_UN) {
 					/* There is no remaining options. */
 					/* Adjust non-options index to current non-option if needed. */
 					if (*non_options_index > i) {

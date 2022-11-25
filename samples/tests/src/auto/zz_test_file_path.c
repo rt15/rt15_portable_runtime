@@ -686,7 +686,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_browse_callback(const rt_char *path, enum rt_file_path_type type, void *context)
+static rt_s zz_test_browse_callback(RT_UNUSED const rt_char *path, RT_UNUSED enum rt_file_path_type type, void *context)
 {
 	rt_un *paths_count;
 

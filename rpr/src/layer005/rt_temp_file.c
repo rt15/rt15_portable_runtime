@@ -25,7 +25,7 @@ error:
 	goto free;
 }
 
-rt_s rt_temp_file_create_with_parent_path(struct rt_file *file, const rt_char *prefix, const rt_char *parent_path, rt_un parent_path_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+rt_s rt_temp_file_create_with_parent_path(struct rt_file *file, const rt_char *prefix, const rt_char *parent_path, RT_WINDOWS_UNUSED rt_un parent_path_size, rt_char *buffer, RT_WINDOWS_UNUSED rt_un buffer_capacity, rt_un *buffer_size)
 {
 	rt_s ret;
 

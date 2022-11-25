@@ -76,6 +76,21 @@
 
 #define RT_EXPORT __declspec(dllexport)
 
+#ifdef RT_DEFINE_GCC
+#define RT_UNUSED __attribute__((unused))
+#ifdef RT_DEFINE_WINDOWS
+#define RT_WINDOWS_UNUSED RT_UNUSED
+#define RT_LINUX_UNUSED
+#else
+#define RT_WINDOWS_UNUSED
+#define RT_LINUX_UNUSED RT_UNUSED
+#endif
+#else
+#define RT_UNUSED
+#define RT_WINDOWS_UNUSED
+#define RT_LINUX_UNUSED
+#endif
+
 /* Use gcc __va_copy if va_copy is not available.                                    */
 /* Unlike va_copy/__va_copy, first parameter is destination, next parameter is source. */
 #if defined(RT_DEFINE_GCC) && !defined(va_copy)

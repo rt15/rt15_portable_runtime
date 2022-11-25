@@ -463,7 +463,7 @@ error:
 	goto free;
 }
 
-rt_b rt_file_path_is_namespaced(const rt_char *path)
+rt_b rt_file_path_is_namespaced(RT_LINUX_UNUSED const rt_char *path)
 {
 #ifdef RT_DEFINE_WINDOWS
 	/* If we hit the final null then we automatically stop iterating. */
@@ -566,7 +566,7 @@ error:
 }
 
 
-rt_s rt_file_path_strip_namespace(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size)
+rt_s rt_file_path_strip_namespace(RT_LINUX_UNUSED rt_char *path, RT_UNUSED rt_un buffer_capacity, RT_LINUX_UNUSED rt_un *buffer_size)
 {
 #ifdef RT_DEFINE_WINDOWS
 	rt_un local_buffer_size;
@@ -728,7 +728,11 @@ error:
 
 rt_s rt_file_path_get_executable_path(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
+#ifdef RT_DEFINE_WINDOWS
 	rt_un written;
+#else
+	ssize_t written;
+#endif
 	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
@@ -749,7 +753,7 @@ rt_s rt_file_path_get_executable_path(rt_char *buffer, rt_un buffer_capacity, rt
 		goto error;
 	}
 
-	if (written >= buffer_capacity) {
+	if ((rt_un)written >= buffer_capacity) {
 		/* There is no room for the zero character. */
 		buffer[buffer_capacity - 1] = 0;
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);

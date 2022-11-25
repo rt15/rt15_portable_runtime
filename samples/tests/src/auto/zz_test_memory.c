@@ -504,7 +504,7 @@ static rt_s zz_test_memory_swap_bytes16()
 	rt_char8 data[4] = { 0x02, 0x01, 0x04, 0x03 };
 	rt_un16 *source = (rt_un16*)data;
 	rt_un16 *result;
-	rt_un i;
+	rt_n i;
 	rt_s ret;
 
 	result = rt_memory_swap_bytes16(source, source, 2);
@@ -528,7 +528,7 @@ static rt_s zz_test_memory_swap_bytes32()
 	rt_char8 data[8] = { 0x04, 0x03, 0x02, 0x01, 0x08, 0x07, 0x06, 0x05 };
 	rt_un32 *source = (rt_un32*)data;
 	rt_un32 *result;
-	rt_un i;
+	rt_n i;
 	rt_s ret;
 
 	result = rt_memory_swap_bytes32(source, source, 2);
