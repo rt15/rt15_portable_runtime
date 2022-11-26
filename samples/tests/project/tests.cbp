@@ -172,6 +172,9 @@
 		<Unit filename="../src/auto/zz_test_slurp.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/auto/zz_test_small_file.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/auto/zz_test_static_heap.c">
 			<Option compilerVar="CC" />
 		</Unit>

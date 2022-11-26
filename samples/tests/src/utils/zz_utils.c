@@ -55,34 +55,23 @@ error:
 
 rt_s zz_check_file_content(const rt_char *file_path, const rt_char8 *expected)
 {
-	rt_un64 file_size;
-	struct rt_file file;
-	rt_b file_created = RT_FALSE;
 	enum rt_file_path_type type;
-	rt_char8 buffer[RT_CHAR_BIG_STRING_SIZE];
-	rt_un bytes_read;
+	rt_char8 buffer[RT_CHAR8_BIG_STRING_SIZE];
+	rt_char8 *output;
+	rt_un output_size;
 	rt_s ret;
 
 	if (!rt_file_path_get_type(file_path, &type)) goto error;
 	if (type != RT_FILE_PATH_TYPE_FILE) goto error;
 
-	if (!rt_file_system_get_file_size(file_path, &file_size)) goto error;
-	if (file_size != rt_char8_get_size(expected)) goto error;
+	if (!rt_small_file_read(file_path, buffer, RT_CHAR8_BIG_STRING_SIZE, RT_NULL, RT_NULL, &output, &output_size, RT_NULL)) goto error;
 
-	if (!rt_file_create(&file, file_path, RT_FILE_MODE_READ)) goto error;
-	file_created = RT_TRUE;
-
-	if (!rt_io_device_read(&file.io_device.input_stream, buffer, RT_CHAR_BIG_STRING_SIZE, &bytes_read)) goto error;
-	if (!rt_char8_equals(buffer, rt_char8_get_size(expected), expected, bytes_read)) goto error;
+	if (!rt_char8_equals(output, output_size, expected, rt_char8_get_size(expected))) goto error;
 
 	ret = RT_OK;
 free:
-	if (file_created) {
-		file_created = RT_FALSE;
-		if (!rt_io_device_free(&file.io_device) && ret)
-			goto error;
-	}
 	return ret;
+
 error:
 	ret = RT_FAILED;
 	goto free;

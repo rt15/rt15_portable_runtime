@@ -107,6 +107,7 @@
 		<Unit filename="../include/layer004/rt_os_version.h" />
 		<Unit filename="../include/layer004/rt_page_heap.h" />
 		<Unit filename="../include/layer004/rt_random.h" />
+		<Unit filename="../include/layer004/rt_small_file.h" />
 		<Unit filename="../include/layer004/rt_static_heap.h" />
 		<Unit filename="../include/layer005/rt_console.h" />
 		<Unit filename="../include/layer005/rt_env_vars.h" />
@@ -197,6 +198,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer004/rt_random.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer004/rt_small_file.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer004/rt_static_heap.c">
