@@ -72,7 +72,7 @@ rt_s rt_env_vars_create(struct rt_env_vars *env_vars)
 
 		env_vars->windows_block = RT_FALSE;
 		env_vars->env_vars_block = library_env_vars_block;
-		rt_memory_copy(windows_env_vars_block, library_env_vars_block, block_size * sizeof(rt_char));
+		RT_MEMORY_COPY(windows_env_vars_block, library_env_vars_block, block_size * sizeof(rt_char));
 
 		/* We just replaced the Windows environment block in the struct, so it is now our responsibility to free it. */
 		/* Returns zero and set last error in case of issue. */
