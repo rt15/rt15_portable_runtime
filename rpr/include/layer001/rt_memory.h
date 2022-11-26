@@ -10,8 +10,8 @@
  * <p>
  * To compare/copy/move/set memory, use macros.<br>
  * If the CRT is used, then CRT/intrinsics will be used.<br>
- * If CRT is not used then implementations from rt_Win32ExMem.h/intrinsics will be used.<br>
- * Intrinsics are much faster than CRT/rt_Win32ExMem.h (They are "inlined" and the size is known).
+ * If CRT is not used then implementations from rpr_mem.h/intrinsics will be used.<br>
+ * Intrinsics are much faster than CRT/rpr_mem.h (They are "inlined" and the size is known).
  * </p>
  */
 
