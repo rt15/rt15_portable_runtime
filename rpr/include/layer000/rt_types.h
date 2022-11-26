@@ -91,7 +91,7 @@
 #define RT_LINUX_UNUSED
 #endif
 
-/* Use gcc __va_copy if va_copy is not available.                                    */
+/* Use gcc __va_copy if va_copy is not available.                                      */
 /* Unlike va_copy/__va_copy, first parameter is destination, next parameter is source. */
 #if defined(RT_DEFINE_GCC) && !defined(va_copy)
 #define RT_VA_COPY(SOURCE, DESTINATION) __va_copy(DESTINATION, SOURCE)
@@ -106,7 +106,7 @@ typedef unsigned short rt_un16;
 typedef short rt_n16;
 
 /* Use 16 bits characters under windows, 8 bits otherwise. */
-/* RT_CHAR is most likely to be "signed (or not) rt_char8" under Linux and "unsigned rt_un16" under Windows. */
+/* rt_char is "signed (or occasionaly unsigned) rt_char8" under Linux and "unsigned rt_un16" under Windows. */
 #ifdef RT_DEFINE_WINDOWS
 #define _R(x) L ## x
 typedef rt_un16 rt_char;
@@ -163,7 +163,7 @@ typedef _W64 long rt_n;
 typedef _W64 unsigned long rt_un;
 #endif
 #endif
-typedef void* rt_h;                    /* HANDLE.  */
+typedef void* rt_h;                    /* HANDLE. */
 
 /* Convert pointers into integers and integers into pointers. */
 
