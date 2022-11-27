@@ -42,6 +42,7 @@
     <ClCompile Include="..\src\auto\zz_test_memory_output_stream.c" />
     <ClCompile Include="..\src\auto\zz_test_os_version.c" />
     <ClCompile Include="..\src\auto\zz_test_pipe.c" />
+    <ClCompile Include="..\src\auto\zz_test_process.c" />
     <ClCompile Include="..\src\auto\zz_test_random.c" />
     <ClCompile Include="..\src\auto\zz_test_sleep.c" />
     <ClCompile Include="..\src\auto\zz_test_slurp.c" />

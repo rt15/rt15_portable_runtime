@@ -10,13 +10,15 @@ rt_s zz_display_env_var(const rt_char *name);
 
 rt_s zz_display_help(rt_s ret)
 {
-	if (!rt_console_write_string(_R("tests\n")))
+	rt_b error = !ret;
+
+	if (!rt_console_write(_R("tests\n"), error))
 		ret = RT_FAILED;
-	if (!rt_console_write_string(_R("tests <--parse-args|-p> ARGS...\n")))
+	if (!rt_console_write(_R("tests <--parse-args|-p> ARGS...\n"), error))
 		ret = RT_FAILED;
-	if (!rt_console_write_string(_R("tests <--display-args|-d> ARGS...\n")))
+	if (!rt_console_write(_R("tests <--display-args|-d> ARGS...\n"), error))
 		ret = RT_FAILED;
-	if (!rt_console_write_string(_R("tests <--display-env-var|-v> [ENV_VAR]\n")))
+	if (!rt_console_write(_R("tests <--display-env-var|-v> [ENV_VAR]\n"), error))
 		ret = RT_FAILED;
 
 	return ret;

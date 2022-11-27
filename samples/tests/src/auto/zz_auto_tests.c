@@ -41,6 +41,9 @@ rt_s zz_test_file_system();
 /* Layer 006. */
 rt_s zz_test_error_message();
 
+/* Layer 007. */
+rt_s zz_test_process();
+
 rt_s zz_auto_tests()
 {
 	rt_s ret;
@@ -96,6 +99,9 @@ rt_s zz_auto_tests()
 
 	/* Layer 006. */
 	if (!zz_test_error_message()) goto error;
+
+	/* Layer 007. */
+	if (!zz_test_process()) goto error;
 
 	if (!output_stream->write(output_stream, "Tests successful!\n", rt_char8_get_size("Tests successful!\n")))
 		goto error;
