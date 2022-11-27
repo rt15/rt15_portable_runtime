@@ -214,6 +214,9 @@
 		<Unit filename="../src/zz_display_args.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/zz_display_env_var.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/zz_main.c">
 			<Option compilerVar="CC" />
 		</Unit>
