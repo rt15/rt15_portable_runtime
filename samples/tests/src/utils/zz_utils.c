@@ -1,6 +1,6 @@
 #include "zz_utils.h"
 
-rt_s zz_get_tmp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+static rt_s zz_get_dir(const rt_char *dir_name, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
 	enum rt_file_path_type type;
 	rt_s ret;
@@ -13,9 +13,9 @@ rt_s zz_get_tmp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 	/* Get tests directory. */
 	if (!rt_file_path_get_parent(buffer, buffer_capacity, buffer_size)) goto error;
 
-	/* Get tmp directory. */
+	/* Get requested directory. */
 	if (!rt_file_path_append_separator(buffer, buffer_capacity, buffer_size)) goto error;
-	if (!rt_char_append(_R("tmp"), 3, buffer, buffer_capacity, buffer_size)) goto error;
+	if (!rt_char_append(dir_name, rt_char_get_size(dir_name), buffer, buffer_capacity, buffer_size)) goto error;
 
 	/* Checking the directory. */
 	if (!rt_file_path_get_type(buffer, &type)) goto error;
@@ -28,6 +28,16 @@ free:
 error:
 	ret = RT_FAILED;
 	goto free;
+}
+
+rt_s zz_get_tmp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	return zz_get_dir(_R("tmp"), buffer, buffer_capacity, buffer_size);
+}
+
+rt_s zz_get_test_resources_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	return zz_get_dir(_R("test_resources"), buffer, buffer_capacity, buffer_size);
 }
 
 rt_s zz_create_file(const rt_char *file_path, const rt_char8 *str)
@@ -97,4 +107,24 @@ rt_b zz_char_equals_with_nulls(const rt_char *string1, const rt_char *string2)
 	}
 
 	return ret;
+}
+
+rt_s zz_read_text_file(const rt_char *file_path, enum rt_encoding encoding, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	rt_char8 encoded_buffer[RT_CHAR8_BIG_STRING_SIZE];
+	rt_char8 *encoded_output;
+	rt_un encoded_output_size;
+	rt_char *output;
+	rt_s ret;
+
+	if (!rt_small_file_read(file_path, encoded_buffer, RT_CHAR8_BIG_STRING_SIZE, RT_NULL, RT_NULL, &encoded_output, &encoded_output_size, RT_NULL)) goto error;
+	if (!rt_encoding_decode(encoded_buffer, encoded_output_size, encoding, buffer, buffer_capacity, RT_NULL, RT_NULL, &output, buffer_size, RT_NULL)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
 }

@@ -1,6 +1,5 @@
 #include <rpr.h>
 
-
 static rt_s zz_test_encoding_get_info_do(enum rt_encoding encoding, const rt_char *encoding_enum)
 {
 	struct rt_encoding_info encoding_info;
