@@ -15,6 +15,9 @@ rt_s zz_manual_test_temp_file();
 /* Layer 006. */
 rt_s zz_manual_test_error_message();
 
+/* Layer 007. */
+rt_s zz_manual_test_process();
+
 rt_s zz_manual_tests()
 {
 	rt_s ret;
@@ -33,6 +36,9 @@ rt_s zz_manual_tests()
 
 	/* Layer 006. */
 	if (!zz_manual_test_error_message()) goto error;
+
+	/* Layer 007. */
+	if (!zz_manual_test_process()) goto error;
 
 	ret = RT_OK;
 free:

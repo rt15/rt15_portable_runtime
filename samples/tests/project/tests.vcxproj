@@ -56,6 +56,7 @@
     <ClCompile Include="..\src\manual\zz_manual_test_error_message.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_file_path.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_os_version.c" />
+    <ClCompile Include="..\src\manual\zz_manual_test_process.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_temp_file.c" />
     <ClCompile Include="..\src\utils\zz_utils.c" />
     <ClCompile Include="..\src\zz_display_args.c" />

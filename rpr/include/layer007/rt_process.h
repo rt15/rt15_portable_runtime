@@ -56,6 +56,7 @@ struct rt_process
  *
  * @param child Set to RT_TRUE if and only if you will call rt_process_join (otherwise the process will become a zombie). No effect under Windows.
  * @param current_dir Current directory of the started process. Same as current process if RT_NULL.
+ * @param env_vars Can be RT_NULL.
  */
 rt_s rt_process_create(struct rt_process *process, rt_b child, const rt_char *current_dir, struct rt_env_vars *env_vars, const rt_char *const *application_path_and_args);
 

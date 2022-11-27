@@ -202,6 +202,9 @@
 		<Unit filename="../src/manual/zz_manual_test_os_version.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/manual/zz_manual_test_process.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/manual/zz_manual_test_temp_file.c">
 			<Option compilerVar="CC" />
 		</Unit>
