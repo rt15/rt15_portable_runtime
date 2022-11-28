@@ -7,6 +7,7 @@ rt_s zz_parse_args(rt_un argc, const rt_char *argv[]);
 rt_s zz_display_args(rt_un argc, const rt_char *argv[]);
 rt_s zz_display_env_vars();
 rt_s zz_display_env_var(const rt_char *name);
+rt_s zz_read_line();
 
 rt_s zz_display_help(rt_s ret)
 {
@@ -19,6 +20,8 @@ rt_s zz_display_help(rt_s ret)
 	if (!rt_console_write(_R("tests <--display-args|-d> ARGS...\n"), error))
 		ret = RT_FAILED;
 	if (!rt_console_write(_R("tests <--display-env-var|-v> [ENV_VAR]\n"), error))
+		ret = RT_FAILED;
+	if (!rt_console_write(_R("tests <--read-line|-r>\n"), error))
 		ret = RT_FAILED;
 
 	return ret;
@@ -77,10 +80,16 @@ rt_s zz_main_do(rt_un argc, const rt_char *argv[])
 		} else if (argc == 2) {
 
 			if (rt_char_equals(argv[1], arg_size, _R("--help"), 6) ||
-				   rt_char_equals(argv[1], arg_size, _R("-h"), 2) ||
-				   rt_char_equals(argv[1], arg_size, _R("/?"), 2)) {
+			    rt_char_equals(argv[1], arg_size, _R("-h"), 2) ||
+			    rt_char_equals(argv[1], arg_size, _R("/?"), 2)) {
 
 				if (!zz_display_help(RT_OK))
+					goto error;
+
+			} else if (rt_char_equals(argv[1], arg_size, _R("--read-line"), 11) ||
+				   rt_char_equals(argv[1], arg_size, _R("-r"), 2)) {
+
+				if (!zz_read_line())
 					goto error;
 
 			} else {

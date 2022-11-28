@@ -232,6 +232,9 @@
 		<Unit filename="../src/zz_parse_args.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/zz_read_line.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
