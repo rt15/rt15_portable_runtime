@@ -292,3 +292,133 @@ error:
 }
 
 #endif
+
+#ifdef RT_DEFINE_WINDOWS
+
+rt_s rt_console_read_char(rt_char *character)
+{
+	rt_h std_input_handle;
+	DWORD old_mode;
+	rt_b restore_old_mode = RT_FALSE;
+	DWORD number_of_chars_read;
+	rt_s ret;
+
+	std_input_handle = GetStdHandle(STD_INPUT_HANDLE);
+
+	/* GetStdHandle returns INVALID_HANDLE_VALUE and set last error in case of issue. */
+	if (std_input_handle == INVALID_HANDLE_VALUE) goto error;
+
+	/* GetConsoleMode returns zero in case of issue. */
+	if (!GetConsoleMode(std_input_handle, &old_mode)) goto error;
+
+	/* SetConsoleMode returns zero and set last error in case of issue. */
+	if (!SetConsoleMode(std_input_handle, 0)) goto error;
+	restore_old_mode = RT_TRUE;
+
+	/* ReadConsole returns zero and set last error in case of issue. */
+	if (!ReadConsole(std_input_handle, character, 1, &number_of_chars_read, RT_NULL)) goto error;
+
+	if (!number_of_chars_read) {
+		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
+		goto error;
+	}
+
+	ret = RT_OK;
+free:
+	if (restore_old_mode) {
+		restore_old_mode = RT_FALSE;
+		/* SetConsoleMode returns zero and set last error in case of issue. */
+		if (!SetConsoleMode(std_input_handle, old_mode) && ret)
+			goto error;
+	}
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+#else
+
+rt_s rt_console_read_char(rt_char *character)
+{
+	struct termios terminal_attributes;
+	struct termios old_terminal_attributes;
+	rt_b restore_old_terminal_attributes = RT_FALSE;
+	int getchar_result;
+	int file_descriptor_flags;
+	rt_b restore_old_file_descriptor_flags = RT_FALSE;
+	char local_character;
+	rt_s ret;
+
+	/* Retrieve the terminal attributes. */
+	/* Zero is the standard input. */
+	/* The tcgetattr returns non-zero and set errno in case of error. */
+	if (tcgetattr(0, &terminal_attributes))
+		goto error;
+
+	/* Backup the attributes. */
+	memcpy(&old_terminal_attributes, &terminal_attributes, sizeof(old_terminal_attributes));
+
+	/* Prepare new attributes. */
+	terminal_attributes.c_lflag &= ~(ICANON | ECHO);
+	terminal_attributes.c_cc[VTIME] = 0;
+	terminal_attributes.c_cc[VMIN] = 1;
+
+	/* Configure the terminal with the new attributes. */
+	/* The tcsetattr returns non-zero and set errno in case of error. */
+	if (tcsetattr(0, TCSANOW, &terminal_attributes))
+		goto error;
+	restore_old_terminal_attributes = RT_TRUE;
+
+	/* The getchar function returns EOF in case of error (or in case of end of file). */
+	getchar_result = getchar();
+	if (getchar_result == EOF && !feof(stdin))
+		goto error;
+
+	*character = getchar_result;
+
+	/* Get current stdin file descriptor flags. */
+	/* In case of error -1 is returned and errno is set. */
+	file_descriptor_flags = fcntl(0, F_GETFL);
+	if (file_descriptor_flags == -1)
+		goto error;
+
+	/* Set stdin as non-blocking. */
+	if (fcntl(0, F_SETFL, file_descriptor_flags | O_NONBLOCK) == -1)
+		goto error;
+	restore_old_file_descriptor_flags = RT_TRUE;
+
+	/* Discard (most of) possible trailing UTF-8 characters. */
+	while (RT_TRUE) {
+		local_character = getchar();
+		if (local_character == EOF || local_character == _R('\n')) {
+			break;
+		}
+	}
+
+	ret = RT_OK;
+free:
+
+	/* Restore blocking stdin using initial flags. */
+	if (restore_old_file_descriptor_flags) {
+		restore_old_file_descriptor_flags = RT_FALSE;
+		if (fcntl(0, F_SETFL, file_descriptor_flags) == -1 && ret)
+			goto error;
+	}
+
+	/* Restore old terminal attributes. */
+	if (restore_old_terminal_attributes) {
+		restore_old_terminal_attributes = RT_FALSE;
+		if (tcsetattr(0, TCSANOW, &old_terminal_attributes) && ret)
+			goto error;
+	}
+
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+#endif

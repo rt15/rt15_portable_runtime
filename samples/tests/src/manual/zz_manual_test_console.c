@@ -58,6 +58,33 @@ error:
 	goto free;
 }
 
+static rt_s zz_manual_test_read_char()
+{
+	rt_char character;
+	rt_char message[RT_CHAR_HALF_BIG_STRING_SIZE];
+	rt_un message_size;
+	rt_s ret;
+
+	if (!rt_console_write_string(_R("Please type a character:\n"))) goto error;
+
+	if (!rt_console_read_char(&character)) goto error;
+
+	message_size = 1;
+	if (!rt_char_copy(_R("\""), message_size, message, RT_CHAR_HALF_BIG_STRING_SIZE)) goto error;
+	if (!rt_char_append_char(character, message, RT_CHAR_HALF_BIG_STRING_SIZE, &message_size)) goto error;
+	if (!rt_char_append(_R("\" ("), 3, message, RT_CHAR_HALF_BIG_STRING_SIZE, &message_size)) goto error;
+	if (!rt_char_append_n(character, 10, message, RT_CHAR_HALF_BIG_STRING_SIZE, &message_size)) goto error;
+	if (!rt_char_append(_R(")\n"), 2, message, RT_CHAR_HALF_BIG_STRING_SIZE, &message_size)) goto error;
+	if (!rt_console_write_string_with_size(message, message_size)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s zz_manual_test_console()
 {
 	rt_char test_resources_dir[RT_FILE_PATH_SIZE];
@@ -71,6 +98,7 @@ rt_s zz_manual_test_console()
 	if (!zz_manual_test_console_read_file(test_resources_dir, _R("utf8.txt"), RT_ENCODING_UTF_8)) goto error;
 	if (!rt_console_write_string(_R("Accented character in source file: OOOOÈOOOO\n"))) goto error;
 	if (!zz_manual_test_read_line()) goto error;
+	if (!zz_manual_test_read_char()) goto error;
 
 	ret = RT_OK;
 free:
