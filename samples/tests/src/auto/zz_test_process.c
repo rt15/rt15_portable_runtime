@@ -2,6 +2,85 @@
 
 #include "zz_utils.h"
 
+static rt_s zz_test_process_redirect_std_in_to_pipe(const rt_char* executable_path)
+{
+	rt_char temp_file[RT_FILE_PATH_SIZE];
+	rt_un buffer_size;
+	struct rt_file file;
+	rt_b file_created;
+	rt_b delete_temp_file;
+	struct rt_pipe pipe;
+	struct rt_io_device *input_io_device;
+	struct rt_io_device *output_io_device;
+	rt_b input_created = RT_FALSE;
+	rt_b output_created = RT_FALSE;
+	const rt_char *application_path_and_args[3];
+	struct rt_process process;
+	rt_b process_created = RT_FALSE;
+	struct rt_output_stream *output_stream;
+	rt_un32 exit_code;
+	rt_s ret;
+
+	if (!rt_temp_file_create(&file, _R("Zz"), temp_file, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
+	file_created = RT_TRUE;
+	delete_temp_file = RT_TRUE;
+
+	if (!rt_pipe_create(&pipe)) goto error;
+	input_io_device = &pipe.input_io_device;
+	output_io_device = &pipe.output_io_device;
+	input_created = RT_TRUE;
+	output_created = RT_TRUE;
+
+	application_path_and_args[0] = executable_path;
+	application_path_and_args[1] = _R("--read-line");
+	application_path_and_args[2] = RT_NULL;
+
+	if (!rt_process_create_with_redirections(&process, RT_TRUE, RT_NULL, RT_NULL, input_io_device, &file.io_device, RT_NULL, application_path_and_args)) goto error;
+	process_created = RT_TRUE;
+
+	output_stream = &output_io_device->output_stream;
+	if (!output_stream->write(output_stream, "123\n", 4)) goto error;
+
+	if (!rt_process_join(&process)) goto error;
+	if (!rt_process_get_exit_code(&process, &exit_code)) goto error;
+	if (exit_code) goto error;
+
+	if (!zz_check_file_content(temp_file, "\"123\"\n")) goto error;
+
+	ret = RT_OK;
+free:
+	if (process_created) {
+		process_created = RT_FALSE;
+		if (!rt_process_free(&process) && ret)
+			goto error;
+	}
+	if (output_created) {
+		output_created = RT_FALSE;
+		if (!rt_io_device_free(output_io_device) && ret)
+			goto error;
+	}
+	if (input_created) {
+		input_created = RT_FALSE;
+		if (!rt_io_device_free(input_io_device) && ret)
+			goto error;
+	}
+	if (file_created) {
+		file_created = RT_FALSE;
+		if (!rt_io_device_free(&file.io_device) && ret)
+			goto error;
+	}
+	if (delete_temp_file) {
+		delete_temp_file = RT_FALSE;
+		if (!rt_file_system_delete_file(temp_file) && ret)
+			goto error;
+	}
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 static rt_s zz_test_process_redirect_std_out_to_file(const rt_char* executable_path)
 {
 	rt_char temp_file[RT_FILE_PATH_SIZE];
@@ -253,6 +332,7 @@ rt_s zz_test_process()
 
 	if (!rt_file_path_get_executable_path(executable_path, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
 
+	if (!zz_test_process_redirect_std_in_to_pipe(executable_path)) goto error;
 	if (!zz_test_process_redirect_std_out_to_file(executable_path)) goto error;
 	if (!zz_test_process_redirect_std_err_to_file(executable_path)) goto error;
 	if (!zz_test_process_env(executable_path)) goto error;
