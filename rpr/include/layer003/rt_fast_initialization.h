@@ -21,8 +21,7 @@
  * </p>
  */
 
-struct rt_fast_initialization
-{
+struct rt_fast_initialization {
 	rt_un initialized;
 	rt_un lock;
 };

@@ -35,8 +35,7 @@
  * </p>
  */
 
-struct rt_env_vars
-{
+struct rt_env_vars {
 	/* Windows like concatenated zero terminated strings with 2 zeros after the last string. */
 	/* Cannot be RT_NULL but can contain two zeros if there are no variables. */
 	rt_char *env_vars_block;

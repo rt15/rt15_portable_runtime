@@ -25,8 +25,7 @@
  * </p>
  */
 
-struct rt_process
-{
+struct rt_process {
 #ifdef RT_DEFINE_WINDOWS
 	/* rt_process first 4 fields must be exactly the same fields as PROCESS_INFORMATION because this structure address is passed to CreateProcess function. */
 	rt_h process_handle; /* HANDLE.	*/

@@ -9,8 +9,7 @@
  * Simple file management.
  */
 
-struct rt_file
-{
+struct rt_file {
 	struct rt_io_device io_device;
 };
 
