@@ -142,6 +142,9 @@
     <ClCompile Include="..\src\zz_read_line.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_array.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

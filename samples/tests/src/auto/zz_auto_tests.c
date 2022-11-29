@@ -24,6 +24,7 @@ rt_s zz_test_pipe();
 rt_s zz_test_thread();
 
 /* Layer 004. */
+rt_s zz_test_array();
 rt_s zz_test_base64();
 rt_s zz_test_command_line_args();
 rt_s zz_test_encoding();
@@ -83,6 +84,7 @@ rt_s zz_auto_tests()
 	if (!zz_test_thread()) goto error;
 
 	/* Layer 004. */
+	if (!zz_test_array()) goto error;
 	if (!zz_test_base64()) goto error;
 	if (!zz_test_command_line_args()) goto error;
 	if (!zz_test_encoding()) goto error;

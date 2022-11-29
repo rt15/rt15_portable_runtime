@@ -115,6 +115,9 @@
     <ClCompile Include="..\src\layer004\rt_small_file.c">
       <Filter>src\layer004</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer004\rt_array.c">
+      <Filter>src\layer004</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -247,6 +250,9 @@
       <Filter>include\layer004</Filter>
     </ClInclude>
     <ClInclude Include="..\include\layer004\rt_small_file.h">
+      <Filter>include\layer004</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer004\rt_array.h">
       <Filter>include\layer004</Filter>
     </ClInclude>
   </ItemGroup>
