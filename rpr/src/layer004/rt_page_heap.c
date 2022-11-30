@@ -52,7 +52,7 @@ void *rt_page_heap_realloc(void **area, rt_un size)
 	rt_un *area_size;
 	rt_un new_required_size;
 	rt_un new_required_pages_count;
-	void* old_area;
+	void *old_area;
 	rt_un old_size;
 	rt_un old_required_size;
 	rt_un old_required_pages_count;

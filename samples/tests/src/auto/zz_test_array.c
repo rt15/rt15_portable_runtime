@@ -7,25 +7,25 @@ struct zz_test_array_header {
 
 static rt_s zz_test_array_check(rt_un *array, rt_un size, struct rt_heap *heap)
 {
-	struct rt_array_header *array_header;
-	struct zz_test_array_header *test_array_header;
+	struct rt_array_header *header;
+	struct zz_test_array_header *test_header;
 	rt_un i;
 	rt_s ret;
 
-	array_header = RT_ARRAY_GET_HEADER(array);
-	if (array_header->size != size) goto error;
-	if (array_header->item_size != sizeof(rt_un)) goto error;
-	if (array_header->header_size != sizeof(struct zz_test_array_header)) goto error;
-	if (array_header->heap != heap) goto error;
+	header = RT_ARRAY_GET_HEADER(array);
+	if (header->size != size) goto error;
+	if (header->item_size != sizeof(rt_un)) goto error;
+	if (header->header_size != sizeof(struct zz_test_array_header)) goto error;
+	if (header->heap != heap) goto error;
 
-	test_array_header = RT_ARRAY_GET_CUSTOM_HEADER(array, array_header);
-	if (test_array_header->value != 42) goto error;
+	test_header = RT_ARRAY_GET_CUSTOM_HEADER(array, header);
+	if (test_header->value != 12) goto error;
 
 	if (array[-1] != (rt_un)heap) goto error;
 	if (array[-2] != sizeof(struct zz_test_array_header)) goto error;
 	if (array[-3] != sizeof(rt_un)) goto error;
 	if (array[-4] != size) goto error;
-	if (array[-5] != 42) goto error;
+	if (array[-5] != 12) goto error;
 
 	for (i = 0; i < size; i++) {
 		if (array[i] != i)
@@ -41,11 +41,11 @@ error:
 	goto free;
 }
 
-rt_s zz_test_array_do(struct rt_heap *heap)
+static rt_s zz_test_array_do(struct rt_heap *heap)
 {
 	rt_un *array = RT_NULL;
-	struct rt_array_header *array_header;
-	struct zz_test_array_header *test_array_header;
+	struct rt_array_header *header;
+	struct zz_test_array_header *test_header;
 	rt_un *item;
 	rt_un item_index;
 	rt_un i;
@@ -54,9 +54,9 @@ rt_s zz_test_array_do(struct rt_heap *heap)
 	/* Test create. */
 	if (!rt_array_create((void**)&array, 10, sizeof(rt_un), sizeof(struct zz_test_array_header), heap)) goto error;
 
-	array_header = RT_ARRAY_GET_HEADER(array);
-	test_array_header = RT_ARRAY_GET_CUSTOM_HEADER(array, array_header);
-	test_array_header->value = 42;
+	header = RT_ARRAY_GET_HEADER(array);
+	test_header = RT_ARRAY_GET_CUSTOM_HEADER(array, header);
+	test_header->value = 12;
 
 	for (i = 0; i < 10; i++)
 		array[i] = i;

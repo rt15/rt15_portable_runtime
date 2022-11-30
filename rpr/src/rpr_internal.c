@@ -9,7 +9,7 @@
 #if defined(__cplusplus)
 extern "C" {
 #endif
-void* _fltused;
+void *_fltused;
 #if defined(__cplusplus)
 };
 #endif

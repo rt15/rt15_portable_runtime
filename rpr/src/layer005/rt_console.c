@@ -39,7 +39,7 @@ rt_s rt_console_write_with_size(const rt_char *message, rt_un size, rt_b error)
 	HANDLE stream_handle;
 	rt_char8 stack_buffer[RT_CHAR8_BIG_STRING_SIZE];
 	int oem_text_size;
-	void* heap_buffer = RT_NULL;
+	void *heap_buffer = RT_NULL;
 	rt_char8 *oem_text;
 	DWORD written;
 	rt_s ret;

@@ -3,7 +3,7 @@
 static rt_s zz_test_heap_do(struct rt_heap *heap)
 {
 	rt_char8 *area = RT_NULL;
-	void* result;
+	void *result;
 	rt_un i;
 	rt_s ret;
 
@@ -74,7 +74,7 @@ static rt_s zz_test_alloc_if_needed(struct rt_heap *heap)
 	void *previous_heap_buffer;
 	rt_un heap_buffer_capacity = 0;
 	rt_un i;
-	void* result;
+	void *result;
 	rt_s ret;
 
 	/* Nothing provided, so failure. */

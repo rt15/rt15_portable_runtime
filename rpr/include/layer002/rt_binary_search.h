@@ -42,8 +42,8 @@ rt_s rt_binary_search_index(const void *area, const void *item, rt_un size, rt_u
  * If <tt>item</tt> is greater than all the values, then last index plus one is returned.
  * </p>
  *
- * @param item_index The index of searched item or an index to which insert it.
+ * @param insertion_index The index of searched item or an index to which insert it.
  */
-rt_s rt_binary_search_insertion_index(const void *area, const void *item, rt_un size, rt_un item_size, rt_comparison_callback_t callback, void *context, rt_un *item_index);
+rt_s rt_binary_search_insertion_index(const void *area, const void *item, rt_un size, rt_un item_size, rt_comparison_callback_t callback, void *context, rt_un *insertion_index);
 
 #endif /* RT_BINARY_SEARCH_H */

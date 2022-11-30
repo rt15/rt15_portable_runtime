@@ -40,6 +40,7 @@ rt_s zz_test_static_heap();
 /* Layer 005. */
 rt_s zz_test_env_vars();
 rt_s zz_test_file_system();
+rt_s zz_test_sortable_array();
 
 /* Layer 006. */
 rt_s zz_test_error_message();
@@ -102,6 +103,7 @@ rt_s zz_auto_tests()
 	/* Layer 005. */
 	if (!zz_test_env_vars()) goto error;
 	if (!zz_test_file_system()) goto error;
+	if (!zz_test_sortable_array()) goto error;
 
 	/* Layer 006. */
 	if (!zz_test_error_message()) goto error;

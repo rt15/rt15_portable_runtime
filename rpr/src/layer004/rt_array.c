@@ -5,8 +5,8 @@
 
 rt_s rt_array_create(void **array, rt_un size, rt_un item_size, rt_un header_size, struct rt_heap *heap)
 {
-	struct rt_array_header *array_header;
-	void* area;
+	struct rt_array_header *header;
+	void *area;
 
 	if (!header_size)
 		header_size = sizeof(struct rt_array_header);
@@ -16,11 +16,11 @@ rt_s rt_array_create(void **array, rt_un size, rt_un item_size, rt_un header_siz
 		/* Make the array point after the custom header. */
 		*array = (rt_uchar8*)area + header_size;
 
-		array_header = RT_ARRAY_GET_HEADER(*array);
-		array_header->size = size;
-		array_header->item_size = item_size;
-		array_header->header_size = header_size;
-		array_header->heap = heap;
+		header = RT_ARRAY_GET_HEADER(*array);
+		header->size = size;
+		header->item_size = item_size;
+		header->header_size = header_size;
+		header->heap = heap;
 	} else {
 		*array = RT_NULL;
 	}
@@ -29,26 +29,26 @@ rt_s rt_array_create(void **array, rt_un size, rt_un item_size, rt_un header_siz
 
 rt_s rt_array_set_size(void **array, rt_un size)
 {
-	struct rt_array_header *array_header;
+	struct rt_array_header *header;
 	void *area;
 	rt_un header_size;
 	struct rt_heap *heap;
 	rt_s ret;
 
-	array_header = RT_ARRAY_GET_HEADER(*array);
-	area = RT_ARRAY_GET_CUSTOM_HEADER(*array, array_header);
+	header = RT_ARRAY_GET_HEADER(*array);
+	area = RT_ARRAY_GET_CUSTOM_HEADER(*array, header);
 
-	header_size = array_header->header_size;
-	heap = array_header->heap;
+	header_size = header->header_size;
+	heap = header->heap;
 
-	if (!heap->realloc(heap, &area, header_size + size * array_header->item_size))
+	if (!heap->realloc(heap, &area, header_size + size * header->item_size))
 		goto error;
 
 	/* Make the array point after the custom header. */
 	*array = (rt_uchar8*)area + header_size;
 
-	array_header = RT_ARRAY_GET_HEADER(*array);
-	array_header->size = size;
+	header = RT_ARRAY_GET_HEADER(*array);
+	header->size = size;
 
 	ret = RT_OK;
 free:
@@ -61,14 +61,14 @@ error:
 
 rt_s rt_array_new_item(void **array, void **item)
 {
-	struct rt_array_header *array_header;
+	struct rt_array_header *header;
 	rt_un initial_size;
 	rt_un item_size;
 	rt_s ret;
 
-	array_header = RT_ARRAY_GET_HEADER(*array);
-	initial_size = array_header->size;
-	item_size = array_header->item_size;
+	header = RT_ARRAY_GET_HEADER(*array);
+	initial_size = header->size;
+	item_size = header->item_size;
 
 	if (!rt_array_set_size(array, initial_size + 1))
 		goto error;
@@ -86,12 +86,12 @@ error:
 
 rt_s rt_array_new_item_index(void **array, rt_un *item_index)
 {
-	struct rt_array_header *array_header;
+	struct rt_array_header *header;
 	rt_un initial_size;
 	rt_s ret;
 
-	array_header = RT_ARRAY_GET_HEADER(*array);
-	initial_size = array_header->size;
+	header = RT_ARRAY_GET_HEADER(*array);
+	initial_size = header->size;
 
 	if (!rt_array_set_size(array, initial_size + 1))
 		goto error;
@@ -109,19 +109,19 @@ error:
 
 rt_s rt_array_delete_item_index(void **array, rt_un item_index)
 {
-	struct rt_array_header *array_header;
+	struct rt_array_header *header;
 	rt_un last_item_index;
 	rt_un item_size;
 	void *source;
 	void *destination;
 	rt_s ret;
 
-	array_header = RT_ARRAY_GET_HEADER(*array);
-	last_item_index = array_header->size - 1;
-	item_size = array_header->item_size;
+	header = RT_ARRAY_GET_HEADER(*array);
+	last_item_index = header->size - 1;
+	item_size = header->item_size;
 
 	/* Check that the item index is within range. */
-	if (item_index >= array_header->size) {
+	if (item_index >= header->size) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto error;
 	}
@@ -147,18 +147,18 @@ error:
 
 rt_s rt_array_get_last_item(void *array, void **item)
 {
-	struct rt_array_header *array_header;
+	struct rt_array_header *header;
 	rt_s ret;
 
-	array_header = RT_ARRAY_GET_HEADER(array);
+	header = RT_ARRAY_GET_HEADER(array);
 
 	/* Makes sure there is something to return. */
-	if (!array_header->size) {
+	if (!header->size) {
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
 		goto error;
 	}
 
-	*item = ((rt_uchar8*)array) + (array_header->size - 1) * array_header->item_size;
+	*item = ((rt_uchar8*)array) + (header->size - 1) * header->item_size;
 
 	ret = RT_OK;
 free:
@@ -171,18 +171,18 @@ error:
 
 rt_s rt_array_get_item(void *array, rt_un item_index, void **item)
 {
-	struct rt_array_header *array_header;
+	struct rt_array_header *header;
 	rt_s ret;
 
-	array_header = RT_ARRAY_GET_HEADER(array);
+	header = RT_ARRAY_GET_HEADER(array);
 
 	/* Check that the item index is within range. */
-	if (item_index >= array_header->size) {
+	if (item_index >= header->size) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto error;
 	}
 
-	*item = ((rt_uchar8*)array) + item_index * array_header->item_size;
+	*item = ((rt_uchar8*)array) + item_index * header->item_size;
 
 	ret = RT_OK;
 free:
@@ -195,18 +195,18 @@ error:
 
 rt_s rt_array_delete_last_item(void **array)
 {
-	struct rt_array_header *array_header;
+	struct rt_array_header *header;
 	rt_s ret;
 
-	array_header = RT_ARRAY_GET_HEADER(*array);
+	header = RT_ARRAY_GET_HEADER(*array);
 
 	/* Makes sure there is something to delete. */
-	if (!array_header->size) {
+	if (!header->size) {
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
 		goto error;
 	}
 
-	if (!rt_array_set_size(array, array_header->size - 1))
+	if (!rt_array_set_size(array, header->size - 1))
 		goto error;
 
 	ret = RT_OK;
@@ -220,18 +220,18 @@ error:
 
 rt_s rt_array_free(void **array)
 {
-	struct rt_array_header *array_header;
+	struct rt_array_header *header;
 	void *area;
 	struct rt_heap *heap;
 	rt_s ret;
 
 	if (*array) {
-		array_header = RT_ARRAY_GET_HEADER(*array);
-		area = RT_ARRAY_GET_CUSTOM_HEADER(*array, array_header);
+		header = RT_ARRAY_GET_HEADER(*array);
+		area = RT_ARRAY_GET_CUSTOM_HEADER(*array, header);
 
 		*array = RT_NULL;
 
-		heap = array_header->heap;
+		heap = header->heap;
 		if (!heap->free(heap, &area))
 			goto error;
 	}

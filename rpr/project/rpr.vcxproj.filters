@@ -124,6 +124,9 @@
     <ClCompile Include="..\src\layer002\rt_binary_search.c">
       <Filter>src\layer002</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer005\rt_sortable_array.c">
+      <Filter>src\layer005</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -269,6 +272,9 @@
     </ClInclude>
     <ClInclude Include="..\include\layer002\rt_binary_search.h">
       <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer005\rt_sortable_array.h">
+      <Filter>include\layer005</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

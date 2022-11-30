@@ -51,7 +51,7 @@ error:
 	goto free;
 }
 
-rt_s rt_binary_search_insertion_index(const void *area, const void *item, rt_un size, rt_un item_size, rt_comparison_callback_t callback, void *context, rt_un *item_index)
+rt_s rt_binary_search_insertion_index(const void *area, const void *item, rt_un size, rt_un item_size, rt_comparison_callback_t callback, void *context, rt_un *insertion_index)
 {
 	const rt_char8 *area_chars;
 	rt_un lower_bound;
@@ -81,13 +81,13 @@ rt_s rt_binary_search_insertion_index(const void *area, const void *item, rt_un 
 		if (!callback(&area_chars[upper_bound * item_size], item, context, &comparison_result))
 			goto error;
 		if (comparison_result < 0) {
-			*item_index = upper_bound + 1;
+			*insertion_index = upper_bound + 1;
 		} else {
-			*item_index = upper_bound;
+			*insertion_index = upper_bound;
 		}
 	} else {
 		/* No item yet, insert at first index. */
-		*item_index = 0;
+		*insertion_index = 0;
 	}
 
 	ret = RT_OK;

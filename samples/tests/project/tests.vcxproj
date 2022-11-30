@@ -50,6 +50,7 @@
     <ClCompile Include="..\src\auto\zz_test_sleep.c" />
     <ClCompile Include="..\src\auto\zz_test_slurp.c" />
     <ClCompile Include="..\src\auto\zz_test_small_file.c" />
+    <ClCompile Include="..\src\auto\zz_test_sortable_array.c" />
     <ClCompile Include="..\src\auto\zz_test_static_heap.c" />
     <ClCompile Include="..\src\auto\zz_test_thread.c" />
     <ClCompile Include="..\src\auto\zz_test_virtual_memory.c" />
