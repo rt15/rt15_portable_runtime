@@ -26,6 +26,7 @@
     <ClCompile Include="..\src\layer002\rt_event.c" />
     <ClCompile Include="..\src\layer002\rt_io_device.c" />
     <ClCompile Include="..\src\layer002\rt_memory_input_stream.c" />
+    <ClCompile Include="..\src\layer002\rt_quick_sort.c" />
     <ClCompile Include="..\src\layer002\rt_sleep.c" />
     <ClCompile Include="..\src\layer002\rt_slurp.c" />
     <ClCompile Include="..\src\layer002\rt_virtual_memory.c" />
@@ -62,6 +63,7 @@
   <ItemGroup>
     <ClInclude Include="..\include\layer000\rt_types.h" />
     <ClInclude Include="..\include\layer001\rt_atomic.h" />
+    <ClInclude Include="..\include\layer001\rt_comparison.h" />
     <ClInclude Include="..\include\layer001\rt_input_stream.h" />
     <ClInclude Include="..\include\layer001\rt_memory.h" />
     <ClInclude Include="..\include\layer001\rt_os_headers.h" />
@@ -72,6 +74,7 @@
     <ClInclude Include="..\include\layer002\rt_event.h" />
     <ClInclude Include="..\include\layer002\rt_io_device.h" />
     <ClInclude Include="..\include\layer002\rt_memory_input_stream.h" />
+    <ClInclude Include="..\include\layer002\rt_quick_sort.h" />
     <ClInclude Include="..\include\layer002\rt_sleep.h" />
     <ClInclude Include="..\include\layer002\rt_slurp.h" />
     <ClInclude Include="..\include\layer002\rt_virtual_memory.h" />

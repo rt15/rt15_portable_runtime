@@ -4,6 +4,7 @@
 #include "layer000/rt_types.h"
 
 #include "layer001/rt_atomic.h"
+#include "layer001/rt_comparison.h"
 #include "layer001/rt_input_stream.h"
 #include "layer001/rt_memory.h"
 #include "layer001/rt_output_stream.h"
@@ -14,6 +15,7 @@
 #include "layer002/rt_event.h"
 #include "layer002/rt_io_device.h"
 #include "layer002/rt_memory_input_stream.h"
+#include "layer002/rt_quick_sort.h"
 #include "layer002/rt_sleep.h"
 #include "layer002/rt_slurp.h"
 #include "layer002/rt_virtual_memory.h"

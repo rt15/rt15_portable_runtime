@@ -77,6 +77,7 @@
 		</Compiler>
 		<Unit filename="../include/layer000/rt_types.h" />
 		<Unit filename="../include/layer001/rt_atomic.h" />
+		<Unit filename="../include/layer001/rt_comparison.h" />
 		<Unit filename="../include/layer001/rt_input_stream.h" />
 		<Unit filename="../include/layer001/rt_memory.h" />
 		<Unit filename="../include/layer001/rt_os_headers.h" />
@@ -87,6 +88,7 @@
 		<Unit filename="../include/layer002/rt_event.h" />
 		<Unit filename="../include/layer002/rt_io_device.h" />
 		<Unit filename="../include/layer002/rt_memory_input_stream.h" />
+		<Unit filename="../include/layer002/rt_quick_sort.h" />
 		<Unit filename="../include/layer002/rt_sleep.h" />
 		<Unit filename="../include/layer002/rt_slurp.h" />
 		<Unit filename="../include/layer002/rt_virtual_memory.h" />
@@ -139,6 +141,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer002/rt_memory_input_stream.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer002/rt_quick_sort.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer002/rt_sleep.c">

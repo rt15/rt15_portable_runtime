@@ -43,7 +43,7 @@ error:
 
 rt_s zz_test_array_do(struct rt_heap *heap)
 {
-	rt_un *array;
+	rt_un *array = RT_NULL;
 	struct rt_array_header *array_header;
 	struct zz_test_array_header *test_array_header;
 	rt_un *item;

@@ -169,6 +169,9 @@
 		<Unit filename="../src/auto/zz_test_process.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/auto/zz_test_quick_sort.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/auto/zz_test_random.c">
 			<Option compilerVar="CC" />
 		</Unit>

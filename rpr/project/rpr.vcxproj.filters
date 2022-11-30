@@ -118,6 +118,9 @@
     <ClCompile Include="..\src\layer004\rt_array.c">
       <Filter>src\layer004</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer002\rt_quick_sort.c">
+      <Filter>src\layer002</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -254,6 +257,12 @@
     </ClInclude>
     <ClInclude Include="..\include\layer004\rt_array.h">
       <Filter>include\layer004</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer001\rt_comparison.h">
+      <Filter>include\layer001</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer002\rt_quick_sort.h">
+      <Filter>include\layer002</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
