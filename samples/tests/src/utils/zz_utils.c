@@ -128,3 +128,23 @@ error:
 	ret = RT_FAILED;
 	goto free;
 }
+
+rt_s zz_comparison_callback(const void *item1, const void *item2, void *context, rt_n *comparison_result)
+{
+	rt_un item1_value = *(rt_un*)item1;
+	rt_un item2_value = *(rt_un*)item2;
+	rt_un context_value = *(rt_un*)context;
+	rt_s ret;
+
+	if (context_value != 42)
+		goto error;
+
+	*comparison_result = item1_value - item2_value;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}

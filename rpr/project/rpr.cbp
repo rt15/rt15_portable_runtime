@@ -82,6 +82,7 @@
 		<Unit filename="../include/layer001/rt_memory.h" />
 		<Unit filename="../include/layer001/rt_os_headers.h" />
 		<Unit filename="../include/layer001/rt_output_stream.h" />
+		<Unit filename="../include/layer002/rt_binary_search.h" />
 		<Unit filename="../include/layer002/rt_chrono.h" />
 		<Unit filename="../include/layer002/rt_critical_section.h" />
 		<Unit filename="../include/layer002/rt_error.h" />
@@ -123,6 +124,9 @@
 		<Unit filename="../include/rpr_main.h" />
 		<Unit filename="../include/rpr_mem.h" />
 		<Unit filename="../src/layer001/rt_memory.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer002/rt_binary_search.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer002/rt_chrono.c">

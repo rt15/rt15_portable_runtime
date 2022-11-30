@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\layer001\rt_memory.c" />
+    <ClCompile Include="..\src\layer002\rt_binary_search.c" />
     <ClCompile Include="..\src\layer002\rt_chrono.c" />
     <ClCompile Include="..\src\layer002\rt_critical_section.c" />
     <ClCompile Include="..\src\layer002\rt_error.c" />
@@ -68,6 +69,7 @@
     <ClInclude Include="..\include\layer001\rt_memory.h" />
     <ClInclude Include="..\include\layer001\rt_os_headers.h" />
     <ClInclude Include="..\include\layer001\rt_output_stream.h" />
+    <ClInclude Include="..\include\layer002\rt_binary_search.h" />
     <ClInclude Include="..\include\layer002\rt_chrono.h" />
     <ClInclude Include="..\include\layer002\rt_critical_section.h" />
     <ClInclude Include="..\include\layer002\rt_error.h" />

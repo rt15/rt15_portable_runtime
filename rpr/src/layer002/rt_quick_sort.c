@@ -76,7 +76,7 @@ static rt_s rt_quick_sort_short_sort(char *lo, char *hi, rt_un item_size, rt_com
  *   Returns neg if 1<2, 0 if 1=2, pos if 1>2.
  *
  */
-rt_s rt_quick_sort(void *area, rt_un size, rt_un item_size, rt_comparison_callback_t callback, void *context)
+rt_s rt_quick_sort(const void *area, rt_un size, rt_un item_size, rt_comparison_callback_t callback, void *context)
 {
 	/* Note: the number of stack entries required is no more than
 	   1 + log2(size), so 30 is sufficient for any array.

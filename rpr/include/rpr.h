@@ -9,6 +9,7 @@
 #include "layer001/rt_memory.h"
 #include "layer001/rt_output_stream.h"
 
+#include "layer002/rt_binary_search.h"
 #include "layer002/rt_chrono.h"
 #include "layer002/rt_critical_section.h"
 #include "layer002/rt_error.h"

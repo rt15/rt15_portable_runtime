@@ -1,24 +1,6 @@
 #include <rpr.h>
 
-static rt_s zz_test_quick_sort_callback(void *item1, void *item2, void *context, rt_n *comparison_result)
-{
-	rt_un item1_value = *(rt_un*)item1;
-	rt_un item2_value = *(rt_un*)item2;
-	rt_un context_value = *(rt_un*)context;
-	rt_s ret;
-
-	if (context_value != 42)
-		goto error;
-
-	*comparison_result = item1_value - item2_value;
-
-	ret = RT_OK;
-free:
-	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
-}
+#include "zz_utils.h"
 
 static rt_s zz_test_quick_sort_do(struct rt_heap *heap)
 {
@@ -44,7 +26,7 @@ static rt_s zz_test_quick_sort_do(struct rt_heap *heap)
 		check_sum += item;
 	}
 
-	if (!rt_quick_sort(array, size, sizeof(rt_un), &zz_test_quick_sort_callback, &context_value))
+	if (!rt_quick_sort(array, size, sizeof(rt_un), &zz_comparison_callback, &context_value))
 		goto error;
 
 	for (i = 0; i < size; i++) {

@@ -35,4 +35,13 @@ rt_b zz_char_equals_with_nulls(const rt_char *string1, const rt_char *string2);
  */
 rt_s zz_read_text_file(const rt_char *file_path, enum rt_encoding encoding, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
+/**
+ * Can be used as a comparison callback to compare two <tt>rt_un</tt>.
+ *
+ * <p>
+ * Make sure to provide a pointer on 42 as context.
+ * </p>
+ */
+rt_s zz_comparison_callback(const void *item1, const void *item2, void *context, rt_n *comparison_result);
+
 #endif /* ZZ_UTILS_H */
