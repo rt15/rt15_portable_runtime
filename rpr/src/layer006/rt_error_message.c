@@ -24,7 +24,7 @@ rt_s rt_error_message_append(rt_un32 error_number, rt_char *buffer, rt_un buffer
 
 	/* Remove trailing end of lines. */
 	*buffer_size += message_size;
-	rt_char_right_trim(buffer, buffer_size);
+	rt_char_trim(RT_FALSE, RT_TRUE, buffer, buffer_size);
 
 	ret = RT_OK;
 free:

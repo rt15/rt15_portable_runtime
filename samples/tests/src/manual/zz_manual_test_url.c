@@ -47,7 +47,7 @@ static rt_s zz_manual_test_url_print_info(struct rt_url_info *url_info)
 			goto error;
 	} else {
 		buffer_size = 0;
-		if (!rt_char_append_n(url_info->port, 10, buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &buffer_size)) goto error;
+		if (!rt_char_append_un(url_info->port, 10, buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &buffer_size)) goto error;
 		if (!zz_manual_test_url_print_info_item(_R("Port"), buffer, buffer_size)) goto error;
 	}
 

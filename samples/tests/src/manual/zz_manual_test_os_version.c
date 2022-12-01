@@ -14,11 +14,11 @@ rt_s zz_manual_test_os_version()
 	if (!rt_console_write_string(_R("Operating system version = "))) goto error;
 
 	buffer_size = 0;
-	if (!rt_char_append_n(major, 10,   buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)) goto error;
+	if (!rt_char_append_un(major, 10,   buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)) goto error;
 	if (!rt_char_append_char(_R('.'),  buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)) goto error;
-	if (!rt_char_append_n(minor, 10,   buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)) goto error;
+	if (!rt_char_append_un(minor, 10,   buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)) goto error;
 	if (!rt_char_append_char(_R('.'),  buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)) goto error;
-	if (!rt_char_append_n(patch, 10,   buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)) goto error;
+	if (!rt_char_append_un(patch, 10,   buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)) goto error;
 	if (!rt_char_append_char(_R('\n'), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)) goto error;
 
 	if (!rt_console_write_string_with_size(buffer, buffer_size)) goto error;

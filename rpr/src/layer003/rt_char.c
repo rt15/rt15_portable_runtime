@@ -24,6 +24,15 @@ rt_b rt_char_equals(const rt_char *str1, rt_un str1_size, const rt_char *str2, r
 	return ret;
 }
 
+rt_n rt_char_compare(const rt_char *str1, const rt_char *str2)
+{
+	while (*str1 && (*str1 == *str2)) {
+		str1++;
+		str2++;
+	}
+	return *(rt_uchar8*)str1 - *(rt_uchar8*)str2;
+}
+
 rt_s rt_char_append(const rt_char *suffix, rt_un suffix_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
 	rt_un local_buffer_size = *buffer_size;
@@ -124,6 +133,53 @@ rt_un rt_char_get_size(const rt_char *str)
 	return ret;
 }
 
+rt_s rt_char_append_un(rt_un value, rt_un base, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	rt_un previous_value;
+	rt_char tmp_char;
+	rt_un i, j;
+	rt_s ret;
+
+	if (base < 2 || base > 36)
+		goto error;
+
+	i = *buffer_size;
+	j = *buffer_size;
+	while (i < buffer_capacity - 1) {
+		previous_value = value;
+		value = value / base;
+		buffer[i] = _R("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")[previous_value - value * base];
+		i++;
+		if (!value)
+			break;
+	}
+	if (value)
+		goto error;
+
+	buffer[i] = 0;
+	*buffer_size = i;
+	i--;
+	for (; j < i; j++) {
+		tmp_char = buffer[j];
+		buffer[j] = buffer[i];
+		buffer[i] = tmp_char;
+		i--;
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	/* Add a zero terminating character if possible. */
+	if (buffer_capacity) {
+		if (*buffer_size >= buffer_capacity)
+			*buffer_size = buffer_capacity - 1;
+		buffer[*buffer_size] = 0;
+	}
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s rt_char_append_n(rt_n value, rt_un base, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
 	rt_n local_value;
@@ -141,7 +197,7 @@ rt_s rt_char_append_n(rt_n value, rt_un base, rt_char *buffer, rt_un buffer_capa
 	while (i < buffer_capacity - 1) {
 		previous_value = local_value;
 		local_value = local_value / (rt_n)base;
-		buffer[i] = _R("ZYXWVUTSRQPONMLKJIHGFEDCBA9876543210123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ") [35 + (previous_value - local_value * base)];
+		buffer[i] = _R("ZYXWVUTSRQPONMLKJIHGFEDCBA9876543210123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")[35 + (previous_value - local_value * base)];
 		i++;
 		if (!local_value)
 			break;
@@ -211,20 +267,6 @@ rt_un rt_char_fast_upper(rt_char *str)
 	return ret;
 }
 
-rt_un rt_char_search_char(const rt_char *str, rt_char searched)
-{
-	rt_un result;
-
-	result = 0;
-	while (str[result] && str[result] != searched)
-		result++;
-	if (!str[result]) {
-		result = RT_TYPE_MAX_UN;
-	}
-
-	return result;
-}
-
 /* TODO: Watch out for overflows!? Check i at the end then check characters if necessary. */
 rt_s rt_char_convert_to_un(const rt_char *str, rt_un *result)
 {
@@ -265,21 +307,21 @@ error:
 }
 
 /* TODO: Watch out for overflows!? */
-rt_s rt_char_convert_to_un_with_size(const rt_char *str, rt_un size, rt_un *result)
+rt_s rt_char_convert_to_un_with_size(const rt_char *str, rt_un str_size, rt_un *result)
 {
 	rt_char character;
 	rt_un local_result = 0;
 	rt_un i;
 	rt_s ret;
 
-	if (!size) {
-		/* The string was empty. */
+	if (!str_size) {
+		/* The string is empty. */
 		*result = 0;
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto error;
 	}
 
-	for (i = 0; i < size; i++) {
+	for (i = 0; i < str_size; i++) {
 		character = str[i];
 
 		if ((character < _R('0')) || (character > _R('9'))) {
@@ -301,16 +343,391 @@ error:
 	goto free;
 }
 
-void rt_char_right_trim(rt_char *buffer, rt_un *buffer_size)
+rt_s rt_char_convert_to_n(const rt_char *str, rt_n *result)
+{
+	rt_b negative;
+	rt_char character;
+	rt_un i = 0;
+	rt_n local_result = 0;
+	rt_s ret;
+
+	if (str[0] == _R('-')) {
+		negative = RT_TRUE;
+		str = &str[1];
+	} else {
+		negative = RT_FALSE;
+	}
+
+	if (!str[0]) {
+		/* The string is empty or just a minus sign. */
+		*result = 0;
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
+	}
+
+	while (RT_TRUE) {
+		character = str[i];
+		if (!character)
+			break;
+
+		if ((character < _R('0')) || (character > _R('9'))) {
+			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+			goto error;
+		} else {
+			local_result = local_result * 10 + character - _R('0');
+		}
+		i++;
+	}
+
+	if (negative)
+		local_result = -local_result;
+
+	*result = local_result;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_char_convert_to_n_with_size(const rt_char *str, rt_un str_size, rt_n *result)
+{
+	rt_b negative;
+	rt_char character;
+	rt_n local_result = 0;
+	rt_un i;
+	rt_s ret;
+
+	if (!str_size) {
+		/* The string is empty. */
+		*result = 0;
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
+	}
+
+	if (str[0] == '-') {
+		negative = RT_TRUE;
+		if (str_size == 1) {
+			/* The string is only a minus sign. */
+			*result = 0;
+			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+			goto error;
+		}
+	} else {
+		negative = RT_FALSE;
+	}
+
+	for (i = (negative) ? 1 : 0; i < str_size; i++) {
+		character = str[i];
+
+		if ((character < _R('0')) || (character > _R('9'))) {
+			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+			goto error;
+		} else {
+			local_result = local_result * 10 + character - _R('0');
+		}
+	}
+
+	if (negative)
+		local_result = -local_result;
+
+	*result = local_result;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+void rt_char_trim(rt_b left, rt_b right, rt_char *buffer, rt_un *buffer_size)
 {
 	rt_un local_buffer_size = *buffer_size;
+	rt_un i;
 
-	while (local_buffer_size) {
-		if (buffer[local_buffer_size - 1] > _R(' '))
-			break;
-		local_buffer_size--;
+	if (right) {
+		while (local_buffer_size && buffer[local_buffer_size - 1] <= _R(' '))
+			local_buffer_size--;
+
 		buffer[local_buffer_size] = 0;
 	}
 
+	if (left) {
+		for (i = 0; i < local_buffer_size; i++) {
+			if (buffer[i] > _R(' '))
+				break;
+		}
+		if (i) {
+			local_buffer_size -= i;
+			if (local_buffer_size) {
+				RT_MEMORY_COPY(&buffer[i], buffer, local_buffer_size * sizeof(rt_char));
+			}
+			buffer[local_buffer_size] = 0;
+		}
+	}
+
 	*buffer_size = local_buffer_size;
+}
+
+rt_s rt_char_left_pad(const rt_char *input, rt_un input_size, rt_char character, rt_un size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	rt_un padding_size;
+	rt_s ret;
+
+	if (input_size < size) {
+
+		/* Makes sure the buffer capacity is enough for the padding + input_size + zero terminating character. */
+		if (buffer_capacity < size + 1) {
+			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
+			goto error;
+		}
+
+		padding_size = size - input_size;
+		if (input_size) {
+			if (input == buffer) {
+				RT_MEMORY_MOVE(input, &buffer[padding_size], input_size * sizeof(rt_char));
+			} else {
+				RT_MEMORY_COPY(input, &buffer[padding_size], input_size * sizeof(rt_char));
+			}
+		}
+
+		/* Add padding at the left of the input. */
+		RT_MEMORY_SET_CHAR(buffer, character, padding_size);
+
+		/* Add zero terminating character. */
+		buffer[size] = 0;
+
+		*buffer_size = size;
+
+	} else {
+		/* If the result is the same as the input, then there is nothing to do. */
+		if (input != buffer) {
+			/* The input is already long enough. We copy it to the result. */
+			if (!rt_char_copy(input, input_size, buffer, buffer_capacity))
+				goto error;
+		}
+		*buffer_size = input_size;
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_char_right_pad(rt_char character, rt_un size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	rt_un local_buffer_size = *buffer_size;
+	rt_s ret;
+
+	/* If padding is required. */
+	if (local_buffer_size < size) {
+
+		/* Makes sure the buffer is enough for its current content + padding + zero terminating character. */
+		if (buffer_capacity < size + 1) {
+			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
+			goto error;
+		}
+
+		RT_MEMORY_SET_CHAR(&buffer[local_buffer_size], character, size - local_buffer_size);
+
+		/* Add zero terminating character. */
+		buffer[size] = 0;
+
+		*buffer_size = size;
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_char_ends_with(const rt_char *str, rt_un str_size, const rt_char *searched, rt_un searched_size)
+{
+	const rt_char *str_end;
+	rt_b ret;
+
+	if (str_size >= searched_size) {
+		if (searched_size) {
+			str_end = &str[str_size - searched_size];
+			ret = !RT_MEMORY_COMPARE(str_end, searched, searched_size * sizeof(rt_char));
+		} else {
+			ret = RT_TRUE;
+		}
+	} else {
+		ret = RT_FALSE;
+	}
+	return ret;
+}
+
+
+rt_un rt_char_search(const rt_char *str, const rt_char *searched)
+{
+	rt_char first_searched_character = searched[0];
+	rt_un in_str = 0;
+	rt_char str_character;
+	rt_un in_searched;
+	rt_un in_str2;
+	rt_char searched_character;
+	rt_un ret = RT_TYPE_MAX_UN;
+
+	if (first_searched_character) {
+		while (RT_TRUE) {
+			str_character = str[in_str];
+			if (!str_character)
+				break;
+			if (str_character == first_searched_character) {
+				/* We found the first character of searched, in str. */
+				/* Let's check the others. */
+				in_searched = 1;
+				in_str2 = in_str + 1;
+				while (RT_TRUE) {
+					searched_character = searched[in_searched];
+					if (!searched_character) {
+						ret = in_str;
+						goto end;
+					}
+					if (str[in_str2] != searched_character)
+						break;
+					in_searched++;
+					in_str2++;
+				}
+			}
+			in_str++;
+		}
+	}
+
+end:
+	return ret;
+}
+
+rt_un rt_char_search_char(const rt_char *str, rt_char searched)
+{
+	rt_un result;
+
+	result = 0;
+	while (str[result] && str[result] != searched)
+		result++;
+	if (!str[result]) {
+		result = RT_TYPE_MAX_UN;
+	}
+
+	return result;
+}
+
+rt_un rt_char_count_occurrences(const rt_char *str, const rt_char *searched)
+{
+	const rt_char *in_str = str;
+	rt_un index;
+	rt_un searched_size = rt_char_get_size(searched);
+	rt_un res = 0;
+
+	while (RT_TRUE) {
+		index = rt_char_search(in_str, searched);
+		if (index == RT_TYPE_MAX_UN)
+			break;
+
+		res++;
+		in_str = &in_str[index + searched_size];
+	}
+
+	return res;
+}
+
+rt_s RT_CDECL rt_char_concat(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size, ...)
+{
+	va_list args_list;
+	rt_s ret;
+
+	va_start(args_list, buffer_size);
+	ret = rt_char_vconcat(buffer, buffer_capacity, buffer_size, args_list);
+	va_end(args_list);
+
+	return ret;
+}
+
+rt_s rt_char_vconcat(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size, va_list args_list)
+{
+	rt_char *str;
+	rt_s ret;
+
+	while (RT_TRUE) {
+		str = va_arg(args_list, rt_char*);
+		if (str) {
+			if (!rt_char_append(str, rt_char_get_size(str), buffer, buffer_capacity, buffer_size))
+				goto error;
+		} else {
+			break;
+		}
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_char_replace(const rt_char *str, rt_un str_size,
+		     const rt_char *searched, rt_un searched_size,
+		     const rt_char *replacement, rt_un replacement_size,
+		     rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	rt_un in_str = 0;
+	rt_un index;
+	rt_un remaining_characters;
+	rt_s ret;
+
+	while (RT_TRUE) {
+		index = rt_char_search(&str[in_str], searched);
+
+		if (index == RT_TYPE_MAX_UN) {
+			/* No more occurrences of the searched string, copy remaining characters. */
+			remaining_characters = str_size - in_str;
+			if (remaining_characters) {
+				if (!rt_char_append(&str[in_str], remaining_characters, buffer, buffer_capacity, buffer_size))
+					goto error;
+			}
+
+			/* Job done. */
+			break;
+		}
+
+		/* Copy from the current position in str to the found index. */
+		if (index) {
+			if (!rt_char_append(&str[in_str], index, buffer, buffer_capacity, buffer_size))
+				goto error;
+		}
+
+		/* Copy the replacement. */
+		if (replacement_size) {
+			if (!rt_char_append(replacement, replacement_size, buffer, buffer_capacity, buffer_size))
+				goto error;
+		}
+
+		/* Continue reading str. */
+		in_str += index + searched_size;
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
 }

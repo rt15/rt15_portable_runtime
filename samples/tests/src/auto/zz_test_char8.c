@@ -36,6 +36,31 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_char8_compare()
+{
+	rt_s ret;
+
+	if (rt_char8_compare("abc", "abc")) goto error;
+	if (rt_char8_compare("", "")) goto error;
+	if (rt_char8_compare("abc", "abd") >= 0) goto error;
+	if (rt_char8_compare("abd", "abc") <= 0) goto error;
+	if (rt_char8_compare("abc", "ab") <= 0) goto error;
+	if (rt_char8_compare("ab", "abc") >= 0) goto error;
+	if (rt_char8_compare("a", "é") >= 0) goto error;
+	if (rt_char8_compare("é", "a") <= 0) goto error;
+	if (rt_char8_compare("a", " ") <= 0) goto error;
+	if (rt_char8_compare(" ", "a") >= 0) goto error;
+	if (rt_char8_compare("a", "") <= 0) goto error;
+	if (rt_char8_compare("", "a") >= 0) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 static rt_s zz_test_char8_append_ok(const rt_char8 *prefix, const rt_char8 *suffix, const rt_char8 *expected)
 {
 	rt_s ret;
@@ -245,6 +270,89 @@ error:
 	goto free;
 }
 
+rt_s zz_test_char8_append_un_ok(rt_un value, rt_un base, rt_un buffer_capacity, rt_un buffer_size, const rt_char8 *expected)
+{
+	rt_char8 buffer[200];
+	rt_un local_buffer_size = buffer_size;
+	rt_un expected_size;
+	rt_s ret;
+
+	RT_MEMORY_SET(buffer, 'a', 200);
+
+	if (!rt_char8_append_un(value, base, buffer, buffer_capacity, &local_buffer_size))
+		goto error;
+	expected_size = rt_char8_get_size(expected);
+	if (rt_char8_get_size(buffer) != expected_size) goto error;
+	if (local_buffer_size != expected_size) goto error;
+	if (!rt_char8_equals(buffer, expected_size, expected, expected_size)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s zz_test_char8_append_un_failed(rt_un value, rt_un base, rt_un buffer_capacity, rt_un buffer_size, const rt_char8 *expected)
+{
+	rt_char8 buffer[200];
+	rt_un local_buffer_size = buffer_size;
+	rt_un expected_size;
+	rt_s ret;
+
+	RT_MEMORY_SET(buffer, 'a', 200);
+
+	if (rt_char8_append_un(value, base, buffer, buffer_capacity, &local_buffer_size))
+		goto error;
+	expected_size = rt_char8_get_size(expected);
+	if (rt_char8_get_size(buffer) != expected_size) goto error;
+	if (local_buffer_size != expected_size) goto error;
+	if (!rt_char8_equals(buffer, expected_size, expected, expected_size)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s zz_test_char8_append_un()
+{
+	rt_s ret;
+
+	if (!zz_test_char8_append_un_failed(12, 1, 7, 5, "aaaaa")) goto error;
+	if (!zz_test_char8_append_un_failed(12, 1, 6, 5, "aaaaa")) goto error;
+	if (!zz_test_char8_append_un_failed(12, 1, 5, 5, "aaaa")) goto error;
+	if (!zz_test_char8_append_un_failed(12, 1, 4, 5, "aaa")) goto error;
+	if (!zz_test_char8_append_un_failed(12, 1, 3, 5, "aa")) goto error;
+	if (!zz_test_char8_append_un_failed(12, 1, 2, 5, "a")) goto error;
+	if (!zz_test_char8_append_un_failed(12, 1, 1, 5, "")) goto error;
+
+	if (!zz_test_char8_append_un_ok(0, 10, 10, 0, "0")) goto error;
+	if (!zz_test_char8_append_un_ok(1, 10, 10, 0, "1")) goto error;
+	if (!zz_test_char8_append_un_ok(12, 10, 10, 0, "12")) goto error;
+	if (!zz_test_char8_append_un_ok(123, 10, 10, 0, "123")) goto error;
+	if (!zz_test_char8_append_un_ok(1234, 10, 10, 0, "1234")) goto error;
+	if (!zz_test_char8_append_un_ok(12345, 10, 10, 0, "12345")) goto error;
+
+	if (!zz_test_char8_append_un_ok(12345, 10, 10, 1, "a12345")) goto error;
+	if (!zz_test_char8_append_un_ok(12345, 10, 10, 2, "aa12345")) goto error;
+	if (!zz_test_char8_append_un_ok(12345, 10, 10, 3, "aaa12345")) goto error;
+
+	if (!zz_test_char8_append_un_ok(12345, 10, 9, 3, "aaa12345")) goto error;
+	if (!zz_test_char8_append_un_failed(12345, 10, 8, 3, "aaa")) goto error;
+	if (!zz_test_char8_append_un_failed(12345, 10, 7, 3, "aaa")) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s zz_test_char8_append_n_ok(rt_n value, rt_un base, rt_un buffer_capacity, rt_un buffer_size, const rt_char8 *expected)
 {
 	rt_char8 buffer[200];
@@ -427,25 +535,6 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_search_char()
-{
-	rt_s ret;
-
-	if (rt_char8_search_char("", 'a') != RT_TYPE_MAX_UN) goto error;
-	if (rt_char8_search_char("b", 'a') != RT_TYPE_MAX_UN) goto error;
-	if (rt_char8_search_char("a", 'a') != 0) goto error;
-	if (rt_char8_search_char("ab", 'a') != 0) goto error;
-	if (rt_char8_search_char("ba", 'a') != 1) goto error;
-	if (rt_char8_search_char("aba", 'a') != 0) goto error;
-
-	ret = RT_OK;
-free:
-	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
-}
-
 static rt_s zz_test_successful_char_convert_to_un(const rt_char8 *str, rt_un expected)
 {
 	rt_un result;
@@ -494,6 +583,8 @@ static rt_s zz_test_char8_convert_to_un()
 	if (!zz_test_failed_char_convert_to_un("")) goto error;
 	if (!zz_test_failed_char_convert_to_un(" ")) goto error;
 	if (!zz_test_failed_char_convert_to_un("-1")) goto error;
+	if (!zz_test_failed_char_convert_to_un("-")) goto error;
+	if (!zz_test_failed_char_convert_to_un("-a")) goto error;
 	if (!zz_test_failed_char_convert_to_un("a")) goto error;
 	if (!zz_test_failed_char_convert_to_un("2a")) goto error;
 	if (!zz_test_failed_char_convert_to_un("a2")) goto error;
@@ -506,7 +597,72 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_right_trim_do(const rt_char8 *str, const rt_char8 *expected)
+static rt_s zz_test_successful_char_convert_to_n(const rt_char8 *str, rt_n expected)
+{
+	rt_n result;
+	rt_s ret;
+
+	if (!rt_char8_convert_to_n(str, &result)) goto error;
+	if (result != expected) goto error;
+
+	result = 99;
+	if (!rt_char8_convert_to_n_with_size(str, rt_char8_get_size(str), &result)) goto error;
+	if (result != expected) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_failed_char_convert_to_n(const rt_char8 *str)
+{
+	rt_n result;
+	rt_s ret;
+
+	if (rt_char8_convert_to_n(str, &result)) goto error;
+	if (rt_char8_convert_to_n_with_size(str, rt_char8_get_size(str), &result)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_convert_to_n()
+{
+	rt_s ret;
+
+	if (!zz_test_successful_char_convert_to_n("0", 0)) goto error;
+	if (!zz_test_successful_char_convert_to_n("1", 1)) goto error;
+	if (!zz_test_successful_char_convert_to_n("2147483647", 2147483647)) goto error;
+	if (!zz_test_successful_char_convert_to_n("-1", -1)) goto error;
+	if (!zz_test_successful_char_convert_to_n("-0", 0)) goto error;
+	if (!zz_test_successful_char_convert_to_n("-2111222333", -2111222333)) goto error;
+	/* TODO: Test larger numbers under 64 bits. */
+
+	if (!zz_test_failed_char_convert_to_n("")) goto error;
+	if (!zz_test_failed_char_convert_to_n(" ")) goto error;
+	if (!zz_test_failed_char_convert_to_n("-")) goto error;
+	if (!zz_test_failed_char_convert_to_n("1-")) goto error;
+	if (!zz_test_failed_char_convert_to_n("-a")) goto error;
+	if (!zz_test_failed_char_convert_to_n("a")) goto error;
+	if (!zz_test_failed_char_convert_to_n("2a")) goto error;
+	if (!zz_test_failed_char_convert_to_n("a2")) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_trim_do(rt_b left, rt_b right, const rt_char8 *str, const rt_char8 *expected)
 {
 	rt_char8 buffer[200];
 	rt_un buffer_size;
@@ -514,7 +670,7 @@ static rt_s zz_test_char8_right_trim_do(const rt_char8 *str, const rt_char8 *exp
 
 	buffer_size = rt_char8_get_size(str);
 	if (!rt_char8_copy(str, buffer_size, buffer, 200)) goto error;
-	rt_char8_right_trim(buffer, &buffer_size);
+	rt_char8_trim(left, right, buffer, &buffer_size);
 	if (rt_char8_get_size(buffer) != buffer_size) goto error;
 	if (!rt_char8_equals(buffer, buffer_size, expected, rt_char8_get_size(expected))) goto error;
 
@@ -526,21 +682,340 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_right_trim()
+static rt_s zz_test_char8_trim()
 {
 	rt_s ret;
 
-	if (!zz_test_char8_right_trim_do("foo",     "foo")) goto error;
-	if (!zz_test_char8_right_trim_do("foo ",    "foo")) goto error;
-	if (!zz_test_char8_right_trim_do("foo\t",   "foo")) goto error;
-	if (!zz_test_char8_right_trim_do("foo  ",   "foo")) goto error;
-	if (!zz_test_char8_right_trim_do("foo\t\t", "foo")) goto error;
-	if (!zz_test_char8_right_trim_do(" foo",    " foo")) goto error;
-	if (!zz_test_char8_right_trim_do("",        "")) goto error;
-	if (!zz_test_char8_right_trim_do(" ",       "")) goto error;
-	if (!zz_test_char8_right_trim_do("\t",      "")) goto error;
-	if (!zz_test_char8_right_trim_do("  ",      "")) goto error;
-	if (!zz_test_char8_right_trim_do("\t\t",    "")) goto error;
+	/* Right. */
+	if (!zz_test_char8_trim_do(RT_FALSE, RT_TRUE, "f",       "f")) goto error;
+	if (!zz_test_char8_trim_do(RT_FALSE, RT_TRUE, "f ",      "f")) goto error;
+	if (!zz_test_char8_trim_do(RT_FALSE, RT_TRUE, "foo",     "foo")) goto error;
+	if (!zz_test_char8_trim_do(RT_FALSE, RT_TRUE, "foo ",    "foo")) goto error;
+	if (!zz_test_char8_trim_do(RT_FALSE, RT_TRUE, "foo\t",   "foo")) goto error;
+	if (!zz_test_char8_trim_do(RT_FALSE, RT_TRUE, "foo  ",   "foo")) goto error;
+	if (!zz_test_char8_trim_do(RT_FALSE, RT_TRUE, "foo\t\t", "foo")) goto error;
+	if (!zz_test_char8_trim_do(RT_FALSE, RT_TRUE, " foo",    " foo")) goto error;
+	if (!zz_test_char8_trim_do(RT_FALSE, RT_TRUE, "fo o ",   "fo o")) goto error;
+	if (!zz_test_char8_trim_do(RT_FALSE, RT_TRUE, "",        "")) goto error;
+	if (!zz_test_char8_trim_do(RT_FALSE, RT_TRUE, " ",       "")) goto error;
+	if (!zz_test_char8_trim_do(RT_FALSE, RT_TRUE, "\t",      "")) goto error;
+	if (!zz_test_char8_trim_do(RT_FALSE, RT_TRUE, "  ",      "")) goto error;
+	if (!zz_test_char8_trim_do(RT_FALSE, RT_TRUE, "\t\t",    "")) goto error;
+
+	/* Left. */
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_FALSE, "f",       "f")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_FALSE, " f",      "f")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_FALSE, "foo",     "foo")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_FALSE, " foo",    "foo")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_FALSE, "\tfoo",   "foo")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_FALSE, "  foo",   "foo")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_FALSE, "\t\tfoo", "foo")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_FALSE, "foo ",    "foo ")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_FALSE, " fo o",   "fo o")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_FALSE, "",        "")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_FALSE, " ",       "")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_FALSE, "\t",      "")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_FALSE, "  ",      "")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_FALSE, "\t\t",    "")) goto error;
+
+	/* Both. */
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_TRUE, "f",           "f")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_TRUE, " f",          "f")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_TRUE, "f ",          "f")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_TRUE, "foo",         "foo")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_TRUE, " foo ",       "foo")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_TRUE, "\tfoo\t",     "foo")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_TRUE, "  foo  ",     "foo")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_TRUE, "\t\tfoo\t\t", "foo")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_TRUE, " fo o ",      "fo o")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_TRUE, "",            "")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_TRUE, " ",           "")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_TRUE, "\t",          "")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_TRUE, "  ",          "")) goto error;
+	if (!zz_test_char8_trim_do(RT_TRUE, RT_TRUE, "\t\t",        "")) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_left_pad_do(const rt_char8 *input, rt_un size, const rt_char8 *expected)
+{
+	rt_un input_size = rt_char8_get_size(input);
+	rt_un expected_size = rt_char8_get_size(expected);
+	rt_char8 buffer[RT_CHAR8_QUARTER_BIG_STRING_SIZE];
+	rt_un buffer_size;
+	rt_un i;
+	rt_s ret;
+
+	/* Buffer is too small. */
+	if (rt_char8_left_pad(input, input_size, 'O', size, buffer, expected_size, &buffer_size)) goto error;
+
+	/* input != buffer. */
+	for (i = 0; i < RT_CHAR8_QUARTER_BIG_STRING_SIZE; i++)
+		buffer[i] = 'z';
+	if (!rt_char8_left_pad(input, input_size, 'O', size, buffer, expected_size + 1, &buffer_size)) goto error;
+	if (rt_char8_get_size(buffer) != buffer_size) goto error;
+	if (!rt_char8_equals(buffer, buffer_size, expected, expected_size)) goto error;
+
+	/* input == buffer. */
+	for (i = 0; i < RT_CHAR8_QUARTER_BIG_STRING_SIZE; i++)
+		buffer[i] = 'z';
+	if (!rt_char8_copy(input, input_size, buffer, RT_CHAR8_QUARTER_BIG_STRING_SIZE)) goto error;
+	if (!rt_char8_left_pad(buffer, input_size, 'O', size, buffer, expected_size + 1, &buffer_size)) goto error;
+	if (rt_char8_get_size(buffer) != buffer_size) goto error;
+	if (!rt_char8_equals(buffer, buffer_size, expected, expected_size)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_left_pad()
+{
+	rt_s ret;
+
+	if (!zz_test_char8_left_pad_do("Foo", 6, "OOOFoo")) goto error;
+	if (!zz_test_char8_left_pad_do("Foo", 3, "Foo")) goto error;
+	if (!zz_test_char8_left_pad_do("", 6, "OOOOOO")) goto error;
+	if (!zz_test_char8_left_pad_do("Foo", 16, "OOOOOOOOOOOOOFoo")) goto error;
+	if (!zz_test_char8_left_pad_do("ABCDEFGHIJKLM", 16, "OOOABCDEFGHIJKLM")) goto error;
+	if (!zz_test_char8_left_pad_do("ABCDEFGHIJKLM", 3, "ABCDEFGHIJKLM")) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_right_pad_do(const rt_char8 *input, rt_un size, const rt_char8 *expected)
+{
+	rt_un expected_size = rt_char8_get_size(expected);
+	rt_char8 buffer[RT_CHAR8_QUARTER_BIG_STRING_SIZE];
+	rt_un buffer_size;
+	rt_un i;
+	rt_s ret;
+
+	/* Buffer is too small. */
+	for (i = 0; i < RT_CHAR8_QUARTER_BIG_STRING_SIZE; i++)
+		buffer[i] = 'z';
+	buffer_size = rt_char8_get_size(input);
+	if (buffer_size < size) {
+		if (!rt_char8_copy(input, buffer_size, buffer, RT_CHAR8_QUARTER_BIG_STRING_SIZE)) goto error;
+		if (rt_char8_right_pad('O', size, buffer, expected_size, &buffer_size)) goto error;
+	}
+
+	for (i = 0; i < RT_CHAR8_QUARTER_BIG_STRING_SIZE; i++)
+		buffer[i] = 'z';
+	buffer_size = rt_char8_get_size(input);
+	if (!rt_char8_copy(input, buffer_size, buffer, RT_CHAR8_QUARTER_BIG_STRING_SIZE)) goto error;
+	if (!rt_char8_right_pad('O', size, buffer, expected_size + 1, &buffer_size)) goto error;
+	if (rt_char8_get_size(buffer) != buffer_size) goto error;
+	if (!rt_char8_equals(buffer, buffer_size, expected, expected_size)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_right_pad()
+{
+	rt_s ret;
+
+	if (!zz_test_char8_right_pad_do("Foo", 6, "FooOOO")) goto error;
+	if (!zz_test_char8_right_pad_do("Foo", 3, "Foo")) goto error;
+	if (!zz_test_char8_right_pad_do("", 6, "OOOOOO")) goto error;
+	if (!zz_test_char8_right_pad_do("Foo", 16, "FooOOOOOOOOOOOOO")) goto error;
+	if (!zz_test_char8_right_pad_do("ABCDEFGHIJKLM", 16, "ABCDEFGHIJKLMOOO")) goto error;
+	if (!zz_test_char8_right_pad_do("ABCDEFGHIJKLM", 3, "ABCDEFGHIJKLM")) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_ends_with_do(const rt_char8 *str, const rt_char8 *searched, rt_b expected)
+{
+	rt_b ends_with;
+	rt_s ret;
+
+	ends_with = rt_char8_ends_with(str, rt_char8_get_size(str), searched, rt_char8_get_size(searched));
+	if (!RT_MEMORY_XNOR(ends_with, expected))
+		goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_ends_with()
+{
+	rt_s ret;
+
+	if (!zz_test_char8_ends_with_do("foo", "o", RT_TRUE)) goto error;
+	if (!zz_test_char8_ends_with_do("foo", "oo", RT_TRUE)) goto error;
+	if (!zz_test_char8_ends_with_do("foo", "foo", RT_TRUE)) goto error;
+	if (!zz_test_char8_ends_with_do("ZZZZZZABCDEFGHIJKLMNOPQRSTUVWXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYZ", RT_TRUE)) goto error;
+	if (!zz_test_char8_ends_with_do("ZZZZZZABCDEFGHIJKLMNOPQRSTUVWXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYA", RT_FALSE)) goto error;
+	if (!zz_test_char8_ends_with_do("foo", "ffoo", RT_FALSE)) goto error;
+	if (!zz_test_char8_ends_with_do("foo", "fo", RT_FALSE)) goto error;
+	if (!zz_test_char8_ends_with_do("foo", "", RT_TRUE)) goto error;
+	if (!zz_test_char8_ends_with_do("", "", RT_TRUE)) goto error;
+	if (!zz_test_char8_ends_with_do("", "a", RT_FALSE)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_search()
+{
+	rt_s ret;
+
+	if (rt_char8_search("", "") != RT_TYPE_MAX_UN) goto error;
+	if (rt_char8_search("", "o") != RT_TYPE_MAX_UN) goto error;
+	if (rt_char8_search("o", "") != RT_TYPE_MAX_UN) goto error;
+	if (rt_char8_search("Foo", "oo") != 1) goto error;
+	if (rt_char8_search("Foo", "o") != 1) goto error;
+	if (rt_char8_search("Foo", "Fo") != 0) goto error;
+	if (rt_char8_search("Foo", "ob") != RT_TYPE_MAX_UN) goto error;
+	if (rt_char8_search("BarFo", "Foo") != RT_TYPE_MAX_UN) goto error;
+	if (rt_char8_search("BarFoo", "Fo") != 3) goto error;
+	if (rt_char8_search("FoFoFoFoFoo", "Foo") != 8) goto error;
+	if (rt_char8_search("FoFoFoFFoo", "Foo") != 7) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_search_char()
+{
+	rt_s ret;
+
+	if (rt_char8_search_char("", 'a') != RT_TYPE_MAX_UN) goto error;
+	if (rt_char8_search_char("b", 'a') != RT_TYPE_MAX_UN) goto error;
+	if (rt_char8_search_char("a", 'a') != 0) goto error;
+	if (rt_char8_search_char("ab", 'a') != 0) goto error;
+	if (rt_char8_search_char("ba", 'a') != 1) goto error;
+	if (rt_char8_search_char("aba", 'a') != 0) goto error;
+	if (rt_char8_search_char("abcde", 'a') != 0) goto error;
+	if (rt_char8_search_char("abcde", 'b') != 1) goto error;
+	if (rt_char8_search_char("abcde", 'd') != 3) goto error;
+	if (rt_char8_search_char("abcde", 'e') != 4) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_count_occurrences()
+{
+	rt_s ret;
+
+	if (rt_char8_count_occurrences("foo", "foo") != 1) goto error;
+	if (rt_char8_count_occurrences("foofoo", "foo") != 2) goto error;
+	if (rt_char8_count_occurrences("ofoofoo", "o") != 5) goto error;
+	if (rt_char8_count_occurrences("foof", "o") != 2) goto error;
+	if (rt_char8_count_occurrences("FoFoF", "FoF") != 1) goto error;
+	if (rt_char8_count_occurrences("FoFFoF", "FoF") != 2) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_concat()
+{
+	rt_char8 buffer[RT_CHAR8_QUARTER_BIG_STRING_SIZE];
+	rt_un buffer_size;
+	rt_s ret;
+
+	/* Buffer too small. */
+	buffer_size = 0;
+	if (rt_char8_concat(buffer, 6, &buffer_size, "foo", "bar", RT_NULL)) goto error;
+
+	buffer_size = 0;
+	if (!rt_char8_concat(buffer, 7, &buffer_size, "foo", "bar", RT_NULL)) goto error;
+	if (rt_char8_get_size(buffer) != buffer_size) goto error;
+	if (!rt_char8_equals(buffer, buffer_size, "foobar", 6)) goto error;
+
+	if (!rt_char8_concat(buffer, RT_CHAR8_QUARTER_BIG_STRING_SIZE, &buffer_size, "", "t", "e", "a", "m", RT_NULL)) goto error;
+	if (rt_char8_get_size(buffer) != buffer_size) goto error;
+	if (!rt_char8_equals(buffer, buffer_size, "foobarteam", 10)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_replace_do(const rt_char8 *str, const rt_char8 *searched, const rt_char8 *replacement, const rt_char8 *expected)
+{
+	rt_un str_size = rt_char8_get_size(str);
+	rt_un searched_size = rt_char8_get_size(searched);
+	rt_un replacement_size = rt_char8_get_size(replacement);
+	rt_char8 buffer[RT_CHAR8_QUARTER_BIG_STRING_SIZE];
+	rt_un buffer_size;
+	rt_s ret;
+
+	buffer_size = 3;
+	if (!rt_char8_copy("XYZ", buffer_size, buffer, RT_CHAR8_QUARTER_BIG_STRING_SIZE)) goto error;
+	if (!rt_char8_replace(str, str_size, searched, searched_size, replacement, replacement_size, buffer, RT_CHAR8_QUARTER_BIG_STRING_SIZE, &buffer_size)) goto error;
+	if (rt_char8_get_size(buffer) != buffer_size) goto error;
+	if (!rt_char8_equals(buffer, buffer_size, expected, rt_char8_get_size(expected))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_replace()
+{
+	rt_s ret;
+
+	if (!zz_test_char8_replace_do("foo",       "foo", "bar",         "XYZbar"))                       goto error;
+	if (!zz_test_char8_replace_do("foo",       "o",   "a",           "XYZfaa"))                       goto error;
+	if (!zz_test_char8_replace_do("foobarfoo", "foo", "a",           "XYZabara"))                     goto error;
+	if (!zz_test_char8_replace_do("foobarfoo", "foo", "long_string", "XYZlong_stringbarlong_string")) goto error;
+	if (!zz_test_char8_replace_do("foobarfoo", "foo", "",            "XYZbar"))                       goto error;
+	if (!zz_test_char8_replace_do("foofoo",    "foo", "",            "XYZ"))                          goto error;
+	if (!zz_test_char8_replace_do("foobar",    "foo", "bar",         "XYZbarbar"))                    goto error;
+	if (!zz_test_char8_replace_do("fobbar",    "foo", "bar",         "XYZfobbar"))                    goto error;
 
 	ret = RT_OK;
 free:
@@ -556,16 +1031,26 @@ rt_s zz_test_char8()
 
 	if (!zz_test_char8_get_size()) goto error;
 	if (!zz_test_char8_equals()) goto error;
+	if (!zz_test_char8_compare()) goto error;
 	if (!zz_test_char8_append()) goto error;
 	if (!zz_test_char8_append_char()) goto error;
 	if (!zz_test_char8_copy()) goto error;
+	if (!zz_test_char8_append_un()) goto error;
 	if (!zz_test_char8_append_n()) goto error;
 	if (!zz_test_char8_fast_lower_char()) goto error;
 	if (!zz_test_char8_fast_upper_char()) goto error;
 	if (!zz_test_char8_fast_lower_or_upper()) goto error;
-	if (!zz_test_char8_search_char()) goto error;
 	if (!zz_test_char8_convert_to_un()) goto error;
-	if (!zz_test_char8_right_trim()) goto error;
+	if (!zz_test_char8_convert_to_n()) goto error;
+	if (!zz_test_char8_trim()) goto error;
+	if (!zz_test_char8_left_pad()) goto error;
+	if (!zz_test_char8_right_pad()) goto error;
+	if (!zz_test_char8_ends_with()) goto error;
+	if (!zz_test_char8_search()) goto error;
+	if (!zz_test_char8_search_char()) goto error;
+	if (!zz_test_char8_count_occurrences()) goto error;
+	if (!zz_test_char8_concat()) goto error;
+	if (!zz_test_char8_replace()) goto error;
 
 	ret = RT_OK;
 free:
