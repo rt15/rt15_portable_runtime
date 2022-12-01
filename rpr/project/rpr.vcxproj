@@ -51,6 +51,7 @@
     <ClCompile Include="..\src\layer004\rt_random.c" />
     <ClCompile Include="..\src\layer004\rt_small_file.c" />
     <ClCompile Include="..\src\layer004\rt_static_heap.c" />
+    <ClCompile Include="..\src\layer004\rt_url.c" />
     <ClCompile Include="..\src\layer005\rt_console.c" />
     <ClCompile Include="..\src\layer005\rt_env_vars.c" />
     <ClCompile Include="..\src\layer005\rt_file_system.c" />
@@ -101,6 +102,7 @@
     <ClInclude Include="..\include\layer004\rt_random.h" />
     <ClInclude Include="..\include\layer004\rt_small_file.h" />
     <ClInclude Include="..\include\layer004\rt_static_heap.h" />
+    <ClInclude Include="..\include\layer004\rt_url.h" />
     <ClInclude Include="..\include\layer005\rt_console.h" />
     <ClInclude Include="..\include\layer005\rt_env_vars.h" />
     <ClInclude Include="..\include\layer005\rt_file_system.h" />

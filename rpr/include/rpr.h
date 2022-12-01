@@ -42,6 +42,7 @@
 #include "layer004/rt_random.h"
 #include "layer004/rt_small_file.h"
 #include "layer004/rt_static_heap.h"
+#include "layer004/rt_url.h"
 
 #include "layer005/rt_console.h"
 #include "layer005/rt_env_vars.h"

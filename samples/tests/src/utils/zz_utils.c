@@ -87,20 +87,20 @@ error:
 	goto free;
 }
 
-rt_b zz_char_equals_with_nulls(const rt_char *string1, const rt_char *string2)
+rt_b zz_char_equals_with_nulls(const rt_char *str1, const rt_char *str2)
 {
 	rt_b ret;
 
-	if (!string1) {
-		ret = (!string2);
+	if (!str1) {
+		ret = (!str2);
 	} else {
-		if (!string2) {
+		if (!str2) {
 			ret = RT_FALSE;
 		} else {
-			while (!(ret = *(rt_uchar*)string1 - *(rt_uchar*)string2) && *string2)
+			while (!(ret = *(rt_uchar*)str1 - *(rt_uchar*)str2) && *str2)
 			{
-				string1++;
-				string2++;
+				str1++;
+				str2++;
 			}
 			ret = !ret;
 		}

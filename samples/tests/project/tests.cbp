@@ -196,6 +196,9 @@
 		<Unit filename="../src/auto/zz_test_thread.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/auto/zz_test_url.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/auto/zz_test_virtual_memory.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -221,6 +224,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/manual/zz_manual_test_temp_file.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/manual/zz_manual_test_url.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/manual/zz_manual_tests.c">

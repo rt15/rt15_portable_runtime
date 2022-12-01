@@ -24,7 +24,7 @@
  * </p>
  *
  */
-rt_b rt_char_equals(const rt_char *string1, rt_un string1_size, const rt_char *string2, rt_un string2_size);
+rt_b rt_char_equals(const rt_char *str1, rt_un str1_size, const rt_char *str2, rt_un str2_size);
 
 /**
  *
@@ -93,6 +93,8 @@ rt_un rt_char_fast_upper(rt_char *str);
 rt_un rt_char_search_char(const rt_char *str, rt_char searched);
 
 rt_s rt_char_convert_to_un(const rt_char *str, rt_un *result);
+
+rt_s rt_char_convert_to_un_with_size(const rt_char *str, rt_un size, rt_un *result);
 
 /**
  * Remove trailing characters <= ' '.

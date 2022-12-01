@@ -53,6 +53,7 @@
     <ClCompile Include="..\src\auto\zz_test_sortable_array.c" />
     <ClCompile Include="..\src\auto\zz_test_static_heap.c" />
     <ClCompile Include="..\src\auto\zz_test_thread.c" />
+    <ClCompile Include="..\src\auto\zz_test_url.c" />
     <ClCompile Include="..\src\auto\zz_test_virtual_memory.c" />
     <ClCompile Include="..\src\manual\zz_manual_tests.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_console.c" />
@@ -63,6 +64,7 @@
     <ClCompile Include="..\src\manual\zz_manual_test_os_version.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_process.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_temp_file.c" />
+    <ClCompile Include="..\src\manual\zz_manual_test_url.c" />
     <ClCompile Include="..\src\utils\zz_utils.c" />
     <ClCompile Include="..\src\zz_display_args.c" />
     <ClCompile Include="..\src\zz_display_env_var.c" />

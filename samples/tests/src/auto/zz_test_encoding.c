@@ -227,18 +227,18 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_encoding_encode_decode_do(const rt_char *string, const rt_char8 *encoded, enum rt_encoding encoding, rt_un code_unit_size, rt_b encode, rt_b decode, struct rt_heap *heap)
+static rt_s zz_test_encoding_encode_decode_do(const rt_char *str, const rt_char8 *encoded, enum rt_encoding encoding, rt_un code_unit_size, rt_b encode, rt_b decode, struct rt_heap *heap)
 {
 	rt_un encoded_size;
 	rt_s ret;
 
 	if (encode) {
-		if (!zz_test_encoding_encode(string, rt_char_get_size(string), encoded, encoding, code_unit_size, heap)) goto error;
+		if (!zz_test_encoding_encode(str, rt_char_get_size(str), encoded, encoding, code_unit_size, heap)) goto error;
 	}
 
 	if (decode) {
 		encoded_size = rt_encoding_get_size(encoded, code_unit_size) * code_unit_size;
-		if (!zz_test_encoding_decode(encoded, encoded_size, string, encoding, heap)) goto error;
+		if (!zz_test_encoding_decode(encoded, encoded_size, str, encoding, heap)) goto error;
 	}
 
 	ret = RT_OK;

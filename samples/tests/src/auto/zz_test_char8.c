@@ -1,11 +1,11 @@
 #include <rpr.h>
 
-static rt_s zz_test_char8_equals_single(rt_char8 *string1, rt_char8 *string2, rt_b expected)
+static rt_s zz_test_char8_equals_single(rt_char8 *str1, rt_char8 *str2, rt_b expected)
 {
 	rt_s ret;
 
-	if (!rt_char8_equals(string1, rt_char8_get_size(string1), string2, rt_char8_get_size(string2)) != !expected) goto error;
-	if (!rt_char8_equals(string2, rt_char8_get_size(string2), string1, rt_char8_get_size(string1)) != !expected) goto error;
+	if (!rt_char8_equals(str1, rt_char8_get_size(str1), str2, rt_char8_get_size(str2)) != !expected) goto error;
+	if (!rt_char8_equals(str2, rt_char8_get_size(str2), str1, rt_char8_get_size(str1)) != !expected) goto error;
 
 	ret = RT_OK;
 free:
@@ -454,6 +454,10 @@ static rt_s zz_test_successful_char_convert_to_un(const rt_char8 *str, rt_un exp
 	if (!rt_char8_convert_to_un(str, &result)) goto error;
 	if (result != expected) goto error;
 
+	result = 99;
+	if (!rt_char8_convert_to_un_with_size(str, rt_char8_get_size(str), &result)) goto error;
+	if (result != expected) goto error;
+
 	ret = RT_OK;
 free:
 	return ret;
@@ -468,6 +472,7 @@ static rt_s zz_test_failed_char_convert_to_un(const rt_char8 *str)
 	rt_s ret;
 
 	if (rt_char8_convert_to_un(str, &result)) goto error;
+	if (rt_char8_convert_to_un_with_size(str, rt_char8_get_size(str), &result)) goto error;
 
 	ret = RT_OK;
 free:

@@ -26,9 +26,9 @@ rt_s zz_create_file(const rt_char *file_path, const rt_char8 *str);
 rt_s zz_check_file_content(const rt_char *file_path, const rt_char8 *expected);
 
 /**
- * Return true if <tt>string1</tt> is equal to <tt>string2</tt> or if they are both null.
+ * Return true if <tt>str1</tt> is equal to <tt>str2</tt> or if they are both null.
  */
-rt_b zz_char_equals_with_nulls(const rt_char *string1, const rt_char *string2);
+rt_b zz_char_equals_with_nulls(const rt_char *str1, const rt_char *str2);
 
 /**
  * Read <tt>file_path</tt> and decode it according to <tt>encoding</tt>.

@@ -154,6 +154,12 @@
     <ClCompile Include="..\src\auto\zz_test_sortable_array.c">
       <Filter>src\auto</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_url.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\manual\zz_manual_test_url.c">
+      <Filter>src\manual</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

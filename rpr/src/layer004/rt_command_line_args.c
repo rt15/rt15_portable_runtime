@@ -3,17 +3,17 @@
 #include "layer003/rt_char.h"
 
 /**
- * Search the first occurence of <tt>searched</tt> in <tt>strings</tt>.
+ * Search the first occurrence of <tt>searched</tt> in <tt>strs</tt>.
  *
  * <p>
  * Should not be used with large arrays.<br>
  * Use sorted array and quicksort for large arrays.
  * </p>
  *
- * @param strings Null terminated array of zero terminated strings. Can be RT_NULL.
- * @return index of <tt>searched</tt> in <tt>strings</tt> or RT_TYPE_MAX_UN if not found.
+ * @param strs Null terminated array of zero terminated strings. Can be RT_NULL.
+ * @return index of <tt>searched</tt> in <tt>strs</tt> or RT_TYPE_MAX_UN if not found.
  */
-static rt_un rt_command_line_args_search_string_in_strings(const rt_char *strings[], const rt_char *searched)
+static rt_un rt_command_line_args_search_string_in_strings(const rt_char *strs[], const rt_char *searched)
 {
 	rt_un result;
 	rt_un searched_size;
@@ -21,11 +21,11 @@ static rt_un rt_command_line_args_search_string_in_strings(const rt_char *string
 
 	result = RT_TYPE_MAX_UN;
 
-	if (strings) {
+	if (strs) {
 		searched_size = rt_char_get_size(searched);
 		i = 0;
-		while (strings[i]) {
-			if (rt_char_equals(strings[i], rt_char_get_size(strings[i]), searched, searched_size)) {
+		while (strs[i]) {
+			if (rt_char_equals(strs[i], rt_char_get_size(strs[i]), searched, searched_size)) {
 				/* We found the string. */
 				result = i;
 				break;

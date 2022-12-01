@@ -36,6 +36,7 @@ rt_s zz_test_os_version();
 rt_s zz_test_random();
 rt_s zz_test_small_file();
 rt_s zz_test_static_heap();
+rt_s zz_test_url();
 
 /* Layer 005. */
 rt_s zz_test_env_vars();
@@ -99,6 +100,7 @@ rt_s zz_auto_tests()
 	if (!zz_test_random()) goto error;
 	if (!zz_test_small_file()) goto error;
 	if (!zz_test_static_heap()) goto error;
+	if (!zz_test_url()) goto error;
 
 	/* Layer 005. */
 	if (!zz_test_env_vars()) goto error;

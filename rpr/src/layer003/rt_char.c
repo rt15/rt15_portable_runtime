@@ -12,14 +12,14 @@
 /* Adjust RT_CHAR8_XX_STRING_SIZE. */
 /* Remove macros from _R("XXX") and _R('X'). */
 
-rt_b rt_char_equals(const rt_char *string1, rt_un string1_size, const rt_char *string2, rt_un string2_size)
+rt_b rt_char_equals(const rt_char *str1, rt_un str1_size, const rt_char *str2, rt_un str2_size)
 {
 	rt_b ret;
 
-	if (string1_size != string2_size) {
+	if (str1_size != str2_size) {
 		ret = RT_FALSE;
 	} else {
-		ret = !RT_MEMORY_COMPARE(string1, string2, string1_size * sizeof(rt_char));
+		ret = !RT_MEMORY_COMPARE(str1, str2, str1_size * sizeof(rt_char));
 	}
 	return ret;
 }
@@ -253,6 +253,43 @@ rt_s rt_char_convert_to_un(const rt_char *str, rt_un *result)
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto error;
 	}
+	*result = local_result;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+/* TODO: Watch out for overflows!? */
+rt_s rt_char_convert_to_un_with_size(const rt_char *str, rt_un size, rt_un *result)
+{
+	rt_char character;
+	rt_un local_result = 0;
+	rt_un i;
+	rt_s ret;
+
+	if (!size) {
+		/* The string was empty. */
+		*result = 0;
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
+	}
+
+	for (i = 0; i < size; i++) {
+		character = str[i];
+
+		if ((character < _R('0')) || (character > _R('9'))) {
+			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+			goto error;
+		} else {
+			local_result = local_result * 10 + character - _R('0');
+		}
+	}
+
 	*result = local_result;
 
 	ret = RT_OK;
