@@ -97,6 +97,7 @@ static rt_s rt_check_types()
 	if (sizeof(rt_un) != sizeof(ULONG_PTR)) goto error;
 	if (sizeof(rt_un) != sizeof(DWORD_PTR)) goto error;
 	if (sizeof(rt_un) != sizeof(WPARAM)) goto error;
+	if (sizeof(rt_un) != sizeof(SOCKET)) goto error;
 
 	if (sizeof(rt_h) != sizeof(HANDLE)) goto error;
 #else
