@@ -1,5 +1,8 @@
 #include <rpr.h>
 
+/* Layer 000. */
+rt_s zz_manual_test_types();
+
 /* Layer 003. */
 rt_s zz_manual_test_env_var();
 
@@ -22,6 +25,9 @@ rt_s zz_manual_test_process();
 rt_s zz_manual_tests()
 {
 	rt_s ret;
+
+	/* Layer 000. */
+	if (!zz_manual_test_types()) goto error;
 
 	/* Layer 003. */
 	if (!zz_manual_test_env_var()) goto error;

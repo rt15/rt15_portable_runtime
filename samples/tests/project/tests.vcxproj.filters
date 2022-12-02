@@ -160,6 +160,9 @@
     <ClCompile Include="..\src\manual\zz_manual_test_url.c">
       <Filter>src\manual</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\manual\zz_manual_test_types.c">
+      <Filter>src\manual</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

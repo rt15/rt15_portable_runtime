@@ -179,11 +179,53 @@ error:
 	goto free;
 }
 
+static rt_s rt_check_signedness()
+{
+	rt_uchar8 rt_uchar8_variable = -1;
+	rt_un16 rt_un16_variable = -1;
+	rt_n16 rt_n16_variable = -1;
+	rt_uchar rt_uchar_variable = -1;
+	rt_n32 rt_n32_variable = -1;
+	rt_un32 rt_un32_variable = -1;
+	rt_n64 rt_n64_variable = -1;
+	rt_un64 rt_un64_variable = -1;
+	rt_n rt_n_variable = -1;
+	rt_un rt_un_variable = -1;
+	rt_s ret;
+
+	if (rt_n16_variable > 0) goto error;
+	if (rt_n32_variable > 0) goto error;
+	if (rt_n64_variable > 0) goto error;
+	if (rt_n_variable > 0) goto error;
+
+#ifdef RT_DEFINE_GCC
+#pragma GCC diagnostic ignored "-Wtype-limits"
+#endif
+	if (rt_uchar8_variable < 0) goto error;
+	if (rt_un16_variable < 0) goto error;
+	if (rt_uchar_variable < 0) goto error;
+	if (rt_un32_variable < 0) goto error;
+	if (rt_un64_variable < 0) goto error;
+	if (rt_un_variable < 0) goto error;
+#ifdef RT_DEFINE_GCC
+#pragma GCC diagnostic pop
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s rt_check_rpr()
 {
 	rt_s ret;
 
 	if (!rt_check_types()) goto error;
+	if (!rt_check_signedness()) goto error;
 	if (!rt_check_critical_section()) goto error;
 	if (!rt_check_chrono()) goto error;
 	if (!rt_check_thread()) goto error;
