@@ -117,7 +117,7 @@ rt_s rt_process_join(struct rt_process *process);
  *
  * <p>
  * Under Linux, exit code is 8 unsigned bits, 0 -> 255.<br>
- * Under Windows, exit code is a DWORD (32 unsigned bits) although command line interpreter treats them as signed.<br>
+ * Under Windows, exit code is a DWORD (32 unsigned bits) although the command line interpreter treats them as signed.<br>
  * </p>
  */
 rt_s rt_process_get_exit_code(struct rt_process *process, rt_un32 *exit_code);
