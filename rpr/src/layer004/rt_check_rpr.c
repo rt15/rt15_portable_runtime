@@ -5,93 +5,32 @@
 #include "layer002/rt_critical_section.h"
 #include "layer003/rt_thread.h"
 
-static rt_s rt_check_thread()
+static rt_s rt_check_flags()
 {
-	rt_s ret;
-	struct rt_thread thread;
-#ifdef RT_DEFINE_WINDOWS
-	HANDLE ref_thread;
-#else
-	pthread_t ref_thread;
+#if defined(RT_DEFINE_32) && defined(RT_DEFINE_64)
+#error Both RT_DEFINE_32 and RT_DEFINE_64 are defined.
 #endif
 
-#ifdef RT_DEFINE_WINDOWS
-	if (sizeof(thread.thread_handle) != sizeof(ref_thread)) goto error;
-	if (sizeof(thread) != sizeof(HANDLE)) goto error;
-#else
-	if (sizeof(thread.thread_pointer) != sizeof(ref_thread)) goto error;
-	if (sizeof(thread.thread_pointer) != sizeof(pthread_t)) goto error;
+#if !defined(RT_DEFINE_32) && !defined(RT_DEFINE_64)
+#error Either RT_DEFINE_32 or RT_DEFINE_64 must be defined.
 #endif
 
-	ret = RT_OK;
-free:
-	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
-}
-
-static rt_s rt_check_chrono()
-{
-	rt_s ret;
-	struct rt_chrono chrono;
-#ifdef RT_DEFINE_WINDOWS
-	LARGE_INTEGER ref_chrono;
-#else
-	struct timespec ref_chrono;
+#if defined(RT_DEFINE_VC) && defined(RT_DEFINE_GCC)
+#error Both RT_DEFINE_VC and RT_DEFINE_GCC are defined.
 #endif
 
-#ifdef RT_DEFINE_WINDOWS
-	if (sizeof(chrono.start_counter) != sizeof(ref_chrono)) goto error;
-	if (sizeof(chrono) != sizeof(LARGE_INTEGER)) goto error;
-#else
-	if (sizeof(chrono.seconds) != sizeof(ref_chrono.tv_sec)) goto error;
-	if (sizeof(chrono.nano_seconds) != sizeof(ref_chrono.tv_nsec)) goto error;
-	if (sizeof(chrono) != sizeof(struct timespec)) goto error;
+#if !defined(RT_DEFINE_VC) && !defined(RT_DEFINE_GCC)
+#error Either RT_DEFINE_VC or RT_DEFINE_GCC must be defined.
 #endif
 
-	ret = RT_OK;
-free:
-	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
-}
-
-static rt_s rt_check_critical_section()
-{
-	rt_s ret;
-	struct rt_critical_section critical_section;
-#ifdef RT_DEFINE_WINDOWS
-	CRITICAL_SECTION ref_critical_section;
-#else
-	pthread_mutex_t ref_critical_section;
+#if defined(RT_DEFINE_WINDOWS) && defined(RT_DEFINE_LINUX)
+#error Both RT_DEFINE_WINDOWS and RT_DEFINE_LINUX are defined.
 #endif
 
-#ifdef RT_DEFINE_WINDOWS
-	if (sizeof(critical_section.debug_info) != sizeof(ref_critical_section.DebugInfo)) goto error;
-	if (sizeof(critical_section.lock_count) != sizeof(ref_critical_section.LockCount)) goto error;
-	if (sizeof(critical_section.recursion_count) != sizeof(ref_critical_section.RecursionCount)) goto error;
-	if (sizeof(critical_section.owning_thread_handle) != sizeof(ref_critical_section.OwningThread)) goto error;
-	if (sizeof(critical_section.lock_semaphore_handle) != sizeof(ref_critical_section.LockSemaphore)) goto error;
-	if (sizeof(critical_section.spin_count) != sizeof(ref_critical_section.SpinCount)) goto error;
-
-	if (sizeof(struct rt_critical_section) != sizeof(CRITICAL_SECTION)) goto error;
-#else
-	/* __SIZEOF_PTHREAD_MUTEX_T from /usr/include/bits/pthreadtypes.h. */
-	if (sizeof(critical_section.data) != sizeof(ref_critical_section)) goto error;
-	if (sizeof(critical_section) != sizeof(pthread_mutex_t)) goto error;
+#if !defined(RT_DEFINE_WINDOWS) && !defined(RT_DEFINE_LINUX)
+#error Either RT_DEFINE_WINDOWS or RT_DEFINE_LINUX must be defined.
 #endif
-
-	ret = RT_OK;
-free:
-	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
+	return RT_OK;
 }
 
 static rt_s rt_check_types()
@@ -220,15 +159,105 @@ error:
 	goto free;
 }
 
+static rt_s rt_check_thread()
+{
+	rt_s ret;
+	struct rt_thread thread;
+#ifdef RT_DEFINE_WINDOWS
+	HANDLE ref_thread;
+#else
+	pthread_t ref_thread;
+#endif
+
+#ifdef RT_DEFINE_WINDOWS
+	if (sizeof(thread.thread_handle) != sizeof(ref_thread)) goto error;
+	if (sizeof(thread) != sizeof(HANDLE)) goto error;
+#else
+	if (sizeof(thread.thread_pointer) != sizeof(ref_thread)) goto error;
+	if (sizeof(thread.thread_pointer) != sizeof(pthread_t)) goto error;
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s rt_check_chrono()
+{
+	rt_s ret;
+	struct rt_chrono chrono;
+#ifdef RT_DEFINE_WINDOWS
+	LARGE_INTEGER ref_chrono;
+#else
+	struct timespec ref_chrono;
+#endif
+
+#ifdef RT_DEFINE_WINDOWS
+	if (sizeof(chrono.start_counter) != sizeof(ref_chrono)) goto error;
+	if (sizeof(chrono) != sizeof(LARGE_INTEGER)) goto error;
+#else
+	if (sizeof(chrono.seconds) != sizeof(ref_chrono.tv_sec)) goto error;
+	if (sizeof(chrono.nano_seconds) != sizeof(ref_chrono.tv_nsec)) goto error;
+	if (sizeof(chrono) != sizeof(struct timespec)) goto error;
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s rt_check_critical_section()
+{
+	rt_s ret;
+	struct rt_critical_section critical_section;
+#ifdef RT_DEFINE_WINDOWS
+	CRITICAL_SECTION ref_critical_section;
+#else
+	pthread_mutex_t ref_critical_section;
+#endif
+
+#ifdef RT_DEFINE_WINDOWS
+	if (sizeof(critical_section.debug_info) != sizeof(ref_critical_section.DebugInfo)) goto error;
+	if (sizeof(critical_section.lock_count) != sizeof(ref_critical_section.LockCount)) goto error;
+	if (sizeof(critical_section.recursion_count) != sizeof(ref_critical_section.RecursionCount)) goto error;
+	if (sizeof(critical_section.owning_thread_handle) != sizeof(ref_critical_section.OwningThread)) goto error;
+	if (sizeof(critical_section.lock_semaphore_handle) != sizeof(ref_critical_section.LockSemaphore)) goto error;
+	if (sizeof(critical_section.spin_count) != sizeof(ref_critical_section.SpinCount)) goto error;
+
+	if (sizeof(struct rt_critical_section) != sizeof(CRITICAL_SECTION)) goto error;
+#else
+	/* __SIZEOF_PTHREAD_MUTEX_T from /usr/include/bits/pthreadtypes.h. */
+	if (sizeof(critical_section.data) != sizeof(ref_critical_section)) goto error;
+	if (sizeof(critical_section) != sizeof(pthread_mutex_t)) goto error;
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s rt_check_rpr()
 {
 	rt_s ret;
 
+	if (!rt_check_flags()) goto error;
 	if (!rt_check_types()) goto error;
 	if (!rt_check_signedness()) goto error;
-	if (!rt_check_critical_section()) goto error;
-	if (!rt_check_chrono()) goto error;
 	if (!rt_check_thread()) goto error;
+	if (!rt_check_chrono()) goto error;
+	if (!rt_check_critical_section()) goto error;
 
 	ret = RT_OK;
 free:
