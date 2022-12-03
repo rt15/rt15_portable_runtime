@@ -103,12 +103,21 @@ static rt_s rt_check_types()
 #else
 	/* _FILE_OFFSET_BITS should be set to 64 even in 32 bits case. */
 	if (sizeof(rt_n64) != sizeof(off_t)) goto error;
-
 	if (sizeof(rt_n) != sizeof(ssize_t)) goto error;
-	if (sizeof(rt_n) != sizeof(time_t)) goto error;
+#endif
+
+	/* Socket address structures. */
+	if (sizeof(struct in_addr) != 4) goto error;
+	if (sizeof(struct in6_addr) != 16) goto error;
+	if (sizeof(struct sockaddr) != 16) goto error;
+	if (sizeof(struct sockaddr_in) != 16) goto error;
+	if (sizeof(struct sockaddr_in6) != 28) goto error;
 
 	if (sizeof(rt_un) != sizeof(size_t)) goto error;
-#endif
+	if (sizeof(rt_n) != sizeof(time_t)) goto error;
+
+	/* socklen_t is signed under Windows and unsigned under Linux. */
+	if (sizeof(rt_n32) != sizeof(socklen_t)) goto error;
 
 	ret = RT_OK;
 free:

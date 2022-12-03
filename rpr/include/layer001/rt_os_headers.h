@@ -28,17 +28,25 @@
 #define UNICODE
 #endif
 
-#if (!defined(_WIN32_WINNT)) || (_WIN32_WINNT < 0x0501)
-#define _WIN32_WINNT 0x0501
+#ifdef _WIN32_WINNT
+#undef _WIN32_WINNT
 #endif
+#define _WIN32_WINNT _WIN32_WINNT_WINXP
 
-#if (!defined(WINVER)) || (WINVER < 0x0500)
+#ifdef NTDDI_VERSION
+#undef NTDDI_VERSION
+#endif
+#define NTDDI_VERSION NTDDI_WINXPSP2
+
+#ifdef WINVER
+#undef WINVER
+#endif
 #define WINVER 0x0500
-#endif
 
-#if (!defined(_WIN32_IE)) || (_WIN32_IE < 0x0600)
-#define _WIN32_IE 0x0600
+#ifdef _WIN32_IE
+#undef _WIN32_IE
 #endif
+#define _WIN32_IE 0x0600
 
 #else
 
@@ -64,6 +72,10 @@
 
 #ifndef __USE_BSD
 #define __USE_BSD
+#endif
+
+#ifndef __USE_POSIX
+#define __USE_POSIX
 #endif
 
 #endif

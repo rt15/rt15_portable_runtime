@@ -48,10 +48,12 @@
 #include "layer005/rt_env_vars.h"
 #include "layer005/rt_file_system.h"
 #include "layer005/rt_runtime_heap.h"
+#include "layer005/rt_socket_address.h"
 #include "layer005/rt_sortable_array.h"
 #include "layer005/rt_temp_file.h"
 
 #include "layer006/rt_error_message.h"
+#include "layer006/rt_socket.h"
 
 #include "layer007/rt_process.h"
 

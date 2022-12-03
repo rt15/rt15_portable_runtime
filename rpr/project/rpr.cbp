@@ -118,9 +118,11 @@
 		<Unit filename="../include/layer005/rt_env_vars.h" />
 		<Unit filename="../include/layer005/rt_file_system.h" />
 		<Unit filename="../include/layer005/rt_runtime_heap.h" />
+		<Unit filename="../include/layer005/rt_socket_address.h" />
 		<Unit filename="../include/layer005/rt_sortable_array.h" />
 		<Unit filename="../include/layer005/rt_temp_file.h" />
 		<Unit filename="../include/layer006/rt_error_message.h" />
+		<Unit filename="../include/layer006/rt_socket.h" />
 		<Unit filename="../include/layer007/rt_process.h" />
 		<Unit filename="../include/rpr.h" />
 		<Unit filename="../include/rpr_main.h" />
@@ -236,6 +238,9 @@
 		<Unit filename="../src/layer005/rt_runtime_heap.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/layer005/rt_socket_address.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/layer005/rt_sortable_array.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -243,6 +248,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer006/rt_error_message.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer006/rt_socket.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer007/rt_process.c">

@@ -21,6 +21,7 @@
 				<Linker>
 					<Add option="-nostartfiles -nodefaultlibs -nostdlib -ffreestanding" />
 					<Add library="rprd" />
+					<Add library="ws2_32" />
 					<Add library="shell32" />
 					<Add library="user32" />
 					<Add library="kernel32" />
@@ -42,6 +43,7 @@
 					<Add option="-s" />
 					<Add option="-nostartfiles -nodefaultlibs -nostdlib -ffreestanding" />
 					<Add library="rpr" />
+					<Add library="ws2_32" />
 					<Add library="shell32" />
 					<Add library="user32" />
 					<Add library="kernel32" />
@@ -185,6 +187,12 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/auto/zz_test_small_file.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_socket.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/auto/zz_test_socket_address.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/auto/zz_test_sortable_array.c">
