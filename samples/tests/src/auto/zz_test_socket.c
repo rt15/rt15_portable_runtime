@@ -11,6 +11,7 @@ static rt_un32 RT_STDCALL zz_test_socket_server_callback(void *parameter)
 	rt_b socket_created = RT_FALSE;
 	struct rt_socket accepted_socket;
 	rt_b accepted_socket_created = RT_FALSE;
+	rt_b shutdown_accepted_socket = RT_FALSE;
 	struct rt_event *event;
 	rt_char8 *message;
 	rt_un bytes_sent;
@@ -29,6 +30,7 @@ static rt_un32 RT_STDCALL zz_test_socket_server_callback(void *parameter)
 
 	if (!rt_socket_accept_connection(&socket, &accepted_socket, RT_NULL, RT_NULL)) goto error;
 	accepted_socket_created = RT_TRUE;
+	shutdown_accepted_socket = RT_TRUE;
 
 	message = "Hello";
 	if (!rt_socket_send(&accepted_socket, message, rt_char8_get_size(message), 0, &bytes_sent)) goto error;
@@ -41,17 +43,22 @@ static rt_un32 RT_STDCALL zz_test_socket_server_callback(void *parameter)
 	if (!rt_socket_send(&accepted_socket, message, rt_char8_get_size(message) + 1, 0, &bytes_sent)) goto error;
 	if (bytes_sent != 9) goto error;
 
-	if (!rt_socket_shutdown(&accepted_socket, RT_SOCKET_SHUTDOWN_FLAG_BOTH)) goto error;
-
 	ret = RT_OK;
 free:
+	if (shutdown_accepted_socket) {
+		shutdown_accepted_socket = RT_FALSE;
+		if (!rt_socket_shutdown(&accepted_socket, RT_SOCKET_SHUTDOWN_FLAG_BOTH) && ret)
+			goto error;
+	}
 	if (accepted_socket_created) {
 		accepted_socket_created = RT_FALSE;
-		if (!rt_socket_free(&accepted_socket) && ret) goto error;
+		if (!rt_socket_free(&accepted_socket) && ret)
+			goto error;
 	}
 	if (socket_created) {
 		socket_created = RT_FALSE;
-		if (!rt_socket_free(&socket) && ret) goto error;
+		if (!rt_socket_free(&socket) && ret)
+			goto error;
 	}
 	return ret;
 
@@ -70,6 +77,7 @@ static rt_s zz_test_socket_client()
 	struct rt_socket_address_ipv4 socket_address;
 	rt_char8 buffer[RT_CHAR_BIG_STRING_SIZE];
 	rt_un received;
+	rt_b shutdown_socket = RT_FALSE;
 	rt_s ret;
 
 	if (!rt_socket_create(&socket, RT_SOCKET_ADDRESS_FAMILY_IPV4, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_FALSE)) goto error;
@@ -79,14 +87,19 @@ static rt_s zz_test_socket_client()
 	rt_socket_address_create_ipv4(&socket_address, &address, ZZ_TEST_SOCKET_PORT_NUMBER);
 
 	if (!rt_socket_connect_with_socket_address(&socket, (struct rt_socket_address*)&socket_address)) goto error;
+	shutdown_socket = RT_TRUE;
 
 	if (!rt_socket_receive_all(&socket, buffer, RT_CHAR_BIG_STRING_SIZE, &received)) goto error;
 	if (received != rt_char8_get_size(buffer) + 1) goto error;
 	if (!rt_char8_equals(buffer, received - 1, "Hello, world!", 13)) goto error;
-	if (!rt_socket_shutdown(&socket, RT_SOCKET_SHUTDOWN_FLAG_BOTH)) goto error;
 
 	ret = RT_OK;
 free:
+	if (shutdown_socket) {
+		shutdown_socket = RT_FALSE;
+		if (!rt_socket_shutdown(&socket, RT_SOCKET_SHUTDOWN_FLAG_BOTH) && ret)
+			goto error;
+	}
 	if (socket_created) {
 		socket_created = RT_FALSE;
 		if (!rt_socket_free(&socket) && ret)
