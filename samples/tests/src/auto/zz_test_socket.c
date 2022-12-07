@@ -2,31 +2,39 @@
 
 #define ZZ_TEST_SOCKET_PORT_NUMBER 42334
 
+struct zz_test_socket_server_parameter {
+	struct rt_event event;
+	enum rt_socket_address_family address_family;
+};
+
 /**
  * Thread that create a server socket and send "Hello, world!" to the first connecting socket.
  */
 static rt_un32 RT_STDCALL zz_test_socket_server_callback(void *parameter)
 {
+	struct zz_test_socket_server_parameter *server_parameter = (struct zz_test_socket_server_parameter*)parameter;
 	struct rt_socket socket;
 	rt_b socket_created = RT_FALSE;
 	struct rt_socket accepted_socket;
 	rt_b accepted_socket_created = RT_FALSE;
 	rt_b shutdown_accepted_socket = RT_FALSE;
-	struct rt_event *event;
 	rt_char8 *message;
 	rt_un bytes_sent;
 	rt_un32 ret;
 
-	if (!rt_socket_create(&socket, RT_SOCKET_ADDRESS_FAMILY_IPV4, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_FALSE)) goto error;
+	if (!rt_socket_create(&socket, server_parameter->address_family, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_FALSE)) goto error;
 	socket_created = RT_TRUE;
 
 	if (!rt_socket_set_boolean_option(&socket, RT_SOCKET_PROTOCOL_LEVEL_SOCKET, RT_SOCKET_OPTION_REUSEADDR, RT_TRUE)) goto error;
+	if (server_parameter->address_family == RT_SOCKET_ADDRESS_FAMILY_IPV6) {
+		if (!rt_socket_set_ipv6_boolean_option(&socket, RT_SOCKET_PROTOCOL_LEVEL_IPV6, RT_SOCKET_IPV6_OPTION_V6ONLY, RT_TRUE))
+			goto error;
+	}
 
 	if (!rt_socket_bind(&socket, ZZ_TEST_SOCKET_PORT_NUMBER)) goto error;
 	if (!rt_socket_listen(&socket)) goto error;
 
-	event = (struct rt_event*)parameter;
-	if (!rt_event_signal(event)) goto error;
+	if (!rt_event_signal(&server_parameter->event)) goto error;
 
 	if (!rt_socket_accept_connection(&socket, &accepted_socket, RT_NULL, RT_NULL)) goto error;
 	accepted_socket_created = RT_TRUE;
@@ -64,29 +72,38 @@ free:
 
 error:
 	/* Ensure that main thread will not wait for ever. */
-	rt_event_signal(event);
+	rt_event_signal(&server_parameter->event);
 	ret = RT_FAILED;
 	goto free;
 }
 
-static rt_s zz_test_socket_client()
+static rt_s zz_test_socket_client(enum rt_socket_address_family address_family)
 {
 	struct rt_socket socket;
 	rt_b socket_created = RT_FALSE;
-	struct rt_address_ipv4 address;
-	struct rt_socket_address_ipv4 socket_address;
+	struct rt_address_ipv4 ipv4_address;
+	struct rt_socket_address_ipv4 ipv4_socket_address;
+	struct rt_address_ipv6 ipv6_address;
+	struct rt_socket_address_ipv6 ipv6_socket_address;
+	struct rt_socket_address *socket_address;
 	rt_char8 buffer[RT_CHAR_BIG_STRING_SIZE];
 	rt_un received;
 	rt_b shutdown_socket = RT_FALSE;
 	rt_s ret;
 
-	if (!rt_socket_create(&socket, RT_SOCKET_ADDRESS_FAMILY_IPV4, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_FALSE)) goto error;
+	if (!rt_socket_create(&socket, address_family, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_FALSE)) goto error;
 	socket_created = RT_TRUE;
 
-	rt_socket_address_create_ipv4_loopback_address(&address);
-	rt_socket_address_create_ipv4(&socket_address, &address, ZZ_TEST_SOCKET_PORT_NUMBER);
-
-	if (!rt_socket_connect_with_socket_address(&socket, (struct rt_socket_address*)&socket_address)) goto error;
+	if (address_family == RT_SOCKET_ADDRESS_FAMILY_IPV4) {
+		rt_socket_address_create_ipv4_loopback_address(&ipv4_address);
+		rt_socket_address_create_ipv4(&ipv4_socket_address, &ipv4_address, ZZ_TEST_SOCKET_PORT_NUMBER);
+		socket_address = (struct rt_socket_address*)&ipv4_socket_address;
+	} else {
+		rt_socket_address_create_ipv6_loopback_address(&ipv6_address);
+		rt_socket_address_create_ipv6(&ipv6_socket_address, &ipv6_address, ZZ_TEST_SOCKET_PORT_NUMBER);
+		socket_address = (struct rt_socket_address*)&ipv6_socket_address;
+	}
+	if (!rt_socket_connect_with_socket_address(&socket, socket_address)) goto error;
 	shutdown_socket = RT_TRUE;
 
 	if (!rt_socket_receive_all(&socket, buffer, RT_CHAR_BIG_STRING_SIZE, &received)) goto error;
@@ -115,26 +132,28 @@ error:
 /**
  * Test socket assuming rt_socket_initialize/rt_socket_cleanup are called.
  */
-static rt_s zz_test_socket_do()
+static rt_s zz_test_socket_do(enum rt_socket_address_family address_family)
 {
-	struct rt_event event;
+	struct zz_test_socket_server_parameter server_parameter;
 	rt_b event_created = RT_FALSE;
 	struct rt_thread thread;
 	rt_b thread_created = RT_FALSE;
 	rt_s ret;
 
-	if (!rt_event_create(&event)) goto error;
+	server_parameter.address_family = address_family;
+
+	if (!rt_event_create(&server_parameter.event)) goto error;
 	event_created = RT_TRUE;
 
-	if (!rt_thread_create(&thread, &zz_test_socket_server_callback, &event)) goto error;
+	if (!rt_thread_create(&thread, &zz_test_socket_server_callback, &server_parameter)) goto error;
 	thread_created = RT_TRUE;
 
-	if (!rt_event_wait_for(&event)) goto error;
+	if (!rt_event_wait_for(&server_parameter.event)) goto error;
 
 	/* Let some time for the server socket to accept connections. */
 	rt_sleep_sleep(10);
 
-	if (!zz_test_socket_client()) goto error;
+	if (!zz_test_socket_client(address_family)) goto error;
 
 	if (!rt_thread_join_and_check(&thread)) goto error;
 
@@ -147,7 +166,7 @@ free:
 	}
 	if (event_created) {
 		event_created = RT_FALSE;
-		if (!rt_event_free(&event) && ret)
+		if (!rt_event_free(&server_parameter.event) && ret)
 			goto error;
 	}
 	return ret;
@@ -167,7 +186,8 @@ rt_s zz_test_socket()
 	if (!rt_socket_initialize()) goto error;
 	sockets_initialized = RT_TRUE;
 
-	if (!zz_test_socket_do()) goto error;
+	if (!zz_test_socket_do(RT_SOCKET_ADDRESS_FAMILY_IPV4)) goto error;
+	if (!zz_test_socket_do(RT_SOCKET_ADDRESS_FAMILY_IPV6)) goto error;
 
 	ret = RT_OK;
 free:
