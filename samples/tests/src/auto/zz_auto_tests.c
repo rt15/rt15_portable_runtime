@@ -50,6 +50,7 @@ rt_s zz_test_socket();
 
 /* Layer 007. */
 rt_s zz_test_process();
+rt_s zz_test_select();
 
 rt_s zz_auto_tests()
 {
@@ -116,6 +117,7 @@ rt_s zz_auto_tests()
 
 	/* Layer 007. */
 	if (!zz_test_process()) goto error;
+	if (!zz_test_select()) goto error;
 
 	if (!output_stream->write(output_stream, "Tests successful!\n", rt_char8_get_size("Tests successful!\n")))
 		goto error;

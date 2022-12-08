@@ -47,6 +47,7 @@
     <ClCompile Include="..\src\auto\zz_test_process.c" />
     <ClCompile Include="..\src\auto\zz_test_quick_sort.c" />
     <ClCompile Include="..\src\auto\zz_test_random.c" />
+    <ClCompile Include="..\src\auto\zz_test_select.c" />
     <ClCompile Include="..\src\auto\zz_test_sleep.c" />
     <ClCompile Include="..\src\auto\zz_test_slurp.c" />
     <ClCompile Include="..\src\auto\zz_test_small_file.c" />

@@ -124,6 +124,7 @@
 		<Unit filename="../include/layer006/rt_error_message.h" />
 		<Unit filename="../include/layer006/rt_socket.h" />
 		<Unit filename="../include/layer007/rt_process.h" />
+		<Unit filename="../include/layer007/rt_select.h" />
 		<Unit filename="../include/rpr.h" />
 		<Unit filename="../include/rpr_main.h" />
 		<Unit filename="../include/rpr_mem.h" />
@@ -254,6 +255,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer007/rt_process.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer007/rt_select.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/rpr_internal.c">

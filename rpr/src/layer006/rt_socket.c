@@ -428,6 +428,103 @@ error:
 	goto free;
 }
 
+/**
+ * Actually get the option.<br>
+ * Must be called with correct Linux option values.
+ */
+static rt_s rt_socket_get_option_do(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, int option, void *value, rt_un *value_size)
+{
+#ifdef RT_DEFINE_WINDOWS
+	int local_value_size = (int)*value_size;
+#else
+	socklen_t local_value_size = *value_size;
+	int actual_protocol_level;
+#endif
+	rt_s ret;
+
+#ifdef RT_DEFINE_WINDOWS
+	/* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
+	if (getsockopt(socket->socket_handle, (int)protocol_level, (int)option, value, &local_value_size))
+		goto error;
+	*value_size = local_value_size;
+#else
+	if (protocol_level == RT_SOCKET_PROTOCOL_LEVEL_SOCKET) {
+		/* SOL_SOCKET is 1 under Linux. */
+		/* By the way a consequence is that SOL_ICMP which should be 1 is not defined in Linux headers. */
+		actual_protocol_level = SOL_SOCKET;
+	} else {
+		actual_protocol_level = (int)protocol_level;
+	}
+
+	/* On success, zero is returned. On error, -1 is returned, and errno is set appropriately. */
+	if (getsockopt(socket->socket_file_descriptor, actual_protocol_level, option, value, &local_value_size))
+		goto error;
+	*value_size = local_value_size;
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_socket_get_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_option option, void *value, rt_un *value_size)
+{
+#ifdef RT_DEFINE_LINUX
+	int actual_option;
+#endif
+	rt_s ret;
+
+#ifdef RT_DEFINE_WINDOWS
+	if (!rt_socket_get_option_do(socket, protocol_level, option, value, value_size))
+		goto error;
+#else
+	if (!rt_socket_get_linux_option(option, &actual_option))
+		goto error;
+
+	if (!rt_socket_get_option_do(socket, protocol_level, actual_option, value, value_size))
+		goto error;
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_socket_get_ipv6_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_ipv6_option ipv6_option, void *value, rt_un *value_size)
+{
+#ifdef RT_DEFINE_LINUX
+	int actual_ipv6_option;
+#endif
+	rt_s ret;
+
+#ifdef RT_DEFINE_WINDOWS
+	if (!rt_socket_get_option_do(socket, protocol_level, ipv6_option, value, value_size))
+		goto error;
+#else
+	if (!rt_socket_get_linux_ipv6_option(ipv6_option, &actual_ipv6_option))
+		goto error;
+
+	if (!rt_socket_get_option_do(socket, protocol_level, actual_ipv6_option, value, value_size))
+		goto error;
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s rt_socket_connect(struct rt_socket *socket, const rt_char *host_name, rt_un port)
 {
 	struct rt_address_ipv4 ipv4_address;
@@ -655,13 +752,17 @@ rt_s rt_socket_send(struct rt_socket *socket, void *data, rt_un data_size, enum 
 #ifdef RT_DEFINE_WINDOWS
 	/* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
 	send_result = send(socket->socket_handle, data, (int)data_size, (int)flags);
+	if (send_result < 0)
+		goto error;
 #else
 	/* Returns -1 in case of issue and set errno. */
 	send_result = send(socket->socket_file_descriptor, data, data_size, actual_flags);
-#endif
-
-	if (send_result < 0)
+	if (send_result < 0) {
+		if (errno == EAGAIN)
+			errno = EWOULDBLOCK;
 		goto error;
+	}
+#endif
 
 	*bytes_sent = send_result;
 
@@ -689,13 +790,17 @@ rt_s rt_socket_receive(struct rt_socket *socket, void *buffer, rt_un buffer_capa
 #ifdef RT_DEFINE_WINDOWS
 	/* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
 	recv_result = recv(socket->socket_handle, buffer, (int)buffer_capacity, (int)flags);
+	if (recv_result < 0)
+		goto error;
 #else
 	/* Returns -1 in case of issue and set errno. */
 	recv_result = recv(socket->socket_file_descriptor, buffer, buffer_capacity, actual_flags);
-#endif
-
-	if (recv_result < 0)
+	if (recv_result < 0) {
+		if (errno == EAGAIN)
+			errno = EWOULDBLOCK;
 		goto error;
+	}
+#endif
 
 	*bytes_received = recv_result;
 

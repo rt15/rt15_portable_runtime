@@ -100,10 +100,15 @@ static rt_s rt_check_types()
 	if (sizeof(rt_un) != sizeof(SOCKET)) goto error;
 
 	if (sizeof(rt_h) != sizeof(HANDLE)) goto error;
+
+	if (FD_SETSIZE != 160) goto error;
+	if (sizeof(fd_set) != sizeof(rt_un32) + sizeof(rt_un) * FD_SETSIZE + 4 /* padding. */) goto error;
 #else
 	/* _FILE_OFFSET_BITS should be set to 64 even in 32 bits case. */
 	if (sizeof(rt_n64) != sizeof(off_t)) goto error;
 	if (sizeof(rt_n) != sizeof(ssize_t)) goto error;
+	if (FD_SETSIZE != 1024) goto error;
+	if (sizeof(fd_set) != sizeof(rt_n) * FD_SETSIZE / 64 /* __FD_SETSIZE / __NFDBITS */) goto error;
 #endif
 
 	/* Socket address structures. */

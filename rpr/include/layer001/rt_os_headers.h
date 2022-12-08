@@ -28,6 +28,14 @@
 #define UNICODE
 #endif
 
+#ifdef FD_SETSIZE
+#undef FD_SETSIZE
+#endif
+/* Makes sure that 3 of them stick into the stack. */
+/* 160 * 3 * 8 = 3840. */
+/* On Linux, it is 1024, not configurable, but there is no stack issue. */
+#define FD_SETSIZE 160
+
 #ifdef _WIN32_WINNT
 #undef _WIN32_WINNT
 #endif

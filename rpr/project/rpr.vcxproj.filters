@@ -136,6 +136,9 @@
     <ClCompile Include="..\src\layer006\rt_socket.c">
       <Filter>src\layer006</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer007\rt_select.c">
+      <Filter>src\layer007</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -293,6 +296,9 @@
     </ClInclude>
     <ClInclude Include="..\include\layer006\rt_socket.h">
       <Filter>include\layer006</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer007\rt_select.h">
+      <Filter>include\layer007</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

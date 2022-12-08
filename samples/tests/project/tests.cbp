@@ -180,6 +180,9 @@
 		<Unit filename="../src/auto/zz_test_random.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/auto/zz_test_select.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/auto/zz_test_sleep.c">
 			<Option compilerVar="CC" />
 		</Unit>

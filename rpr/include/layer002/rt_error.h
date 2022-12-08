@@ -56,6 +56,17 @@ void rt_error_set_last(enum rt_error error);
  * </p>
  *
  * <p>
+ * For sockets, the list of blocking functions is:
+ * </p>
+ * <ul>
+ *   <li>accept. You have to wait for the listening socket to be readable before calling accept.</li>
+ *   <li>connect. To make sure that the connection is successful, you have to wait for the socket to be writable after the connect call.</li>
+ *   <li>send/sendto. You have to wait for the socket to be writable.</li>
+ *   <li>recv/recvfrom. You have to wait for the socket to be readable.</li>
+ *   <li>close.</li>
+ * </ul>
+ *
+ * <p>
  * On Linux, <tt>connect</tt> uses <tt>EINPROGRESS</tt>.<br>
  * <tt>recv</tt> and <tt>write</tt> uses <tt>EAGAIN</tt> or <tt>EWOULDBLOCK</tt>.<br>
  * The library normalizes everything to <tt>EWOULDBLOCK</tt>.<br>

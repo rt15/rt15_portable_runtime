@@ -277,6 +277,9 @@ rt_s rt_socket_set_ipv6_boolean_option(struct rt_socket *socket, enum rt_socket_
 rt_s rt_socket_set_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_option option, void *value, rt_un value_size);
 rt_s rt_socket_set_ipv6_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_ipv6_option ipv6_option, void *value, rt_un value_size);
 
+rt_s rt_socket_get_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_option option, void *value, rt_un *value_size);
+rt_s rt_socket_get_ipv6_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_ipv6_option ipv6_option, void *value, rt_un *value_size);
+
 /**
  * Make this client socket connect to <tt>host_name</tt> and <tt>port</tt>.
  *
@@ -293,15 +296,10 @@ rt_s rt_socket_connect(struct rt_socket *socket, const rt_char *host_name, rt_un
  * <p>
  * In the case of a non-blocking socket, most of the time <tt>RT_FAILED</tt> is returned.<br>
  * You then have to use <tt>rt_error_would_block</tt> to determine if the error is a failure or if the connection is in progress.<br>
- * You can use <tt>rt_socket_wait_for_non_blocking_connection</tt> to wait for the connection to be writable.
+ * If the connection is in progress, you should wait for the socket to be writable to ensure that the connection is successful.
  * </p>
  */
 rt_s rt_socket_connect_with_socket_address(struct rt_socket *socket, struct rt_socket_address *socket_address);
-
-/**
- * Can be used after socket connection in the case of a non-blocking socket.
- */
-rt_s rt_socket_wait_for_non_blocking_connection(struct rt_socket *socket);
 
 /**
  * Bind to any address and given <tt>port</tt>.
@@ -318,6 +316,11 @@ rt_s rt_socket_listen(struct rt_socket *socket);
 rt_s rt_socket_listen_with_backlog(struct rt_socket *socket, rt_un backlog);
 
 /**
+ *
+ * <p>
+ * In the case of a non-blocking socket, you should wait for the listening socket to be readable before calling this function.
+ * </p>
+ *
  * @param socket_address If not null, will be returned with the address of the connecting entity.
  * @param socket_address_size In/out parameter. Must be null if <tt>socket_address</tt> is null. Set it with the size of <tt>socket_address</tt>. Returned with the size of the address.
  */

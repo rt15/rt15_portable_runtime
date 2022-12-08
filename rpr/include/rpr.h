@@ -56,5 +56,6 @@
 #include "layer006/rt_socket.h"
 
 #include "layer007/rt_process.h"
+#include "layer007/rt_select.h"
 
 #endif /* RPR_H */
