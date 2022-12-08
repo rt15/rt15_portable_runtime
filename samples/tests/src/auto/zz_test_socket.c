@@ -15,6 +15,8 @@ static rt_un32 RT_STDCALL zz_test_socket_server_callback(void *parameter)
 	struct zz_test_socket_server_parameter *server_parameter = (struct zz_test_socket_server_parameter*)parameter;
 	struct rt_socket socket;
 	rt_b socket_created = RT_FALSE;
+	rt_n32 option;
+	rt_un option_size = sizeof(rt_n32);
 	struct rt_socket accepted_socket;
 	rt_b accepted_socket_created = RT_FALSE;
 	rt_b shutdown_accepted_socket = RT_FALSE;
@@ -25,10 +27,24 @@ static rt_un32 RT_STDCALL zz_test_socket_server_callback(void *parameter)
 	if (!rt_socket_create(&socket, server_parameter->address_family, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_FALSE)) goto error;
 	socket_created = RT_TRUE;
 
+	/* Check REUSEADDR default value. */
+	if (!rt_socket_get_option(&socket, RT_SOCKET_PROTOCOL_LEVEL_SOCKET, RT_SOCKET_OPTION_REUSEADDR, &option, &option_size)) goto error;
+	if (option_size != sizeof(rt_n32)) goto error;
+	if (option) goto error;
+
+	/* Update REUSEADDR. */
 	if (!rt_socket_set_boolean_option(&socket, RT_SOCKET_PROTOCOL_LEVEL_SOCKET, RT_SOCKET_OPTION_REUSEADDR, RT_TRUE)) goto error;
+
+	/* Check new REUSEADDR value. */
+	if (!rt_socket_get_option(&socket, RT_SOCKET_PROTOCOL_LEVEL_SOCKET, RT_SOCKET_OPTION_REUSEADDR, &option, &option_size)) goto error;
+	if (option_size != sizeof(rt_n32)) goto error;
+	if (!option) goto error;
+
 	if (server_parameter->address_family == RT_SOCKET_ADDRESS_FAMILY_IPV6) {
-		if (!rt_socket_set_ipv6_boolean_option(&socket, RT_SOCKET_PROTOCOL_LEVEL_IPV6, RT_SOCKET_IPV6_OPTION_V6ONLY, RT_TRUE))
-			goto error;
+		if (!rt_socket_set_ipv6_boolean_option(&socket, RT_SOCKET_PROTOCOL_LEVEL_IPV6, RT_SOCKET_IPV6_OPTION_V6ONLY, RT_TRUE)) goto error;
+		if (!rt_socket_get_ipv6_option(&socket, RT_SOCKET_PROTOCOL_LEVEL_IPV6, RT_SOCKET_IPV6_OPTION_V6ONLY, &option, &option_size)) goto error;
+		if (option_size != sizeof(rt_n32)) goto error;
+		if (!option) goto error;
 	}
 
 	if (!rt_socket_bind(&socket, ZZ_TEST_SOCKET_PORT_NUMBER)) goto error;
