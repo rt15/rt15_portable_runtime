@@ -72,6 +72,8 @@ void rt_address_create_ipv4_any(struct rt_address_ipv4 *address);
 
 rt_s rt_address_create_ipv4(struct rt_address_ipv4 *address, const rt_char *str);
 
+rt_s rt_address_create_ipv6(struct rt_address_ipv6 *address, const rt_char *str);
+
 /**
  * Create a 127.0.0.1 IPv6 address.<br>
  * Can be use to connect to localhost.
@@ -101,5 +103,19 @@ rt_s rt_address_create_from_host_name(const rt_char *host_name, struct rt_addres
  * @param buffer_size In/out parameter.
  */
 rt_s rt_address_append_ipv4(struct rt_address_ipv4 *address, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+
+/**
+ * Append the IPv6 address in classical form (2001:db8:85a3:8d3:1319:8a2e:370:7348), 8 times 16 bits in hexa.
+ *
+ * <p>
+ * IPv4-mapped addresses are formatted as ::ffff:192.0.2.128.<br>
+ * IPv4-translated addresses are formatted as ::ffff:0:192.0.2.128.<br>
+ * The longest sequence of consecutive all-zero fields is replaced with two colons (the sequence must contain at least two consecutive zeros).<br>
+ * Addresses starting with 64:ff9b: (IPv4/IPv6 translations) are formatted with the classical form.
+ * </p>
+ *
+ * @param buffer_size In/out parameter.
+ */
+rt_s rt_address_append_ipv6(struct rt_address_ipv6 *address, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 #endif /* RT_ADDRESS_H */
