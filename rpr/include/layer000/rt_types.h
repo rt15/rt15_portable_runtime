@@ -181,6 +181,9 @@ typedef void* rt_h;                    /* HANDLE. */
 
 /* Maximum and minimum values for types. */
 
+#define RT_TYPE_MAX_CHAR8  127
+#define RT_TYPE_MIN_CHAR8  (-RT_TYPE_MAX_CHAR8 - 1)
+#define RT_TYPE_MAX_UCHAR8 ((rt_uchar8)-1)
 #define RT_TYPE_MAX_N16    32767
 #define RT_TYPE_MIN_N16    (-RT_TYPE_MAX_N16 - 1)
 #define RT_TYPE_MAX_UN16   ((rt_un16)-1)

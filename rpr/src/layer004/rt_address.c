@@ -3,6 +3,7 @@
 #include "layer001/rt_memory.h"
 #include "layer001/rt_os_headers.h"
 #include "layer002/rt_error.h"
+#include "layer003/rt_char.h"
 
 void rt_address_create_ipv4_loopback(struct rt_address_ipv4 *address)
 {
@@ -12,6 +13,45 @@ void rt_address_create_ipv4_loopback(struct rt_address_ipv4 *address)
 void rt_address_create_ipv4_any(struct rt_address_ipv4 *address)
 {
 	address->u.address = htonl(INADDR_ANY);
+}
+
+rt_s rt_address_create_ipv4(struct rt_address_ipv4 *address, const rt_char *str)
+{
+	rt_uchar8 *bytes = (rt_uchar8*)address;
+	const rt_char *in_str = str;
+	rt_un separator_index;
+	rt_un value;
+	rt_un i;
+	rt_s ret;
+
+	/* Parse the first three numbers, all ending with a dot. */
+	for (i = 0; i < 3; i++) {
+		separator_index =  rt_char_search_char(in_str, _R('.'));
+		if (separator_index == RT_TYPE_MAX_UN)
+			goto error;
+		if (!rt_char_convert_to_un_with_size(in_str, separator_index, &value))
+			goto error;
+		if (value > RT_TYPE_MAX_UCHAR8)
+			goto error;
+		bytes[i] = (rt_uchar8)value;
+
+		in_str = &in_str[separator_index + 1];
+	}
+
+	/* Parse the last number, ending with terminating zero. */
+	if (!rt_char_convert_to_un(in_str, &value))
+		goto error;
+	if (value > RT_TYPE_MAX_UCHAR8)
+		goto error;
+	bytes[3] = (rt_uchar8)value;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
 }
 
 void rt_address_create_ipv6_loopback(struct rt_address_ipv6 *address)
@@ -82,6 +122,33 @@ free:
 		freeaddrinfo(address_info);
 #endif
 	}
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_address_append_ipv4(struct rt_address_ipv4 *address, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	rt_uchar8 *bytes = (rt_uchar8*)address;
+	rt_b first = RT_TRUE;
+	rt_un i;
+	rt_s ret;
+
+	for (i = 0; i < 4; i ++) {
+		if (first) {
+			first = RT_FALSE;
+		} else {
+			if (!rt_char_append_char(_R('.'), buffer, buffer_capacity, buffer_size))
+				goto error;
+		}
+		if (!rt_char_append_un(bytes[i], 10, buffer, buffer_capacity, buffer_size))
+			goto error;
+	}
+
+	ret = RT_OK;
+free:
 	return ret;
 
 error:

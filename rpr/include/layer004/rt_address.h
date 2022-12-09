@@ -70,6 +70,8 @@ void rt_address_create_ipv4_loopback(struct rt_address_ipv4 *address);
  */
 void rt_address_create_ipv4_any(struct rt_address_ipv4 *address);
 
+rt_s rt_address_create_ipv4(struct rt_address_ipv4 *address, const rt_char *str);
+
 /**
  * Create a 127.0.0.1 IPv6 address.<br>
  * Can be use to connect to localhost.
@@ -92,5 +94,12 @@ void rt_address_create_ipv6_any(struct rt_address_ipv6 *address);
  * </p>
  */
 rt_s rt_address_create_from_host_name(const rt_char *host_name, struct rt_address_ipv4 *ipv4_address, struct rt_address_ipv6 *ipv6_address, enum rt_address_family *address_family);
+
+/**
+ * Append the IPv4 address in classical form (192.168.18.139).
+ *
+ * @param buffer_size In/out parameter.
+ */
+rt_s rt_address_append_ipv4(struct rt_address_ipv4 *address, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 #endif /* RT_ADDRESS_H */
