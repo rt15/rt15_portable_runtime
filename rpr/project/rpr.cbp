@@ -101,6 +101,7 @@
 		<Unit filename="../include/layer003/rt_heap.h" />
 		<Unit filename="../include/layer003/rt_pipe.h" />
 		<Unit filename="../include/layer003/rt_thread.h" />
+		<Unit filename="../include/layer004/rt_address.h" />
 		<Unit filename="../include/layer004/rt_array.h" />
 		<Unit filename="../include/layer004/rt_base64.h" />
 		<Unit filename="../include/layer004/rt_check_rpr.h" />
@@ -186,6 +187,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer003/rt_thread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer004/rt_address.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer004/rt_array.c">

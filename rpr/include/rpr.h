@@ -30,6 +30,7 @@
 #include "layer003/rt_pipe.h"
 #include "layer003/rt_thread.h"
 
+#include "layer004/rt_address.h"
 #include "layer004/rt_array.h"
 #include "layer004/rt_base64.h"
 #include "layer004/rt_check_rpr.h"

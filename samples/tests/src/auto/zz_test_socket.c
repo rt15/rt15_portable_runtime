@@ -4,7 +4,7 @@
 
 struct zz_test_socket_server_parameter {
 	struct rt_event event;
-	enum rt_socket_address_family address_family;
+	enum rt_address_family address_family;
 };
 
 /**
@@ -40,7 +40,7 @@ static rt_un32 RT_STDCALL zz_test_socket_server_callback(void *parameter)
 	if (option_size != sizeof(rt_n32)) goto error;
 	if (!option) goto error;
 
-	if (server_parameter->address_family == RT_SOCKET_ADDRESS_FAMILY_IPV6) {
+	if (server_parameter->address_family == RT_ADDRESS_FAMILY_IPV6) {
 		if (!rt_socket_set_ipv6_boolean_option(&socket, RT_SOCKET_PROTOCOL_LEVEL_IPV6, RT_SOCKET_IPV6_OPTION_V6ONLY, RT_TRUE)) goto error;
 		if (!rt_socket_get_ipv6_option(&socket, RT_SOCKET_PROTOCOL_LEVEL_IPV6, RT_SOCKET_IPV6_OPTION_V6ONLY, &option, &option_size)) goto error;
 		if (option_size != sizeof(rt_n32)) goto error;
@@ -93,7 +93,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_socket_client(enum rt_socket_address_family address_family)
+static rt_s zz_test_socket_client(enum rt_address_family address_family)
 {
 	struct rt_socket socket;
 	rt_b socket_created = RT_FALSE;
@@ -110,12 +110,12 @@ static rt_s zz_test_socket_client(enum rt_socket_address_family address_family)
 	if (!rt_socket_create(&socket, address_family, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_FALSE)) goto error;
 	socket_created = RT_TRUE;
 
-	if (address_family == RT_SOCKET_ADDRESS_FAMILY_IPV4) {
-		rt_socket_address_create_ipv4_loopback_address(&ipv4_address);
+	if (address_family == RT_ADDRESS_FAMILY_IPV4) {
+		rt_address_create_ipv4_loopback(&ipv4_address);
 		rt_socket_address_create_ipv4(&ipv4_socket_address, &ipv4_address, ZZ_TEST_SOCKET_PORT_NUMBER);
 		socket_address = (struct rt_socket_address*)&ipv4_socket_address;
 	} else {
-		rt_socket_address_create_ipv6_loopback_address(&ipv6_address);
+		rt_address_create_ipv6_loopback(&ipv6_address);
 		rt_socket_address_create_ipv6(&ipv6_socket_address, &ipv6_address, ZZ_TEST_SOCKET_PORT_NUMBER);
 		socket_address = (struct rt_socket_address*)&ipv6_socket_address;
 	}
@@ -148,7 +148,7 @@ error:
 /**
  * Test socket assuming rt_socket_initialize/rt_socket_cleanup are called.
  */
-static rt_s zz_test_socket_do(enum rt_socket_address_family address_family)
+static rt_s zz_test_socket_do(enum rt_address_family address_family)
 {
 	struct zz_test_socket_server_parameter server_parameter;
 	rt_b event_created = RT_FALSE;
@@ -202,8 +202,8 @@ rt_s zz_test_socket()
 	if (!rt_socket_initialize()) goto error;
 	sockets_initialized = RT_TRUE;
 
-	if (!zz_test_socket_do(RT_SOCKET_ADDRESS_FAMILY_IPV4)) goto error;
-	if (!zz_test_socket_do(RT_SOCKET_ADDRESS_FAMILY_IPV6)) goto error;
+	if (!zz_test_socket_do(RT_ADDRESS_FAMILY_IPV4)) goto error;
+	if (!zz_test_socket_do(RT_ADDRESS_FAMILY_IPV6)) goto error;
 
 	ret = RT_OK;
 free:

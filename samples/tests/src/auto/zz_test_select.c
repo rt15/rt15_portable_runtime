@@ -21,7 +21,7 @@ static rt_un32 RT_STDCALL zz_test_select_server_callback(void *parameter)
 	rt_un bytes_sent;
 	rt_un32 ret;
 
-	if (!rt_socket_create(&socket, RT_SOCKET_ADDRESS_FAMILY_IPV6, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_FALSE, RT_FALSE)) goto error;
+	if (!rt_socket_create(&socket, RT_ADDRESS_FAMILY_IPV6, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_FALSE, RT_FALSE)) goto error;
 	socket_created = RT_TRUE;
 
 	if (!rt_socket_set_boolean_option(&socket, RT_SOCKET_PROTOCOL_LEVEL_SOCKET, RT_SOCKET_OPTION_REUSEADDR, RT_TRUE)) goto error;
@@ -89,10 +89,10 @@ static rt_s zz_test_select_client()
 	rt_b shutdown_socket = RT_FALSE;
 	rt_s ret;
 
-	if (!rt_socket_create(&socket, RT_SOCKET_ADDRESS_FAMILY_IPV4, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_FALSE, RT_FALSE)) goto error;
+	if (!rt_socket_create(&socket, RT_ADDRESS_FAMILY_IPV4, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_FALSE, RT_FALSE)) goto error;
 	socket_created = RT_TRUE;
 
-	rt_socket_address_create_ipv4_loopback_address(&ipv4_address);
+	rt_address_create_ipv4_loopback(&ipv4_address);
 	rt_socket_address_create_ipv4(&ipv4_socket_address, &ipv4_address, ZZ_TEST_SOCKET_PORT_NUMBER);
 	socket_address = (struct rt_socket_address*)&ipv4_socket_address;
 

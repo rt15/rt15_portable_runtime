@@ -39,6 +39,7 @@
     <ClCompile Include="..\src\layer003\rt_heap.c" />
     <ClCompile Include="..\src\layer003\rt_pipe.c" />
     <ClCompile Include="..\src\layer003\rt_thread.c" />
+    <ClCompile Include="..\src\layer004\rt_address.c" />
     <ClCompile Include="..\src\layer004\rt_array.c" />
     <ClCompile Include="..\src\layer004\rt_base64.c" />
     <ClCompile Include="..\src\layer004\rt_check_rpr.c" />
@@ -93,6 +94,7 @@
     <ClInclude Include="..\include\layer003\rt_heap.h" />
     <ClInclude Include="..\include\layer003\rt_pipe.h" />
     <ClInclude Include="..\include\layer003\rt_thread.h" />
+    <ClInclude Include="..\include\layer004\rt_address.h" />
     <ClInclude Include="..\include\layer004\rt_array.h" />
     <ClInclude Include="..\include\layer004\rt_base64.h" />
     <ClInclude Include="..\include\layer004\rt_check_rpr.h" />

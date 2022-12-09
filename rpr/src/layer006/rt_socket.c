@@ -90,7 +90,7 @@ rt_s rt_socket_initialize()
 
 #endif
 
-rt_s rt_socket_create(struct rt_socket *socket_, enum rt_socket_address_family address_family, enum rt_socket_type type, enum rt_socket_protocol protocol, rt_b blocking, rt_b inheritable)
+rt_s rt_socket_create(struct rt_socket *socket_, enum rt_address_family address_family, enum rt_socket_type type, enum rt_socket_protocol protocol, rt_b blocking, rt_b inheritable)
 {
 #ifdef RT_DEFINE_WINDOWS
 	DWORD flags;
@@ -529,21 +529,21 @@ rt_s rt_socket_connect(struct rt_socket *socket, const rt_char *host_name, rt_un
 {
 	struct rt_address_ipv4 ipv4_address;
 	struct rt_address_ipv6 ipv6_address;
-	enum rt_socket_address_family address_family;
+	enum rt_address_family address_family;
 	struct rt_socket_address_ipv4 ipv4_socket_address;
 	struct rt_socket_address_ipv6 ipv6_socket_address;
 	struct rt_socket_address *socket_address;
 	rt_s ret;
 
-	if (!rt_socket_address_get_host_address(host_name, &ipv4_address, &ipv6_address, &address_family))
+	if (!rt_address_create_from_host_name(host_name, &ipv4_address, &ipv6_address, &address_family))
 		goto error;
 
 	switch (address_family) {
-	case RT_SOCKET_ADDRESS_FAMILY_IPV4:
+	case RT_ADDRESS_FAMILY_IPV4:
 		rt_socket_address_create_ipv4(&ipv4_socket_address, &ipv4_address, port);
 		socket_address = (struct rt_socket_address*)&ipv4_socket_address;
 		break;
-	case RT_SOCKET_ADDRESS_FAMILY_IPV6:
+	case RT_ADDRESS_FAMILY_IPV6:
 		rt_socket_address_create_ipv6(&ipv6_socket_address, &ipv6_address, port);
 		socket_address = (struct rt_socket_address*)&ipv6_socket_address;
 		break;
@@ -616,13 +616,13 @@ rt_s rt_socket_bind(struct rt_socket *socket, rt_un port)
 	rt_s ret;
 
 	switch (socket->address_family)	{
-	case RT_SOCKET_ADDRESS_FAMILY_IPV4:
-		rt_socket_address_create_ipv4_any_address(&ipv4_address);
+	case RT_ADDRESS_FAMILY_IPV4:
+		rt_address_create_ipv4_any(&ipv4_address);
 		rt_socket_address_create_ipv4(&ipv4_socket_address, &ipv4_address, port);
 		socket_address = (struct rt_socket_address*)&ipv4_socket_address;
 		break;
-	case RT_SOCKET_ADDRESS_FAMILY_IPV6:
-		rt_socket_address_create_ipv6_any_address(&ipv6_address);
+	case RT_ADDRESS_FAMILY_IPV6:
+		rt_address_create_ipv6_any(&ipv6_address);
 		rt_socket_address_create_ipv6(&ipv6_socket_address, &ipv6_address, port);
 		socket_address = (struct rt_socket_address*)&ipv6_socket_address;
 		break;

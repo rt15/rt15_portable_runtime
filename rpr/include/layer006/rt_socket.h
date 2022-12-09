@@ -11,7 +11,7 @@ struct rt_socket {
 #else
 	rt_n32 socket_file_descriptor;
 #endif
-	enum rt_socket_address_family address_family;
+	enum rt_address_family address_family;
 	rt_b blocking;
 };
 
@@ -235,8 +235,8 @@ rt_s rt_socket_initialize();
  *
  * <p>
  * If <tt>protocol</tt> is zero, the protocol is deduced from <tt>address_family</tt> and <tt>type</tt>.<br>
- * <tt>RT_SOCKET_ADDRESS_FAMILY_IPV4<tt> and <tt>RT_SOCKET_TYPE_STREAM</tt> mostly means TCP.
- * <tt>RT_SOCKET_ADDRESS_FAMILY_IPV4<tt> and <tt>RT_SOCKET_TYPE_DGRAM</tt> mostly means UDP.
+ * <tt>RT_ADDRESS_FAMILY_IPV4<tt> and <tt>RT_SOCKET_TYPE_STREAM</tt> mostly means TCP.
+ * <tt>RT_ADDRESS_FAMILY_IPV4<tt> and <tt>RT_SOCKET_TYPE_DGRAM</tt> mostly means UDP.
  * </p>
  *
  * <p>
@@ -250,7 +250,7 @@ rt_s rt_socket_initialize();
  * @param protocol Often zero.
  * @param inheritable Whether the socket could be used in a child process. Beware of handles/file descriptors leaks.
  */
-rt_s rt_socket_create(struct rt_socket *socket, enum rt_socket_address_family address_family, enum rt_socket_type type, enum rt_socket_protocol protocol, rt_b blocking, rt_b inheritable);
+rt_s rt_socket_create(struct rt_socket *socket, enum rt_address_family address_family, enum rt_socket_type type, enum rt_socket_protocol protocol, rt_b blocking, rt_b inheritable);
 
 /**
  * Set a socket boolean option.
