@@ -346,10 +346,42 @@ rt_s rt_socket_receive(struct rt_socket *socket, void *buffer, rt_un buffer_capa
 rt_s rt_socket_receive_all(struct rt_socket *socket, void *buffer, rt_un buffer_capacity, rt_un *bytes_received);
 
 /**
+ *
+ * <p>
+ * This function should never block, regardless of the blockiness of the socket or the <tt>SO_LINGER</tt> option.<br>
+ * It should behave like close without <tt>SO_LINGER</tt>: the work is supposed to be done behind the scene.<br>
+ * This behavior is not the one documented in Linux <tt>SO_LINGER</tt> manual though.
+ * </p>
+ *
  * @param flag One of RT_SOCKET_SHUTDOWN_FLAG_XXXX, mostly RT_SOCKET_SHUTDOWN_FLAG_BOTH.
  */
 rt_s rt_socket_shutdown(struct rt_socket *socket, enum rt_socket_shutdown_flag flag);
 
+/**
+ * Close the socket.
+ *
+ * <p>
+ * It does not block unless <tt>SO_LINGER</tt> is activated and its timeout is greater than zero.<br>
+ * By default <tt>SO_LINGER</tt> is not activated.<br>
+ * In case the process is terminating, <tt>exit</tt> will try to wait for the socket to finish its job though.
+ * </p>
+ *
+ * <p>
+ * If <tt>SO_LINGER</tt> is activated, its timeout is greater than zero, and the socket is non-blocking then:<br>
+ * Under Linux, the call will block.<br>
+ * Under Windows, the call will not block and the last error will be <tt>WSAEWOULDBLOCK</tt>.
+ * </p>
+ *
+ * <p>
+ * Activating <tt>SO_LINGER</tt> with zero as timeout (or if the timeout is reached) aborts the connection (TCP RST) and some data can easily be lost.<br>
+ * There is an exception under Windows: if <tt>shutdown</tt> is called before <tt>close</tt>, then the connection is not aborted in <tt>close</tt>.
+ * </p>
+ *
+ * <p>
+ * Overall, activating <tt>SO_LINGER</tt> is pretty tricky.<br>
+ * It sounds better to keep it deactivated and to rely on a protocol to make sure that all the data is sent/received.
+ * </p>
+ */
 rt_s rt_socket_free(struct rt_socket *socket);
 
 /**

@@ -63,7 +63,7 @@ void rt_error_set_last(enum rt_error error);
  *   <li>connect. To make sure that the connection is successful, you have to wait for the socket to be writable after the connect call.</li>
  *   <li>send/sendto. You have to wait for the socket to be writable.</li>
  *   <li>recv/recvfrom. You have to wait for the socket to be readable.</li>
- *   <li>close.</li>
+ *   <li>close. It can block if SO_LINGER is activated and its timeout is greater than zero. It does not depend on the socket blockiness.</li>
  * </ul>
  *
  * <p>
