@@ -9,7 +9,7 @@ rt_s zz_display_env_vars();
 rt_s zz_display_env_var(const rt_char *name);
 rt_s zz_read_line();
 
-rt_s zz_display_help(rt_s ret)
+static rt_s zz_display_help(rt_s ret)
 {
 	rt_b error = !ret;
 
@@ -23,32 +23,19 @@ rt_s zz_display_help(rt_s ret)
 		ret = RT_FAILED;
 	if (!rt_console_write(_R("tests <--read-line|-r>\n"), error))
 		ret = RT_FAILED;
+	if (!rt_console_write(_R("tests <--manual|-m>\n"), error))
+		ret = RT_FAILED;
 
 	return ret;
 }
 
-rt_s zz_test()
-{
-	rt_s ret;
-
-	if (!zz_auto_tests()) goto error;
-	if (!zz_manual_tests()) goto error;
-
-	ret = RT_OK;
-free:
-	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
-}
-
-rt_s zz_main_do(rt_un argc, const rt_char *argv[])
+static rt_s zz_main_do(rt_un argc, const rt_char *argv[])
 {
 	rt_un arg_size;
 	rt_s ret;
 
 	if (argc == 1) {
-		if (!zz_test())
+		if (!zz_auto_tests())
 			goto error;
 	} else {
 		arg_size = rt_char_get_size(argv[1]);
@@ -90,6 +77,12 @@ rt_s zz_main_do(rt_un argc, const rt_char *argv[])
 				   rt_char_equals(argv[1], arg_size, _R("-r"), 2)) {
 
 				if (!zz_read_line())
+					goto error;
+
+			} else if (rt_char_equals(argv[1], arg_size, _R("--manual"), 8) ||
+				   rt_char_equals(argv[1], arg_size, _R("-m"), 2)) {
+
+				if (!zz_manual_tests())
 					goto error;
 
 			} else {
