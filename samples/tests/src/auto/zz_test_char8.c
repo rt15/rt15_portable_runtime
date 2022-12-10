@@ -535,7 +535,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_successful_char_convert_to_un(const rt_char8 *str, rt_un expected)
+static rt_s zz_test_char8_successfully_convert_to_un(const rt_char8 *str, rt_un expected)
 {
 	rt_un result;
 	rt_s ret;
@@ -555,7 +555,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_failed_char_convert_to_un(const rt_char8 *str)
+static rt_s zz_test_char8_failed_to_convert_to_un(const rt_char8 *str)
 {
 	rt_un result;
 	rt_s ret;
@@ -575,19 +575,19 @@ static rt_s zz_test_char8_convert_to_un()
 {
 	rt_s ret;
 
-	if (!zz_test_successful_char_convert_to_un("0", 0)) goto error;
-	if (!zz_test_successful_char_convert_to_un("1", 1)) goto error;
-	if (!zz_test_successful_char_convert_to_un("4294967296", 4294967296)) goto error;
+	if (!zz_test_char8_successfully_convert_to_un("0", 0)) goto error;
+	if (!zz_test_char8_successfully_convert_to_un("1", 1)) goto error;
+	if (!zz_test_char8_successfully_convert_to_un("4294967296", 4294967296)) goto error;
 	/* TODO: Test larger numbers under 64 bits. */
 
-	if (!zz_test_failed_char_convert_to_un("")) goto error;
-	if (!zz_test_failed_char_convert_to_un(" ")) goto error;
-	if (!zz_test_failed_char_convert_to_un("-1")) goto error;
-	if (!zz_test_failed_char_convert_to_un("-")) goto error;
-	if (!zz_test_failed_char_convert_to_un("-a")) goto error;
-	if (!zz_test_failed_char_convert_to_un("a")) goto error;
-	if (!zz_test_failed_char_convert_to_un("2a")) goto error;
-	if (!zz_test_failed_char_convert_to_un("a2")) goto error;
+	if (!zz_test_char8_failed_to_convert_to_un("")) goto error;
+	if (!zz_test_char8_failed_to_convert_to_un(" ")) goto error;
+	if (!zz_test_char8_failed_to_convert_to_un("-1")) goto error;
+	if (!zz_test_char8_failed_to_convert_to_un("-")) goto error;
+	if (!zz_test_char8_failed_to_convert_to_un("-a")) goto error;
+	if (!zz_test_char8_failed_to_convert_to_un("a")) goto error;
+	if (!zz_test_char8_failed_to_convert_to_un("2a")) goto error;
+	if (!zz_test_char8_failed_to_convert_to_un("a2")) goto error;
 
 	ret = RT_OK;
 free:
@@ -597,7 +597,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_successful_char_convert_to_n(const rt_char8 *str, rt_n expected)
+static rt_s zz_test_char8_successfully_convert_to_n(const rt_char8 *str, rt_n expected)
 {
 	rt_n result;
 	rt_s ret;
@@ -617,7 +617,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_failed_char_convert_to_n(const rt_char8 *str)
+static rt_s zz_test_char8_failed_to_convert_to_n(const rt_char8 *str)
 {
 	rt_n result;
 	rt_s ret;
@@ -637,22 +637,86 @@ static rt_s zz_test_char8_convert_to_n()
 {
 	rt_s ret;
 
-	if (!zz_test_successful_char_convert_to_n("0", 0)) goto error;
-	if (!zz_test_successful_char_convert_to_n("1", 1)) goto error;
-	if (!zz_test_successful_char_convert_to_n("2147483647", 2147483647)) goto error;
-	if (!zz_test_successful_char_convert_to_n("-1", -1)) goto error;
-	if (!zz_test_successful_char_convert_to_n("-0", 0)) goto error;
-	if (!zz_test_successful_char_convert_to_n("-2111222333", -2111222333)) goto error;
+	if (!zz_test_char8_successfully_convert_to_n("0", 0)) goto error;
+	if (!zz_test_char8_successfully_convert_to_n("1", 1)) goto error;
+	if (!zz_test_char8_successfully_convert_to_n("2147483647", 2147483647)) goto error;
+	if (!zz_test_char8_successfully_convert_to_n("-1", -1)) goto error;
+	if (!zz_test_char8_successfully_convert_to_n("-0", 0)) goto error;
+	if (!zz_test_char8_successfully_convert_to_n("-2111222333", -2111222333)) goto error;
 	/* TODO: Test larger numbers under 64 bits. */
 
-	if (!zz_test_failed_char_convert_to_n("")) goto error;
-	if (!zz_test_failed_char_convert_to_n(" ")) goto error;
-	if (!zz_test_failed_char_convert_to_n("-")) goto error;
-	if (!zz_test_failed_char_convert_to_n("1-")) goto error;
-	if (!zz_test_failed_char_convert_to_n("-a")) goto error;
-	if (!zz_test_failed_char_convert_to_n("a")) goto error;
-	if (!zz_test_failed_char_convert_to_n("2a")) goto error;
-	if (!zz_test_failed_char_convert_to_n("a2")) goto error;
+	if (!zz_test_char8_failed_to_convert_to_n("")) goto error;
+	if (!zz_test_char8_failed_to_convert_to_n(" ")) goto error;
+	if (!zz_test_char8_failed_to_convert_to_n("-")) goto error;
+	if (!zz_test_char8_failed_to_convert_to_n("1-")) goto error;
+	if (!zz_test_char8_failed_to_convert_to_n("-a")) goto error;
+	if (!zz_test_char8_failed_to_convert_to_n("a")) goto error;
+	if (!zz_test_char8_failed_to_convert_to_n("2a")) goto error;
+	if (!zz_test_char8_failed_to_convert_to_n("a2")) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_successfully_convert_hex_to_un(const rt_char8 *str, rt_un expected)
+{
+	rt_un result;
+	rt_s ret;
+
+	if (!rt_char8_convert_hex_to_un(str, &result)) goto error;
+	if (result != expected) goto error;
+
+	result = 99;
+	if (!rt_char8_convert_hex_to_un_with_size(str, rt_char8_get_size(str), &result)) goto error;
+	if (result != expected) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_failed_to_convert_hex_to_un(const rt_char8 *str)
+{
+	rt_un result;
+	rt_s ret;
+
+	if (rt_char8_convert_hex_to_un(str, &result)) goto error;
+	if (rt_char8_convert_hex_to_un_with_size(str, rt_char8_get_size(str), &result)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_convert_hex_to_un()
+{
+	rt_s ret;
+
+	if (!zz_test_char8_successfully_convert_hex_to_un("0", 0)) goto error;
+	if (!zz_test_char8_successfully_convert_hex_to_un("1", 1)) goto error;
+	if (!zz_test_char8_successfully_convert_hex_to_un("5C9D2", 379346)) goto error;
+	if (!zz_test_char8_successfully_convert_hex_to_un("5c9d2", 379346)) goto error;
+	if (!zz_test_char8_successfully_convert_hex_to_un("AF0", 2800)) goto error;
+	if (!zz_test_char8_successfully_convert_hex_to_un("af0", 2800)) goto error;
+	/* TODO: Test larger numbers under 64 bits. */
+
+	if (!zz_test_char8_failed_to_convert_hex_to_un("")) goto error;
+	if (!zz_test_char8_failed_to_convert_hex_to_un(" ")) goto error;
+	if (!zz_test_char8_failed_to_convert_hex_to_un("-1")) goto error;
+	if (!zz_test_char8_failed_to_convert_hex_to_un("-")) goto error;
+	if (!zz_test_char8_failed_to_convert_hex_to_un("-a")) goto error;
+	if (!zz_test_char8_failed_to_convert_hex_to_un("G")) goto error;
+	if (!zz_test_char8_failed_to_convert_hex_to_un("g")) goto error;
 
 	ret = RT_OK;
 free:
@@ -1042,6 +1106,7 @@ rt_s zz_test_char8()
 	if (!zz_test_char8_fast_lower_or_upper()) goto error;
 	if (!zz_test_char8_convert_to_un()) goto error;
 	if (!zz_test_char8_convert_to_n()) goto error;
+	if (!zz_test_char8_convert_hex_to_un()) goto error;
 	if (!zz_test_char8_trim()) goto error;
 	if (!zz_test_char8_left_pad()) goto error;
 	if (!zz_test_char8_right_pad()) goto error;

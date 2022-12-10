@@ -131,6 +131,9 @@ rt_s rt_char_convert_to_un_with_size(const rt_char *str, rt_un str_size, rt_un *
 rt_s rt_char_convert_to_n(const rt_char *str, rt_n *result);
 rt_s rt_char_convert_to_n_with_size(const rt_char *str, rt_un str_size, rt_n *result);
 
+rt_s rt_char_convert_hex_to_un(const rt_char *str, rt_un *result);
+rt_s rt_char_convert_hex_to_un_with_size(const rt_char *str, rt_un str_size, rt_un *result);
+
 /**
  * Remove characters <= ' ' at the left and/or at the right of the string.
  *

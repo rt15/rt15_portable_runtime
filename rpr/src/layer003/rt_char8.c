@@ -262,8 +262,8 @@ rt_un rt_char8_fast_upper(rt_char8 *str)
 rt_s rt_char8_convert_to_un(const rt_char8 *str, rt_un *result)
 {
 	rt_char8 character;
-	rt_un i = 0;
 	rt_un local_result = 0;
+	rt_un i = 0;
 	rt_s ret;
 
 	while (RT_TRUE) {
@@ -338,8 +338,8 @@ rt_s rt_char8_convert_to_n(const rt_char8 *str, rt_n *result)
 {
 	rt_b negative;
 	rt_char8 character;
-	rt_un i = 0;
 	rt_n local_result = 0;
+	rt_un i = 0;
 	rt_s ret;
 
 	if (str[0] == '-') {
@@ -424,6 +424,97 @@ rt_s rt_char8_convert_to_n_with_size(const rt_char8 *str, rt_un str_size, rt_n *
 
 	if (negative)
 		local_result = -local_result;
+
+	*result = local_result;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_char8_convert_hex_to_un(const rt_char8 *str, rt_un *result)
+{
+	rt_char8 character;
+	rt_un local_result = 0;
+	rt_uchar8 byte;
+	rt_un i = 0;
+	rt_s ret;
+
+	while (RT_TRUE) {
+		character = str[i];
+		if (!character)
+			break;
+
+		if (character >= '0' && character <= '9') {
+			byte = character - '0';
+		} else if (character >= 'a' && character <= 'f') {
+			byte = character - 'a' + 10;
+		} else if (character >= 'A' && character <= 'F') {
+			byte = character - 'A' + 10;
+		} else {
+			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+			goto error;
+		}
+
+		local_result = (local_result << 4);
+		local_result |= byte;
+
+		i++;
+	}
+
+	if (!i) {
+		/* The string was empty. */
+		*result = 0;
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
+	}
+	*result = local_result;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_char8_convert_hex_to_un_with_size(const rt_char8 *str, rt_un str_size, rt_un *result)
+{
+	rt_char8 character;
+	rt_un local_result = 0;
+	rt_uchar8 byte;
+	rt_un i;
+	rt_s ret;
+
+	if (!str_size) {
+		/* The string is empty. */
+		*result = 0;
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
+	}
+
+	for (i = 0; i < str_size; i++) {
+		character = str[i];
+
+		if (character >= '0' && character <= '9') {
+			byte = character - '0';
+		} else if (character >= 'a' && character <= 'f') {
+			byte = character - 'a' + 10;
+		} else if (character >= 'A' && character <= 'F') {
+			byte = character - 'A' + 10;
+		} else {
+			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+			goto error;
+		}
+
+		local_result = (local_result << 4);
+		local_result |= byte;
+	}
 
 	*result = local_result;
 
