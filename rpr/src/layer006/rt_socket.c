@@ -705,7 +705,7 @@ rt_s rt_socket_accept_connection(struct rt_socket *socket, struct rt_socket *acc
 #endif
 
 	/* Linux can accept IPv4 incoming socket connections on IPv6 socket (IPV6_V6ONLY must not be used). */
-	/* But even in this case, the IPv4 adress is an IPv4-mapped IPv6 address. */
+	/* But even in this case, the IPv4 address is an IPv4-mapped IPv6 address. */
 	accepted_socket->address_family = socket->address_family;
 
 	ret = RT_OK;
