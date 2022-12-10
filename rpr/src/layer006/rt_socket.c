@@ -529,7 +529,7 @@ rt_s rt_socket_connect(struct rt_socket *socket, const rt_char *host_name, rt_un
 {
 	struct rt_address_ipv4 ipv4_address;
 	struct rt_address_ipv6 ipv6_address;
-	enum rt_address_family address_family;
+	enum rt_address_family address_family = 0;
 	struct rt_socket_address_ipv4 ipv4_socket_address;
 	struct rt_socket_address_ipv6 ipv6_socket_address;
 	struct rt_socket_address *socket_address;

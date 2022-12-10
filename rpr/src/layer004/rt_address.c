@@ -158,14 +158,32 @@ rt_s rt_address_create_from_host_name(const rt_char *host_name, struct rt_addres
 	int returned_value;
 #ifdef RT_DEFINE_WINDOWS
 	struct addrinfoW *address_info;
+	struct addrinfoW hints;
+	struct addrinfoW *actual_hints;
 #else
 	struct addrinfo *address_info;
+	struct addrinfo hints;
+	struct addrinfo *actual_hints;
 #endif
 	rt_b address_info_created = RT_FALSE;
 	rt_s ret;
 
+	if (*address_family) {
+		RT_MEMORY_ZERO(&hints, sizeof(hints));
+		hints.ai_family = *address_family;
 #ifdef RT_DEFINE_WINDOWS
-	returned_value = GetAddrInfo(host_name, RT_NULL, RT_NULL, &address_info);
+		/* These flags may be supported starting with Vista. */
+		hints.ai_flags = (0x00000800 | 0x00000400);
+#else
+		hints.ai_flags = (AI_V4MAPPED | AI_ADDRCONFIG);
+#endif
+		actual_hints = &hints;
+	} else {
+		actual_hints = RT_NULL;
+	}
+
+#ifdef RT_DEFINE_WINDOWS
+	returned_value = GetAddrInfo(host_name, RT_NULL, actual_hints, &address_info);
 	if (returned_value) {
 		/* GetAddrInfoW returns an error code in case of error, zero otherwise. */
 		SetLastError(returned_value);
@@ -174,7 +192,7 @@ rt_s rt_address_create_from_host_name(const rt_char *host_name, struct rt_addres
 	address_info_created = RT_TRUE;
 #else
 	/* getaddrinfo returns 0 if it is successful. It returns an error code in case of error and set errno only if the error code is EAI_SYSTEM. */
-	returned_value = getaddrinfo(host_name, RT_NULL, RT_NULL, &address_info);
+	returned_value = getaddrinfo(host_name, RT_NULL, actual_hints, &address_info);
 	if (returned_value) {
 		if (returned_value == EAI_SYSTEM) {
 			goto error;

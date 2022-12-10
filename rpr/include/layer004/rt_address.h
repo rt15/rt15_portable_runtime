@@ -11,9 +11,9 @@
  * </p>
  */
 enum rt_address_family {
-	/* IPv4. */
+	/* IPv4 (AF_INET). */
 	RT_ADDRESS_FAMILY_IPV4 = 2,
-	/* IPv6. */
+	/* IPv6 (AF_INET6). */
 #ifdef RT_DEFINE_WINDOWS
 	RT_ADDRESS_FAMILY_IPV6 = 23
 #else
@@ -91,9 +91,15 @@ void rt_address_create_ipv6_any(struct rt_address_ipv6 *address);
  * This function is similar to gethostbyname/GetAddrInfo.
  *
  * <p>
+ * <tt>rt_socket_initialize</tt> must be called before using this function.
+ * </p>
+ *
+ * <p>
  * If <tt>address_family</tt> is <tt>RT_ADDRESS_FAMILY_IPV4</tt> then the resulting address is in <tt>ipv4_address</tt>.<br>
  * If <tt>address_family</tt> is <tt>RT_ADDRESS_FAMILY_IPV6</tt> then the resulting address is in <tt>ipv6_address</tt>.
  * </p>
+ *
+ * @param address_family Mandatory in/out parameter. If zero, the function can return either an IPv4 or IPv6 address.
  */
 rt_s rt_address_create_from_host_name(const rt_char *host_name, struct rt_address_ipv4 *ipv4_address, struct rt_address_ipv6 *ipv6_address, enum rt_address_family *address_family);
 

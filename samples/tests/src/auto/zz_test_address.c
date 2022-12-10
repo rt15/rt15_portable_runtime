@@ -16,6 +16,40 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_address_create_from_host_name()
+{
+	struct rt_address_ipv4 ipv4_address;
+	struct rt_address_ipv6 ipv6_address;
+	enum rt_address_family address_family;
+	rt_char buffer[RT_CHAR_QUARTER_BIG_STRING_SIZE];
+	rt_un buffer_size;
+	rt_s ret;
+
+	address_family = RT_ADDRESS_FAMILY_IPV4;
+	if (!rt_address_create_from_host_name(_R("localhost"), &ipv4_address, &ipv6_address, &address_family)) goto error;
+	if (address_family != RT_ADDRESS_FAMILY_IPV4) goto error;
+	buffer_size = 0;
+	if (!rt_address_append_ipv4(&ipv4_address, buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &buffer_size)) goto error;
+	if (!rt_char_append_char(_R('\n'), buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &buffer_size)) goto error;
+	if (!rt_console_write_string_with_size(buffer, buffer_size)) goto error;
+
+	address_family = RT_ADDRESS_FAMILY_IPV6;
+	if (!rt_address_create_from_host_name(_R("localhost"), &ipv4_address, &ipv6_address, &address_family)) goto error;
+	if (address_family != RT_ADDRESS_FAMILY_IPV6) goto error;
+	buffer_size = 0;
+	if (!rt_address_append_ipv6(&ipv6_address, buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &buffer_size)) goto error;
+	if (!rt_char_append_char(_R('\n'), buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &buffer_size)) goto error;
+	if (!rt_console_write_string_with_size(buffer, buffer_size)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 static rt_s zz_test_address_check_ipv4_append(struct rt_address_ipv4 *address, const rt_char *expected)
 {
 	rt_char buffer[RT_CHAR_QUARTER_BIG_STRING_SIZE];
@@ -404,14 +438,24 @@ error:
 
 rt_s zz_test_address()
 {
+	rt_b sockets_initialized = RT_FALSE;
 	rt_s ret;
 
+	if (!rt_socket_initialize()) goto error;
+	sockets_initialized = RT_TRUE;
+
 	if (!zz_test_address_check_stuctures_sizes()) goto error;
+	if (!zz_test_address_create_from_host_name()) goto error;
 	if (!zz_test_address_check_ipv4()) goto error;
 	if (!zz_test_address_check_ipv6()) goto error;
 
 	ret = RT_OK;
 free:
+	if (sockets_initialized) {
+		sockets_initialized = RT_FALSE;
+		if (!rt_socket_cleanup() && ret)
+			goto error;
+	}
 	return ret;
 
 error:

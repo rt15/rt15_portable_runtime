@@ -185,10 +185,8 @@ error:
 
 rt_s zz_test_select()
 {
-	rt_b sockets_initialized;
+	rt_b sockets_initialized = RT_FALSE;
 	rt_s ret;
-
-	sockets_initialized = RT_FALSE;
 
 	if (!rt_socket_initialize()) goto error;
 	sockets_initialized = RT_TRUE;
