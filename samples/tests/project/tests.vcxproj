@@ -28,6 +28,7 @@
     <ClCompile Include="..\src\auto\zz_test_char.c" />
     <ClCompile Include="..\src\auto\zz_test_char8.c" />
     <ClCompile Include="..\src\auto\zz_test_command_line_args.c" />
+    <ClCompile Include="..\src\auto\zz_test_comparison.c" />
     <ClCompile Include="..\src\auto\zz_test_critical_section.c" />
     <ClCompile Include="..\src\auto\zz_test_encoding.c" />
     <ClCompile Include="..\src\auto\zz_test_env_var.c" />

@@ -123,6 +123,9 @@
 		<Unit filename="../src/auto/zz_test_command_line_args.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/auto/zz_test_comparison.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/auto/zz_test_critical_section.c">
 			<Option compilerVar="CC" />
 		</Unit>

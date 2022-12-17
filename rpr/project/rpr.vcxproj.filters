@@ -148,6 +148,9 @@
     <ClCompile Include="..\src\layer003\rt_quick_sort.c">
       <Filter>src\layer003</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer002\rt_comparison.c">
+      <Filter>src\layer002</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">

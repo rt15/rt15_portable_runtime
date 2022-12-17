@@ -6,6 +6,7 @@ rt_s zz_test_hash();
 rt_s zz_test_memory();
 
 /* Layer 002. */
+rt_s zz_test_comparison();
 rt_s zz_test_critical_section();
 rt_s zz_test_event();
 rt_s zz_test_io_device();
@@ -76,6 +77,7 @@ rt_s zz_auto_tests()
 	if (!zz_test_memory()) goto error;
 
 	/* Layer 002. */
+	if (!zz_test_comparison()) goto error;
 	if (!zz_test_critical_section()) goto error;
 	if (!zz_test_event()) goto error;
 	if (!zz_test_io_device()) goto error;
