@@ -2,7 +2,7 @@
 #define RT_BINARY_SEARCH_H
 
 #include "layer000/rt_types.h"
-#include "layer001/rt_comparison.h"
+#include "layer002/rt_comparison.h"
 
 /**
  * @file

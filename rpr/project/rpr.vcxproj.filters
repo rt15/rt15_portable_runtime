@@ -7,9 +7,6 @@
     <ClCompile Include="..\src\rpr_internal.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\layer001\rt_memory.c">
-      <Filter>src\layer001</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\layer002\rt_chrono.c">
       <Filter>src\layer002</Filter>
     </ClCompile>
@@ -118,12 +115,6 @@
     <ClCompile Include="..\src\layer004\rt_array.c">
       <Filter>src\layer004</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\layer002\rt_quick_sort.c">
-      <Filter>src\layer002</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\layer002\rt_binary_search.c">
-      <Filter>src\layer002</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\layer005\rt_sortable_array.c">
       <Filter>src\layer005</Filter>
     </ClCompile>
@@ -147,6 +138,15 @@
     </ClCompile>
     <ClCompile Include="..\src\layer001\rt_hash.c">
       <Filter>src\layer001</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer001\rt_memory.c">
+      <Filter>src\layer001</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer003\rt_binary_search.c">
+      <Filter>src\layer003</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer003\rt_quick_sort.c">
+      <Filter>src\layer003</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -285,15 +285,6 @@
     <ClInclude Include="..\include\layer004\rt_array.h">
       <Filter>include\layer004</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\layer001\rt_comparison.h">
-      <Filter>include\layer001</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\layer002\rt_quick_sort.h">
-      <Filter>include\layer002</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\layer002\rt_binary_search.h">
-      <Filter>include\layer002</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\layer005\rt_sortable_array.h">
       <Filter>include\layer005</Filter>
     </ClInclude>
@@ -317,6 +308,15 @@
     </ClInclude>
     <ClInclude Include="..\include\layer001\rt_hash.h">
       <Filter>include\layer001</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer002\rt_comparison.h">
+      <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer003\rt_binary_search.h">
+      <Filter>include\layer003</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer003\rt_quick_sort.h">
+      <Filter>include\layer003</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -21,17 +21,16 @@
   <ItemGroup>
     <ClCompile Include="..\src\layer001\rt_hash.c" />
     <ClCompile Include="..\src\layer001\rt_memory.c" />
-    <ClCompile Include="..\src\layer002\rt_binary_search.c" />
     <ClCompile Include="..\src\layer002\rt_chrono.c" />
     <ClCompile Include="..\src\layer002\rt_critical_section.c" />
     <ClCompile Include="..\src\layer002\rt_error.c" />
     <ClCompile Include="..\src\layer002\rt_event.c" />
     <ClCompile Include="..\src\layer002\rt_io_device.c" />
     <ClCompile Include="..\src\layer002\rt_memory_input_stream.c" />
-    <ClCompile Include="..\src\layer002\rt_quick_sort.c" />
     <ClCompile Include="..\src\layer002\rt_sleep.c" />
     <ClCompile Include="..\src\layer002\rt_slurp.c" />
     <ClCompile Include="..\src\layer002\rt_virtual_memory.c" />
+    <ClCompile Include="..\src\layer003\rt_binary_search.c" />
     <ClCompile Include="..\src\layer003\rt_char.c" />
     <ClCompile Include="..\src\layer003\rt_char8.c" />
     <ClCompile Include="..\src\layer003\rt_env_var.c" />
@@ -39,6 +38,7 @@
     <ClCompile Include="..\src\layer003\rt_file.c" />
     <ClCompile Include="..\src\layer003\rt_heap.c" />
     <ClCompile Include="..\src\layer003\rt_pipe.c" />
+    <ClCompile Include="..\src\layer003\rt_quick_sort.c" />
     <ClCompile Include="..\src\layer003\rt_thread.c" />
     <ClCompile Include="..\src\layer004\rt_address.c" />
     <ClCompile Include="..\src\layer004\rt_array.c" />
@@ -72,23 +72,22 @@
   <ItemGroup>
     <ClInclude Include="..\include\layer000\rt_types.h" />
     <ClInclude Include="..\include\layer001\rt_atomic.h" />
-    <ClInclude Include="..\include\layer001\rt_comparison.h" />
     <ClInclude Include="..\include\layer001\rt_hash.h" />
     <ClInclude Include="..\include\layer001\rt_input_stream.h" />
     <ClInclude Include="..\include\layer001\rt_memory.h" />
     <ClInclude Include="..\include\layer001\rt_os_headers.h" />
     <ClInclude Include="..\include\layer001\rt_output_stream.h" />
-    <ClInclude Include="..\include\layer002\rt_binary_search.h" />
     <ClInclude Include="..\include\layer002\rt_chrono.h" />
+    <ClInclude Include="..\include\layer002\rt_comparison.h" />
     <ClInclude Include="..\include\layer002\rt_critical_section.h" />
     <ClInclude Include="..\include\layer002\rt_error.h" />
     <ClInclude Include="..\include\layer002\rt_event.h" />
     <ClInclude Include="..\include\layer002\rt_io_device.h" />
     <ClInclude Include="..\include\layer002\rt_memory_input_stream.h" />
-    <ClInclude Include="..\include\layer002\rt_quick_sort.h" />
     <ClInclude Include="..\include\layer002\rt_sleep.h" />
     <ClInclude Include="..\include\layer002\rt_slurp.h" />
     <ClInclude Include="..\include\layer002\rt_virtual_memory.h" />
+    <ClInclude Include="..\include\layer003\rt_binary_search.h" />
     <ClInclude Include="..\include\layer003\rt_char.h" />
     <ClInclude Include="..\include\layer003\rt_char8.h" />
     <ClInclude Include="..\include\layer003\rt_env_var.h" />
@@ -96,6 +95,7 @@
     <ClInclude Include="..\include\layer003\rt_file.h" />
     <ClInclude Include="..\include\layer003\rt_heap.h" />
     <ClInclude Include="..\include\layer003\rt_pipe.h" />
+    <ClInclude Include="..\include\layer003\rt_quick_sort.h" />
     <ClInclude Include="..\include\layer003\rt_thread.h" />
     <ClInclude Include="..\include\layer004\rt_address.h" />
     <ClInclude Include="..\include\layer004\rt_array.h" />
