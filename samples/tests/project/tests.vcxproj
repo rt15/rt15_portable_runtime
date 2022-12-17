@@ -38,8 +38,10 @@
     <ClCompile Include="..\src\auto\zz_test_file.c" />
     <ClCompile Include="..\src\auto\zz_test_file_path.c" />
     <ClCompile Include="..\src\auto\zz_test_file_system.c" />
+    <ClCompile Include="..\src\auto\zz_test_hash.c" />
     <ClCompile Include="..\src\auto\zz_test_heap.c" />
     <ClCompile Include="..\src\auto\zz_test_io_device.c" />
+    <ClCompile Include="..\src\auto\zz_test_list.c" />
     <ClCompile Include="..\src\auto\zz_test_memory.c" />
     <ClCompile Include="..\src\auto\zz_test_memory_input_stream.c" />
     <ClCompile Include="..\src\auto\zz_test_memory_output_stream.c" />

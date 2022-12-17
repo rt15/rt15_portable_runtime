@@ -78,6 +78,7 @@
 		<Unit filename="../include/layer000/rt_types.h" />
 		<Unit filename="../include/layer001/rt_atomic.h" />
 		<Unit filename="../include/layer001/rt_comparison.h" />
+		<Unit filename="../include/layer001/rt_hash.h" />
 		<Unit filename="../include/layer001/rt_input_stream.h" />
 		<Unit filename="../include/layer001/rt_memory.h" />
 		<Unit filename="../include/layer001/rt_os_headers.h" />
@@ -130,6 +131,9 @@
 		<Unit filename="../include/rpr.h" />
 		<Unit filename="../include/rpr_main.h" />
 		<Unit filename="../include/rpr_mem.h" />
+		<Unit filename="../src/layer001/rt_hash.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/layer001/rt_memory.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -53,7 +53,7 @@ static rt_s zz_test_list_do(struct rt_heap *heap)
 	for (i = 0; i < 35; i++) {
 		if (!rt_list_get_item(list, i, (void**)&item))
 			goto error;
-		item->value = i;
+		item->value = (rt_un32)i;
 	}
 
 	/* Reduce the size. */
@@ -68,7 +68,7 @@ static rt_s zz_test_list_do(struct rt_heap *heap)
 	for (i = 0; i < 51; i++) {
 		if (!rt_list_get_item(list, i, (void**)&item))
 			goto error;
-		item->value = i;
+		item->value = (rt_un32)i;
 	}
 	if (!zz_test_list_check(list, 51, 4, heap)) goto error;
 

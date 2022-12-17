@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\layer001\rt_hash.c" />
     <ClCompile Include="..\src\layer001\rt_memory.c" />
     <ClCompile Include="..\src\layer002\rt_binary_search.c" />
     <ClCompile Include="..\src\layer002\rt_chrono.c" />
@@ -72,6 +73,7 @@
     <ClInclude Include="..\include\layer000\rt_types.h" />
     <ClInclude Include="..\include\layer001\rt_atomic.h" />
     <ClInclude Include="..\include\layer001\rt_comparison.h" />
+    <ClInclude Include="..\include\layer001\rt_hash.h" />
     <ClInclude Include="..\include\layer001\rt_input_stream.h" />
     <ClInclude Include="..\include\layer001\rt_memory.h" />
     <ClInclude Include="..\include\layer001\rt_os_headers.h" />

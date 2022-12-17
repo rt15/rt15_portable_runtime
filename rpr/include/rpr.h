@@ -5,6 +5,7 @@
 
 #include "layer001/rt_atomic.h"
 #include "layer001/rt_comparison.h"
+#include "layer001/rt_hash.h"
 #include "layer001/rt_input_stream.h"
 #include "layer001/rt_memory.h"
 #include "layer001/rt_output_stream.h"

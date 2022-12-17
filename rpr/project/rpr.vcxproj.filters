@@ -145,6 +145,9 @@
     <ClCompile Include="..\src\layer005\rt_list.c">
       <Filter>src\layer005</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer001\rt_hash.c">
+      <Filter>src\layer001</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -311,6 +314,9 @@
     </ClInclude>
     <ClInclude Include="..\include\layer005\rt_list.h">
       <Filter>include\layer005</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer001\rt_hash.h">
+      <Filter>include\layer001</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
