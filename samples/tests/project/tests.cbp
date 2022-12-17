@@ -159,6 +159,9 @@
 		<Unit filename="../src/auto/zz_test_hash.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/auto/zz_test_hash_table.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/auto/zz_test_heap.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -109,6 +109,28 @@ rt_b zz_char_equals_with_nulls(const rt_char *str1, const rt_char *str2)
 	return ret;
 }
 
+rt_b zz_char8_equals_with_nulls(const rt_char8 *str1, const rt_char8 *str2)
+{
+	rt_b ret;
+
+	if (!str1) {
+		ret = (!str2);
+	} else {
+		if (!str2) {
+			ret = RT_FALSE;
+		} else {
+			while (!(ret = *(rt_uchar8*)str1 - *(rt_uchar8*)str2) && *str2)
+			{
+				str1++;
+				str2++;
+			}
+			ret = !ret;
+		}
+	}
+
+	return ret;
+}
+
 rt_s zz_read_text_file(const rt_char *file_path, enum rt_encoding encoding, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
 	rt_char8 encoded_buffer[RT_CHAR8_BIG_STRING_SIZE];

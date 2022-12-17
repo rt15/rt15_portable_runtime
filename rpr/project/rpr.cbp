@@ -119,6 +119,7 @@
 		<Unit filename="../include/layer005/rt_console.h" />
 		<Unit filename="../include/layer005/rt_env_vars.h" />
 		<Unit filename="../include/layer005/rt_file_system.h" />
+		<Unit filename="../include/layer005/rt_hash_table.h" />
 		<Unit filename="../include/layer005/rt_list.h" />
 		<Unit filename="../include/layer005/rt_runtime_heap.h" />
 		<Unit filename="../include/layer005/rt_socket_address.h" />
@@ -246,6 +247,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer005/rt_file_system.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer005/rt_hash_table.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer005/rt_list.c">

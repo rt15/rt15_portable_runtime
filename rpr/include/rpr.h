@@ -49,6 +49,7 @@
 #include "layer005/rt_console.h"
 #include "layer005/rt_env_vars.h"
 #include "layer005/rt_file_system.h"
+#include "layer005/rt_hash_table.h"
 #include "layer005/rt_list.h"
 #include "layer005/rt_runtime_heap.h"
 #include "layer005/rt_socket_address.h"

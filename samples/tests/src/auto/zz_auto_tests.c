@@ -44,6 +44,7 @@ rt_s zz_test_url();
 /* Layer 005. */
 rt_s zz_test_env_vars();
 rt_s zz_test_file_system();
+rt_s zz_test_hash_table();
 rt_s zz_test_list();
 rt_s zz_test_socket_address();
 rt_s zz_test_sortable_array();
@@ -115,6 +116,7 @@ rt_s zz_auto_tests()
 	/* Layer 005. */
 	if (!zz_test_env_vars()) goto error;
 	if (!zz_test_file_system()) goto error;
+	if (!zz_test_hash_table()) goto error;
 	if (!zz_test_list()) goto error;
 	if (!zz_test_socket_address()) goto error;
 	if (!zz_test_sortable_array()) goto error;

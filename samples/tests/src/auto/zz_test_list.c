@@ -100,10 +100,8 @@ static rt_s zz_test_list_do(struct rt_heap *heap)
 
 	ret = RT_OK;
 free:
-	if (list) {
-		if (!rt_list_free((void**)&list) && ret)
-			goto error;
-	}
+	if (!rt_list_free((void**)&list) && ret)
+		goto error;
 	return ret;
 
 error:
