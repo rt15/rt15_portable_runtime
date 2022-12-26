@@ -2,8 +2,8 @@
 #define RT_HASH_TABLE_H
 
 #include "layer000/rt_types.h"
+#include "layer001/rt_comparison.h"
 #include "layer001/rt_hash.h"
-#include "layer002/rt_comparison.h"
 #include "layer003/rt_heap.h"
 #include "layer004/rt_array.h"
 

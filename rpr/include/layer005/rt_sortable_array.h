@@ -2,7 +2,7 @@
 #define RT_SORTABLE_ARRAY_H
 
 #include "layer000/rt_types.h"
-#include "layer002/rt_comparison.h"
+#include "layer001/rt_comparison.h"
 #include "layer004/rt_array.h"
 
 struct rt_sortable_array_header {
