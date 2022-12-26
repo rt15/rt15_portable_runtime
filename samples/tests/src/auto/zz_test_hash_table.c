@@ -164,7 +164,7 @@ static rt_s zz_test_hash_table_do(struct rt_heap *heap)
 	struct zz_test_hash_table_header *test_header;
 	rt_s ret;
 
-	if (!rt_hash_table_create(&hash_table, &zz_test_hash_table_hash_callback, &rt_comparison_default_with_size_callback, &context_value, 4, sizeof(struct zz_test_hash_table_header), heap)) goto error;
+	if (!rt_hash_table_create(&hash_table, &zz_test_hash_table_hash_callback, &rt_char8_comparison_with_size_callback, &context_value, 4, sizeof(struct zz_test_hash_table_header), heap)) goto error;
 
 	header = RT_HASH_TABLE_GET_HEADER(hash_table);
 	test_header = RT_HASH_TABLE_GET_CUSTOM_HEADER(hash_table, header);

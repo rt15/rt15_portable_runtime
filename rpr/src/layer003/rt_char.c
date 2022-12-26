@@ -6,6 +6,7 @@
 /* Copy to rt_char8.h, rt_char8.c, zz_test_char8.c. */
 /* Remove these instructions from rt_char8.c. */
 /* Replace rt_char by rt_char8 (matching case but not whole word). */
+/* Replace rt_uchar by rt_uchar8 (matching case and whole word). */
 /* Replace test_char by test_char8 (matching case but not whole word). */
 /* Replace RT_CHAR by RT_CHAR8 (matching case but not whole word). */
 /* Replace RT_MEMORY_SET_CHAR by RT_MEMORY_SET. */
@@ -30,7 +31,7 @@ rt_n rt_char_compare(const rt_char *str1, const rt_char *str2)
 		str1++;
 		str2++;
 	}
-	return *(rt_uchar8*)str1 - *(rt_uchar8*)str2;
+	return *(rt_uchar*)str1 - *(rt_uchar*)str2;
 }
 
 rt_s rt_char_append(const rt_char *suffix, rt_un suffix_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
@@ -821,4 +822,42 @@ free:
 error:
 	ret = RT_FAILED;
 	goto free;
+}
+
+rt_s rt_char_comparison_callback(const void *item1, const void *item2, RT_UNUSED void *context, rt_n *comparison_result)
+{
+	const rt_uchar *str1 = (rt_uchar*)item1;
+	const rt_uchar *str2 = (rt_uchar*)item2;
+
+	while (*str1 && (*str1 == *str2)) {
+		str1++;
+		str2++;
+	}
+	*comparison_result = *str1 - *str2;
+	return RT_OK;
+}
+
+rt_s rt_char_comparison_with_size_callback(const void *item1, rt_un item1_size, const void *item2, rt_un item2_size, RT_UNUSED void *context, rt_n *comparison_result)
+{
+	const rt_uchar *str1 = (rt_uchar*)item1;
+	const rt_uchar *str2 = (rt_uchar*)item2;
+	rt_un smaller_size = (item1_size <= item2_size) ? item1_size : item2_size;
+	rt_un i;
+
+	for (i = 0; i < smaller_size; i++) {
+		if (str1[i] != str2[i])
+			break;
+	}
+	if (i == smaller_size) {
+		if (item1_size > smaller_size) {
+			*comparison_result = str1[i];
+		} else if (item2_size > smaller_size) {
+			*comparison_result = -str2[i];
+		} else {
+			*comparison_result = 0;
+		}
+	} else {
+		*comparison_result = str1[i] - str2[i];
+	}
+	return RT_OK;
 }

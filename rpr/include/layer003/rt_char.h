@@ -209,4 +209,14 @@ rt_s rt_char_replace(const rt_char *str, rt_un str_size,
 		     const rt_char *replacement, rt_un replacement_size,
 		     rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
+/**
+ * Simple <tt>rt_comparison_callback_t</tt> implementation for <tt>rt_char*</tt> pointers.
+ */
+rt_s rt_char_comparison_callback(const void *item1, const void *item2, void *context, rt_n *comparison_result);
+
+/**
+ * Simple <tt>rt_comparison_with_size_callback_t</tt> implementation for <tt>rt_char*</tt> pointers.
+ */
+rt_s rt_char_comparison_with_size_callback(const void *item1, rt_un item1_size, const void *item2, rt_un item2_size, void *context, rt_n *comparison_result);
+
 #endif /* RT_CHAR_H */

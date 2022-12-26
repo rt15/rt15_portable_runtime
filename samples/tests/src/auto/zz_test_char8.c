@@ -1089,6 +1089,52 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_char8_comparison_callback_do(const rt_char8 *str1, const rt_char8 *str2, rt_n expected)
+{
+	rt_n comparison_result;
+	rt_s ret;
+
+	comparison_result = 99;
+	if (!rt_char8_comparison_callback(str1, str2, RT_NULL, &comparison_result)) goto error;
+	if (comparison_result != expected) goto error;
+
+	comparison_result = 99;
+	if (!rt_char8_comparison_with_size_callback(str1, rt_char8_get_size(str1), str2, rt_char8_get_size(str2), RT_NULL, &comparison_result)) goto error;
+	if (comparison_result != expected) goto error;
+
+	comparison_result = 99;
+	if (!rt_char8_comparison_callback(str2, str1, RT_NULL, &comparison_result)) goto error;
+	if (comparison_result != -expected) goto error;
+
+	comparison_result = 99;
+	if (!rt_char8_comparison_with_size_callback(str2, rt_char8_get_size(str2), str1, rt_char8_get_size(str1), RT_NULL, &comparison_result)) goto error;
+	if (comparison_result != -expected) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_comparison_callback()
+{
+	rt_s ret;
+	if (!zz_test_char8_comparison_callback_do("Foo", "Foo", 0))     goto error;
+	if (!zz_test_char8_comparison_callback_do("a",   "b",   -1))    goto error;
+	if (!zz_test_char8_comparison_callback_do("A",   "a",   -0x20)) goto error;
+	if (!zz_test_char8_comparison_callback_do("",    "",    0))     goto error;
+	if (!zz_test_char8_comparison_callback_do("a",   "",    97))    goto error;
+	if (!zz_test_char8_comparison_callback_do("ab",  "a",   98))    goto error;
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s zz_test_char8()
 {
 	rt_s ret;
@@ -1116,6 +1162,7 @@ rt_s zz_test_char8()
 	if (!zz_test_char8_count_occurrences()) goto error;
 	if (!zz_test_char8_concat()) goto error;
 	if (!zz_test_char8_replace()) goto error;
+	if (!zz_test_char8_comparison_callback()) goto error;
 
 	ret = RT_OK;
 free:
