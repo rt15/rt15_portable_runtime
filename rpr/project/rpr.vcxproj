@@ -63,6 +63,7 @@
     <ClCompile Include="..\src\layer005\rt_sortable_array.c" />
     <ClCompile Include="..\src\layer005\rt_temp_file.c" />
     <ClCompile Include="..\src\layer006\rt_error_message.c" />
+    <ClCompile Include="..\src\layer006\rt_properties.c" />
     <ClCompile Include="..\src\layer006\rt_socket.c" />
     <ClCompile Include="..\src\layer007\rt_process.c" />
     <ClCompile Include="..\src\layer007\rt_select.c" />
@@ -121,6 +122,7 @@
     <ClInclude Include="..\include\layer005\rt_sortable_array.h" />
     <ClInclude Include="..\include\layer005\rt_temp_file.h" />
     <ClInclude Include="..\include\layer006\rt_error_message.h" />
+    <ClInclude Include="..\include\layer006\rt_properties.h" />
     <ClInclude Include="..\include\layer006\rt_socket.h" />
     <ClInclude Include="..\include\layer007\rt_process.h" />
     <ClInclude Include="..\include\layer007\rt_select.h" />

@@ -48,6 +48,7 @@
     <ClCompile Include="..\src\auto\zz_test_os_version.c" />
     <ClCompile Include="..\src\auto\zz_test_pipe.c" />
     <ClCompile Include="..\src\auto\zz_test_process.c" />
+    <ClCompile Include="..\src\auto\zz_test_properties.c" />
     <ClCompile Include="..\src\auto\zz_test_quick_sort.c" />
     <ClCompile Include="..\src\auto\zz_test_random.c" />
     <ClCompile Include="..\src\auto\zz_test_select.c" />

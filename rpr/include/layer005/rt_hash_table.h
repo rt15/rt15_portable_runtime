@@ -41,6 +41,8 @@ struct rt_hash_table_entry {
 };
 
 /**
+ * Create an empty hashtable with given initial capacity.
+ *
  * <p>
  * Do not forget to call <tt>rt_hash_table_free</tt> once you are done with the hash table.
  * </p>
@@ -51,6 +53,8 @@ struct rt_hash_table_entry {
 rt_s rt_hash_table_create(struct rt_hash_table_entry **hash_table, rt_hash_callback_t hash_callback, rt_comparison_with_size_callback_t comparison_callback, void *context, rt_un initial_capacity, rt_un header_size, struct rt_heap *heap);
 
 /**
+ * Add or set the entry of given <tt>key</tt> with associated given <tt>value</tt>.
+ *
  * <p>
  * If an entry with given <tt>key</tt> already exists, then the existing value is replaced by <tt>value</tt>.
  * </p>
@@ -60,12 +64,14 @@ rt_s rt_hash_table_create(struct rt_hash_table_entry **hash_table, rt_hash_callb
 rt_s rt_hash_table_set(struct rt_hash_table_entry **hash_table, const void *key, rt_un key_size, const void *value, void **existing_value);
 
 /**
+ * Retrieve the value for given <tt>key</tt>.
  *
  * @param value Will receive RT_NULL if the entry is not found.
  */
 rt_s rt_hash_table_get(struct rt_hash_table_entry *hash_table, const void *key, rt_un key_size, void **value);
 
 /**
+ * Delete the entry with given <tt>key</tt>.
  *
  * <p>
  * Does nothing if <tt>key</tt> is not found in the hash table.

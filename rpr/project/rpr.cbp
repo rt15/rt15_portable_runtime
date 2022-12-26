@@ -126,6 +126,7 @@
 		<Unit filename="../include/layer005/rt_sortable_array.h" />
 		<Unit filename="../include/layer005/rt_temp_file.h" />
 		<Unit filename="../include/layer006/rt_error_message.h" />
+		<Unit filename="../include/layer006/rt_properties.h" />
 		<Unit filename="../include/layer006/rt_socket.h" />
 		<Unit filename="../include/layer007/rt_process.h" />
 		<Unit filename="../include/layer007/rt_select.h" />
@@ -262,6 +263,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer006/rt_error_message.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer006/rt_properties.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer006/rt_socket.c">

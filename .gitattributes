@@ -6,6 +6,7 @@
 *.c text eol=lf
 *.h text eol=lf
 *.workspace text eol=lf
+*.properties eol=lf
 
 # Text files using CRLF:
 *.bat text eol=crlf

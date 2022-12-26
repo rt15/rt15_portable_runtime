@@ -49,6 +49,7 @@ rt_s zz_test_sortable_array();
 
 /* Layer 006. */
 rt_s zz_test_error_message();
+rt_s zz_test_properties();
 rt_s zz_test_socket();
 
 /* Layer 007. */
@@ -119,6 +120,7 @@ rt_s zz_auto_tests()
 
 	/* Layer 006. */
 	if (!zz_test_error_message()) goto error;
+	if (!zz_test_properties()) goto error;
 	if (!zz_test_socket()) goto error;
 
 	/* Layer 007. */
