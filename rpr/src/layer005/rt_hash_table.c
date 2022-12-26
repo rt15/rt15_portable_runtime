@@ -234,6 +234,93 @@ error:
 	goto free;
 }
 
+rt_s rt_hash_table_delete(struct rt_hash_table_entry **hash_table, const rt_char8 *key, rt_un key_size, void **existing_value)
+{
+	struct rt_hash_table_header *header;
+	rt_un array_size;
+	rt_un full_hash;
+	rt_un delete_index;
+	rt_un index;
+	rt_un preferred_index;
+	struct rt_hash_table_entry *delete_entry;
+	struct rt_hash_table_entry *entry;
+	rt_n comparison_result;
+	rt_s ret;
+
+	if (existing_value)
+		*existing_value = RT_NULL;
+
+	header = RT_HASH_TABLE_GET_HEADER(*hash_table);
+	array_size = header->array_header.size;
+
+	if (!header->hash_callback(key, key_size, header->context, &full_hash))
+		goto error;
+
+	delete_index = (full_hash & (array_size - 1));
+	delete_entry = &(*hash_table)[delete_index];
+	while (delete_entry->key) {
+		if (delete_entry->key_hash == full_hash) {
+			if (!header->comparison_callback(delete_entry->key, delete_entry->key_size, key, key_size, header->context, &comparison_result))
+				goto error;
+			if (!comparison_result) {
+
+				/* We found the item to delete. */
+
+				if (existing_value)
+					*existing_value = (void*)delete_entry->value;
+
+				/* Delete the entry, keeping linear probing functional. */
+				index = delete_index;
+				while (RT_TRUE) {
+					index = index + 1;
+					if (index == array_size)
+						index = 0;
+
+					entry = &(*hash_table)[index];
+					if (!entry->key) {
+						/* We found an empty entry. */
+						break;
+					}
+					preferred_index = (entry->key_hash & (array_size - 1));
+
+					/* Is entry at index (with preferred index preferred_index) invalidly positioned? */
+					if ((index > delete_index && (preferred_index <= delete_index || preferred_index > index)) ||
+					    (index < delete_index && (preferred_index <= delete_index && preferred_index > index))) {
+
+						/* Replace the entry at delete_index by the one at index. */
+						delete_entry = &(*hash_table)[delete_index];
+						RT_MEMORY_COPY(entry, delete_entry, sizeof(struct rt_hash_table_entry));
+
+						/* The entry we just moved is now the one to delete. */
+						delete_index = index;
+					}
+
+				}
+
+				/* Mark the entry to delete as deleted. */
+				delete_entry = &(*hash_table)[delete_index];
+				delete_entry->key = RT_NULL;
+				header->size--;
+
+				/* We found the record. */
+				break;
+			}
+		}
+		delete_index++;
+		if (delete_index == array_size)
+			delete_index = 0;
+		delete_entry = &(*hash_table)[delete_index];
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s rt_hash_table_free(struct rt_hash_table_entry **hash_table)
 {
 	return rt_array_free((void**)hash_table);

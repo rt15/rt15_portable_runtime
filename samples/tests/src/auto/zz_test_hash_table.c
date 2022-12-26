@@ -156,6 +156,24 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_hash_table_delete(struct rt_hash_table_entry **hash_table, const rt_char8 *key, const rt_char8 *expected_existing_value)
+{
+	rt_un key_size = rt_char8_get_size(key);
+	rt_char8 *existing_value;
+	rt_s ret;
+
+	if (!rt_hash_table_delete(hash_table, key, key_size, (void**)&existing_value)) goto error;
+	if (!zz_char8_equals_with_nulls(existing_value, expected_existing_value)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 static rt_s zz_test_hash_table_do(struct rt_heap *heap)
 {
 	struct rt_hash_table_entry *hash_table = RT_NULL;
@@ -179,24 +197,73 @@ static rt_s zz_test_hash_table_do(struct rt_heap *heap)
 	if (!zz_test_hash_table_set(&hash_table, "foo1", "FOO1", RT_NULL)) goto error;
 	if (!zz_test_hash_table_check(hash_table, 2, 4, heap)) goto error;
 
-	if (!zz_test_hash_table_set(&hash_table, "bar", "BAR", RT_NULL)) goto error;
+	if (!zz_test_hash_table_set(&hash_table, "a", "A", RT_NULL)) goto error;
 	if (!zz_test_hash_table_check(hash_table, 3, 4, heap)) goto error;
 
-	if (!zz_test_hash_table_set(&hash_table, "bar1", "BAR1", RT_NULL)) goto error;
+	if (!zz_test_hash_table_set(&hash_table, "a1", "A1", RT_NULL)) goto error;
 	if (!zz_test_hash_table_check(hash_table, 4, 8, heap)) goto error;
+
+	if (!zz_test_hash_table_set(&hash_table, "foo2", "FOO2", RT_NULL)) goto error;
+	if (!zz_test_hash_table_check(hash_table, 5, 8, heap)) goto error;
 
 	if (!zz_test_hash_table_display(hash_table)) goto error;
 
 	if (!zz_test_hash_table_get(hash_table, "foo", "FOO")) goto error;
 	if (!zz_test_hash_table_get(hash_table, "foo1", "FOO1")) goto error;
-	if (!zz_test_hash_table_get(hash_table, "bar", "BAR")) goto error;
-	if (!zz_test_hash_table_get(hash_table, "bar1", "BAR1")) goto error;
+	if (!zz_test_hash_table_get(hash_table, "foo2", "FOO2")) goto error;
+	if (!zz_test_hash_table_get(hash_table, "a", "A")) goto error;
+	if (!zz_test_hash_table_get(hash_table, "a1", "A1")) goto error;
 
 	/* Search non-existing item. */
 	if (!zz_test_hash_table_get(hash_table, "team", RT_NULL)) goto error;
 
 	/* Search non-existing item with full hash collision. */
-	if (!zz_test_hash_table_get(hash_table, "foo3", RT_NULL)) goto error;
+	if (!zz_test_hash_table_get(hash_table, "fooXXX", RT_NULL)) goto error;
+
+	/* Delete non-existing item. */
+	if (!zz_test_hash_table_delete(&hash_table, "team", RT_NULL)) goto error;
+
+	/* Delete non-existing item with full hash collision. */
+	if (!zz_test_hash_table_delete(&hash_table, "fooXXX", RT_NULL)) goto error;
+
+	/* Check that nothing was deleted. */
+	if (!zz_test_hash_table_check(hash_table, 5, 8, heap)) goto error;
+
+	/* Test delete. */
+	if (!zz_test_hash_table_delete(&hash_table, "foo1", "FOO1")) goto error;
+	if (!zz_test_hash_table_check(hash_table, 4, 8, heap)) goto error;
+	if (!zz_test_hash_table_get(hash_table, "foo", "FOO")) goto error;
+	if (!zz_test_hash_table_get(hash_table, "foo1", RT_NULL)) goto error;
+	if (!zz_test_hash_table_get(hash_table, "foo2", "FOO2")) goto error;
+	if (!zz_test_hash_table_get(hash_table, "a", "A")) goto error;
+	if (!zz_test_hash_table_get(hash_table, "a1", "A1")) goto error;
+
+	/* Test delete on another entry. */
+	if (!zz_test_hash_table_delete(&hash_table, "foo", "FOO")) goto error;
+	if (!zz_test_hash_table_check(hash_table, 3, 8, heap)) goto error;
+	if (!zz_test_hash_table_get(hash_table, "foo", RT_NULL)) goto error;
+	if (!zz_test_hash_table_get(hash_table, "foo1", RT_NULL)) goto error;
+	if (!zz_test_hash_table_get(hash_table, "foo2", "FOO2")) goto error;
+	if (!zz_test_hash_table_get(hash_table, "a", "A")) goto error;
+	if (!zz_test_hash_table_get(hash_table, "a1", "A1")) goto error;
+
+	/* Test delete on another entry. */
+	if (!zz_test_hash_table_delete(&hash_table, "a", "A")) goto error;
+	if (!zz_test_hash_table_check(hash_table, 2, 8, heap)) goto error;
+	if (!zz_test_hash_table_get(hash_table, "foo", RT_NULL)) goto error;
+	if (!zz_test_hash_table_get(hash_table, "foo1", RT_NULL)) goto error;
+	if (!zz_test_hash_table_get(hash_table, "foo2", "FOO2")) goto error;
+	if (!zz_test_hash_table_get(hash_table, "a", RT_NULL)) goto error;
+	if (!zz_test_hash_table_get(hash_table, "a1", "A1")) goto error;
+
+	/* Test delete on another entry. */
+	if (!zz_test_hash_table_delete(&hash_table, "a1", "A1")) goto error;
+	if (!zz_test_hash_table_check(hash_table, 1, 8, heap)) goto error;
+	if (!zz_test_hash_table_get(hash_table, "foo", RT_NULL)) goto error;
+	if (!zz_test_hash_table_get(hash_table, "foo1", RT_NULL)) goto error;
+	if (!zz_test_hash_table_get(hash_table, "foo2", "FOO2")) goto error;
+	if (!zz_test_hash_table_get(hash_table, "a", RT_NULL)) goto error;
+	if (!zz_test_hash_table_get(hash_table, "a1", RT_NULL)) goto error;
 
 	ret = RT_OK;
 free:
