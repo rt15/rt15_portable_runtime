@@ -148,9 +148,6 @@
     <ClCompile Include="..\src\layer003\rt_quick_sort.c">
       <Filter>src\layer003</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\layer002\rt_comparison.c">
-      <Filter>src\layer002</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\layer005\rt_hash_table.c">
       <Filter>src\layer005</Filter>
     </ClCompile>

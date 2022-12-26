@@ -141,9 +141,6 @@
 		<Unit filename="../src/layer002/rt_chrono.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/layer002/rt_comparison.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/layer002/rt_critical_section.c">
 			<Option compilerVar="CC" />
 		</Unit>

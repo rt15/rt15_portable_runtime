@@ -17,8 +17,4 @@ typedef rt_s (*rt_comparison_callback_t)(const void *item1, const void *item2, v
 
 typedef rt_s (*rt_comparison_with_size_callback_t)(const void *item1, rt_un item1_size, const void *item2, rt_un item2_size, void *context, rt_n *comparison_result);
 
-rt_s rt_comparison_default_callback(const void *item1, const void *item2, void *context, rt_n *comparison_result);
-
-rt_s rt_comparison_default_with_size_callback(const void *item1, rt_un item1_size, const void *item2, rt_un item2_size, void *context, rt_n *comparison_result);
-
 #endif /* RT_COMPARISON_H */
