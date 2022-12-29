@@ -1145,7 +1145,7 @@ static rt_s zz_test_char8_hash_do(const rt_char8 *data, rt_un expected)
 	if (hash != expected) goto error;
 
 	hash = 99;
-	if (!rt_char8_hash_default_callback(data, data_size, RT_NULL, &hash)) goto error;
+	if (!rt_char8_hash_callback(data, data_size, RT_NULL, &hash)) goto error;
 	if (hash != expected) goto error;
 
 	ret = RT_OK;

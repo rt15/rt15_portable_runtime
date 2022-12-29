@@ -239,6 +239,6 @@ rt_un rt_char8_hash(const void *data, rt_un data_size);
  *
  * @param data_size Size of <tt>data</tt>, in <tt>rt_char8</tt>.
  */
-rt_s rt_char8_hash_default_callback(const void *data, rt_un data_size, void *context, rt_un *hash);
+rt_s rt_char8_hash_callback(const void *data, rt_un data_size, void *context, rt_un *hash);
 
 #endif /* RT_CHAR8_H */

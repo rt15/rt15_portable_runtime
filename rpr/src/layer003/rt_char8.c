@@ -866,7 +866,7 @@ rt_un rt_char8_hash(const void *data, rt_un data_size)
 	return ret;
 }
 
-rt_s rt_char8_hash_default_callback(const void *data, rt_un data_size, RT_UNUSED void *context, rt_un *hash)
+rt_s rt_char8_hash_callback(const void *data, rt_un data_size, RT_UNUSED void *context, rt_un *hash)
 {
 	rt_char8 *chars = (rt_char8*)data;
 	rt_un local_hash = 14695981039346656037ull;
