@@ -122,7 +122,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_hash_table_set(struct rt_hash_table_entry **hash_table, const rt_char8 *key, const rt_char8 *value, const rt_char8 *expected_existing_value)
+static rt_s zz_test_hash_table_set(struct rt_hash_table_entry **hash_table, const void *key, const rt_char8 *value, const rt_char8 *expected_existing_value)
 {
 	rt_un key_size = rt_char8_get_size(key);
 	rt_char8 *existing_value;
@@ -140,7 +140,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_hash_table_get(struct rt_hash_table_entry *hash_table, const rt_char8 *key, const rt_char8 *expected)
+static rt_s zz_test_hash_table_get(struct rt_hash_table_entry *hash_table, const void *key, const rt_char8 *expected)
 {
 	rt_char8 *value;
 	rt_s ret;
@@ -157,7 +157,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_hash_table_delete(struct rt_hash_table_entry **hash_table, const rt_char8 *key, const rt_char8 *expected_existing_value)
+static rt_s zz_test_hash_table_delete(struct rt_hash_table_entry **hash_table, const void *key, const rt_char8 *expected_existing_value)
 {
 	rt_un key_size = rt_char8_get_size(key);
 	rt_char8 *existing_value;

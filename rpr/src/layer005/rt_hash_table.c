@@ -120,7 +120,7 @@ error:
 	goto free;
 }
 
-rt_s rt_hash_table_set(struct rt_hash_table_entry **hash_table, const rt_char8 *key, rt_un key_size, const void *value, void **existing_value)
+rt_s rt_hash_table_set(struct rt_hash_table_entry **hash_table, const void *key, rt_un key_size, const void *value, void **existing_value)
 {
 	struct rt_hash_table_header *header;
 	rt_un array_size;
@@ -190,7 +190,7 @@ error:
 	goto free;
 }
 
-rt_s rt_hash_table_get(struct rt_hash_table_entry *hash_table, const rt_char8 *key, rt_un key_size, void **value)
+rt_s rt_hash_table_get(struct rt_hash_table_entry *hash_table, const void *key, rt_un key_size, void **value)
 {
 	struct rt_hash_table_header *header;
 	rt_un array_size;
@@ -234,7 +234,7 @@ error:
 	goto free;
 }
 
-rt_s rt_hash_table_delete(struct rt_hash_table_entry **hash_table, const rt_char8 *key, rt_un key_size, void **existing_value)
+rt_s rt_hash_table_delete(struct rt_hash_table_entry **hash_table, const void *key, rt_un key_size, void **existing_value)
 {
 	struct rt_hash_table_header *header;
 	rt_un array_size;

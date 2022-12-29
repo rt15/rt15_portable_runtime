@@ -34,10 +34,10 @@ struct rt_hash_table_header {
 };
 
 struct rt_hash_table_entry {
-	rt_un key_hash;      /* Full hash of the key.           */
-	const rt_char8 *key; /* If RT_NULL, the entry is empty. */
-	rt_un key_size;      /* Key size, used to compare keys. */
-	const void *value;   /* Value associated with the key.  */
+	rt_un key_hash;    /* Full hash of the key.           */
+	const void *key;   /* If RT_NULL, the entry is empty. */
+	rt_un key_size;    /* Key size, used to compare keys. */
+	const void *value; /* Value associated with the key.  */
 };
 
 /**
@@ -57,13 +57,13 @@ rt_s rt_hash_table_create(struct rt_hash_table_entry **hash_table, rt_hash_callb
  *
  * @param existing_value Out parameter. If not RT_NULL, receives the existing value if the key was already used.
  */
-rt_s rt_hash_table_set(struct rt_hash_table_entry **hash_table, const rt_char8 *key, rt_un key_size, const void *value, void **existing_value);
+rt_s rt_hash_table_set(struct rt_hash_table_entry **hash_table, const void *key, rt_un key_size, const void *value, void **existing_value);
 
 /**
  *
  * @param value Will receive RT_NULL if the entry is not found.
  */
-rt_s rt_hash_table_get(struct rt_hash_table_entry *hash_table, const rt_char8 *key, rt_un key_size, void **value);
+rt_s rt_hash_table_get(struct rt_hash_table_entry *hash_table, const void *key, rt_un key_size, void **value);
 
 /**
  *
@@ -73,7 +73,7 @@ rt_s rt_hash_table_get(struct rt_hash_table_entry *hash_table, const rt_char8 *k
  *
  * @param existing_value Out parameter. If not RT_NULL, receives the existing value if the key was used.
  */
-rt_s rt_hash_table_delete(struct rt_hash_table_entry **hash_table, const rt_char8 *key, rt_un key_size, void **existing_value);
+rt_s rt_hash_table_delete(struct rt_hash_table_entry **hash_table, const void *key, rt_un key_size, void **existing_value);
 
 /**
  * Same as <tt>rt_array_free</tt>.
