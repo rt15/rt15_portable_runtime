@@ -219,4 +219,26 @@ rt_s rt_char8_comparison_callback(const void *item1, const void *item2, void *co
  */
 rt_s rt_char8_comparison_with_size_callback(const void *item1, rt_un item1_size, const void *item2, rt_un item2_size, void *context, rt_n *comparison_result);
 
+/**
+ * Compute a non-cryptographic hash of given <tt>data</tt>.
+ *
+ * <p>
+ * The algorithm is FNV-1a.
+ * </p>
+ *
+ * @param data_size Size of <tt>data</tt>, in <tt>rt_char8</tt>.
+ */
+rt_un rt_char8_hash(const void *data, rt_un data_size);
+
+/**
+ * <tt>rt_hash_callback_t</tt> implementation on for <tt>rt_char8</tt>.
+ *
+ * <p>
+ * The algorithm is FNV-1a.
+ * </p>
+ *
+ * @param data_size Size of <tt>data</tt>, in <tt>rt_char8</tt>.
+ */
+rt_s rt_char8_hash_default_callback(const void *data, rt_un data_size, void *context, rt_un *hash);
+
 #endif /* RT_CHAR8_H */

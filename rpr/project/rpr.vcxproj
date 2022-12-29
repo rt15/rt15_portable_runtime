@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\layer001\rt_hash.c" />
     <ClCompile Include="..\src\layer001\rt_memory.c" />
     <ClCompile Include="..\src\layer002\rt_binary_search.c" />
     <ClCompile Include="..\src\layer002\rt_chrono.c" />

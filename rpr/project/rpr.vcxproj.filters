@@ -145,9 +145,6 @@
     <ClCompile Include="..\src\layer005\rt_list.c">
       <Filter>src\layer005</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\layer001\rt_hash.c">
-      <Filter>src\layer001</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\layer005\rt_hash_table.c">
       <Filter>src\layer005</Filter>
     </ClCompile>

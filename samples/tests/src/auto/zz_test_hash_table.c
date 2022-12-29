@@ -8,17 +8,18 @@ struct zz_test_hash_table_header {
 };
 
 /**
- * The hash is the first letter <tt>data</tt>. It allows to create collisions easily.
+ * The hash is the first letter of <tt>data</tt>. It allows to create collisions easily.
  */
-rt_s zz_test_hash_table_hash_callback(const rt_char8 *data, rt_un data_size, void *context, rt_un *hash)
+rt_s zz_test_hash_table_hash_callback(const void *data, rt_un data_size, void *context, rt_un *hash)
 {
+	rt_char8 *chars = (rt_char8*)data;
 	rt_un context_value = *(rt_un*)context;
 	rt_s ret;
 
 	if (context_value != 42) goto error;
 	if (!data_size) goto error;
 
-	*hash = data[0];
+	*hash = chars[0];
 
 	ret = RT_OK;
 free:

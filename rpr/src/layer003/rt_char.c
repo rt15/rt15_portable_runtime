@@ -861,3 +861,33 @@ rt_s rt_char_comparison_with_size_callback(const void *item1, rt_un item1_size, 
 	}
 	return RT_OK;
 }
+
+rt_un rt_char_hash(const void *data, rt_un data_size)
+{
+	rt_char *chars = (rt_char*)data;
+	rt_un i;
+	rt_un ret = 14695981039346656037ull;
+
+	for (i = 0; i < data_size; i++) {
+		ret ^= chars[i];
+		ret *= 1099511628211ull;
+	}
+
+	return ret;
+}
+
+rt_s rt_char_hash_default_callback(const void *data, rt_un data_size, RT_UNUSED void *context, rt_un *hash)
+{
+	rt_char *chars = (rt_char*)data;
+	rt_un local_hash = 14695981039346656037ull;
+	rt_un i;
+
+	for (i = 0; i < data_size; i++) {
+		local_hash ^= chars[i];
+		local_hash *= 1099511628211ull;
+	}
+
+	*hash = local_hash;
+
+	return RT_OK;
+}

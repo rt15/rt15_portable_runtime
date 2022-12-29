@@ -132,9 +132,6 @@
 		<Unit filename="../include/rpr.h" />
 		<Unit filename="../include/rpr_main.h" />
 		<Unit filename="../include/rpr_mem.h" />
-		<Unit filename="../src/layer001/rt_hash.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/layer001/rt_memory.c">
 			<Option compilerVar="CC" />
 		</Unit>
