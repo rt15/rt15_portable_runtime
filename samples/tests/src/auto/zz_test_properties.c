@@ -76,7 +76,7 @@ static rt_s zz_test_properties_do(rt_char *test_resources_dir, struct rt_heap *h
 	/* Check the properties header. */
 	header = RT_PROPERTIES_GET_HEADER(properties);
 	if (!rt_char_equals(header->file_path, rt_char_get_size(header->file_path), properties_file_path, properties_file_path_size)) goto error;
-	if (header->hash_table_header.size != 21) goto error;
+	if (header->hash_table_header.size != 24) goto error;
 	if (header->hash_table_header.array_header.size != 128) goto error;
 
 	/* Check the hash table content. */
@@ -100,6 +100,9 @@ static rt_s zz_test_properties_do(rt_char *test_resources_dir, struct rt_heap *h
 	if (!zz_test_properties_check_value(properties, _R("foo bar"),                     _R("team")))                  goto error;
 	if (!zz_test_properties_check_value(properties, _R("\t"),                          _R("\t")))                    goto error;
 	if (!zz_test_properties_check_value(properties, _R("=equals="),                    _R("=EQUALS=")))              goto error;
+	if (!zz_test_properties_check_value(properties, _R("multi"),                       _R("several lines")))         goto error;
+	if (!zz_test_properties_check_value(properties, _R("some_key"),                    _R("more lines")))            goto error;
+	if (!zz_test_properties_check_value(properties, _R("#other_key"),                  _R("value")))                 goto error;
 	if (!zz_test_properties_check_value(properties, _R("last_key"),                    _R("last_value")))            goto error;
 
 	ret = RT_OK;

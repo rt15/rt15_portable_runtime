@@ -76,6 +76,45 @@ static void rt_properties_remove_character(rt_char *str, rt_un current_index)
 }
 
 /**
+ * Must be called when a line ends with a backslash to remove the end of line and the blanks at the beginning of the next line.
+ *
+ * @param current_index Index of the backslash.
+ */
+static void rt_properties_remove_end_of_line(rt_char *str, rt_un current_index)
+{
+	rt_un source_index = current_index + 1;
+	rt_un end_of_source_index;
+	rt_char current_char;
+	rt_un copy_size;
+
+	/* Search the first non blank/EOF character (can be zero). */
+	while (RT_TRUE) {
+		current_char = str[source_index];
+		if (current_char != _R('\r') &&
+		    current_char != _R('\n') &&
+		    current_char != _R(' ')  &&
+		    current_char != _R('\t') &&
+		    current_char != _R('\f'))
+			break;
+		source_index++;
+	}
+
+	/* Find the next end of line (or the end of the buffer). */
+	end_of_source_index = source_index;
+	while (RT_TRUE) {
+		current_char = str[end_of_source_index];
+		if (current_char == _R('\n') || current_char == _R('\r') || !current_char)
+			break;
+		end_of_source_index++;
+	}
+	if (source_index != end_of_source_index) {
+		copy_size = end_of_source_index - source_index;
+		RT_MEMORY_COPY(&str[source_index], &str[current_index], copy_size * sizeof(rt_char));
+		RT_MEMORY_SET_CHAR(&str[current_index + copy_size], _R('\n'), source_index - current_index);
+	}
+}
+
+/**
  * Read the entries from <tt>str</tt> and put keys and values into <tt>properties</tt>.<br>
  * At this point, <tt>properties</tt> must be a valid hash table.<br>
  * <tt>str</tt> is modified by this function.
@@ -112,6 +151,10 @@ static rt_s rt_properties_create_from_str_do(struct rt_hash_table_entry **proper
 					/* Remove the backslash. */
 					rt_properties_remove_character(str, current_index);
 				}
+				break;
+			case _R('\n'):
+			case _R('\r'):
+				rt_properties_remove_end_of_line(str, current_index);
 				break;
 			default:
 				/* Remove the backslash. */

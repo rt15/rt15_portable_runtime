@@ -11,6 +11,11 @@
  * See wikipedia for a description of the properties file format.
  *
  * <p>
+ * Unlike the specification, a backslash at an end of line means that the line continues at the first non blank/EOL character.<br>
+ * It is due to this implementation that adds end of line characters to fill gaps due to characters removals.
+ * </p>
+ *
+ * <p>
  * Spaces before and after the key are ignored.<br>
  * Spaces before the value are ignored. Trailing spaces are not.
  * </p>
