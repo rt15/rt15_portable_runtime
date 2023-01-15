@@ -1,5 +1,6 @@
 #include "layer006/rt_properties.h"
 
+#include "layer001/rt_memory.h"
 #include "layer002/rt_error.h"
 #include "layer003/rt_char.h"
 #include "layer004/rt_small_file.h"
@@ -56,6 +57,25 @@ error:
 }
 
 /**
+ * Remove a character by copying the rest of the line at its index.
+ */
+static void rt_properties_remove_character(rt_char *str, rt_un current_index)
+{
+	rt_un end_of_line_index = current_index + 1;
+	rt_char current_char;
+
+	/* Find the end of the line (or the end of the buffer). */
+	while (RT_TRUE) {
+		current_char = str[end_of_line_index];
+		if (current_char == _R('\n') || current_char == _R('\r') || !current_char)
+			break;
+		end_of_line_index++;
+	}
+	RT_MEMORY_COPY(&str[current_index + 1], &str[current_index], (end_of_line_index - current_index) * sizeof(rt_char));
+	str[end_of_line_index - 1] = _R('\n');
+}
+
+/**
  * Read the entries from <tt>str</tt> and put keys and values into <tt>properties</tt>.<br>
  * At this point, <tt>properties</tt> must be a valid hash table.<br>
  * <tt>str</tt> is modified by this function.
@@ -65,6 +85,7 @@ static rt_s rt_properties_create_from_str_do(struct rt_hash_table_entry **proper
 	enum rt_properties_parsing_state parsing_state = RT_PROPERTIES_PARSING_STATE_EOL;
 	rt_un current_index = 0;
 	rt_char current_char;
+	rt_char next_char;
 	rt_char *key;
 	rt_char *value;
 	rt_s ret;
@@ -74,143 +95,198 @@ static rt_s rt_properties_create_from_str_do(struct rt_hash_table_entry **proper
 		if (!current_char)
 			break;
 
-		switch (parsing_state) {
-		case RT_PROPERTIES_PARSING_STATE_EOL:
-			/* Manage end of lines, either at the beginning of the file or after a value. */
-			switch (current_char) {
-			case _R('\r'):
-			case _R('\n'):
-			case _R(' '):
-			case _R('\t'):
-			case _R('\f'):
-				/* Skip all blanks until something interesting is found. */
-				str[current_index] = 0;
-				break;
-			case _R(':'):
-			case _R('='):
-				/* Empty key. */
-				str[current_index] = 0;
-				key = &str[current_index];
-				parsing_state = RT_PROPERTIES_PARSING_STATE_AFTER_SEPARATOR;
-				break;
+		if (current_char == _R('\\')) {
+			next_char = str[current_index + 1];
+			switch (next_char) {
 			case _R('!'):
 			case _R('#'):
-				/* Comment. */
-				current_index++;
-				while (RT_TRUE) {
-					current_char = str[current_index];
-					/* We stop ignoring at the first end of line or at the end of the string. */
-					if (current_char == _R('\n') || current_char == _R('\r') || !current_char) {
-						/* The current_index is incremented at the end of the main parsing loop. */
-						current_index--;
-						break;
-					}
+				if (parsing_state == RT_PROPERTIES_PARSING_STATE_EOL) {
+					/* The first character of the key is hash or exclamation mark. */
 					current_index++;
+					key = &str[current_index];
+					parsing_state = RT_PROPERTIES_PARSING_STATE_KEY;
+
+					/* Continue parsing after the hash or exclamation mark. */
+					current_index++;
+				} else {
+					/* Remove the backslash. */
+					rt_properties_remove_character(str, current_index);
 				}
 				break;
 			default:
-				/* We found the first character of a key. */
-				key = &str[current_index];
-				parsing_state = RT_PROPERTIES_PARSING_STATE_KEY;
+				/* Remove the backslash. */
+				rt_properties_remove_character(str, current_index);
+				if (parsing_state == RT_PROPERTIES_PARSING_STATE_EOL) {
+					/* A key starting with a protected character. */
+					key = &str[current_index];
+					parsing_state = RT_PROPERTIES_PARSING_STATE_KEY;
+				} else if (parsing_state == RT_PROPERTIES_PARSING_STATE_BEFORE_SEPARATOR ||
+					   parsing_state == RT_PROPERTIES_PARSING_STATE_AFTER_SEPARATOR) {
+					/* Beginning of the value. */
+					value = &str[current_index];
+					parsing_state = RT_PROPERTIES_PARSING_STATE_VALUE;
+				}
+				switch (next_char) {
+				case _R('r'):
+					str[current_index] = _R('\r');
+					break;
+				case _R('n'):
+					str[current_index] = _R('\n');
+					break;
+				case _R('t'):
+					str[current_index] = _R('\t');
+					break;
+				case _R('f'):
+					str[current_index] = _R('\f');
+					break;
+				}
+				current_index++;
+				break;
 			}
-			break;
-		case RT_PROPERTIES_PARSING_STATE_KEY:
-			/* Manage a key. */
-			switch (current_char) {
-			case _R('='):
-			case _R(':'):
-				str[current_index] = 0;
-				parsing_state = RT_PROPERTIES_PARSING_STATE_AFTER_SEPARATOR;
+		} else {
+
+			switch (parsing_state) {
+			case RT_PROPERTIES_PARSING_STATE_EOL:
+				/* Manage end of lines, either at the beginning of the file or after a value. */
+				switch (current_char) {
+				case _R('\r'):
+				case _R('\n'):
+				case _R(' '):
+				case _R('\t'):
+				case _R('\f'):
+					/* Skip all blanks until something interesting is found. */
+					str[current_index] = 0;
+					break;
+				case _R(':'):
+				case _R('='):
+					/* Empty key. */
+					str[current_index] = 0;
+					key = &str[current_index];
+					parsing_state = RT_PROPERTIES_PARSING_STATE_AFTER_SEPARATOR;
+					break;
+				case _R('!'):
+				case _R('#'):
+					/* Comment. */
+					current_index++;
+					while (RT_TRUE) {
+						current_char = str[current_index];
+						/* We stop ignoring at the first end of line or at the end of the string. */
+						if (current_char == _R('\n') || current_char == _R('\r') || !current_char) {
+							/* The current_index is incremented at the end of the main parsing loop. */
+							current_index--;
+							break;
+						}
+						current_index++;
+					}
+					break;
+				default:
+					/* We found the first character of a key. */
+					key = &str[current_index];
+					parsing_state = RT_PROPERTIES_PARSING_STATE_KEY;
+				}
 				break;
-			case _R(' '):
-			case _R('\t'):
-			case _R('\f'):
-				/* We reached the end of the key. */
-				str[current_index] = 0;
-				parsing_state = RT_PROPERTIES_PARSING_STATE_BEFORE_SEPARATOR;
+			case RT_PROPERTIES_PARSING_STATE_KEY:
+				/* Manage a key. */
+				switch (current_char) {
+				case _R('='):
+				case _R(':'):
+					str[current_index] = 0;
+					parsing_state = RT_PROPERTIES_PARSING_STATE_AFTER_SEPARATOR;
+					break;
+				case _R(' '):
+				case _R('\t'):
+				case _R('\f'):
+					/* We reached the end of the key. */
+					str[current_index] = 0;
+					parsing_state = RT_PROPERTIES_PARSING_STATE_BEFORE_SEPARATOR;
+					break;
+				case _R('\r'):
+				case _R('\n'):
+					/* Key without value. */
+					str[current_index] = 0;
+					value = &str[current_index];
+					if (!rt_hash_table_set(properties, key, rt_char_get_size(key), value, RT_NULL))
+						goto error;
+					parsing_state = RT_PROPERTIES_PARSING_STATE_EOL;
+					break;
+				}
 				break;
-			case _R('\r'):
-			case _R('\n'):
-				/* Key without value. */
-				str[current_index] = 0;
-				value = &str[current_index];
-				if (!rt_hash_table_set(properties, key, rt_char_get_size(key), value, RT_NULL))
-					goto error;
-				parsing_state = RT_PROPERTIES_PARSING_STATE_EOL;
+			case RT_PROPERTIES_PARSING_STATE_BEFORE_SEPARATOR:
+				/* Manage spaces before the key/value separator. */
+				switch (current_char) {
+				case _R('='):
+				case _R(':'):
+					str[current_index] = 0;
+					parsing_state = RT_PROPERTIES_PARSING_STATE_AFTER_SEPARATOR;
+					break;
+				case _R(' '):
+				case _R('\t'):
+				case _R('\f'):
+					/* Continue ignoring spaces after key. */
+					str[current_index] = 0;
+					break;
+				case _R('\r'):
+				case _R('\n'):
+					/* Key without value. */
+					str[current_index] = 0;
+					value = &str[current_index];
+					if (!rt_hash_table_set(properties, key, rt_char_get_size(key), value, RT_NULL))
+						goto error;
+					parsing_state = RT_PROPERTIES_PARSING_STATE_EOL;
+					break;
+				default:
+					/* Beginning of the value. */
+					value = &str[current_index];
+					parsing_state = RT_PROPERTIES_PARSING_STATE_VALUE;
+				}
 				break;
-			}
-			break;
-		case RT_PROPERTIES_PARSING_STATE_BEFORE_SEPARATOR:
-			/* Manage spaces before the key/value separator. */
-			switch (current_char) {
-			case _R('='):
-			case _R(':'):
-				str[current_index] = 0;
-				parsing_state = RT_PROPERTIES_PARSING_STATE_AFTER_SEPARATOR;
+			case RT_PROPERTIES_PARSING_STATE_AFTER_SEPARATOR:
+				/* Manage spaces after the key/value separator. */
+				switch (current_char) {
+				case _R(' '):
+				case _R('\t'):
+				case _R('\f'):
+					/* Skip all spaces after '='. */
+					str[current_index] = 0;
+					break;
+				case _R('\r'):
+				case _R('\n'):
+					/* Key without value. */
+					str[current_index] = 0;
+					value = &str[current_index];
+					if (!rt_hash_table_set(properties, key, rt_char_get_size(key), value, RT_NULL))
+						goto error;
+					parsing_state = RT_PROPERTIES_PARSING_STATE_EOL;
+					break;
+				default:
+					/* Beginning of the value. */
+					value = &str[current_index];
+					parsing_state = RT_PROPERTIES_PARSING_STATE_VALUE;
+				}
 				break;
-			case _R(' '):
-			case _R('\t'):
-			case _R('\f'):
-				/* Continue ignoring spaces after key. */
-				str[current_index] = 0;
-				break;
-			case _R('\r'):
-			case _R('\n'):
-				/* Key without value. */
-				str[current_index] = 0;
-				value = &str[current_index];
-				if (!rt_hash_table_set(properties, key, rt_char_get_size(key), value, RT_NULL))
-					goto error;
-				parsing_state = RT_PROPERTIES_PARSING_STATE_EOL;
+			case RT_PROPERTIES_PARSING_STATE_VALUE:
+				/* Manage value. */
+				switch (current_char) {
+				case _R('\r'):
+				case _R('\n'):
+					/* End of value. */
+					str[current_index] = 0;
+					if (!rt_hash_table_set(properties, key, rt_char_get_size(key), value, RT_NULL))
+						goto error;
+					parsing_state = RT_PROPERTIES_PARSING_STATE_EOL;
+					break;
+				}
 				break;
 			default:
-				/* Beginning of the value. */
-				value = &str[current_index];
-				parsing_state = RT_PROPERTIES_PARSING_STATE_VALUE;
+				rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
+				goto error;
 			}
-			break;
-		case RT_PROPERTIES_PARSING_STATE_AFTER_SEPARATOR:
-			/* Manage spaces after the key/value separator. */
-			switch (current_char) {
-			case _R(' '):
-			case _R('\t'):
-			case _R('\f'):
-				/* Skip all spaces after '='. */
-				str[current_index] = 0;
-				break;
-			case _R('\r'):
-			case _R('\n'):
-				/* Key without value. */
-				str[current_index] = 0;
-				value = &str[current_index];
-				if (!rt_hash_table_set(properties, key, rt_char_get_size(key), value, RT_NULL))
-					goto error;
-				parsing_state = RT_PROPERTIES_PARSING_STATE_EOL;
-				break;
-			default:
-				/* Beginning of the value. */
-				value = &str[current_index];
-				parsing_state = RT_PROPERTIES_PARSING_STATE_VALUE;
-			}
-			break;
-		case RT_PROPERTIES_PARSING_STATE_VALUE:
-			/* Manage value. */
-			switch (current_char) {
-			case _R('\r'):
-			case _R('\n'):
-				/* End of value. */
-				str[current_index] = 0;
-				if (!rt_hash_table_set(properties, key, rt_char_get_size(key), value, RT_NULL))
-					goto error;
-				parsing_state = RT_PROPERTIES_PARSING_STATE_EOL;
-				break;
-			}
-			break;
-		default:
-			rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-			goto error;
+			current_index++;
 		}
-		current_index++;
+	}
+	if (parsing_state == RT_PROPERTIES_PARSING_STATE_VALUE) {
+		if (!rt_hash_table_set(properties, key, rt_char_get_size(key), value, RT_NULL))
+			goto error;
 	}
 
 	ret = RT_OK;
