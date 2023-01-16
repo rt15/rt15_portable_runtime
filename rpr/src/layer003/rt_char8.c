@@ -852,14 +852,13 @@ rt_s rt_char8_comparison_with_size_callback(const void *item1, rt_un item1_size,
 	return RT_OK;
 }
 
-rt_un rt_char8_hash(const void *data, rt_un data_size)
+rt_un rt_char8_hash(const rt_char8 *data, rt_un data_size)
 {
-	rt_char8 *chars = (rt_char8*)data;
 	rt_un i;
 	rt_un ret = 14695981039346656037ull;
 
 	for (i = 0; i < data_size; i++) {
-		ret ^= chars[i];
+		ret ^= data[i];
 		ret *= 1099511628211ull;
 	}
 
