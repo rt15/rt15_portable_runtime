@@ -62,6 +62,7 @@
     <ClCompile Include="..\src\layer005\rt_socket_address.c" />
     <ClCompile Include="..\src\layer005\rt_sortable_array.c" />
     <ClCompile Include="..\src\layer005\rt_temp_file.c" />
+    <ClCompile Include="..\src\layer005\rt_unicode_code_point.c" />
     <ClCompile Include="..\src\layer006\rt_error_message.c" />
     <ClCompile Include="..\src\layer006\rt_properties.c" />
     <ClCompile Include="..\src\layer006\rt_socket.c" />
@@ -121,6 +122,7 @@
     <ClInclude Include="..\include\layer005\rt_socket_address.h" />
     <ClInclude Include="..\include\layer005\rt_sortable_array.h" />
     <ClInclude Include="..\include\layer005\rt_temp_file.h" />
+    <ClInclude Include="..\include\layer005\rt_unicode_code_point.h" />
     <ClInclude Include="..\include\layer006\rt_error_message.h" />
     <ClInclude Include="..\include\layer006\rt_properties.h" />
     <ClInclude Include="..\include\layer006\rt_socket.h" />

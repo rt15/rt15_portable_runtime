@@ -46,6 +46,7 @@ rt_s zz_test_hash_table();
 rt_s zz_test_list();
 rt_s zz_test_socket_address();
 rt_s zz_test_sortable_array();
+rt_s zz_test_unicode_code_point();
 
 /* Layer 006. */
 rt_s zz_test_error_message();
@@ -117,6 +118,7 @@ rt_s zz_auto_tests()
 	if (!zz_test_list()) goto error;
 	if (!zz_test_socket_address()) goto error;
 	if (!zz_test_sortable_array()) goto error;
+	if (!zz_test_unicode_code_point()) goto error;
 
 	/* Layer 006. */
 	if (!zz_test_error_message()) goto error;

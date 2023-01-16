@@ -125,6 +125,7 @@
 		<Unit filename="../include/layer005/rt_socket_address.h" />
 		<Unit filename="../include/layer005/rt_sortable_array.h" />
 		<Unit filename="../include/layer005/rt_temp_file.h" />
+		<Unit filename="../include/layer005/rt_unicode_code_point.h" />
 		<Unit filename="../include/layer006/rt_error_message.h" />
 		<Unit filename="../include/layer006/rt_properties.h" />
 		<Unit filename="../include/layer006/rt_socket.h" />
@@ -260,6 +261,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer005/rt_temp_file.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer005/rt_unicode_code_point.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer006/rt_error_message.c">

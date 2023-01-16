@@ -219,6 +219,9 @@
 		<Unit filename="../src/auto/zz_test_thread.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/auto/zz_test_unicode_code_point.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/auto/zz_test_url.c">
 			<Option compilerVar="CC" />
 		</Unit>

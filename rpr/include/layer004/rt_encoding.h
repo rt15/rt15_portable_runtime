@@ -28,6 +28,9 @@
  * If there are decomposed characters in the input then the call simply fails with errno set to EILSEQ.
  * </p>
  *
+ * <p>
+ * Under Windows, UTF-16 -> UTF-32 and UTF-32 -> UTF-16 conversions currently only support the BMP (code points up to 0xFFFF).
+ * </p>
  */
 
 /**

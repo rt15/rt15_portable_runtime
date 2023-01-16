@@ -55,6 +55,7 @@
 #include "layer005/rt_socket_address.h"
 #include "layer005/rt_sortable_array.h"
 #include "layer005/rt_temp_file.h"
+#include "layer005/rt_unicode_code_point.h"
 
 #include "layer006/rt_error_message.h"
 #include "layer006/rt_properties.h"

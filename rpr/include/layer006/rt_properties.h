@@ -2,7 +2,6 @@
 #define RT_PROPERTIES_H
 
 #include "layer000/rt_types.h"
-
 #include "layer004/rt_encoding.h"
 #include "layer005/rt_hash_table.h"
 
