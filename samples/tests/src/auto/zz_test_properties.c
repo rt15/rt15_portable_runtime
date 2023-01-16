@@ -76,7 +76,7 @@ static rt_s zz_test_properties_do(rt_char *test_resources_dir, struct rt_heap *h
 	/* Check the properties header. */
 	header = RT_PROPERTIES_GET_HEADER(properties);
 	if (!rt_char_equals(header->file_path, rt_char_get_size(header->file_path), properties_file_path, properties_file_path_size)) goto error;
-	if (header->hash_table_header.size != 24) goto error;
+	if (header->hash_table_header.size != 28) goto error;
 	if (header->hash_table_header.array_header.size != 128) goto error;
 
 	/* Check the hash table content. */
@@ -89,6 +89,10 @@ static rt_s zz_test_properties_do(rt_char *test_resources_dir, struct rt_heap *h
 	if (!zz_test_properties_check_value(properties, _R("foo7"),                        _R("FOO7 # Not a comment."))) goto error;
 	if (!zz_test_properties_check_value(properties, _R("#hash"),                       _R("#HASH")))                 goto error;
 	if (!zz_test_properties_check_value(properties, _R("h#hash"),                      _R("H#HASH")))                goto error;
+	if (!zz_test_properties_check_value(properties, _R("character1"),                  _R("M")))                     goto error;
+	if (!zz_test_properties_check_value(properties, _R("character2"),                  _R("MfooM")))                 goto error;
+	if (!zz_test_properties_check_value(properties, _R("character3"),                  _R("Mfoo")))                  goto error;
+	if (!zz_test_properties_check_value(properties, _R("character4"),                  _R("MM")))                    goto error;
 	if (!zz_test_properties_check_value(properties, _R("key"),                         _R("not_key = not_value")))   goto error;
 	if (!zz_test_properties_check_value(properties, _R("space"),                       _R("space ")))                goto error;
 	if (!zz_test_properties_check_value(properties, _R("without_value"),               _R("")))                      goto error;

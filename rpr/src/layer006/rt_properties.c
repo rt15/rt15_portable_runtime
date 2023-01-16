@@ -4,6 +4,7 @@
 #include "layer002/rt_error.h"
 #include "layer003/rt_char.h"
 #include "layer004/rt_small_file.h"
+#include "layer005/rt_unicode_code_point.h"
 
 enum rt_properties_parsing_state {
 	RT_PROPERTIES_PARSING_STATE_EOL,
@@ -76,6 +77,28 @@ static void rt_properties_remove_character(rt_char *str, rt_un current_index)
 }
 
 /**
+ * Remove <tt>characters_count</tt> characters by copying the rest of the line at their index.
+ */
+static void rt_properties_remove_characters(rt_char *str, rt_un current_index, rt_un characters_count)
+{
+	rt_un end_of_line_index = current_index + 1;
+	rt_char current_char;
+	rt_un copy_size;
+
+	/* Find the end of the line (or the end of the buffer). */
+	while (RT_TRUE) {
+		current_char = str[end_of_line_index];
+		if (current_char == _R('\n') || current_char == _R('\r') || !current_char)
+			break;
+		end_of_line_index++;
+	}
+	copy_size = end_of_line_index - (current_index + characters_count);
+	if (copy_size)
+		RT_MEMORY_COPY(&str[current_index + characters_count], &str[current_index], copy_size * sizeof(rt_char));
+	RT_MEMORY_SET_CHAR(&str[current_index + copy_size], _R('\n'), end_of_line_index - (current_index + copy_size));
+}
+
+/**
  * Must be called when a line ends with a backslash to remove the end of line and the blanks at the beginning of the next line.
  *
  * @param current_index Index of the backslash.
@@ -112,6 +135,52 @@ static void rt_properties_remove_end_of_line(rt_char *str, rt_un current_index)
 		RT_MEMORY_COPY(&str[source_index], &str[current_index], copy_size * sizeof(rt_char));
 		RT_MEMORY_SET_CHAR(&str[current_index + copy_size], _R('\n'), source_index - current_index);
 	}
+}
+
+/**
+ * Replaces "\uXXXX" by the correct value.
+ *
+ * <p>
+ * The specification implies that there must be 4 hexa digits after "\u".
+ * </p>
+ */
+static rt_s rt_properties_unicode(rt_char *str, rt_un current_index)
+{
+	rt_char current_char;
+	rt_un code_point;
+	rt_un written_characters;
+	rt_un i;
+	rt_s ret;
+
+	/* Check that the next 4 characters look like hexa. */
+	for (i = current_index + 2; i < current_index + 6; i++) {
+		current_char = str[i];
+		if (current_char < _R('0') ||
+		   (current_char > _R('9') && current_char < _R('A')) ||
+		   (current_char > _R('F') && current_char < _R('a')) ||
+		    current_char > _R('f')) {
+			rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
+			goto error;
+		}
+	}
+
+	/* Deduce the code point. */
+	if (!rt_char_convert_hex_to_un_with_size(&str[current_index + 2], 4, &code_point))
+		goto error;
+
+	/* Overwrite "\uXXXX" with the correct character. */
+	if (!rt_unicode_code_point_encode(code_point, &str[current_index], 6, &written_characters))
+		goto error;
+
+	rt_properties_remove_characters(str, current_index + written_characters, 6 - written_characters);
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
 }
 
 /**
@@ -155,6 +224,10 @@ static rt_s rt_properties_create_from_str_do(struct rt_hash_table_entry **proper
 			case _R('\n'):
 			case _R('\r'):
 				rt_properties_remove_end_of_line(str, current_index);
+				break;
+			case _R('u'):
+				if (!rt_properties_unicode(str, current_index))
+					goto error;
 				break;
 			default:
 				/* Remove the backslash. */
