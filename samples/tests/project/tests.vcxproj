@@ -30,6 +30,7 @@
     <ClCompile Include="..\src\auto\zz_test_command_line_args.c" />
     <ClCompile Include="..\src\auto\zz_test_critical_section.c" />
     <ClCompile Include="..\src\auto\zz_test_encoding.c" />
+    <ClCompile Include="..\src\auto\zz_test_encoding_deducer.c" />
     <ClCompile Include="..\src\auto\zz_test_env_var.c" />
     <ClCompile Include="..\src\auto\zz_test_env_vars.c" />
     <ClCompile Include="..\src\auto\zz_test_error_message.c" />

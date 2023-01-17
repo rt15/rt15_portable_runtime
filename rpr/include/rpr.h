@@ -47,6 +47,7 @@
 #include "layer004/rt_url.h"
 
 #include "layer005/rt_console.h"
+#include "layer005/rt_encoding_deducer.h"
 #include "layer005/rt_env_vars.h"
 #include "layer005/rt_file_system.h"
 #include "layer005/rt_hash_table.h"

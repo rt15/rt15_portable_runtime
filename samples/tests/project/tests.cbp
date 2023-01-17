@@ -129,6 +129,9 @@
 		<Unit filename="../src/auto/zz_test_encoding.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/auto/zz_test_encoding_deducer.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/auto/zz_test_env_var.c">
 			<Option compilerVar="CC" />
 		</Unit>

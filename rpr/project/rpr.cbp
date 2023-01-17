@@ -117,6 +117,7 @@
 		<Unit filename="../include/layer004/rt_static_heap.h" />
 		<Unit filename="../include/layer004/rt_url.h" />
 		<Unit filename="../include/layer005/rt_console.h" />
+		<Unit filename="../include/layer005/rt_encoding_deducer.h" />
 		<Unit filename="../include/layer005/rt_env_vars.h" />
 		<Unit filename="../include/layer005/rt_file_system.h" />
 		<Unit filename="../include/layer005/rt_hash_table.h" />
@@ -237,6 +238,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer005/rt_console.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer005/rt_encoding_deducer.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer005/rt_env_vars.c">

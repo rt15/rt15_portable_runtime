@@ -40,6 +40,7 @@ rt_s zz_test_static_heap();
 rt_s zz_test_url();
 
 /* Layer 005. */
+rt_s zz_test_encoding_deducer();
 rt_s zz_test_env_vars();
 rt_s zz_test_file_system();
 rt_s zz_test_hash_table();
@@ -112,6 +113,7 @@ rt_s zz_auto_tests()
 	if (!zz_test_url()) goto error;
 
 	/* Layer 005. */
+	if (!zz_test_encoding_deducer()) goto error;
 	if (!zz_test_env_vars()) goto error;
 	if (!zz_test_file_system()) goto error;
 	if (!zz_test_hash_table()) goto error;

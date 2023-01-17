@@ -187,6 +187,9 @@
     <ClCompile Include="..\src\auto\zz_test_unicode_code_point.c">
       <Filter>src\auto</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_encoding_deducer.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

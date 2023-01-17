@@ -154,6 +154,9 @@
     <ClCompile Include="..\src\layer005\rt_unicode_code_point.c">
       <Filter>src\layer005</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer005\rt_encoding_deducer.c">
+      <Filter>src\layer005</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -331,6 +334,9 @@
       <Filter>include\layer006</Filter>
     </ClInclude>
     <ClInclude Include="..\include\layer005\rt_unicode_code_point.h">
+      <Filter>include\layer005</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer005\rt_encoding_deducer.h">
       <Filter>include\layer005</Filter>
     </ClInclude>
   </ItemGroup>

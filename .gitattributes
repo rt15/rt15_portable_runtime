@@ -11,3 +11,6 @@
 # Text files using CRLF:
 *.bat text eol=crlf
 *.vcxproj text eol=crlf
+
+# Binary files:
+*.dat binary
