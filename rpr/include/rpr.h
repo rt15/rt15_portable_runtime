@@ -22,6 +22,7 @@
 #include "layer002/rt_slurp.h"
 #include "layer002/rt_virtual_memory.h"
 
+#include "layer003/rt_buffered_input_stream.h"
 #include "layer003/rt_char.h"
 #include "layer003/rt_char8.h"
 #include "layer003/rt_env_var.h"

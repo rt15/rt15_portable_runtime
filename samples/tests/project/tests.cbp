@@ -114,6 +114,9 @@
 		<Unit filename="../src/auto/zz_test_binary_search.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/auto/zz_test_buffered_input_stream.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/auto/zz_test_char.c">
 			<Option compilerVar="CC" />
 		</Unit>

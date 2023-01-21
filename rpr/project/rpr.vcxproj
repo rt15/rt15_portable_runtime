@@ -31,6 +31,7 @@
     <ClCompile Include="..\src\layer002\rt_sleep.c" />
     <ClCompile Include="..\src\layer002\rt_slurp.c" />
     <ClCompile Include="..\src\layer002\rt_virtual_memory.c" />
+    <ClCompile Include="..\src\layer003\rt_buffered_input_stream.c" />
     <ClCompile Include="..\src\layer003\rt_char.c" />
     <ClCompile Include="..\src\layer003\rt_char8.c" />
     <ClCompile Include="..\src\layer003\rt_env_var.c" />
@@ -92,6 +93,7 @@
     <ClInclude Include="..\include\layer002\rt_sleep.h" />
     <ClInclude Include="..\include\layer002\rt_slurp.h" />
     <ClInclude Include="..\include\layer002\rt_virtual_memory.h" />
+    <ClInclude Include="..\include\layer003\rt_buffered_input_stream.h" />
     <ClInclude Include="..\include\layer003\rt_char.h" />
     <ClInclude Include="..\include\layer003\rt_char8.h" />
     <ClInclude Include="..\include\layer003\rt_env_var.h" />

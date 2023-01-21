@@ -5,11 +5,15 @@
 
 /**
  * Retrieve the tmp directory (the one in samples/tests) path.
+ *
+ * @param buffer_size Out parameter.
  */
 rt_s zz_get_tmp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  * Retrieve the test_resources directory (the one in samples/tests) path.
+ *
+ * @param buffer_size Out parameter.
  */
 rt_s zz_get_test_resources_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 

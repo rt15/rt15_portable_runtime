@@ -16,6 +16,7 @@ rt_s zz_test_slurp();
 rt_s zz_test_virtual_memory();
 
 /* Layer 003. */
+rt_s zz_test_buffered_input_stream();
 rt_s zz_test_char();
 rt_s zz_test_char8();
 rt_s zz_test_env_var();
@@ -89,6 +90,7 @@ rt_s zz_auto_tests()
 	if (!zz_test_virtual_memory()) goto error;
 
 	/* Layer 003. */
+	if (!zz_test_buffered_input_stream()) goto error;
 	if (!zz_test_char()) goto error;
 	if (!zz_test_char8()) goto error;
 	if (!zz_test_env_var()) goto error;

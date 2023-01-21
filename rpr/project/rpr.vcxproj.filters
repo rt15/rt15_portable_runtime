@@ -157,6 +157,9 @@
     <ClCompile Include="..\src\layer005\rt_encoding_deducer.c">
       <Filter>src\layer005</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer003\rt_buffered_input_stream.c">
+      <Filter>src\layer003</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -338,6 +341,9 @@
     </ClInclude>
     <ClInclude Include="..\include\layer005\rt_encoding_deducer.h">
       <Filter>include\layer005</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer003\rt_buffered_input_stream.h">
+      <Filter>include\layer003</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
