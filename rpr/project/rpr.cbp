@@ -78,6 +78,7 @@
 		<Unit filename="../include/layer000/rt_types.h" />
 		<Unit filename="../include/layer001/rt_atomic.h" />
 		<Unit filename="../include/layer001/rt_comparison.h" />
+		<Unit filename="../include/layer001/rt_eol.h" />
 		<Unit filename="../include/layer001/rt_hash.h" />
 		<Unit filename="../include/layer001/rt_input_stream.h" />
 		<Unit filename="../include/layer001/rt_memory.h" />
@@ -102,6 +103,7 @@
 		<Unit filename="../include/layer003/rt_file.h" />
 		<Unit filename="../include/layer003/rt_heap.h" />
 		<Unit filename="../include/layer003/rt_pipe.h" />
+		<Unit filename="../include/layer003/rt_read_lines.h" />
 		<Unit filename="../include/layer003/rt_thread.h" />
 		<Unit filename="../include/layer004/rt_address.h" />
 		<Unit filename="../include/layer004/rt_array.h" />
@@ -194,6 +196,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer003/rt_pipe.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer003/rt_read_lines.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer003/rt_thread.c">

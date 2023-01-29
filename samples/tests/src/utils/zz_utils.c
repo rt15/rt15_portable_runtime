@@ -87,6 +87,74 @@ error:
 	goto free;
 }
 
+static rt_s zz_check_same_files_content_do(struct rt_input_stream *input_stream1, struct rt_input_stream *input_stream2)
+{
+	rt_char8 buffer1[RT_CHAR8_HALF_BIG_STRING_SIZE];
+	rt_un bytes_read1;
+	rt_char8 buffer2[RT_CHAR8_HALF_BIG_STRING_SIZE];
+	rt_un bytes_read2;
+	rt_s ret;
+
+	while (RT_TRUE) {
+
+		if (!input_stream1->read(input_stream1, buffer1, RT_CHAR8_HALF_BIG_STRING_SIZE, &bytes_read1)) goto error;
+		if (!input_stream2->read(input_stream2, buffer2, RT_CHAR8_HALF_BIG_STRING_SIZE, &bytes_read2)) goto error;
+
+		if (!rt_char8_equals(buffer1, bytes_read1, buffer2, bytes_read2)) goto error;
+
+		if (!bytes_read1)
+			break;
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s zz_check_same_files_content(const rt_char *file1_path, const rt_char *file2_path)
+{
+	struct rt_file file1;
+	rt_b file1_created = RT_FALSE;
+	struct rt_input_stream *input_stream1;
+	struct rt_file file2;
+	rt_b file2_created = RT_FALSE;
+	struct rt_input_stream *input_stream2;
+	rt_s ret;
+
+	if (!rt_file_create(&file1, file1_path, RT_FILE_MODE_READ)) goto error;
+	file1_created = RT_TRUE;
+
+	input_stream1 = &file1.io_device.input_stream;
+
+	if (!rt_file_create(&file2, file2_path, RT_FILE_MODE_READ)) goto error;
+	file2_created = RT_TRUE;
+
+	input_stream2 = &file2.io_device.input_stream;
+
+	if (!zz_check_same_files_content_do(input_stream1, input_stream2)) goto error;
+
+	ret = RT_OK;
+free:
+	if (file2_created) {
+		file2_created = RT_FALSE;
+		if (!rt_io_device_free(&file2.io_device) && ret)
+			goto error;
+	}
+	if (file1_created) {
+		file1_created = RT_FALSE;
+		if (!rt_io_device_free(&file1.io_device) && ret)
+			goto error;
+	}
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_b zz_char_equals_with_nulls(const rt_char *str1, const rt_char *str2)
 {
 	rt_b ret;

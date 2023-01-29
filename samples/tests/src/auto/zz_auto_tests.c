@@ -24,6 +24,7 @@ rt_s zz_test_fast_initialization();
 rt_s zz_test_file();
 rt_s zz_test_heap();
 rt_s zz_test_pipe();
+rt_s zz_test_read_lines();
 rt_s zz_test_thread();
 
 /* Layer 004. */
@@ -98,6 +99,7 @@ rt_s zz_auto_tests()
 	if (!zz_test_file()) goto error;
 	if (!zz_test_heap()) goto error;
 	if (!zz_test_pipe()) goto error;
+	if (!zz_test_read_lines()) goto error;
 	if (!zz_test_thread()) goto error;
 
 	/* Layer 004. */

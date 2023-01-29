@@ -193,6 +193,9 @@
     <ClCompile Include="..\src\auto\zz_test_buffered_input_stream.c">
       <Filter>src\auto</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_read_lines.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

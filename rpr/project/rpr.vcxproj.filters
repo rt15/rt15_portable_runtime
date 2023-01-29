@@ -160,6 +160,9 @@
     <ClCompile Include="..\src\layer003\rt_buffered_input_stream.c">
       <Filter>src\layer003</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer003\rt_read_lines.c">
+      <Filter>src\layer003</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -343,6 +346,12 @@
       <Filter>include\layer005</Filter>
     </ClInclude>
     <ClInclude Include="..\include\layer003\rt_buffered_input_stream.h">
+      <Filter>include\layer003</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer001\rt_eol.h">
+      <Filter>include\layer001</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer003\rt_read_lines.h">
       <Filter>include\layer003</Filter>
     </ClInclude>
   </ItemGroup>

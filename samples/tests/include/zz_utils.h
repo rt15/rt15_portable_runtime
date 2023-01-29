@@ -29,6 +29,8 @@ rt_s zz_create_file(const rt_char *file_path, const rt_char8 *str);
  */
 rt_s zz_check_file_content(const rt_char *file_path, const rt_char8 *expected);
 
+rt_s zz_check_same_files_content(const rt_char *file1_path, const rt_char *file2_path);
+
 /**
  * Return true if <tt>str1</tt> is equal to <tt>str2</tt> or if they are both null.
  */
