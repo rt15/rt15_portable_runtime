@@ -1,5 +1,7 @@
 #include "layer005/rt_deduce_encoding.h"
 
+#include "layer002/rt_io_device.h"
+
 rt_s rt_deduce_encoding(rt_char8 *data, rt_un data_size, enum rt_encoding *encoding, rt_un *bom_size)
 {
 	rt_uchar8 *unsigned_data = (rt_uchar8*)data;
@@ -176,4 +178,33 @@ rt_s rt_deduce_encoding(rt_char8 *data, rt_un data_size, enum rt_encoding *encod
 
 end:
 	return RT_OK;
+}
+
+rt_s rt_deduce_encoding_with_file(struct rt_file *file, rt_char8 *buffer, rt_un buffer_capacity, enum rt_encoding *encoding, rt_un *bom_size)
+{
+	rt_un64 old_position;
+	rt_un bytes_read;
+	rt_s ret;
+
+	/* Backup the current position */
+	if (!rt_file_get_pointer(file, &old_position)) goto error;
+
+	/* Go to the beginning of the file. */
+	if (!rt_file_set_pointer(file, 0, RT_FILE_POSITION_BEGIN)) goto error;
+
+	/* Read the beginning of the file. */
+	if (!rt_io_device_read(&file->io_device.input_stream, buffer, buffer_capacity, &bytes_read)) goto error;
+
+	if (!rt_deduce_encoding(buffer, bytes_read, encoding, bom_size)) goto error;
+
+	/* Go back to original position. */
+	if (!rt_file_set_pointer(file, old_position, RT_FILE_POSITION_BEGIN)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
 }

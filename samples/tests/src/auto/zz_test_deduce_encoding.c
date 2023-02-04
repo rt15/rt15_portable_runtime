@@ -14,9 +14,10 @@ static rt_s zz_test_deduce_encoding_do(const rt_char *encoding_dir, const rt_cha
 {
 	rt_char file_path[RT_FILE_PATH_SIZE];
 	rt_un file_path_size = rt_char_get_size(encoding_dir);
+	struct rt_file file;
+	rt_b file_created = RT_FALSE;
 	rt_char8 file_buffer[64];
-	rt_char8 *file_output;
-	rt_un file_output_size;
+	rt_un bytes_read;
 	enum rt_encoding encoding;
 	rt_un bom_size;
 	rt_char buffer[64];
@@ -27,18 +28,30 @@ static rt_s zz_test_deduce_encoding_do(const rt_char *encoding_dir, const rt_cha
 	if (!rt_char_copy(encoding_dir, file_path_size, file_path, RT_FILE_PATH_SIZE)) goto error;
 	if (!rt_char_append(file_name, rt_char_get_size(file_name), file_path, RT_FILE_PATH_SIZE, &file_path_size)) goto error;
 
-	if (!rt_small_file_read(file_path, file_buffer, 64, RT_NULL, RT_NULL, &file_output, &file_output_size, RT_NULL)) goto error;
+	if (!rt_file_create(&file, file_path, RT_FILE_MODE_READ)) goto error;
+	file_created = RT_TRUE;
 
-	if (!rt_deduce_encoding(file_output, file_output_size, &encoding, &bom_size)) goto error;
+	if (!rt_deduce_encoding_with_file(&file, file_buffer, 64, &encoding, &bom_size)) goto error;
 	if (encoding != expected_encoding) goto error;
 	if (bom_size != expected_bom_size) goto error;
 
-	if (!rt_encoding_decode(&file_output[bom_size], file_output_size - bom_size, encoding, buffer, 64, RT_NULL, RT_NULL, &output, &output_size, RT_NULL)) goto error;
+	if (!rt_io_device_read(&file.io_device.input_stream, file_buffer, 64, &bytes_read)) goto error;
+
+	if (!rt_deduce_encoding(file_buffer, bytes_read, &encoding, &bom_size)) goto error;
+	if (encoding != expected_encoding) goto error;
+	if (bom_size != expected_bom_size) goto error;
+
+	if (!rt_encoding_decode(&file_buffer[bom_size], bytes_read - bom_size, encoding, buffer, 64, RT_NULL, RT_NULL, &output, &output_size, RT_NULL)) goto error;
 	if (rt_char_get_size(output) != output_size) goto error;
 	if (!rt_char_equals(output, output_size, expected, rt_char_get_size(expected))) goto error;
 
 	ret = RT_OK;
 free:
+	if (file_created) {
+		file_created = RT_FALSE;
+		if (!rt_io_device_free(&file.io_device) && ret)
+			goto error;
+	}
 	return ret;
 error:
 	ret = RT_FAILED;
