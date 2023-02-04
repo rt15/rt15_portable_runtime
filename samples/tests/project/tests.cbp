@@ -129,10 +129,10 @@
 		<Unit filename="../src/auto/zz_test_critical_section.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/auto/zz_test_encoding.c">
+		<Unit filename="../src/auto/zz_test_deduce_encoding.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/auto/zz_test_encoding_deducer.c">
+		<Unit filename="../src/auto/zz_test_encoding.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/auto/zz_test_env_var.c">

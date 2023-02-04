@@ -1,5 +1,5 @@
-#ifndef RT_ENCODING_DEDUCER_H
-#define RT_ENCODING_DEDUCER_H
+#ifndef RT_DEDUCE_ENCODING_H
+#define RT_DEDUCE_ENCODING_H
 
 #include "layer000/rt_types.h"
 #include "layer004/rt_encoding.h"
@@ -38,6 +38,6 @@
  * @param encoding The deduced encoding. Out parameter.
  * @param bom_size The size of the found BOM. Zero if there is none. Out parameter.
  */
-rt_s rt_encoding_deducer_deduce(rt_char8 *data, rt_un data_size, enum rt_encoding *encoding, rt_un *bom_size);
+rt_s rt_deduce_encoding(rt_char8 *data, rt_un data_size, enum rt_encoding *encoding, rt_un *bom_size);
 
-#endif /* RT_ENCODING_DEDUCER_H */
+#endif /* RT_DEDUCE_ENCODING_H */

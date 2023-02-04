@@ -1,6 +1,6 @@
-#include "layer005/rt_encoding_deducer.h"
+#include "layer005/rt_deduce_encoding.h"
 
-rt_s rt_encoding_deducer_deduce(rt_char8 *data, rt_un data_size, enum rt_encoding *encoding, rt_un *bom_size)
+rt_s rt_deduce_encoding(rt_char8 *data, rt_un data_size, enum rt_encoding *encoding, rt_un *bom_size)
 {
 	rt_uchar8 *unsigned_data = (rt_uchar8*)data;
 	rt_b ascii;

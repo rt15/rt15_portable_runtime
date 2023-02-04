@@ -187,13 +187,13 @@
     <ClCompile Include="..\src\auto\zz_test_unicode_code_point.c">
       <Filter>src\auto</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\auto\zz_test_encoding_deducer.c">
-      <Filter>src\auto</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\auto\zz_test_buffered_input_stream.c">
       <Filter>src\auto</Filter>
     </ClCompile>
     <ClCompile Include="..\src\auto\zz_test_read_lines.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_deduce_encoding.c">
       <Filter>src\auto</Filter>
     </ClCompile>
   </ItemGroup>
