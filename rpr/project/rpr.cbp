@@ -85,6 +85,7 @@
 		<Unit filename="../include/layer001/rt_os_headers.h" />
 		<Unit filename="../include/layer001/rt_output_stream.h" />
 		<Unit filename="../include/layer002/rt_binary_search.h" />
+		<Unit filename="../include/layer002/rt_buffered_input_stream.h" />
 		<Unit filename="../include/layer002/rt_chrono.h" />
 		<Unit filename="../include/layer002/rt_critical_section.h" />
 		<Unit filename="../include/layer002/rt_error.h" />
@@ -95,7 +96,6 @@
 		<Unit filename="../include/layer002/rt_sleep.h" />
 		<Unit filename="../include/layer002/rt_slurp.h" />
 		<Unit filename="../include/layer002/rt_virtual_memory.h" />
-		<Unit filename="../include/layer003/rt_buffered_input_stream.h" />
 		<Unit filename="../include/layer003/rt_char.h" />
 		<Unit filename="../include/layer003/rt_char8.h" />
 		<Unit filename="../include/layer003/rt_env_var.h" />
@@ -144,6 +144,9 @@
 		<Unit filename="../src/layer002/rt_binary_search.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/layer002/rt_buffered_input_stream.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/layer002/rt_chrono.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -172,9 +175,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer002/rt_virtual_memory.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer003/rt_buffered_input_stream.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer003/rt_char.c">

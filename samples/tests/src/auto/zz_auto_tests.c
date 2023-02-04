@@ -6,6 +6,7 @@ rt_s zz_test_memory();
 
 /* Layer 002. */
 rt_s zz_test_binary_search();
+rt_s zz_test_buffered_input_stream();
 rt_s zz_test_critical_section();
 rt_s zz_test_event();
 rt_s zz_test_io_device();
@@ -16,7 +17,6 @@ rt_s zz_test_slurp();
 rt_s zz_test_virtual_memory();
 
 /* Layer 003. */
-rt_s zz_test_buffered_input_stream();
 rt_s zz_test_char();
 rt_s zz_test_char8();
 rt_s zz_test_env_var();
@@ -81,6 +81,7 @@ rt_s zz_auto_tests()
 
 	/* Layer 002. */
 	if (!zz_test_binary_search()) goto error;
+	if (!zz_test_buffered_input_stream()) goto error;
 	if (!zz_test_critical_section()) goto error;
 	if (!zz_test_event()) goto error;
 	if (!zz_test_io_device()) goto error;
@@ -91,7 +92,6 @@ rt_s zz_auto_tests()
 	if (!zz_test_virtual_memory()) goto error;
 
 	/* Layer 003. */
-	if (!zz_test_buffered_input_stream()) goto error;
 	if (!zz_test_char()) goto error;
 	if (!zz_test_char8()) goto error;
 	if (!zz_test_env_var()) goto error;
