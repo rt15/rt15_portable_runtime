@@ -105,6 +105,85 @@ error:
 #endif
 }
 
+rt_s rt_io_device_create_from_console_input(struct rt_io_device *io_device)
+{
+#ifdef RT_DEFINE_WINDOWS
+	rt_h handle;
+#else
+	int file_descriptor;
+	rt_char8 *terminal_name;
+	rt_char8 terminal_name_buffer[L_ctermid];
+#endif
+	rt_s ret;
+
+#ifdef RT_DEFINE_WINDOWS
+	handle = CreateFile(_R("CONIN$"),
+			    GENERIC_READ | GENERIC_WRITE,
+			    FILE_SHARE_READ | FILE_SHARE_WRITE,
+			    NULL,
+			    OPEN_EXISTING,
+			    0,
+			    NULL);
+	if (handle == INVALID_HANDLE_VALUE)
+		goto error;
+	rt_io_device_create_from_handle(io_device, handle);
+#else
+	if (ctermid(terminal_name_buffer))
+		terminal_name = terminal_name_buffer;
+	else
+		terminal_name = "/dev/tty";
+	/* This open can fail if the process is attached to gdb. */
+	file_descriptor = open(terminal_name, O_RDONLY | O_CLOEXEC);
+	if (file_descriptor == -1)
+		goto error;
+	rt_io_device_create_from_file_descriptor(io_device, file_descriptor);
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_io_device_create_from_console_output(struct rt_io_device *io_device)
+{
+#ifdef RT_DEFINE_WINDOWS
+	rt_h handle;
+#else
+	int file_descriptor;
+#endif
+	rt_s ret;
+
+#ifdef RT_DEFINE_WINDOWS
+	handle = CreateFile(_R("CONOUT$"),
+			    GENERIC_READ | GENERIC_WRITE,
+			    FILE_SHARE_READ | FILE_SHARE_WRITE,
+			    NULL,
+			    OPEN_EXISTING,
+			    0,
+			    NULL);
+	if (handle == INVALID_HANDLE_VALUE)
+		goto error;
+	rt_io_device_create_from_handle(io_device, handle);
+#else
+	file_descriptor = open("/dev/tty", O_WRONLY | O_CLOEXEC);
+	if (file_descriptor == -1)
+		goto error;
+	rt_io_device_create_from_file_descriptor(io_device, file_descriptor);
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s rt_io_device_read(struct rt_input_stream *input_stream, rt_char8 *buffer, rt_un bytes_to_read, rt_un *bytes_read)
 {
 #ifdef RT_DEFINE_WINDOWS
@@ -251,6 +330,77 @@ rt_s rt_io_device_set_inheritable(struct rt_io_device *io_device, rt_b inheritab
 #endif
 	}
 
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_io_device_is_console(struct rt_io_device *io_device, rt_b *is_console)
+{
+#ifdef RT_DEFINE_WINDOWS
+	rt_h handle = io_device->handle;
+	DWORD file_type;
+#else
+	rt_n32 file_descriptor = io_device->file_descriptor;
+#endif
+	rt_s ret;
+
+#ifdef RT_DEFINE_WINDOWS
+	/* Returns FILE_TYPE_UNKNOWN and set last error different from NO_ERROR in case of error. */
+	file_type = GetFileType(handle);
+	if (file_type == FILE_TYPE_UNKNOWN && GetLastError() != NO_ERROR)
+		goto error;
+
+	*is_console = (file_type == FILE_TYPE_CHAR);
+#else
+	if (isatty(file_descriptor)) {
+		*is_console = RT_TRUE;
+	} else {
+		/* If it is not a terminal, then errno = EINVAL on old kernel and ENOTTY on new ones. */
+		/* If the descriptor is wrong, errno = EBADF. */
+		if (errno == EINVAL || errno == ENOTTY)
+			*is_console = RT_FALSE;
+		else
+			goto error;
+	}
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_io_device_kernel_flush(struct rt_io_device *io_device)
+{
+	rt_b is_console;
+#ifdef RT_DEFINE_WINDOWS
+	rt_h handle = io_device->handle;
+#else
+	rt_n32 file_descriptor = io_device->file_descriptor;
+#endif
+	rt_s ret;
+
+	if (!rt_io_device_is_console(io_device, &is_console))
+		goto error;
+	if (!is_console) {
+#ifdef RT_DEFINE_WINDOWS
+		/* Returns zero and set last error in case of issue. */
+		if (!FlushFileBuffers(handle))
+			goto error;
+#else
+		/* Returns zero on success. Set errno in case of error. */
+		if (fsync(file_descriptor))
+			goto error;
+#endif
+	}
 	ret = RT_OK;
 free:
 	return ret;

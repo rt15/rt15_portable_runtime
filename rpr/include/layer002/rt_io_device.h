@@ -35,9 +35,48 @@ void rt_io_device_create_from_handle(struct rt_io_device *io_device, rt_h handle
 void rt_io_device_create_from_file_descriptor(struct rt_io_device *io_device, rt_n32 file_descriptor);
 #endif
 
+/**
+ * <p>
+ * Do not use <tt>rt_io_device_free</tt> on the created <tt>rt_io_device</tt>.
+ * </p>
+ */
 rt_s rt_io_device_create_from_std_input(struct rt_io_device *io_device);
+
+/**
+ * <p>
+ * Do not use <tt>rt_io_device_free</tt> on the created <tt>rt_io_device</tt>.
+ * </p>
+ */
 rt_s rt_io_device_create_from_std_output(struct rt_io_device *io_device);
+
+/**
+ * <p>
+ * Do not use <tt>rt_io_device_free</tt> on the created <tt>rt_io_device</tt>.
+ * </p>
+ */
 rt_s rt_io_device_create_from_std_error(struct rt_io_device *io_device);
+
+/**
+ * <p>
+ * Use <tt>rt_io_device_free</tt> on the created <tt>rt_io_device</tt> when you are done with it.
+ * </p>
+ *
+ * <p>
+ * Can fail if the process is attached to gdb under Linux.
+ * </p>
+ */
+rt_s rt_io_device_create_from_console_input(struct rt_io_device *io_device);
+
+/**
+ * <p>
+ * Use <tt>rt_io_device_free</tt> on the created <tt>rt_io_device</tt> when you are done with it.
+ * </p>
+ *
+ * <p>
+ * Can fail if the process is attached to gdb under Linux.
+ * </p>
+ */
+rt_s rt_io_device_create_from_console_output(struct rt_io_device *io_device);
 
 /**
  * In most cases, you should not need this function.<br>
@@ -87,6 +126,18 @@ rt_s rt_io_device_is_inheritable(struct rt_io_device *io_device, rt_b *inheritab
  * </p>
  */
 rt_s rt_io_device_set_inheritable(struct rt_io_device *io_device, rt_b inheritable);
+
+/**
+ * Can be used to find out if <tt>io_device</tt> is a console/terminal.
+ */
+rt_s rt_io_device_is_console(struct rt_io_device *io_device, rt_b *is_console);
+
+/**
+ * Write data from kernel cache onto the disk.<br>
+ * Increases the chances for the data to be saved even in case of system crash.<br>
+ * Should be used on files only.
+ */
+rt_s rt_io_device_kernel_flush(struct rt_io_device *io_device);
 
 /**
  * Should be called only with generic devices like files and pipes, not sockets.<br>

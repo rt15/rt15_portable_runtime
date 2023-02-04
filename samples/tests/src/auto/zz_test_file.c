@@ -8,6 +8,9 @@ static rt_s zz_write_simple_file(struct rt_file *file, const rt_char8 *str)
 
 	if (!rt_io_device_write(&file->io_device.output_stream, str, rt_char8_get_size(str))) goto error;
 
+	/* Check rt_io_device_kernel_flush. */
+	if (!rt_io_device_kernel_flush(&file->io_device)) goto error;
+
 	ret = RT_OK;
 free:
 	return ret;
@@ -51,6 +54,7 @@ static rt_s zz_test_simple_file(const rt_char *tmp_dir, rt_un tmp_dir_size)
 {
 	struct rt_file file;
 	rt_b file_created = RT_FALSE;
+	rt_b is_console;
 	rt_char file_path[RT_FILE_PATH_SIZE];
 	rt_un file_path_size;
 	rt_un64 file_size;
@@ -80,6 +84,10 @@ static rt_s zz_test_simple_file(const rt_char *tmp_dir, rt_un tmp_dir_size)
 	/* RT_FILE_MODE_READ_WRITE, existing file. */
 	if (!rt_file_create(&file, file_path, RT_FILE_MODE_READ_WRITE)) goto error;
 	file_created = RT_TRUE;
+
+	/* Check rt_io_device_is_console. */
+	if (!rt_io_device_is_console(&file.io_device, &is_console)) goto error;
+	if (is_console) goto error;
 
 	if (!rt_file_get_pointer(&file, &offset)) goto error;
 	if (offset != 0) goto error;

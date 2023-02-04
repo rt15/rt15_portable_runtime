@@ -375,13 +375,13 @@ error:
 #else
 
 	/* Open source. */
-	source_file_descriptor = open(source_file_path, O_RDONLY);
+	source_file_descriptor = open(source_file_path, O_RDONLY | O_CLOEXEC);
 	if (source_file_descriptor == -1)
 		goto error;
 	source_open = RT_TRUE;
 
 	/* Open destination. */
-	destination_file_descriptor = open(destination_file_path, O_WRONLY | O_CREAT | O_EXCL, RT_FILE_SYSTEM_RIGHTS);
+	destination_file_descriptor = open(destination_file_path, O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC, RT_FILE_SYSTEM_RIGHTS);
 	if (destination_file_descriptor == -1)
 		goto error;
 	destination_open = RT_TRUE;

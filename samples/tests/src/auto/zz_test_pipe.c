@@ -86,11 +86,18 @@ rt_s zz_test_pipe()
 {
 	struct rt_pipe pipe;
 	rt_b pipe_created = RT_FALSE;
+	rt_b is_console;
 	rt_s ret;
 
 	if (!rt_pipe_create(&pipe))
 		goto error;
 	pipe_created = RT_TRUE;
+
+	/* Check rt_io_device_is_console. */
+	if (!rt_io_device_is_console(&pipe.input_io_device, &is_console)) goto error;
+	if (is_console) goto error;
+	if (!rt_io_device_is_console(&pipe.output_io_device, &is_console)) goto error;
+	if (is_console) goto error;
 
 	if (!zz_test_pipe_with_fixed_size(&pipe)) goto error;
 	if (!zz_test_pipe_with_close()) goto error;

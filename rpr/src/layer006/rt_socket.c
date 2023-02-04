@@ -3,7 +3,6 @@
 #include "layer001/rt_memory.h"
 #include "layer001/rt_os_headers.h"
 #include "layer002/rt_error.h"
-#include "layer002/rt_io_device.h"
 #include "layer004/rt_os_version.h"
 
 /**
@@ -183,6 +182,15 @@ free:
 error:
 	ret = RT_FAILED;
 	goto free;
+}
+
+void rt_socket_create_io_device(struct rt_io_device *io_device, struct rt_socket *socket)
+{
+#ifdef RT_DEFINE_WINDOWS
+	rt_io_device_create_from_handle(io_device, (rt_h)socket->socket_handle);
+#else
+	rt_io_device_create_from_file_descriptor(io_device, socket->socket_file_descriptor);
+#endif
 }
 
 rt_s rt_socket_set_boolean_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_option option, rt_b value)

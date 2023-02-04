@@ -3,6 +3,7 @@
 
 #include "layer000/rt_types.h"
 
+#include "layer002/rt_io_device.h"
 #include "layer005/rt_socket_address.h"
 
 struct rt_socket {
@@ -251,6 +252,11 @@ rt_s rt_socket_initialize();
  * @param inheritable Whether the socket could be used in a child process. Beware of handles/file descriptors leaks.
  */
 rt_s rt_socket_create(struct rt_socket *socket, enum rt_address_family address_family, enum rt_socket_type type, enum rt_socket_protocol protocol, rt_b blocking, rt_b inheritable);
+
+/**
+ * Create an <tt>rt_io_device</tt> from given <tt>rt_socket</tt>.
+ */
+void rt_socket_create_io_device(struct rt_io_device *io_device, struct rt_socket *socket);
 
 /**
  * Set a socket boolean option.

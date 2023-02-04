@@ -97,6 +97,8 @@ static rt_s zz_test_socket_client(enum rt_address_family address_family)
 {
 	struct rt_socket socket;
 	rt_b socket_created = RT_FALSE;
+	struct rt_io_device io_device;
+	rt_b is_console;
 	struct rt_address_ipv4 ipv4_address;
 	struct rt_socket_address_ipv4 ipv4_socket_address;
 	struct rt_address_ipv6 ipv6_address;
@@ -109,6 +111,11 @@ static rt_s zz_test_socket_client(enum rt_address_family address_family)
 
 	if (!rt_socket_create(&socket, address_family, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_FALSE)) goto error;
 	socket_created = RT_TRUE;
+
+	/* Check rt_io_device_is_console. */
+	rt_socket_create_io_device(&io_device, &socket);
+	if (!rt_io_device_is_console(&io_device, &is_console)) goto error;
+	if (is_console) goto error;
 
 	if (address_family == RT_ADDRESS_FAMILY_IPV4) {
 		rt_address_create_ipv4_loopback(&ipv4_address);
