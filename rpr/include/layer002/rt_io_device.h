@@ -52,6 +52,11 @@ rt_s rt_io_device_read(struct rt_input_stream *input_stream, rt_char8 *buffer, r
 rt_s rt_io_device_write(struct rt_output_stream *output_stream, const rt_char8 *data, rt_un bytes_to_write);
 
 /**
+ * Does nothing.
+ */
+rt_s rt_io_device_flush(struct rt_output_stream *output_stream);
+
+/**
  * <p>
  * Under Windows, an inheritable handle is valid in a child process created with CreateProcess and bInheritHandles TRUE.
  * </p>

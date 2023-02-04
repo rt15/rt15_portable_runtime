@@ -13,6 +13,7 @@
 
 #include "layer002/rt_binary_search.h"
 #include "layer002/rt_buffered_input_stream.h"
+#include "layer002/rt_buffered_output_stream.h"
 #include "layer002/rt_chrono.h"
 #include "layer002/rt_critical_section.h"
 #include "layer002/rt_error.h"

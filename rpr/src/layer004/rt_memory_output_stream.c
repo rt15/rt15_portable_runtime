@@ -79,9 +79,15 @@ error:
 	goto free;
 }
 
+rt_s rt_memory_output_stream_flush(RT_UNUSED struct rt_output_stream *output_stream)
+{
+	return RT_OK;
+}
+
 rt_s rt_memory_output_stream_create(struct rt_memory_output_stream *memory_output_stream, rt_char8 *buffer, rt_un buffer_capacity, struct rt_heap *heap, rt_un initial_capacity)
 {
 	memory_output_stream->output_stream.write = &rt_memory_output_stream_write;
+	memory_output_stream->output_stream.flush = &rt_memory_output_stream_flush;
 
 	memory_output_stream->size = 0;
 

@@ -40,4 +40,9 @@ rt_s rt_memory_output_stream_free(struct rt_memory_output_stream *memory_output_
  */
 rt_s rt_memory_output_stream_write(struct rt_output_stream *output_stream, const rt_char8 *data, rt_un bytes_to_write);
 
+/**
+ * Does nothing.
+ */
+rt_s rt_memory_output_stream_flush(struct rt_output_stream *output_stream);
+
 #endif /* RT_MEMORY_OUTPUT_STREAM_H */

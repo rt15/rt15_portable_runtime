@@ -234,8 +234,9 @@ static rt_s zz_test_read_lines_create_destination_file(const rt_char *source_fil
 	struct rt_input_stream *input_stream;
 	struct rt_file destination_file;
 	rt_b destination_file_created = RT_FALSE;
-	struct rt_output_stream *output_stream;
-	rt_char8 buffer[24];
+	struct rt_buffered_output_stream buffered_output_stream;
+	rt_char8 read_buffer[24];
+	rt_char8 write_buffer[4];
 	rt_s ret;
 
 	if (!rt_file_create(&source_file, source_file_path, RT_FILE_MODE_READ)) goto error;
@@ -246,9 +247,11 @@ static rt_s zz_test_read_lines_create_destination_file(const rt_char *source_fil
 	if (!rt_file_create(&destination_file, destination_file_path, RT_FILE_MODE_TRUNCATE)) goto error;
 	destination_file_created = RT_TRUE;
 
-	output_stream = &destination_file.io_device.output_stream;
+	if (!rt_buffered_output_stream_create(&buffered_output_stream, &destination_file.io_device.output_stream, write_buffer, 4)) goto error;
 
-	if (!rt_read_lines(input_stream, buffer, 24, &zz_test_read_lines_copy_file_callback, output_stream)) goto error;
+	if (!rt_read_lines(input_stream, read_buffer, 24, &zz_test_read_lines_copy_file_callback, &buffered_output_stream)) goto error;
+
+	if (!buffered_output_stream.output_stream.flush(&buffered_output_stream.output_stream)) goto error;
 
 	ret = RT_OK;
 free:

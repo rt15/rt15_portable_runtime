@@ -9,6 +9,7 @@ void rt_io_device_create_from_handle(struct rt_io_device *io_device, rt_h handle
 	io_device->handle = handle;
 	io_device->input_stream.read = &rt_io_device_read;
 	io_device->output_stream.write = &rt_io_device_write;
+	io_device->output_stream.flush = &rt_io_device_flush;
 }
 #else
 void rt_io_device_create_from_file_descriptor(struct rt_io_device *io_device, rt_n32 file_descriptor)
@@ -16,6 +17,7 @@ void rt_io_device_create_from_file_descriptor(struct rt_io_device *io_device, rt
 	io_device->file_descriptor = file_descriptor;
 	io_device->input_stream.read = &rt_io_device_read;
 	io_device->output_stream.write = &rt_io_device_write;
+	io_device->output_stream.flush = &rt_io_device_flush;
 }
 #endif
 
@@ -165,6 +167,11 @@ rt_s rt_io_device_write(struct rt_output_stream *output_stream, const rt_char8 *
 #endif
 
 	return ret;
+}
+
+rt_s rt_io_device_flush(RT_UNUSED struct rt_output_stream *output_stream)
+{
+	return RT_OK;
 }
 
 rt_s rt_io_device_is_inheritable(struct rt_io_device *io_device, rt_b *inheritable)
