@@ -52,7 +52,7 @@ static rt_un32 RT_STDCALL zz_test_socket_server_callback(void *parameter)
 
 	if (!rt_event_signal(&server_parameter->event)) goto error;
 
-	if (!rt_socket_accept_connection(&socket, &accepted_socket, RT_NULL, RT_NULL)) goto error;
+	if (!rt_socket_accept_connection(&socket, RT_TRUE, &accepted_socket, RT_NULL, RT_NULL)) goto error;
 	accepted_socket_created = RT_TRUE;
 	shutdown_accepted_socket = RT_TRUE;
 
@@ -97,7 +97,6 @@ static rt_s zz_test_socket_client(enum rt_address_family address_family)
 {
 	struct rt_socket socket;
 	rt_b socket_created = RT_FALSE;
-	struct rt_io_device io_device;
 	rt_b is_console;
 	struct rt_address_ipv4 ipv4_address;
 	struct rt_socket_address_ipv4 ipv4_socket_address;
@@ -113,8 +112,7 @@ static rt_s zz_test_socket_client(enum rt_address_family address_family)
 	socket_created = RT_TRUE;
 
 	/* Check rt_io_device_is_console. */
-	rt_socket_create_io_device(&io_device, &socket);
-	if (!rt_io_device_is_console(&io_device, &is_console)) goto error;
+	if (!rt_io_device_is_console(&socket.io_device, &is_console)) goto error;
 	if (is_console) goto error;
 
 	if (address_family == RT_ADDRESS_FAMILY_IPV4) {

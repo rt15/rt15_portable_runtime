@@ -7,11 +7,7 @@
 #include "layer005/rt_socket_address.h"
 
 struct rt_socket {
-#ifdef RT_DEFINE_WINDOWS
-	rt_un socket_handle;
-#else
-	rt_n32 socket_file_descriptor;
-#endif
+	struct rt_io_device io_device;
 	enum rt_address_family address_family;
 	rt_b blocking;
 };
@@ -254,11 +250,6 @@ rt_s rt_socket_initialize();
 rt_s rt_socket_create(struct rt_socket *socket, enum rt_address_family address_family, enum rt_socket_type type, enum rt_socket_protocol protocol, rt_b blocking, rt_b inheritable);
 
 /**
- * Create an <tt>rt_io_device</tt> from given <tt>rt_socket</tt>.
- */
-void rt_socket_create_io_device(struct rt_io_device *io_device, struct rt_socket *socket);
-
-/**
  * Set a socket boolean option.
  *
  * @param protocol_level Protocol level of the option. A classical value is <tt>RT_SOCKET_PROTOCOL_LEVEL_SOCKET</tt>.
@@ -327,10 +318,15 @@ rt_s rt_socket_listen_with_backlog(struct rt_socket *socket, rt_un backlog);
  * In the case of a non-blocking socket, you should wait for the listening socket to be readable before calling this function.
  * </p>
  *
+ * <p>
+ * The resulting socket is always a blocking socket.
+ * </p>
+ *
+ * @param blocking Whether you want the returned accepted socket to be blocking or not.
  * @param socket_address If not null, will be returned with the address of the connecting entity.
  * @param socket_address_size In/out parameter. Must be null if <tt>socket_address</tt> is null. Set it with the size of <tt>socket_address</tt>. Returned with the size of the address.
  */
-rt_s rt_socket_accept_connection(struct rt_socket *socket, struct rt_socket *accepted_socket, struct rt_socket_address *socket_address, rt_n32 *socket_address_size);
+rt_s rt_socket_accept_connection(struct rt_socket *socket, rt_b blocking, struct rt_socket *accepted_socket, struct rt_socket_address *socket_address, rt_n32 *socket_address_size);
 
 /**
  *

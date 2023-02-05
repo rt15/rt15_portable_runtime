@@ -137,9 +137,9 @@ error:
 rt_s rt_select_wait_for_ready_to_read(struct rt_socket *socket, rt_un timeout_milliseconds)
 {
 #ifdef RT_DEFINE_WINDOWS
-	rt_un file_descriptor = socket->socket_handle;
+	rt_un file_descriptor = (rt_un)socket->io_device.handle;
 #else
-	rt_n32 file_descriptor = socket->socket_file_descriptor;
+	rt_n32 file_descriptor = socket->io_device.file_descriptor;
 #endif
 	struct rt_select_item read_item;
 	struct rt_select_item except_item;
@@ -187,9 +187,9 @@ error:
 rt_s rt_select_wait_for_ready_to_write(struct rt_socket *socket, rt_un timeout_milliseconds)
 {
 #ifdef RT_DEFINE_WINDOWS
-	rt_un file_descriptor = socket->socket_handle;
+	rt_un file_descriptor = (rt_un)socket->io_device.handle;
 #else
-	rt_n32 file_descriptor = socket->socket_file_descriptor;
+	rt_n32 file_descriptor = socket->io_device.file_descriptor;
 #endif
 	struct rt_select_item write_item;
 	struct rt_select_item except_item;

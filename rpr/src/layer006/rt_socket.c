@@ -94,11 +94,12 @@ rt_s rt_socket_create(struct rt_socket *socket_, enum rt_address_family address_
 #ifdef RT_DEFINE_WINDOWS
 	DWORD flags;
 	rt_b flag_no_handle_inherit_supported;
-	struct rt_io_device socket_io_device;
+	rt_h socket_handle;
 	u_long argp;
 #else
 	rt_un actual_type;
 	int actual_protocol;
+	rt_n32 socket_file_descriptor;
 #endif
 	rt_s ret;
 
@@ -126,16 +127,17 @@ rt_s rt_socket_create(struct rt_socket *socket_, enum rt_address_family address_
 
 	/* WSA_FLAG_NO_HANDLE_INHERIT flag is in early versions of Windows only. */
 	/* WSASocket returns INVALID_SOCKET and set last error in case of issue. */
-	socket_->socket_handle = (rt_un)WSASocket((int)address_family, (int)type, (int)protocol, RT_NULL, 0, flags);
-	if (socket_->socket_handle == INVALID_SOCKET)
+	socket_handle = (rt_h)WSASocket((int)address_family, (int)type, (int)protocol, RT_NULL, 0, flags);
+	if ((rt_un)socket_handle == INVALID_SOCKET)
 		goto error;
+
+	rt_io_device_create_from_handle(&socket_->io_device, socket_handle);
 
 	if (!inheritable && !flag_no_handle_inherit_supported) {
 		/* WSA_FLAG_NO_HANDLE_INHERIT is not supported. */
 		/* We manually set it to non-inheritable. */
 		/* There is a race condition here: the handle could leak if CreateProcess is called in parallel. */
-		rt_io_device_create_from_handle(&socket_io_device, (rt_h)socket_->socket_handle);
-		if (!rt_io_device_set_inheritable(&socket_io_device, RT_FALSE)) {
+		if (!rt_io_device_set_inheritable(&socket_->io_device, RT_FALSE)) {
 			rt_socket_free(socket_);
 			goto error;
 		}
@@ -147,7 +149,7 @@ rt_s rt_socket_create(struct rt_socket *socket_, enum rt_address_family address_
 		argp = RT_TRUE;
 
 		/* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
-		if (ioctlsocket(socket_->socket_handle, FIONBIO, &argp)) {
+		if (ioctlsocket((rt_un)socket_->io_device.handle, FIONBIO, &argp)) {
 			rt_socket_free(socket_);
 			goto error;
 		}
@@ -170,9 +172,10 @@ rt_s rt_socket_create(struct rt_socket *socket_, enum rt_address_family address_
 		actual_protocol = protocol;
 
 	/*  On error, socket function returns -1 and errno is set appropriately. */
-	socket_->socket_file_descriptor = socket(address_family, actual_type, actual_protocol);
-	if (socket_->socket_file_descriptor == -1)
+	socket_file_descriptor = socket(address_family, actual_type, actual_protocol);
+	if (socket_file_descriptor == -1)
 		goto error;
+	rt_io_device_create_from_file_descriptor(&socket_->io_device, socket_file_descriptor);
 #endif
 
 	ret = RT_OK;
@@ -182,15 +185,6 @@ free:
 error:
 	ret = RT_FAILED;
 	goto free;
-}
-
-void rt_socket_create_io_device(struct rt_io_device *io_device, struct rt_socket *socket)
-{
-#ifdef RT_DEFINE_WINDOWS
-	rt_io_device_create_from_handle(io_device, (rt_h)socket->socket_handle);
-#else
-	rt_io_device_create_from_file_descriptor(io_device, socket->socket_file_descriptor);
-#endif
 }
 
 rt_s rt_socket_set_boolean_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_option option, rt_b value)
@@ -357,7 +351,7 @@ static rt_s rt_socket_set_option_do(struct rt_socket *socket, enum rt_socket_pro
 
 #ifdef RT_DEFINE_WINDOWS
 	/* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
-	if (setsockopt(socket->socket_handle, (int)protocol_level, (int)option, value, (int)value_size))
+	if (setsockopt((rt_un)socket->io_device.handle, (int)protocol_level, (int)option, value, (int)value_size))
 		goto error;
 #else
 	if (protocol_level == RT_SOCKET_PROTOCOL_LEVEL_SOCKET) {
@@ -369,7 +363,7 @@ static rt_s rt_socket_set_option_do(struct rt_socket *socket, enum rt_socket_pro
 	}
 
 	/* On success, zero is returned. On error, -1 is returned, and errno is set appropriately. */
-	if (setsockopt(socket->socket_file_descriptor, actual_protocol_level, option, value, (socklen_t)value_size))
+	if (setsockopt(socket->io_device.file_descriptor, actual_protocol_level, option, value, (socklen_t)value_size))
 		goto error;
 #endif
 
@@ -452,7 +446,7 @@ static rt_s rt_socket_get_option_do(struct rt_socket *socket, enum rt_socket_pro
 
 #ifdef RT_DEFINE_WINDOWS
 	/* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
-	if (getsockopt(socket->socket_handle, (int)protocol_level, (int)option, value, &local_value_size))
+	if (getsockopt((rt_un)socket->io_device.handle, (int)protocol_level, (int)option, value, &local_value_size))
 		goto error;
 	*value_size = local_value_size;
 #else
@@ -465,7 +459,7 @@ static rt_s rt_socket_get_option_do(struct rt_socket *socket, enum rt_socket_pro
 	}
 
 	/* On success, zero is returned. On error, -1 is returned, and errno is set appropriately. */
-	if (getsockopt(socket->socket_file_descriptor, actual_protocol_level, option, value, &local_value_size))
+	if (getsockopt(socket->io_device.file_descriptor, actual_protocol_level, option, value, &local_value_size))
 		goto error;
 	*value_size = local_value_size;
 #endif
@@ -583,13 +577,13 @@ rt_s rt_socket_connect_with_socket_address(struct rt_socket *socket, struct rt_s
 #ifdef RT_DEFINE_WINDOWS
 
 	/* If no error occurs, connect returns zero. Otherwise, it returns SOCKET_ERROR, and a specific error code can be retrieved by calling WSAGetLastError. */
-	if (connect(socket->socket_handle, (struct sockaddr*)socket_address, (int)socket_address_size)) {
+	if (connect((rt_un)socket->io_device.handle, (struct sockaddr*)socket_address, (int)socket_address_size)) {
 		/* Notice that result is always non zero with non-blocking sockets under Windows. */
 		/* The normal error should be WSAEWOULDBLOCK. */
 		goto error;
 	}
 #else
-	if (connect(socket->socket_file_descriptor, (struct sockaddr*)socket_address, socket_address_size)) {
+	if (connect(socket->io_device.file_descriptor, (struct sockaddr*)socket_address, socket_address_size)) {
 		if (socket->blocking) {
 			goto error;
 		} else {
@@ -661,11 +655,11 @@ rt_s rt_socket_bind_with_socket_address(struct rt_socket *socket, struct rt_sock
 
 #ifdef RT_DEFINE_WINDOWS
 	/* On success bind returns zero, -1 and set last error otherwise. */
-	if (bind(socket->socket_handle, (struct sockaddr*)socket_address, (int)socket_address_size))
+	if (bind((rt_un)socket->io_device.handle, (struct sockaddr*)socket_address, (int)socket_address_size))
 		goto error;
 #else
 	/* On success bind returns zero, -1 and set last error otherwise. */
-	if (bind(socket->socket_file_descriptor, (struct sockaddr*)socket_address, socket_address_size))
+	if (bind(socket->io_device.file_descriptor, (struct sockaddr*)socket_address, socket_address_size))
 		goto error;
 #endif
 
@@ -689,32 +683,71 @@ rt_s rt_socket_listen_with_backlog(struct rt_socket *socket, rt_un backlog)
 
 #ifdef RT_DEFINE_WINDOWS
 	/* On success listen returns zero, -1 and set last error otherwise. */
-	ret = !listen(socket->socket_handle, (int)backlog);
+	ret = !listen((rt_un)socket->io_device.handle, (int)backlog);
 #else
 	/* On success listen returns zero, -1 and set last error otherwise. */
-	ret = !listen(socket->socket_file_descriptor, (int)backlog);
+	ret = !listen(socket->io_device.file_descriptor, (int)backlog);
 #endif
 
 	return ret;
 }
 
-rt_s rt_socket_accept_connection(struct rt_socket *socket, struct rt_socket *accepted_socket, struct rt_socket_address *socket_address, rt_n32 *socket_address_size)
+rt_s rt_socket_accept_connection(struct rt_socket *socket, rt_b blocking, struct rt_socket *accepted_socket, struct rt_socket_address *socket_address, rt_n32 *socket_address_size)
 {
+#ifdef RT_DEFINE_WINDOWS
+	rt_h accepted_socket_handle;
+	u_long argp;
+#else
+	rt_n32 accepted_socket_file_descriptor;
+	int flags;
+#endif
 	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
-	accepted_socket->socket_handle = (rt_un)accept(socket->socket_handle, (struct sockaddr*)socket_address, socket_address_size);
-	if (accepted_socket->socket_handle == INVALID_SOCKET)
+	accepted_socket_handle = (rt_h)accept((rt_un)socket->io_device.handle, (struct sockaddr*)socket_address, socket_address_size);
+	if ((rt_un)accepted_socket_handle == INVALID_SOCKET)
 		goto error;
+	rt_io_device_create_from_handle(&accepted_socket->io_device, accepted_socket_handle);
 #else
-	accepted_socket->socket_file_descriptor = accept(socket->socket_file_descriptor, (struct sockaddr*)socket_address, (socklen_t*)socket_address_size);
-	if (accepted_socket->socket_file_descriptor == -1)
+	accepted_socket_file_descriptor = accept(socket->io_device.file_descriptor, (struct sockaddr*)socket_address, (socklen_t*)socket_address_size);
+	if (accepted_socket_file_descriptor == -1)
 		goto error;
+	rt_io_device_create_from_file_descriptor(&accepted_socket->io_device, accepted_socket_file_descriptor);
 #endif
 
 	/* Linux can accept IPv4 incoming socket connections on IPv6 socket (IPV6_V6ONLY must not be used). */
 	/* But even in this case, the IPv4 address is an IPv4-mapped IPv6 address. */
 	accepted_socket->address_family = socket->address_family;
+
+	/* The resulting socket is always a blocking socket. */
+	if (blocking) {
+		accepted_socket->blocking = RT_TRUE;
+	} else {
+		accepted_socket->blocking = RT_FALSE;
+#ifdef RT_DEFINE_WINDOWS
+
+		/* argp must be true to enable non-blocking mode with FIONBIO command. */
+		argp = RT_TRUE;
+
+		/* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
+		if (ioctlsocket((rt_un)accepted_socket_handle, FIONBIO, &argp)) {
+			rt_socket_free(accepted_socket);
+			goto error;
+		}
+#else
+		flags = fcntl(accepted_socket_file_descriptor, F_GETFL, 0);
+		if (flags == -1) {
+			rt_socket_free(accepted_socket);
+			goto error;
+		}
+
+		/* Add O_NONBLOCK flag. */
+		if (fcntl(accepted_socket_file_descriptor, F_SETFL, flags | O_NONBLOCK) == -1) {
+			rt_socket_free(accepted_socket);
+			goto error;
+		}
+#endif
+	}
 
 	ret = RT_OK;
 free:
@@ -759,12 +792,12 @@ rt_s rt_socket_send(struct rt_socket *socket, void *data, rt_un data_size, enum 
 
 #ifdef RT_DEFINE_WINDOWS
 	/* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
-	send_result = send(socket->socket_handle, data, (int)data_size, (int)flags);
+	send_result = send((rt_un)socket->io_device.handle, data, (int)data_size, (int)flags);
 	if (send_result < 0)
 		goto error;
 #else
 	/* Returns -1 in case of issue and set errno. */
-	send_result = send(socket->socket_file_descriptor, data, data_size, actual_flags);
+	send_result = send(socket->io_device.file_descriptor, data, data_size, actual_flags);
 	if (send_result < 0) {
 		if (errno == EAGAIN)
 			errno = EWOULDBLOCK;
@@ -797,12 +830,12 @@ rt_s rt_socket_receive(struct rt_socket *socket, void *buffer, rt_un buffer_capa
 
 #ifdef RT_DEFINE_WINDOWS
 	/* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
-	recv_result = recv(socket->socket_handle, buffer, (int)buffer_capacity, (int)flags);
+	recv_result = recv((rt_un)socket->io_device.handle, buffer, (int)buffer_capacity, (int)flags);
 	if (recv_result < 0)
 		goto error;
 #else
 	/* Returns -1 in case of issue and set errno. */
-	recv_result = recv(socket->socket_file_descriptor, buffer, buffer_capacity, actual_flags);
+	recv_result = recv(socket->io_device.file_descriptor, buffer, buffer_capacity, actual_flags);
 	if (recv_result < 0) {
 		if (errno == EAGAIN)
 			errno = EWOULDBLOCK;
@@ -860,9 +893,9 @@ rt_s rt_socket_shutdown(struct rt_socket *socket, enum rt_socket_shutdown_flag f
 
 	/* On success shutdown returns zero, -1 and set last error otherwise. */
 #ifdef RT_DEFINE_WINDOWS
-	ret = !shutdown(socket->socket_handle, (int)flag);
+	ret = !shutdown((rt_un)socket->io_device.handle, (int)flag);
 #else
-	ret = !shutdown(socket->socket_file_descriptor, flag);
+	ret = !shutdown(socket->io_device.file_descriptor, flag);
 #endif
 
 	return ret;
@@ -874,10 +907,10 @@ rt_s rt_socket_free(struct rt_socket *socket)
 
 #ifdef RT_DEFINE_WINDOWS
 	/* closesocket returns zero if the operation was successful, call WSASetLastError and returns SOCKET_ERROR otherwise. */
-	ret = !closesocket(socket->socket_handle);
+	ret = !closesocket((rt_un)socket->io_device.handle);
 #else
 	/* close() returns zero on success, and set errno in case of issue. */
-	ret = !close(socket->socket_file_descriptor);
+	ret = !close(socket->io_device.file_descriptor);
 #endif
 	return ret;
 }

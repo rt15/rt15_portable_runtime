@@ -34,7 +34,7 @@ static rt_un32 RT_STDCALL zz_test_select_server_callback(void *parameter)
 
 	if (!rt_select_wait_for_ready_to_read(&socket, 0)) goto error;
 
-	if (!rt_socket_accept_connection(&socket, &accepted_socket, RT_NULL, RT_NULL)) goto error;
+	if (!rt_socket_accept_connection(&socket, RT_FALSE, &accepted_socket, RT_NULL, RT_NULL)) goto error;
 	accepted_socket_created = RT_TRUE;
 	shutdown_accepted_socket = RT_TRUE;
 
