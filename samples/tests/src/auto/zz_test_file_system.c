@@ -269,6 +269,100 @@ error:
 	goto free;
 }
 
+static rt_s zz_prepare_dir(const rt_char *dir_path, rt_un dir_path_size)
+{
+	rt_char path[RT_FILE_PATH_SIZE];
+	rt_un path_size;
+	rt_s ret;
+
+	if (!rt_file_system_delete_dir_recursively(dir_path)) goto error;
+	if (!rt_file_system_create_dir(dir_path)) goto error;
+
+	path_size = dir_path_size;
+	if (!rt_char_copy(dir_path, path_size, path, RT_FILE_PATH_SIZE)) goto error;
+	if (!rt_file_path_append_separator(path, RT_FILE_PATH_SIZE, &path_size)) goto error;
+	if (!rt_char_append(_R("sub_dir"), 7, path, RT_FILE_PATH_SIZE, &path_size)) goto error;
+
+	if (!rt_file_system_create_dir(path)) goto error;
+
+	if (!rt_file_path_append_separator(path, RT_FILE_PATH_SIZE, &path_size)) goto error;
+	if (!rt_char_append(_R("file.txt"), 8, path, RT_FILE_PATH_SIZE, &path_size)) goto error;
+
+	if (!zz_create_file(path, "Hello, world!")) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_check_dir(const rt_char *dir_path, rt_un dir_path_size)
+{
+	enum rt_file_path_type type;
+	rt_char path[RT_FILE_PATH_SIZE];
+	rt_un path_size;
+	rt_s ret;
+
+	if (!rt_file_path_get_type(dir_path, &type)) goto error;
+	if (type != RT_FILE_PATH_TYPE_DIR) goto error;
+
+	path_size = dir_path_size;
+	if (!rt_char_copy(dir_path, path_size, path, RT_FILE_PATH_SIZE)) goto error;
+	if (!rt_file_path_append_separator(path, RT_FILE_PATH_SIZE, &path_size)) goto error;
+	if (!rt_char_append(_R("sub_dir"), 7, path, RT_FILE_PATH_SIZE, &path_size)) goto error;
+
+	if (!rt_file_path_get_type(path, &type)) goto error;
+	if (type != RT_FILE_PATH_TYPE_DIR) goto error;
+
+	if (!rt_file_path_append_separator(path, RT_FILE_PATH_SIZE, &path_size)) goto error;
+	if (!rt_char_append(_R("file.txt"), 8, path, RT_FILE_PATH_SIZE, &path_size)) goto error;
+
+	if (!zz_check_file_content(path, "Hello, world!")) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_rename_dir(const rt_char *tmp_dir, rt_un tmp_dir_size)
+{
+	rt_char source_dir_path[RT_FILE_PATH_SIZE];
+	rt_un source_dir_path_size;
+	rt_char destination_dir_path[RT_FILE_PATH_SIZE];
+	rt_un destination_dir_path_size;
+	rt_s ret;
+
+	source_dir_path_size = tmp_dir_size;
+	if (!rt_char_copy(tmp_dir, source_dir_path_size, source_dir_path, RT_FILE_PATH_SIZE)) goto error;
+	if (!rt_file_path_append_separator(source_dir_path, RT_FILE_PATH_SIZE, &source_dir_path_size)) goto error;
+	if (!rt_char_append(_R("dir"), 3, source_dir_path, RT_FILE_PATH_SIZE, &source_dir_path_size)) goto error;
+
+	if (!zz_prepare_dir(source_dir_path, source_dir_path_size)) goto error;
+
+	destination_dir_path_size = tmp_dir_size;
+	if (!rt_char_copy(tmp_dir, destination_dir_path_size, destination_dir_path, RT_FILE_PATH_SIZE)) goto error;
+	if (!rt_file_path_append_separator(destination_dir_path, RT_FILE_PATH_SIZE, &destination_dir_path_size)) goto error;
+	if (!rt_char_append(_R("new_name"), 8, destination_dir_path, RT_FILE_PATH_SIZE, &destination_dir_path_size)) goto error;
+
+	if (!rt_file_system_delete_dir_recursively(destination_dir_path)) goto error;
+
+	if (!rt_file_system_rename_dir(source_dir_path, _R("new_name"))) goto error;
+
+	if (!zz_check_dir(destination_dir_path, destination_dir_path_size)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s zz_test_file_system()
 {
 	rt_char tmp_dir[RT_FILE_PATH_SIZE];
@@ -280,6 +374,7 @@ rt_s zz_test_file_system()
 	if (!zz_test_empty_dir(tmp_dir, tmp_dir_size)) goto error;
 	if (!zz_test_empty_file(tmp_dir, tmp_dir_size)) goto error;
 	if (!zz_test_copy_move_rename_file(tmp_dir, tmp_dir_size)) goto error;
+	if (!zz_test_rename_dir(tmp_dir, tmp_dir_size)) goto error;
 
 	ret = RT_OK;
 free:

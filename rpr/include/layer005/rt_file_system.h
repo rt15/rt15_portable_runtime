@@ -69,6 +69,17 @@ rt_s rt_file_system_create_empty_file(const rt_char *file_path, rt_b truncate);
 rt_s rt_file_system_delete_dir_recursively(const rt_char *dir_path);
 
 /**
+ * Rename a directory.
+ *
+ * <p>
+ * This function fails if a directory or a file already exists with <tt>destination_dir_name</tt> in the same directory.
+ * </p>
+ *
+ * @param destination_dir_name Directory name.
+ */
+rt_s rt_file_system_rename_dir(const rt_char *source_dir_path, const rt_char *destination_dir_name);
+
+/**
  * Find out the size of a file without opening it.
  *
  * <p>
@@ -94,7 +105,6 @@ rt_s rt_file_system_copy_file(const rt_char *source_file_path, const rt_char *de
  *
  * @param source_file_path Current file path.
  * @param destination_file_path Expected new file path (Must not be a directory).
- * @return Zero in case of failure.
  */
 rt_s rt_file_system_move_file(const rt_char *source_file_path, const rt_char *destination_file_path);
 
@@ -106,7 +116,6 @@ rt_s rt_file_system_move_file(const rt_char *source_file_path, const rt_char *de
  * </p>
  *
  * @param destination_file_name File name.
- * @return Zero in case of failure.
  */
 rt_s rt_file_system_rename_file(const rt_char *source_file_path, const rt_char *destination_file_name);
 

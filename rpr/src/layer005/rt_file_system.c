@@ -273,6 +273,11 @@ error:
 	goto free;
 }
 
+rt_s rt_file_system_rename_dir(const rt_char *source_dir_path, const rt_char *destination_dir_name)
+{
+	return rt_file_system_rename_file(source_dir_path, destination_dir_name);
+}
+
 rt_s rt_file_system_get_file_size(const rt_char *file_path, rt_un64 *file_size)
 {
 #ifdef RT_DEFINE_WINDOWS
