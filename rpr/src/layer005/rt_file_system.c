@@ -273,11 +273,6 @@ error:
 	goto free;
 }
 
-rt_s rt_file_system_rename_dir(const rt_char *source_dir_path, const rt_char *destination_dir_name)
-{
-	return rt_file_system_rename_file(source_dir_path, destination_dir_name);
-}
-
 rt_s rt_file_system_get_file_size(const rt_char *file_path, rt_un64 *file_size)
 {
 #ifdef RT_DEFINE_WINDOWS
@@ -424,7 +419,7 @@ error:
 #endif
 }
 
-static rt_s rt_file_system_move_or_rename_file(const rt_char *source_file_path, const rt_char *destination_file_path, RT_WINDOWS_UNUSED rt_b rename_operation)
+static rt_s rt_file_system_move_or_rename_dir_or_file(const rt_char *source_file_path, const rt_char *destination_file_path, RT_WINDOWS_UNUSED rt_b rename_operation, RT_WINDOWS_UNUSED rt_b dir)
 {
 #ifdef RT_DEFINE_WINDOWS
 	rt_char source_namespaced_path[RT_FILE_PATH_SIZE];
@@ -490,9 +485,37 @@ error:
 	goto free;
 }
 
+rt_s rt_file_system_move_dir(const rt_char *source_dir_path, const rt_char *destination_dir_path)
+{
+	return rt_file_system_move_or_rename_dir_or_file(source_dir_path, destination_dir_path, RT_FALSE, RT_TRUE);
+}
+
+rt_s rt_file_system_rename_dir(const rt_char *source_dir_path, const rt_char *destination_dir_name)
+{
+	rt_char destination_dir_path[RT_FILE_PATH_SIZE];
+	rt_un destination_dir_path_size;
+	rt_s ret;
+
+	/* Append destination directory name to source directory parent path. */
+	destination_dir_path_size = rt_char_get_size(source_dir_path);
+	if (!rt_char_copy(source_dir_path, destination_dir_path_size, destination_dir_path, RT_FILE_PATH_SIZE)) goto error;
+	if (!rt_file_path_get_parent(destination_dir_path, RT_FILE_PATH_SIZE, &destination_dir_path_size)) goto error;
+	if (!rt_file_path_append_separator(destination_dir_path, RT_FILE_PATH_SIZE, &destination_dir_path_size)) goto error;
+	if (!rt_char_append(destination_dir_name, rt_char_get_size(destination_dir_name), destination_dir_path, RT_FILE_PATH_SIZE, &destination_dir_path_size)) goto error;
+
+	if (!rt_file_system_move_or_rename_dir_or_file(source_dir_path, destination_dir_path, RT_TRUE, RT_TRUE)) goto error;
+
+	ret = RT_OK;
+	goto free;
+error:
+	ret = RT_FAILED;
+free:
+	return ret;
+}
+
 rt_s rt_file_system_move_file(const rt_char *source_file_path, const rt_char *destination_file_path)
 {
-	return rt_file_system_move_or_rename_file(source_file_path, destination_file_path, RT_FALSE);
+	return rt_file_system_move_or_rename_dir_or_file(source_file_path, destination_file_path, RT_FALSE, RT_FALSE);
 }
 
 rt_s rt_file_system_rename_file(const rt_char *source_file_path, const rt_char *destination_file_name)
@@ -508,7 +531,7 @@ rt_s rt_file_system_rename_file(const rt_char *source_file_path, const rt_char *
 	if (!rt_file_path_append_separator(destination_file_path, RT_FILE_PATH_SIZE, &destination_file_path_size)) goto error;
 	if (!rt_char_append(destination_file_name, rt_char_get_size(destination_file_name), destination_file_path, RT_FILE_PATH_SIZE, &destination_file_path_size)) goto error;
 
-	if (!rt_file_system_move_or_rename_file(source_file_path, destination_file_path, RT_TRUE)) goto error;
+	if (!rt_file_system_move_or_rename_dir_or_file(source_file_path, destination_file_path, RT_TRUE, RT_FALSE)) goto error;
 
 	ret = RT_OK;
 	goto free;

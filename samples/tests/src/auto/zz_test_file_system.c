@@ -363,6 +363,44 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_move_dir(const rt_char *tmp_dir, rt_un tmp_dir_size)
+{
+	rt_char source_dir_path[RT_FILE_PATH_SIZE];
+	rt_un source_dir_path_size;
+	rt_char destination_dir_path[RT_FILE_PATH_SIZE];
+	rt_un destination_dir_path_size;
+	rt_s ret;
+
+	source_dir_path_size = tmp_dir_size;
+	if (!rt_char_copy(tmp_dir, source_dir_path_size, source_dir_path, RT_FILE_PATH_SIZE)) goto error;
+	if (!rt_file_path_append_separator(source_dir_path, RT_FILE_PATH_SIZE, &source_dir_path_size)) goto error;
+	if (!rt_char_append(_R("dir1"), 4, source_dir_path, RT_FILE_PATH_SIZE, &source_dir_path_size)) goto error;
+
+	if (!zz_prepare_dir(source_dir_path, source_dir_path_size)) goto error;
+
+	destination_dir_path_size = tmp_dir_size;
+	if (!rt_char_copy(tmp_dir, destination_dir_path_size, destination_dir_path, RT_FILE_PATH_SIZE)) goto error;
+	if (!rt_file_path_append_separator(destination_dir_path, RT_FILE_PATH_SIZE, &destination_dir_path_size)) goto error;
+	if (!rt_char_append(_R("dest_dir"), 8, destination_dir_path, RT_FILE_PATH_SIZE, &destination_dir_path_size)) goto error;
+
+	if (!rt_file_system_delete_dir_recursively(destination_dir_path)) goto error;
+	if (!rt_file_system_create_dir(destination_dir_path)) goto error;
+
+	if (!rt_file_path_append_separator(destination_dir_path, RT_FILE_PATH_SIZE, &destination_dir_path_size)) goto error;
+	if (!rt_char_append(_R("dir2"), 4, destination_dir_path, RT_FILE_PATH_SIZE, &destination_dir_path_size)) goto error;
+
+	if (!rt_file_system_move_dir(source_dir_path, destination_dir_path)) goto error;
+
+	if (!zz_check_dir(destination_dir_path, destination_dir_path_size)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s zz_test_file_system()
 {
 	rt_char tmp_dir[RT_FILE_PATH_SIZE];
@@ -375,6 +413,7 @@ rt_s zz_test_file_system()
 	if (!zz_test_empty_file(tmp_dir, tmp_dir_size)) goto error;
 	if (!zz_test_copy_move_rename_file(tmp_dir, tmp_dir_size)) goto error;
 	if (!zz_test_rename_dir(tmp_dir, tmp_dir_size)) goto error;
+	if (!zz_test_move_dir(tmp_dir, tmp_dir_size)) goto error;
 
 	ret = RT_OK;
 free:

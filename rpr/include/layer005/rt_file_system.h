@@ -69,6 +69,18 @@ rt_s rt_file_system_create_empty_file(const rt_char *file_path, rt_b truncate);
 rt_s rt_file_system_delete_dir_recursively(const rt_char *dir_path);
 
 /**
+ * Move a directory.
+ *
+ * <p>
+ * This function fails if the destination already exists.
+ * </p>
+ *
+ * @param source_dir_path Current directory path.
+ * @param destination_dir_path Expected new directory path (Must be the new actual path, not the parent).
+ */
+rt_s rt_file_system_move_dir(const rt_char *source_dir_path, const rt_char *destination_dir_path);
+
+/**
  * Rename a directory.
  *
  * <p>
