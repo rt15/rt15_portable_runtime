@@ -6,7 +6,15 @@
 #include "layer003/rt_file.h"
 #include "layer004/rt_file_path.h"
 
-#ifndef RT_DEFINE_WINDOWS
+struct rt_file_system_copy_dir_callback_context {
+	const rt_char *source_dir_path;
+	rt_un source_dir_path_size;
+	const rt_char *destination_dir_path;
+	rt_un destination_dir_path_size;
+	rt_b overwrite;
+};
+
+#ifdef RT_DEFINE_LINUX
 
 /* rwx to user, rx to group and others. */
 #define RT_FILE_SYSTEM_RIGHTS S_IRWXU | S_IXGRP | S_IRGRP | S_IXOTH | S_IROTH
@@ -38,6 +46,39 @@ rt_s rt_file_system_create_dir(const rt_char *dir_path)
 	/* mkdir returns zero on success, or -1 if an error occurred (in which case, errno is set appropriately). */
 	if (mkdir(dir_path, RT_FILE_SYSTEM_RIGHTS)) goto error;
 #endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_file_system_create_dir_if_not_exists(const rt_char *dir_path)
+{
+	enum rt_file_path_type type;
+	rt_s ret;
+
+	if (!rt_file_path_get_type(dir_path, &type))
+		goto error;
+
+	switch (type) {
+	case RT_FILE_PATH_TYPE_NONE:
+		/* Create the destination folder. */
+		if (!rt_file_system_create_dir(dir_path))
+			goto error;
+		break;
+	case RT_FILE_PATH_TYPE_FILE:
+		/* A file is in the way. */
+		rt_error_set_last(RT_ERROR_FILE_ALREADY_EXISTS);
+		goto error;
+		break;
+	case RT_FILE_PATH_TYPE_DIR:
+		/* The directory already exists, nothing to do. */
+		break;
+	}
 
 	ret = RT_OK;
 free:
@@ -323,7 +364,7 @@ error:
 	goto free;
 }
 
-rt_s rt_file_system_copy_file(const rt_char *source_file_path, const rt_char *destination_file_path)
+rt_s rt_file_system_copy_file(const rt_char *source_file_path, const rt_char *destination_file_path, rt_b overwrite)
 {
 #ifdef RT_DEFINE_WINDOWS
 	rt_char source_namespaced_path[RT_FILE_PATH_SIZE];
@@ -333,6 +374,7 @@ rt_s rt_file_system_copy_file(const rt_char *source_file_path, const rt_char *de
 	rt_un destination_buffer_size;
 	const rt_char *destination_actual_path;
 #else
+	int destination_flags;
 	rt_char8 buffer[BUFSIZ];
 	ssize_t read_bytes;
 	int source_file_descriptor;
@@ -363,7 +405,7 @@ rt_s rt_file_system_copy_file(const rt_char *source_file_path, const rt_char *de
 	}
 
 	/* Returns 0 in case of error and set last error. */
-	ret = CopyFile(source_actual_path, destination_actual_path, TRUE);
+	ret = CopyFile(source_actual_path, destination_actual_path, !overwrite);
 
 free:
 	return ret;
@@ -381,7 +423,12 @@ error:
 	source_open = RT_TRUE;
 
 	/* Open destination. */
-	destination_file_descriptor = open(destination_file_path, O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC, RT_FILE_SYSTEM_RIGHTS);
+	if (overwrite)
+		destination_flags = O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC;
+	else
+		destination_flags = O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC;
+
+	destination_file_descriptor = open(destination_file_path, destination_flags, RT_FILE_SYSTEM_RIGHTS);
 	if (destination_file_descriptor == -1)
 		goto error;
 	destination_open = RT_TRUE;
@@ -417,6 +464,78 @@ error:
 	ret = RT_FAILED;
 	goto free;
 #endif
+}
+
+static rt_s rt_file_system_copy_dir_callback(const rt_char *path, enum rt_file_path_type type, RT_UNUSED void *context)
+{
+	struct rt_file_system_copy_dir_callback_context *callback_context;
+	const rt_char *relative_source_path;
+	rt_char destination_path[RT_FILE_PATH_SIZE];
+	rt_un destination_path_size;
+	rt_s ret;
+
+	callback_context = (struct rt_file_system_copy_dir_callback_context*)context;
+
+	/* Point on everything after the initial source directory path, after the last separator. */
+	relative_source_path = &path[callback_context->source_dir_path_size];
+
+	/* In the code below, we know that the initial destination directory has already a separator at the end. */
+	destination_path_size = callback_context->destination_dir_path_size;
+	if (!rt_char_copy(callback_context->destination_dir_path, destination_path_size, destination_path, RT_FILE_PATH_SIZE)) goto error;
+	if (!rt_char_append(relative_source_path, rt_char_get_size(relative_source_path), destination_path, RT_FILE_PATH_SIZE, &destination_path_size)) goto error;
+
+	if (type == RT_FILE_PATH_TYPE_DIR) {
+		if (!rt_file_system_create_dir_if_not_exists(destination_path))
+			goto error;
+	} else {
+		if (!rt_file_system_copy_file(path, destination_path, callback_context->overwrite))
+			goto error;
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_file_system_copy_dir(const rt_char *source_dir_path, const rt_char *destination_dir_path, rt_b overwrite)
+{
+	rt_char source_dir_path_with_separator[RT_FILE_PATH_SIZE];
+	rt_un source_dir_path_with_separator_size;
+	rt_char destination_dir_path_with_separator[RT_FILE_PATH_SIZE];
+	rt_un destination_dir_path_with_separator_size;
+	struct rt_file_system_copy_dir_callback_context context;
+	rt_s ret;
+
+	if (!rt_file_system_create_dir_if_not_exists(destination_dir_path))
+		goto error;
+
+	source_dir_path_with_separator_size = rt_char_get_size(source_dir_path);
+	if (!rt_char_copy(source_dir_path, source_dir_path_with_separator_size, source_dir_path_with_separator, RT_FILE_PATH_SIZE)) goto error;
+	if (!rt_file_path_append_separator(source_dir_path_with_separator, RT_FILE_PATH_SIZE, &source_dir_path_with_separator_size)) goto error;
+
+	destination_dir_path_with_separator_size = rt_char_get_size(destination_dir_path);
+	if (!rt_char_copy(destination_dir_path, destination_dir_path_with_separator_size, destination_dir_path_with_separator, RT_FILE_PATH_SIZE)) goto error;
+	if (!rt_file_path_append_separator(destination_dir_path_with_separator, RT_FILE_PATH_SIZE, &destination_dir_path_with_separator_size)) goto error;
+
+	context.source_dir_path = source_dir_path_with_separator;
+	context.source_dir_path_size = source_dir_path_with_separator_size;
+	context.destination_dir_path = destination_dir_path_with_separator;
+	context.destination_dir_path_size = destination_dir_path_with_separator_size;
+	context.overwrite = overwrite;
+
+	if (!rt_file_path_browse(source_dir_path, rt_file_system_copy_dir_callback, RT_TRUE, RT_FALSE, &context)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
 }
 
 static rt_s rt_file_system_move_or_rename_dir_or_file(const rt_char *source_file_path, const rt_char *destination_file_path, RT_WINDOWS_UNUSED rt_b rename_operation, RT_WINDOWS_UNUSED rt_b dir)
@@ -472,7 +591,7 @@ static rt_s rt_file_system_move_or_rename_dir_or_file(const rt_char *source_file
 			goto error;
 		}
 		/* The rename call has failed, try another approach to move: copy then delete. */
-		if (!rt_file_system_copy_file(source_file_path, destination_file_path)) goto error;
+		if (!rt_file_system_copy_file(source_file_path, destination_file_path, RT_FALSE)) goto error;
 		if (!rt_file_system_delete_file(source_file_path)) goto error;
 	}
 #endif

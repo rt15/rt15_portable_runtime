@@ -4,6 +4,7 @@
 #include "layer000/rt_types.h"
 
 /**
+ * Create a directory.
  *
  * <p>
  * This function fails if:
@@ -14,6 +15,8 @@
  * </ul>
  */
 rt_s rt_file_system_create_dir(const rt_char *dir_path);
+
+rt_s rt_file_system_create_dir_if_not_exists(const rt_char *dir_path);
 
 /**
  * Create all necessary directories to create given <tt>dir_path</tt>.
@@ -76,7 +79,7 @@ rt_s rt_file_system_delete_dir_recursively(const rt_char *dir_path);
  * </p>
  *
  * @param source_dir_path Current directory path.
- * @param destination_dir_path Expected new directory path (Must be the new actual path, not the parent).
+ * @param destination_dir_path Expected new directory path (must be the new actual path, not the parent).
  */
 rt_s rt_file_system_move_dir(const rt_char *source_dir_path, const rt_char *destination_dir_path);
 
@@ -102,11 +105,19 @@ rt_s rt_file_system_rename_dir(const rt_char *source_dir_path, const rt_char *de
 rt_s rt_file_system_get_file_size(const rt_char *file_path, rt_un64 *file_size);
 
 /**
- * <p>
- * This function fails if the destination already exists.
- * </p>
+ * Copy a file.
+ *
+ * @param overwrite Overwrite existing file. Otherwise, fail if the file already exists.
  */
-rt_s rt_file_system_copy_file(const rt_char *source_file_path, const rt_char *destination_file_path);
+rt_s rt_file_system_copy_file(const rt_char *source_file_path, const rt_char *destination_file_path, rt_b overwrite);
+
+/**
+ * Copy a directory, recursively.
+ *
+ * @param destination_dir_path New path for the files in <tt>source_dir_path</tt> (must be the new actual path, not the parent).
+ * @param overwrite Overwrite existing files. Otherwise, fail if a file already exists.
+ */
+rt_s rt_file_system_copy_dir(const rt_char *source_dir_path, const rt_char *destination_dir_path, rt_b overwrite);
 
 /**
  * Move a file.
