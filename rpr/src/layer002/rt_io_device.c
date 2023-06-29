@@ -199,7 +199,6 @@ rt_s rt_io_device_read(struct rt_input_stream *input_stream, rt_char8 *buffer, r
 	io_device = RT_MEMORY_CONTAINER_OF(input_stream, struct rt_io_device, input_stream);
 
 #ifdef RT_DEFINE_WINDOWS
-	/* TODO: Manage more than 4Go? */
 	if (!ReadFile(io_device->handle, buffer, (DWORD)bytes_to_read, &local_bytes_read, NULL))
 		goto error;
 	*bytes_read = local_bytes_read;
