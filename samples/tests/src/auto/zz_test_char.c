@@ -575,8 +575,10 @@ static rt_s zz_test_char_convert_to_un()
 
 	if (!zz_test_char_successfully_convert_to_un(_R("0"), 0)) goto error;
 	if (!zz_test_char_successfully_convert_to_un(_R("1"), 1)) goto error;
-	if (!zz_test_char_successfully_convert_to_un(_R("4294967296"), 4294967296)) goto error;
-	/* TODO: Test larger numbers under 64 bits. */
+	if (!zz_test_char_successfully_convert_to_un(_R("4294967295"), 4294967295ul)) goto error;
+#ifdef RT_DEFINE_64
+	if (!zz_test_char_successfully_convert_to_un(_R("18446744073709551615"), 18446744073709551615ull)) goto error;
+#endif
 
 	if (!zz_test_char_failed_to_convert_to_un(_R(""))) goto error;
 	if (!zz_test_char_failed_to_convert_to_un(_R(" "))) goto error;
@@ -641,7 +643,9 @@ static rt_s zz_test_char_convert_to_n()
 	if (!zz_test_char_successfully_convert_to_n(_R("-1"), -1)) goto error;
 	if (!zz_test_char_successfully_convert_to_n(_R("-0"), 0)) goto error;
 	if (!zz_test_char_successfully_convert_to_n(_R("-2111222333"), -2111222333)) goto error;
-	/* TODO: Test larger numbers under 64 bits. */
+#ifdef RT_DEFINE_64
+	if (!zz_test_char_successfully_convert_to_n(_R("9223372036854775807"), 9223372036854775807ll)) goto error;
+#endif
 
 	if (!zz_test_char_failed_to_convert_to_n(_R(""))) goto error;
 	if (!zz_test_char_failed_to_convert_to_n(_R(" "))) goto error;
@@ -706,7 +710,10 @@ static rt_s zz_test_char_convert_hex_to_un()
 	if (!zz_test_char_successfully_convert_hex_to_un(_R("5c9d2"), 379346)) goto error;
 	if (!zz_test_char_successfully_convert_hex_to_un(_R("AF0"), 2800)) goto error;
 	if (!zz_test_char_successfully_convert_hex_to_un(_R("af0"), 2800)) goto error;
-	/* TODO: Test larger numbers under 64 bits. */
+	if (!zz_test_char_successfully_convert_hex_to_un(_R("ffffffff"), 4294967295ul)) goto error;
+#ifdef RT_DEFINE_64
+	if (!zz_test_char_successfully_convert_hex_to_un(_R("ffffffffffffffff"), 18446744073709551615ull)) goto error;
+#endif
 
 	if (!zz_test_char_failed_to_convert_hex_to_un(_R(""))) goto error;
 	if (!zz_test_char_failed_to_convert_hex_to_un(_R(" "))) goto error;

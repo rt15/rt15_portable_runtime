@@ -577,8 +577,10 @@ static rt_s zz_test_char8_convert_to_un()
 
 	if (!zz_test_char8_successfully_convert_to_un("0", 0)) goto error;
 	if (!zz_test_char8_successfully_convert_to_un("1", 1)) goto error;
-	if (!zz_test_char8_successfully_convert_to_un("4294967296", 4294967296)) goto error;
-	/* TODO: Test larger numbers under 64 bits. */
+	if (!zz_test_char8_successfully_convert_to_un("4294967295", 4294967295ul)) goto error;
+#ifdef RT_DEFINE_64
+	if (!zz_test_char8_successfully_convert_to_un("18446744073709551615", 18446744073709551615ull)) goto error;
+#endif
 
 	if (!zz_test_char8_failed_to_convert_to_un("")) goto error;
 	if (!zz_test_char8_failed_to_convert_to_un(" ")) goto error;
@@ -643,7 +645,9 @@ static rt_s zz_test_char8_convert_to_n()
 	if (!zz_test_char8_successfully_convert_to_n("-1", -1)) goto error;
 	if (!zz_test_char8_successfully_convert_to_n("-0", 0)) goto error;
 	if (!zz_test_char8_successfully_convert_to_n("-2111222333", -2111222333)) goto error;
-	/* TODO: Test larger numbers under 64 bits. */
+#ifdef RT_DEFINE_64
+	if (!zz_test_char8_successfully_convert_to_n("9223372036854775807", 9223372036854775807ll)) goto error;
+#endif
 
 	if (!zz_test_char8_failed_to_convert_to_n("")) goto error;
 	if (!zz_test_char8_failed_to_convert_to_n(" ")) goto error;
@@ -708,7 +712,10 @@ static rt_s zz_test_char8_convert_hex_to_un()
 	if (!zz_test_char8_successfully_convert_hex_to_un("5c9d2", 379346)) goto error;
 	if (!zz_test_char8_successfully_convert_hex_to_un("AF0", 2800)) goto error;
 	if (!zz_test_char8_successfully_convert_hex_to_un("af0", 2800)) goto error;
-	/* TODO: Test larger numbers under 64 bits. */
+	if (!zz_test_char8_successfully_convert_hex_to_un("ffffffff", 4294967295ul)) goto error;
+#ifdef RT_DEFINE_64
+	if (!zz_test_char8_successfully_convert_hex_to_un("ffffffffffffffff", 18446744073709551615ull)) goto error;
+#endif
 
 	if (!zz_test_char8_failed_to_convert_hex_to_un("")) goto error;
 	if (!zz_test_char8_failed_to_convert_hex_to_un(" ")) goto error;
