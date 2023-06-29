@@ -158,7 +158,13 @@ rt_s zz_manual_test_console()
 	if (!zz_manual_test_console_io_device()) goto error;
 	if (!zz_manual_test_console_read_file(test_resources_dir, _R("latin1.txt"), RT_ENCODING_ISO_8859_15)) goto error;
 	if (!zz_manual_test_console_read_file(test_resources_dir, _R("utf8.txt"), RT_ENCODING_UTF_8)) goto error;
+
 	if (!rt_console_write_string(_R("Accented character in source file: OOOOÈOOOO\n"))) goto error;
+
+	if (!rt_console_write_string(_R("Writing nothing: OOOO"))) goto error;
+	if (!rt_console_write_string(_R(""))) goto error;
+	if (!rt_console_write_string(_R("OOOO\n"))) goto error;
+
 	if (!zz_manual_test_read_line()) goto error;
 	if (!zz_manual_test_read_char()) goto error;
 
