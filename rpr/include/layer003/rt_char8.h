@@ -125,13 +125,52 @@ rt_un rt_char8_fast_lower(rt_char8 *str);
  */
 rt_un rt_char8_fast_upper(rt_char8 *str);
 
+/**
+ *
+ * <p>
+ * Beware that this function does not check for overflows.
+ * </p>
+ */
 rt_s rt_char8_convert_to_un(const rt_char8 *str, rt_un *result);
+
+/**
+ *
+ * <p>
+ * Beware that this function does not check for overflows.
+ * </p>
+ */
 rt_s rt_char8_convert_to_un_with_size(const rt_char8 *str, rt_un str_size, rt_un *result);
 
+/**
+ *
+ * <p>
+ * Beware that this function does not check for overflows.
+ * </p>
+ */
 rt_s rt_char8_convert_to_n(const rt_char8 *str, rt_n *result);
+
+/**
+ *
+ * <p>
+ * Beware that this function does not check for overflows.
+ * </p>
+ */
 rt_s rt_char8_convert_to_n_with_size(const rt_char8 *str, rt_un str_size, rt_n *result);
 
+/**
+ *
+ * <p>
+ * Beware that this function does not check for overflows.
+ * </p>
+ */
 rt_s rt_char8_convert_hex_to_un(const rt_char8 *str, rt_un *result);
+
+/**
+ *
+ * <p>
+ * Beware that this function does not check for overflows.
+ * </p>
+ */
 rt_s rt_char8_convert_hex_to_un_with_size(const rt_char8 *str, rt_un str_size, rt_un *result);
 
 /**

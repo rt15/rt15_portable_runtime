@@ -268,7 +268,6 @@ rt_un rt_char_fast_upper(rt_char *str)
 	return ret;
 }
 
-/* TODO: Watch out for overflows!? Check i at the end then check characters if necessary. */
 rt_s rt_char_convert_to_un(const rt_char *str, rt_un *result)
 {
 	rt_char character;
@@ -307,7 +306,6 @@ error:
 	goto free;
 }
 
-/* TODO: Watch out for overflows!? */
 rt_s rt_char_convert_to_un_with_size(const rt_char *str, rt_un str_size, rt_un *result)
 {
 	rt_char character;
