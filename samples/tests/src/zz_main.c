@@ -29,7 +29,7 @@ static rt_s zz_display_help(rt_s ret)
 	return ret;
 }
 
-static rt_s zz_main_do(rt_un argc, const rt_char *argv[])
+static rt_s zz_main(rt_un argc, const rt_char *argv[])
 {
 	rt_un arg_size;
 	rt_s ret;
@@ -107,7 +107,7 @@ rt_un16 rpr_main(rt_un argc, const rt_char *argv[])
 {
 	int ret;
 
-	if (zz_main_do(argc, argv))
+	if (zz_main(argc, argv))
 		ret = 0;
 	else
 		ret = 1;
