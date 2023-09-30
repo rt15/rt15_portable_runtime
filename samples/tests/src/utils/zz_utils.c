@@ -19,7 +19,15 @@ static rt_s zz_get_dir(const rt_char *dir_name, rt_char *buffer, rt_un buffer_ca
 
 	/* Checking the directory. */
 	if (!rt_file_path_get_type(buffer, &type)) goto error;
-	if (type != RT_FILE_PATH_TYPE_DIR) goto error;
+	if (type != RT_FILE_PATH_TYPE_DIR) {
+		if (type == RT_FILE_PATH_TYPE_NONE && rt_char_equals(dir_name, rt_char_get_size(dir_name), _R("tmp"), 3)) {
+			/* Create the tmp directory if it does not exist yet. */
+			if (!rt_file_system_create_dir(buffer))
+				goto error;
+		} else {
+			goto error;
+		}
+	}
 
 	ret = RT_OK;
 free:

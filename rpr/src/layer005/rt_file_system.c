@@ -585,14 +585,20 @@ static rt_s rt_file_system_move_or_rename_dir_or_file(const rt_char *source_file
 	}
 
 	/* rename is faster under Linux but does not work across files systems/mount points. */
+	/* It works on both files and directories. */
 	if (rename(source_file_path, destination_file_path)) {
 		if (rename_operation) {
 			/* Rename has failed while it is a renaming (So same file system/mount point). */
 			goto error;
 		}
-		/* The rename call has failed, try another approach to move: copy then delete. */
-		if (!rt_file_system_copy_file(source_file_path, destination_file_path, RT_FALSE)) goto error;
-		if (!rt_file_system_delete_file(source_file_path)) goto error;
+			/* The rename call has failed, try another approach to move: copy then delete. */
+		if (dir) {
+			if (!rt_file_system_copy_dir(source_file_path, destination_file_path, RT_FALSE)) goto error;
+			if (!rt_file_system_delete_dir(source_file_path)) goto error;
+		} else {
+			if (!rt_file_system_copy_file(source_file_path, destination_file_path, RT_FALSE)) goto error;
+			if (!rt_file_system_delete_file(source_file_path)) goto error;
+		}
 	}
 #endif
 
