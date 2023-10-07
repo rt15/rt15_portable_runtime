@@ -3,6 +3,26 @@
 
 #include "layer000/rt_types.h"
 
+
+enum rt_console_color {
+	RT_CONSOLE_COLOR_BLACK = 0,
+	RT_CONSOLE_COLOR_BLUE = 0x1,
+	RT_CONSOLE_COLOR_GREEN = 0x2,
+	RT_CONSOLE_COLOR_CYAN = 0x1 | 0x2, /* Dark cyan. You might prefer BRIGHT_CYAN. */
+	RT_CONSOLE_COLOR_RED = 0x4,
+	RT_CONSOLE_COLOR_MAGENTA = 0x1 | 0x4,
+	RT_CONSOLE_COLOR_YELLOW = 0x2 | 0x4, /* More like orange. Prefer BRIGHT_YELLOW for yellow. */
+	RT_CONSOLE_COLOR_WHITE = 0x1 | 0x2 | 0x4, /* Very light gray, default color under Windows. */
+	RT_CONSOLE_COLOR_BRIGHT_BLACK = 0x8, /* Gray. */
+	RT_CONSOLE_COLOR_BRIGHT_BLUE = 0x1 | 0x8,
+	RT_CONSOLE_COLOR_BRIGHT_GREEN = 0x2 | 0x8, /* Lemon green. */
+	RT_CONSOLE_COLOR_BRIGHT_CYAN = 0x1 | 0x2 | 0x8,
+	RT_CONSOLE_COLOR_BRIGHT_RED = 0x4 | 0x8, /* Almost orange. */
+	RT_CONSOLE_COLOR_BRIGHT_MAGENTA = 0x1 | 0x4 | 0x8, /* Almost pink. */
+	RT_CONSOLE_COLOR_BRIGHT_YELLOW = 0x2 | 0x4 | 0x8, /* Yellow. */
+	RT_CONSOLE_COLOR_BRIGHT_WHITE = 0x1 | 0x2 | 0x4 | 0x8 /* True white. */
+};
+
 rt_s rt_console_write_string(const rt_char *str);
 rt_s rt_console_write_string_with_size(const rt_char *str, rt_un size);
 
@@ -41,5 +61,15 @@ rt_s rt_console_read_char(rt_char *character);
  * Clear the console screen.
  */
 rt_s rt_console_clear();
+
+/**
+ * Set console foreground color.
+ */
+rt_s rt_console_set_color(enum rt_console_color console_color);
+
+/**
+ * Reset console foreground color to the default one.
+ */
+rt_s rt_console_reset_color();
 
 #endif /* RT_CONSOLE_H */

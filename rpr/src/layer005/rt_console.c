@@ -465,12 +465,139 @@ error:
 	goto free;
 }
 
+static rt_s rt_console_set_windows_color(rt_un windows_color)
+{
+	rt_h std_output_handle;
+	rt_s ret;
+
+	std_output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	/* GetStdHandle returns INVALID_HANDLE_VALUE and set last error in case of issue. */
+	if (std_output_handle == INVALID_HANDLE_VALUE)
+		goto error;
+
+	/* Returns zero and set last error in case of issue. */
+	if (!SetConsoleTextAttribute(std_output_handle, windows_color))
+		goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_console_set_color(enum rt_console_color console_color)
+{
+	return rt_console_set_windows_color(console_color);
+}
+
+rt_s rt_console_reset_color()
+{
+	return rt_console_set_windows_color(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+}
+
 #else
 
 rt_s rt_console_clear()
 {
-	printf("\033[2J");
-	return RT_OK;
+	rt_s ret;
+
+	if (!rt_console_write_string_with_size("\033[2J", 4))
+		goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_console_set_color(enum rt_console_color console_color)
+{
+	char *string;
+	rt_s ret;
+
+	switch (console_color) {
+	case RT_CONSOLE_COLOR_BLACK:
+		string = "\033[30m";
+		break;
+	case RT_CONSOLE_COLOR_RED:
+		string = "\033[31m";
+		break;
+	case RT_CONSOLE_COLOR_GREEN:
+		string = "\033[32m";
+		break;
+	case RT_CONSOLE_COLOR_YELLOW:
+		string = "\033[33m";
+		break;
+	case RT_CONSOLE_COLOR_BLUE:
+		string = "\033[34m";
+		break;
+	case RT_CONSOLE_COLOR_MAGENTA:
+		string = "\033[35m";
+		break;
+	case RT_CONSOLE_COLOR_CYAN:
+		string = "\033[36m";
+		break;
+	case RT_CONSOLE_COLOR_WHITE:
+		string = "\033[37m";
+		break;
+	case RT_CONSOLE_COLOR_BRIGHT_BLACK:
+		string = "\033[90m";
+		break;
+	case RT_CONSOLE_COLOR_BRIGHT_RED:
+		string = "\033[91m";
+		break;
+	case RT_CONSOLE_COLOR_BRIGHT_GREEN:
+		string = "\033[92m";
+		break;
+	case RT_CONSOLE_COLOR_BRIGHT_YELLOW:
+		string = "\033[93m";
+		break;
+	case RT_CONSOLE_COLOR_BRIGHT_BLUE:
+		string = "\033[94m";
+		break;
+	case RT_CONSOLE_COLOR_BRIGHT_MAGENTA:
+		string = "\033[95m";
+		break;
+	case RT_CONSOLE_COLOR_BRIGHT_CYAN:
+		string = "\033[96m";
+		break;
+	case RT_CONSOLE_COLOR_BRIGHT_WHITE:
+		string = "\033[97m";
+		break;
+	}
+
+	if (!rt_console_write_string_with_size(string, 5))
+		goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_console_reset_color()
+{
+	rt_s ret;
+
+	if (!rt_console_write_string_with_size("\033[0m", 4))
+		goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
 }
 
 #endif

@@ -146,6 +146,52 @@ error:
 	goto free;
 }
 
+static rt_s zz_manual_test_set_color()
+{
+	rt_s ret;
+
+	if (!rt_console_set_color(RT_CONSOLE_COLOR_BLACK)) goto error;
+	if (!rt_console_write_string(_R("Black\n"))) goto error;
+	if (!rt_console_set_color(RT_CONSOLE_COLOR_BLUE)) goto error;
+	if (!rt_console_write_string(_R("Blue\n"))) goto error;
+	if (!rt_console_set_color(RT_CONSOLE_COLOR_GREEN)) goto error;
+	if (!rt_console_write_string(_R("Green\n"))) goto error;
+	if (!rt_console_set_color(RT_CONSOLE_COLOR_CYAN)) goto error;
+	if (!rt_console_write_string(_R("Cyan\n"))) goto error;
+	if (!rt_console_set_color(RT_CONSOLE_COLOR_RED)) goto error;
+	if (!rt_console_write_string(_R("Red\n"))) goto error;
+	if (!rt_console_set_color(RT_CONSOLE_COLOR_MAGENTA)) goto error;
+	if (!rt_console_write_string(_R("Magenta\n"))) goto error;
+	if (!rt_console_set_color(RT_CONSOLE_COLOR_YELLOW)) goto error;
+	if (!rt_console_write_string(_R("Yellow\n"))) goto error;
+	if (!rt_console_set_color(RT_CONSOLE_COLOR_WHITE)) goto error;
+	if (!rt_console_write_string(_R("White\n"))) goto error;
+	if (!rt_console_set_color(RT_CONSOLE_COLOR_BRIGHT_BLACK)) goto error;
+	if (!rt_console_write_string(_R("Bright black\n"))) goto error;
+	if (!rt_console_set_color(RT_CONSOLE_COLOR_BRIGHT_BLUE)) goto error;
+	if (!rt_console_write_string(_R("Bright blue\n"))) goto error;
+	if (!rt_console_set_color(RT_CONSOLE_COLOR_BRIGHT_GREEN)) goto error;
+	if (!rt_console_write_string(_R("Bright green\n"))) goto error;
+	if (!rt_console_set_color(RT_CONSOLE_COLOR_BRIGHT_CYAN)) goto error;
+	if (!rt_console_write_string(_R("Bright cyan\n"))) goto error;
+	if (!rt_console_set_color(RT_CONSOLE_COLOR_BRIGHT_RED)) goto error;
+	if (!rt_console_write_string(_R("Bright red\n"))) goto error;
+	if (!rt_console_set_color(RT_CONSOLE_COLOR_BRIGHT_MAGENTA)) goto error;
+	if (!rt_console_write_string(_R("Bright magenta\n"))) goto error;
+	if (!rt_console_set_color(RT_CONSOLE_COLOR_BRIGHT_YELLOW)) goto error;
+	if (!rt_console_write_string(_R("Bright yellow\n"))) goto error;
+	if (!rt_console_set_color(RT_CONSOLE_COLOR_BRIGHT_WHITE)) goto error;
+	if (!rt_console_write_string(_R("Bright white\n"))) goto error;
+	if (!rt_console_reset_color()) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s zz_manual_test_console()
 {
 	rt_char test_resources_dir[RT_FILE_PATH_SIZE];
@@ -167,6 +213,8 @@ rt_s zz_manual_test_console()
 
 	if (!zz_manual_test_read_line()) goto error;
 	if (!zz_manual_test_read_char()) goto error;
+
+	if (!zz_manual_test_set_color()) goto error;
 
 	ret = RT_OK;
 free:
