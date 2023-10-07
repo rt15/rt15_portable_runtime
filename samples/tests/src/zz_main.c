@@ -25,6 +25,8 @@ static rt_s zz_display_help(rt_s ret)
 		ret = RT_FAILED;
 	if (!rt_console_write(_R("tests <--manual|-m>\n"), error))
 		ret = RT_FAILED;
+	if (!rt_console_write(_R("tests <--clear-screen|-c>\n"), error))
+		ret = RT_FAILED;
 
 	return ret;
 }
@@ -83,6 +85,12 @@ static rt_s zz_main(rt_un argc, const rt_char *argv[])
 				   rt_char_equals(argv[1], arg_size, _R("-m"), 2)) {
 
 				if (!zz_manual_tests())
+					goto error;
+
+			} else if (rt_char_equals(argv[1], arg_size, _R("--clear-screen"), 14) ||
+				   rt_char_equals(argv[1], arg_size, _R("-c"), 2)) {
+
+				if (!rt_console_clear())
 					goto error;
 
 			} else {

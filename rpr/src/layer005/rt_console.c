@@ -422,3 +422,55 @@ error:
 }
 
 #endif
+
+#ifdef RT_DEFINE_WINDOWS
+
+rt_s rt_console_clear()
+{
+	rt_h std_output_handle;
+	COORD cursor_position;
+	DWORD written;
+	CONSOLE_SCREEN_BUFFER_INFO screen_buffer_info;
+	rt_s ret;
+
+	std_output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	/* GetStdHandle returns INVALID_HANDLE_VALUE and set last error in case of issue. */
+	if (std_output_handle == INVALID_HANDLE_VALUE)
+		goto error;
+
+	cursor_position.X = 0;
+	cursor_position.Y = 0;
+
+	/* Get the current console screen buffer information. */
+	/* Returns zero and set last error in case of issue. */
+	if (!GetConsoleScreenBufferInfo(std_output_handle, &screen_buffer_info))
+		goto error;
+
+	/* Fill the entire console screen with blank spaces. */
+	/* Returns zero and set last error in case of issue. */
+	if (!FillConsoleOutputCharacter(std_output_handle, ' ', screen_buffer_info.dwSize.X * screen_buffer_info.dwSize.Y, cursor_position, &written))
+		goto error;
+
+	/* Set the cursor position to the top left corner. */
+	/* Returns zero and set last error in case of issue. */
+	if (!SetConsoleCursorPosition(std_output_handle, cursor_position))
+		goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+#else
+
+rt_s rt_console_clear()
+{
+	printf("\033[2J");
+	return RT_OK;
+}
+
+#endif

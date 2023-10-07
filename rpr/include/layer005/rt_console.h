@@ -37,4 +37,9 @@ rt_s rt_console_read_line(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_
  */
 rt_s rt_console_read_char(rt_char *character);
 
+/**
+ * Clear the console screen.
+ */
+rt_s rt_console_clear();
+
 #endif /* RT_CONSOLE_H */
