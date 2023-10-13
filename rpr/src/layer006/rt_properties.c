@@ -194,7 +194,7 @@ static rt_s rt_properties_create_from_str_do(struct rt_hash_table_entry **proper
 	rt_un current_index = 0;
 	rt_char current_char;
 	rt_char next_char;
-	rt_char *key;
+	rt_char *key = RT_NULL;
 	rt_char *value;
 	rt_s ret;
 

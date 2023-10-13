@@ -618,9 +618,9 @@ rt_s rt_process_create_with_redirections(struct rt_process *process, RT_WINDOWS_
 	struct rt_io_device std_output_device;
 	struct rt_io_device std_error_device;
 
-	struct rt_io_device *actual_std_input;
-	struct rt_io_device *actual_std_output;
-	struct rt_io_device *actual_std_error;
+	struct rt_io_device *actual_std_input = std_input;
+	struct rt_io_device *actual_std_output = std_output;
+	struct rt_io_device *actual_std_error = std_error;
 
 	rt_b inheritable;
 
@@ -646,9 +646,7 @@ rt_s rt_process_create_with_redirections(struct rt_process *process, RT_WINDOWS_
 		startup_info.dwFlags |= STARTF_USESTDHANDLES;
 
 		/* Std input. */
-		if (std_input) {
-			actual_std_input = std_input;
-		} else {
+		if (!actual_std_input) {
 			 if (RT_UNLIKELY(!rt_io_device_create_from_std_input(&std_input_device)))
 				 goto error;
 			 actual_std_input = &std_input_device;
@@ -656,9 +654,7 @@ rt_s rt_process_create_with_redirections(struct rt_process *process, RT_WINDOWS_
 		startup_info.hStdInput = actual_std_input->handle;
 
 		/* Std output. */
-		if (std_output) {
-			actual_std_output = std_output;
-		} else {
+		if (!actual_std_output) {
 			if (RT_UNLIKELY(!rt_io_device_create_from_std_output(&std_output_device)))
 				goto error;
 			actual_std_output = &std_output_device;
@@ -666,9 +662,7 @@ rt_s rt_process_create_with_redirections(struct rt_process *process, RT_WINDOWS_
 		startup_info.hStdOutput = actual_std_output->handle;
 
 		/* Std error. */
-		if (std_error) {
-			actual_std_error = std_error;
-		} else {
+		if (!actual_std_error) {
 			if (RT_UNLIKELY(!rt_io_device_create_from_std_error(&std_error_device)))
 				goto error;
 			actual_std_error = &std_error_device;

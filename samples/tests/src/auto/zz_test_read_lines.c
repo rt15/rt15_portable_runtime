@@ -87,6 +87,9 @@ static rt_s zz_test_read_lines_callback(const rt_char8 *line, rt_un line_size, e
 			expected_eol = RT_EOL_NONE;
 		}
 		break;
+	default:
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
 	}
 
 	if (RT_UNLIKELY(!rt_char8_equals(line, line_size, expected_line, rt_char8_get_size(expected_line))))
@@ -211,6 +214,9 @@ static rt_s zz_test_read_lines_copy_file_callback(const rt_char8 *line, rt_un li
 	case RT_EOL_CR:
 		end_of_line = "\r";
 		break;
+	default:
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
 	}
 
 	if (end_of_line) {
