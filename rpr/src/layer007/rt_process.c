@@ -20,20 +20,20 @@ rt_s rt_process_spawn_sync(const rt_char *current_dir, struct rt_env_vars *env_v
 	rt_b process_created = RT_FALSE;
 	rt_s ret;
 
-	if (!rt_process_create(&process, RT_TRUE, current_dir, env_vars, application_path_and_args))
+	if (RT_UNLIKELY(!rt_process_create(&process, RT_TRUE, current_dir, env_vars, application_path_and_args)))
 		goto error;
 	process_created = RT_TRUE;
 
-	if (!rt_process_join(&process))
+	if (RT_UNLIKELY(!rt_process_join(&process)))
 		goto error;
-	if (!rt_process_get_exit_code(&process, exit_code))
+	if (RT_UNLIKELY(!rt_process_get_exit_code(&process, exit_code)))
 		goto error;
 
 	ret = RT_OK;
 free:
 	if (process_created) {
 		process_created = RT_FALSE;
-		if (!rt_process_free(&process) && ret)
+		if (RT_UNLIKELY(!rt_process_free(&process) && ret))
 			goto error;
 	}
 	return ret;
@@ -49,7 +49,7 @@ rt_s rt_process_spawn_async(const rt_char *current_dir, struct rt_env_vars *env_
 	rt_b process_created = RT_FALSE;
 	rt_s ret;
 
-	if (!rt_process_create(&process, RT_FALSE, current_dir, env_vars, application_path_and_args))
+	if (RT_UNLIKELY(!rt_process_create(&process, RT_FALSE, current_dir, env_vars, application_path_and_args)))
 		goto error;
 	process_created = RT_TRUE;
 
@@ -57,7 +57,7 @@ rt_s rt_process_spawn_async(const rt_char *current_dir, struct rt_env_vars *env_
 free:
 	if (process_created) {
 		process_created = RT_FALSE;
-		if (!rt_process_free(&process) && ret)
+		if (RT_UNLIKELY(!rt_process_free(&process) && ret))
 			goto error;
 	}
 	return ret;
@@ -98,7 +98,7 @@ static rt_s rt_process_convert_arg_to_command_line(const rt_char *arg, rt_char *
 
 	if (need_double_quotes) {
 		/* Open double-quotes. */
-		if (!rt_char_append_char(_R('"'), buffer, buffer_capacity, buffer_size))
+		if (RT_UNLIKELY(!rt_char_append_char(_R('"'), buffer, buffer_capacity, buffer_size)))
 			goto error;
 
 		i = 0;
@@ -110,19 +110,19 @@ static rt_s rt_process_convert_arg_to_command_line(const rt_char *arg, rt_char *
 				if (arg[i] == _R('"')) {
 					for (j = 0; j < anti_slashes_count; j++) {
 						/* Escape anti-slashes just before the double quote. */
-						if (!rt_char_append_char(_R('\\'), buffer, buffer_capacity, buffer_size))
+						if (RT_UNLIKELY(!rt_char_append_char(_R('\\'), buffer, buffer_capacity, buffer_size)))
 							goto error;
 					}
 
 					/* Escape double-quote. */
-					if (!rt_char_append_char(_R('\\'), buffer, buffer_capacity, buffer_size))
+					if (RT_UNLIKELY(!rt_char_append_char(_R('\\'), buffer, buffer_capacity, buffer_size)))
 						goto error;
 				}
 				anti_slashes_count = 0;
 			}
 
 			/* Copy character. */
-			if (!rt_char_append_char(arg[i], buffer, buffer_capacity, buffer_size))
+			if (RT_UNLIKELY(!rt_char_append_char(arg[i], buffer, buffer_capacity, buffer_size)))
 				goto error;
 
 			i++;
@@ -130,16 +130,16 @@ static rt_s rt_process_convert_arg_to_command_line(const rt_char *arg, rt_char *
 
 		/* Protect possible slashes before added closing double-quote. */
 		for (i = 0; i < anti_slashes_count; i++) {
-			if (!rt_char_append_char(_R('\\'), buffer, buffer_capacity, buffer_size))
+			if (RT_UNLIKELY(!rt_char_append_char(_R('\\'), buffer, buffer_capacity, buffer_size)))
 				goto error;
 		}
 
 		/* Close double-quotes. */
-		if (!rt_char_append_char(_R('"'), buffer, buffer_capacity, buffer_size))
+		if (RT_UNLIKELY(!rt_char_append_char(_R('"'), buffer, buffer_capacity, buffer_size)))
 			goto error;
 	} else {
 		/* No need to add double-quotes, simply append the argument. */
-		if (!rt_char_append(arg, rt_char_get_size(arg), buffer, buffer_capacity, buffer_size))
+		if (RT_UNLIKELY(!rt_char_append(arg, rt_char_get_size(arg), buffer, buffer_capacity, buffer_size)))
 			goto error;
 	}
 
@@ -256,7 +256,7 @@ static rt_s rt_process_argv_to_command_line(const rt_char *const *application_pa
 	command_line_buffer_capacity++;
 
 	/* Allocate space for the command line if needed. */
-	if (!rt_static_heap_alloc_if_needed(buffer, buffer_capacity * sizeof(rt_char), heap_buffer, &heap_buffer_capacity, (void**)command_line, command_line_buffer_capacity * sizeof(rt_char)))
+	if (RT_UNLIKELY(!rt_static_heap_alloc_if_needed(buffer, buffer_capacity * sizeof(rt_char), heap_buffer, &heap_buffer_capacity, (void**)command_line, command_line_buffer_capacity * sizeof(rt_char))))
 		goto error;
 
 	/* Simplify pointer access. */
@@ -271,11 +271,11 @@ static rt_s rt_process_argv_to_command_line(const rt_char *const *application_pa
 			first = RT_FALSE;
 		} else {
 			/* Arguments separator. */
-			if (!rt_char_append_char(_R(' '), local_command_line, command_line_buffer_capacity, &command_line_buffer_size))
+			if (RT_UNLIKELY(!rt_char_append_char(_R(' '), local_command_line, command_line_buffer_capacity, &command_line_buffer_size)))
 				goto error;
 		}
 		/* Convert argument. */
-		if (!rt_process_convert_arg_to_command_line(*in_application_path_and_args, local_command_line, command_line_buffer_capacity, &command_line_buffer_size))
+		if (RT_UNLIKELY(!rt_process_convert_arg_to_command_line(*in_application_path_and_args, local_command_line, command_line_buffer_capacity, &command_line_buffer_size)))
 			goto error;
 
 		/* Switch to next argument. */
@@ -326,7 +326,7 @@ static rt_s rt_process_create_actual_linux(struct rt_process *process, const rt_
 	rt_s ret;
 
 	/* Not inheritable, only used by the forked process before execvp/execvpe. */
-	if (!rt_pipe_create(&pipe))
+	if (RT_UNLIKELY(!rt_pipe_create(&pipe)))
 		goto error;
 	input_io_device = &pipe.input_io_device;
 	output_io_device = &pipe.output_io_device;
@@ -421,13 +421,13 @@ handle_child_error:
 
 		/* We close writing pipe to avoid a dead lock (as we will read from the pipe soon). It will be used only by the child. */
 		output_created = RT_FALSE;
-		if (!rt_io_device_free(output_io_device))
+		if (RT_UNLIKELY(!rt_io_device_free(output_io_device)))
 			goto error;
 
 		/* Synchronously read errno or zero bytes (pipe closed, success!) from created child. */
-		if (!input_stream->read(input_stream, (rt_char8*)&error_number, sizeof(error_number), &bytes_read))
+		if (RT_UNLIKELY(!input_stream->read(input_stream, (rt_char8*)&error_number, sizeof(error_number), &bytes_read)))
 			goto error;
-		if (bytes_read) {
+		if (RT_UNLIKELY(bytes_read)) {
 			/* Copy errno read from child pipe into parent/intermediate errno. */
 			errno = error_number;
 			goto error;
@@ -441,12 +441,12 @@ handle_child_error:
 free:
 	if (output_created) {
 		output_created = RT_FALSE;
-		if (!rt_io_device_free(output_io_device) && ret)
+		if (RT_UNLIKELY(!rt_io_device_free(output_io_device) && ret))
 			goto error;
 	}
 	if (input_created) {
 		input_created = RT_FALSE;
-		if (!rt_io_device_free(input_io_device) && ret)
+		if (RT_UNLIKELY(!rt_io_device_free(input_io_device) && ret))
 			goto error;
 	}
 	return ret;
@@ -484,7 +484,7 @@ static rt_s rt_process_create_linux_using_intermediate(struct rt_process *proces
 	rt_s ret;
 
 	/* Not inheritable, only used by the forked process. */
-	if (!rt_pipe_create(&pipe))
+	if (RT_UNLIKELY(!rt_pipe_create(&pipe)))
 		goto error;
 	input_io_device = &pipe.input_io_device;
 	output_io_device = &pipe.output_io_device;
@@ -542,20 +542,20 @@ handle_child_error:
 
 		/* We close writing pipe to avoid a dead lock (as we will read from the pipe soon). It will be used only by the intermediate. */
 		output_created = RT_FALSE;
-		if (!rt_io_device_free(output_io_device))
+		if (RT_UNLIKELY(!rt_io_device_free(output_io_device)))
 			goto error;
 
 		/* Wait for intermediate process and retrieve its exit code. */
-		if (!rt_process_join(&intermediate_process))
+		if (RT_UNLIKELY(!rt_process_join(&intermediate_process)))
 			goto error;
-		if (!rt_process_get_exit_code(&intermediate_process, &intermediate_process_exit_code))
+		if (RT_UNLIKELY(!rt_process_get_exit_code(&intermediate_process, &intermediate_process_exit_code)))
 			goto error;
 
 		if (intermediate_process_exit_code) {
 			/* Something went wrong at some point in the intermediate process. */
 
 			/* Synchronously read errno or zero bytes (should not happen) from created intermediate. */
-			if (!input_stream->read(input_stream, (rt_char8*)&error_number, sizeof(error_number), &bytes_read))
+			if (RT_UNLIKELY(!input_stream->read(input_stream, (rt_char8*)&error_number, sizeof(error_number), &bytes_read)))
 				goto error;
 			if (bytes_read) {
 				/* Copy errno read from child pipe into parent errno. */
@@ -571,9 +571,9 @@ handle_child_error:
 			/* The intermediate process has done its job. */
 
 			/* Synchronously read PID or zero bytes (should not happen) from created intermediate. */
-			if (!input_stream->read(input_stream, (rt_char8*)&child_pid, sizeof(child_pid), &bytes_read))
+			if (RT_UNLIKELY(!input_stream->read(input_stream, (rt_char8*)&child_pid, sizeof(child_pid), &bytes_read)))
 				goto error;
-			if (bytes_read) {
+			if (RT_LIKELY(bytes_read)) {
 				/* Great, we have read the child PID from the intermediate pipe. */
 				process->pid = child_pid;
 			} else {
@@ -591,12 +591,12 @@ handle_child_error:
 free:
 	if (output_created) {
 		output_created = RT_FALSE;
-		if (!rt_io_device_free(output_io_device) && ret)
+		if (RT_UNLIKELY(!rt_io_device_free(output_io_device) && ret))
 			goto error;
 	}
 	if (input_created) {
 		input_created = RT_FALSE;
-		if (!rt_io_device_free(input_io_device) && ret)
+		if (RT_UNLIKELY(!rt_io_device_free(input_io_device) && ret))
 			goto error;
 	}
 	return ret;
@@ -649,7 +649,7 @@ rt_s rt_process_create_with_redirections(struct rt_process *process, RT_WINDOWS_
 		if (std_input) {
 			actual_std_input = std_input;
 		} else {
-			 if (!rt_io_device_create_from_std_input(&std_input_device))
+			 if (RT_UNLIKELY(!rt_io_device_create_from_std_input(&std_input_device)))
 				 goto error;
 			 actual_std_input = &std_input_device;
 		}
@@ -659,7 +659,7 @@ rt_s rt_process_create_with_redirections(struct rt_process *process, RT_WINDOWS_
 		if (std_output) {
 			actual_std_output = std_output;
 		} else {
-			if (!rt_io_device_create_from_std_output(&std_output_device))
+			if (RT_UNLIKELY(!rt_io_device_create_from_std_output(&std_output_device)))
 				goto error;
 			actual_std_output = &std_output_device;
 		}
@@ -669,82 +669,81 @@ rt_s rt_process_create_with_redirections(struct rt_process *process, RT_WINDOWS_
 		if (std_error) {
 			actual_std_error = std_error;
 		} else {
-			if (!rt_io_device_create_from_std_error(&std_error_device))
+			if (RT_UNLIKELY(!rt_io_device_create_from_std_error(&std_error_device)))
 				goto error;
 			actual_std_error = &std_error_device;
 		}
 		startup_info.hStdError = actual_std_error->handle;
 
 		/* Temporarily update input inheritability if needed. */
-		if (!rt_io_device_is_inheritable(actual_std_input, &inheritable))
+		if (RT_UNLIKELY(!rt_io_device_is_inheritable(actual_std_input, &inheritable)))
 			goto error;
 		if (!inheritable) {
-			if (!rt_io_device_set_inheritable(actual_std_input, RT_TRUE))
+			if (RT_UNLIKELY(!rt_io_device_set_inheritable(actual_std_input, RT_TRUE)))
 				goto error;
 			restore_input_non_inheritable = RT_TRUE;
 		}
 
 		/* Temporarily update output inheritability if needed. */
-		if (!rt_io_device_is_inheritable(actual_std_output, &inheritable))
+		if (RT_UNLIKELY(!rt_io_device_is_inheritable(actual_std_output, &inheritable)))
 			goto error;
 		if (!inheritable) {
-			if (!rt_io_device_set_inheritable(actual_std_output, RT_TRUE))
+			if (RT_UNLIKELY(!rt_io_device_set_inheritable(actual_std_output, RT_TRUE)))
 				goto error;
 			restore_output_non_inheritable = RT_TRUE;
 		}
 
 		/* Temporarily update error inheritability if needed. */
-		if (!rt_io_device_is_inheritable(actual_std_error, &inheritable))
+		if (RT_UNLIKELY(!rt_io_device_is_inheritable(actual_std_error, &inheritable)))
 			goto error;
 		if (!inheritable) {
-			if (!rt_io_device_set_inheritable(actual_std_error, RT_TRUE))
+			if (RT_UNLIKELY(!rt_io_device_set_inheritable(actual_std_error, RT_TRUE)))
 				goto error;
 			restore_error_non_inheritable = RT_TRUE;
 		}
 	}
 
-	if (!rt_process_argv_to_command_line(application_path_and_args, command_line_buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &heap_buffer, &command_line))
+	if (RT_UNLIKELY(!rt_process_argv_to_command_line(application_path_and_args, command_line_buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &heap_buffer, &command_line)))
 		goto error;
 
 	if (env_vars) {
-		if (!rt_env_vars_get_block(env_vars, &env_vars_block))
+		if (RT_UNLIKELY(!rt_env_vars_get_block(env_vars, &env_vars_block)))
 			goto error;
 	} else {
 		env_vars_block = RT_NULL;
 	}
 
-	if (!CreateProcess(RT_NULL,		       /* lpApplicationName.								*/
-			   command_line,
-			   RT_NULL,		       /* LPSECURITY_ATTRIBUTES lpProcessAttributes.					*/
-			   RT_NULL,		       /* LPSECURITY_ATTRIBUTES lpThreadAttributes.					*/
-			   TRUE,		       /* bInheritHandles, we align inheritance with Linux.				*/
-			   CREATE_UNICODE_ENVIRONMENT, /* dwCreationFlags.								*/
-			   env_vars_block,	       /* lpEnvironment.								*/
-			   current_dir,		       /* If NULL, the new process will have the same current directory as this one.	*/
-			   &startup_info,
-			   (PROCESS_INFORMATION*)process
-			  ))
+	if (RT_UNLIKELY(!CreateProcess(RT_NULL,			   /* lpApplicationName.							 */
+				       command_line,
+				       RT_NULL,			   /* LPSECURITY_ATTRIBUTES lpProcessAttributes.				 */
+				       RT_NULL,			   /* LPSECURITY_ATTRIBUTES lpThreadAttributes.					 */
+				       TRUE,			   /* bInheritHandles, we align inheritance with Linux.				 */
+				       CREATE_UNICODE_ENVIRONMENT, /* dwCreationFlags.								 */
+				       env_vars_block,		   /* lpEnvironment.								 */
+				       current_dir,		   /* If NULL, the new process will have the same current directory as this one. */
+				       &startup_info,
+				       (PROCESS_INFORMATION*)process)))
 		goto error;
 
 	ret = RT_OK;
 free:
 	if (heap_buffer) {
-		if (!rt_static_heap_free(&heap_buffer) && ret)
+		if (RT_UNLIKELY(!rt_static_heap_free(&heap_buffer) && ret))
 			goto error;
 	}
 	if (restore_error_non_inheritable) {
 		restore_error_non_inheritable = RT_FALSE;
-		if (!rt_io_device_set_inheritable(actual_std_error, RT_FALSE) && ret)
+		if (RT_UNLIKELY(!rt_io_device_set_inheritable(actual_std_error, RT_FALSE) && ret))
 			goto error;
 	}
 	if (restore_output_non_inheritable) {
 		restore_output_non_inheritable = RT_FALSE;
-		if (!rt_io_device_set_inheritable(actual_std_output, RT_FALSE) && ret)
+		if (RT_UNLIKELY(!rt_io_device_set_inheritable(actual_std_output, RT_FALSE) && ret))
 			goto error;
 	}
 	if (restore_input_non_inheritable) {
 		restore_input_non_inheritable = RT_FALSE;
-		if (!rt_io_device_set_inheritable(actual_std_input, RT_FALSE) && ret)
+		if (RT_UNLIKELY(!rt_io_device_set_inheritable(actual_std_input, RT_FALSE) && ret))
 			goto error;
 	}
 	return ret;
@@ -756,10 +755,10 @@ error:
 #else
 
 	if (child) {
-		if (!rt_process_create_actual_linux(process, current_dir, env_vars, std_input, std_output, std_error, application_path_and_args))
+		if (RT_UNLIKELY(!rt_process_create_actual_linux(process, current_dir, env_vars, std_input, std_output, std_error, application_path_and_args)))
 			goto error;
 	} else {
-		if (!rt_process_create_linux_using_intermediate(process, current_dir, env_vars, std_input, std_output, std_error, application_path_and_args))
+		if (RT_UNLIKELY(!rt_process_create_linux_using_intermediate(process, current_dir, env_vars, std_input, std_output, std_error, application_path_and_args)))
 			goto error;
 	}
 
@@ -787,7 +786,7 @@ rt_s rt_process_join(struct rt_process *process)
 	returned_value = WaitForSingleObject(process->process_handle, INFINITE);
 	if (returned_value != WAIT_OBJECT_0) {
 		/* If returned value is WAIT_FAILED, then last error is set. */
-		if (returned_value != WAIT_FAILED) {
+		if (RT_UNLIKELY(returned_value != WAIT_FAILED)) {
 			/* Set an arbitrary last error for WAIT_TIMEOUT/WAIT_ABANDONED cases. */
 			rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
 		}
@@ -797,7 +796,7 @@ rt_s rt_process_join(struct rt_process *process)
 #else
 
 	/* Returns -1 and set errno in case of error. */
-	if (waitpid((pid_t)process->pid, &status, 0) == -1)
+	if (RT_UNLIKELY(waitpid((pid_t)process->pid, &status, 0) == -1))
 		goto error;
 
 	/* Exit code can be read only if WIFEXITED is true. */
@@ -824,7 +823,7 @@ rt_s rt_process_get_exit_code(struct rt_process *process, rt_un32 *exit_code)
 #ifdef RT_DEFINE_WINDOWS
 	rt_s ret;
 
-	if (!GetExitCodeProcess(process->process_handle, exit_code))
+	if (RT_UNLIKELY(!GetExitCodeProcess(process->process_handle, exit_code)))
 		goto error;
 
 	ret = RT_OK;

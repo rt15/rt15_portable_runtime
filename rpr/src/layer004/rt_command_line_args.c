@@ -83,7 +83,7 @@ static rt_s rt_command_line_args_analyze(const rt_char *arg, enum rt_command_lin
 					if (i != arg_size) {
 						/* Copy until equals sign, skipping '--' at the beginning. */
 						*options_buffer_size = i - 2;
-						if (!rt_char_copy(&arg[2], *options_buffer_size, options_buffer, options_buffer_capacity))
+						if (RT_UNLIKELY(!rt_char_copy(&arg[2], *options_buffer_size, options_buffer, options_buffer_capacity)))
 							goto error;
 
 						/* Value is after equals sign. */
@@ -91,7 +91,7 @@ static rt_s rt_command_line_args_analyze(const rt_char *arg, enum rt_command_lin
 					} else {
 						/* Copy the whole arg without '--'. */
 						*options_buffer_size = arg_size - 2;
-						if (!rt_char_copy(&arg[2], *options_buffer_size, options_buffer, options_buffer_capacity))
+						if (RT_UNLIKELY(!rt_char_copy(&arg[2], *options_buffer_size, options_buffer, options_buffer_capacity)))
 							goto error;
 
 						/* No value directly concatenated after the option and '='. */
@@ -104,7 +104,7 @@ static rt_s rt_command_line_args_analyze(const rt_char *arg, enum rt_command_lin
 				*arg_type = RT_COMMAND_LINE_ARGS_TYPE_SHORT;
 
 				*options_buffer_size = arg_size - 1;
-				if (!rt_char_copy(&arg[1], *options_buffer_size, options_buffer, options_buffer_capacity))
+				if (RT_UNLIKELY(!rt_char_copy(&arg[1], *options_buffer_size, options_buffer, options_buffer_capacity)))
 					goto error;
 
 				*value = RT_NULL;
@@ -152,9 +152,9 @@ rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_l
 	for (i = 1; i < *argc; i++) {
 		options_buffer_size = 0;
 
-		if (!rt_command_line_args_analyze(argv[i], &arg_type,
+		if (RT_UNLIKELY(!rt_command_line_args_analyze(argv[i], &arg_type,
 						  options_buffer,   RT_CHAR_HALF_BIG_STRING_SIZE, &options_buffer_size,
-						  &value))
+						  &value)))
 			goto error;
 
 		if (arg_type == RT_COMMAND_LINE_ARGS_TYPE_SHORT) {
@@ -204,7 +204,7 @@ rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_l
 					value = RT_NULL;
 				}
 
-				if (!callback(arg_type, valid, short_option, RT_NULL, value_cardinality, value, context))
+				if (RT_UNLIKELY(!callback(arg_type, valid, short_option, RT_NULL, value_cardinality, value, context)))
 					goto error;
 				j++;
 			}
@@ -232,7 +232,7 @@ rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_l
 				value_cardinality = RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE;
 			}
 
-			if (!callback(arg_type, valid, 0, options_buffer, value_cardinality, value, context))
+			if (RT_UNLIKELY(!callback(arg_type, valid, 0, options_buffer, value_cardinality, value, context)))
 				goto error;
 
 		} else if (arg_type == RT_COMMAND_LINE_ARGS_TYPE_NON_OPTION) {
@@ -248,9 +248,9 @@ rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_l
 
 				last_option = RT_TYPE_MAX_UN;
 				for (k = i + 1; k < *argc; k++) {
-					if (!rt_command_line_args_analyze(argv[k], &arg_type,
+					if (RT_UNLIKELY(!rt_command_line_args_analyze(argv[k], &arg_type,
 									  options_buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &options_buffer_size,
-									  &value))
+									  &value)))
 						goto error;
 
 					if (arg_type == RT_COMMAND_LINE_ARGS_TYPE_SHORT) {

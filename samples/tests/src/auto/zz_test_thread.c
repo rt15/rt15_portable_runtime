@@ -22,33 +22,33 @@ rt_s zz_test_thread()
 	rt_un32 exit_code;
 	rt_s ret;
 
-	if (!rt_chrono_create(&chrono))
+	if (RT_UNLIKELY(!rt_chrono_create(&chrono)))
 		goto error;
 
-	if (!rt_thread_create(&thread, &zz_test_thread_callback, &parameter))
+	if (RT_UNLIKELY(!rt_thread_create(&thread, &zz_test_thread_callback, &parameter)))
 		goto error;
 	thread_created = RT_TRUE;
 
-	if (!rt_thread_join(&thread))
+	if (RT_UNLIKELY(!rt_thread_join(&thread)))
 		goto error;
 
-	if (!rt_chrono_get_duration(&chrono, &duration))
+	if (RT_UNLIKELY(!rt_chrono_get_duration(&chrono, &duration)))
 		goto error;
 
-	if (duration < 250000 || duration > 1000000)
+	if (RT_UNLIKELY(duration < 250000 || duration > 1000000))
 		goto error;
 
-	if (!rt_thread_get_exit_code(&thread, &exit_code))
+	if (RT_UNLIKELY(!rt_thread_get_exit_code(&thread, &exit_code)))
 		goto error;
 
-	if (exit_code != 42)
+	if (RT_UNLIKELY(exit_code != 42))
 		goto error;
 
 	ret = RT_OK;
 free:
 	if (thread_created) {
 		thread_created = RT_FALSE;
-		if (!rt_thread_free(&thread) && ret)
+		if (RT_UNLIKELY(!rt_thread_free(&thread) && ret))
 			goto error;
 	}
 	return ret;

@@ -91,6 +91,14 @@
 #define RT_LINUX_UNUSED
 #endif
 
+#ifdef RT_DEFINE_GCC
+#define RT_LIKELY(x) (__builtin_expect(!!(x), 1))
+#define RT_UNLIKELY(x) (__builtin_expect(!!(x), 0))
+#else
+#define RT_LIKELY(x) (x)
+#define RT_UNLIKELY(x) (x)
+#endif
+
 /* Use gcc __va_copy if va_copy is not available.                                      */
 /* Unlike va_copy/__va_copy, first parameter is destination, next parameter is source. */
 #if defined(RT_DEFINE_GCC) && !defined(va_copy)

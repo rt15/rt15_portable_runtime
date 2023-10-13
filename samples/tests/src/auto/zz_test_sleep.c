@@ -6,15 +6,15 @@ rt_s zz_test_sleep()
 	rt_un duration;
 	rt_s ret;
 
-	if (!rt_chrono_create(&chrono))
+	if (RT_UNLIKELY(!rt_chrono_create(&chrono)))
 		goto error;
 
 	rt_sleep_sleep(500);
 
-	if (!rt_chrono_get_duration(&chrono, &duration))
+	if (RT_UNLIKELY(!rt_chrono_get_duration(&chrono, &duration)))
 		goto error;
 
-	if (duration < 400000 || duration > 600000)
+	if (RT_UNLIKELY(duration < 400000 || duration > 600000))
 		goto error;
 
 	ret = RT_OK;

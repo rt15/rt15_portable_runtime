@@ -131,7 +131,7 @@ rt_s rt_char8_append_un(rt_un value, rt_un base, rt_char8 *buffer, rt_un buffer_
 	rt_un i, j;
 	rt_s ret;
 
-	if (base < 2 || base > 36)
+	if (RT_UNLIKELY(base < 2 || base > 36))
 		goto error;
 
 	i = *buffer_size;
@@ -144,7 +144,7 @@ rt_s rt_char8_append_un(rt_un value, rt_un base, rt_char8 *buffer, rt_un buffer_
 		if (!value)
 			break;
 	}
-	if (value)
+	if (RT_UNLIKELY(value))
 		goto error;
 
 	buffer[i] = 0;
@@ -179,7 +179,7 @@ rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_ca
 	rt_un i, j;
 	rt_s ret;
 
-	if (base < 2 || base > 36)
+	if (RT_UNLIKELY(base < 2 || base > 36))
 		goto error;
 
 	local_value = value;
@@ -193,11 +193,11 @@ rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_ca
 		if (!local_value)
 			break;
 	}
-	if (local_value)
+	if (RT_UNLIKELY(local_value))
 		goto error;
 
 	if (value < 0) {
-		if (i >= buffer_capacity - 1)
+		if (RT_UNLIKELY(i >= buffer_capacity - 1))
 			goto error;
 		buffer[i] = '-';
 		i++;
@@ -270,7 +270,7 @@ rt_s rt_char8_convert_to_un(const rt_char8 *str, rt_un *result)
 		if (!character)
 			break;
 
-		if ((character < '0') || (character > '9')) {
+		if (RT_UNLIKELY((character < '0') || (character > '9'))) {
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 			goto error;
 		} else {
@@ -279,7 +279,7 @@ rt_s rt_char8_convert_to_un(const rt_char8 *str, rt_un *result)
 		i++;
 	}
 
-	if (!i) {
+	if (RT_UNLIKELY(!i)) {
 		/* The string was empty. */
 		*result = 0;
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
@@ -303,7 +303,7 @@ rt_s rt_char8_convert_to_un_with_size(const rt_char8 *str, rt_un str_size, rt_un
 	rt_un i;
 	rt_s ret;
 
-	if (!str_size) {
+	if (RT_UNLIKELY(!str_size)) {
 		/* The string is empty. */
 		*result = 0;
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
@@ -313,7 +313,7 @@ rt_s rt_char8_convert_to_un_with_size(const rt_char8 *str, rt_un str_size, rt_un
 	for (i = 0; i < str_size; i++) {
 		character = str[i];
 
-		if ((character < '0') || (character > '9')) {
+		if (RT_UNLIKELY((character < '0') || (character > '9'))) {
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 			goto error;
 		} else {
@@ -347,7 +347,7 @@ rt_s rt_char8_convert_to_n(const rt_char8 *str, rt_n *result)
 		negative = RT_FALSE;
 	}
 
-	if (!str[0]) {
+	if (RT_UNLIKELY(!str[0])) {
 		/* The string is empty or just a minus sign. */
 		*result = 0;
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
@@ -359,7 +359,7 @@ rt_s rt_char8_convert_to_n(const rt_char8 *str, rt_n *result)
 		if (!character)
 			break;
 
-		if ((character < '0') || (character > '9')) {
+		if (RT_UNLIKELY((character < '0') || (character > '9'))) {
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 			goto error;
 		} else {
@@ -390,7 +390,7 @@ rt_s rt_char8_convert_to_n_with_size(const rt_char8 *str, rt_un str_size, rt_n *
 	rt_un i;
 	rt_s ret;
 
-	if (!str_size) {
+	if (RT_UNLIKELY(!str_size)) {
 		/* The string is empty. */
 		*result = 0;
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
@@ -399,7 +399,7 @@ rt_s rt_char8_convert_to_n_with_size(const rt_char8 *str, rt_un str_size, rt_n *
 
 	if (str[0] == '-') {
 		negative = RT_TRUE;
-		if (str_size == 1) {
+		if (RT_UNLIKELY(str_size == 1)) {
 			/* The string is only a minus sign. */
 			*result = 0;
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
@@ -412,7 +412,7 @@ rt_s rt_char8_convert_to_n_with_size(const rt_char8 *str, rt_un str_size, rt_n *
 	for (i = (negative) ? 1 : 0; i < str_size; i++) {
 		character = str[i];
 
-		if ((character < '0') || (character > '9')) {
+		if (RT_UNLIKELY((character < '0') || (character > '9'))) {
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 			goto error;
 		} else {
@@ -464,7 +464,7 @@ rt_s rt_char8_convert_hex_to_un(const rt_char8 *str, rt_un *result)
 		i++;
 	}
 
-	if (!i) {
+	if (RT_UNLIKELY(!i)) {
 		/* The string was empty. */
 		*result = 0;
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
@@ -489,7 +489,7 @@ rt_s rt_char8_convert_hex_to_un_with_size(const rt_char8 *str, rt_un str_size, r
 	rt_un i;
 	rt_s ret;
 
-	if (!str_size) {
+	if (RT_UNLIKELY(!str_size)) {
 		/* The string is empty. */
 		*result = 0;
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
@@ -562,7 +562,7 @@ rt_s rt_char8_left_pad(const rt_char8 *input, rt_un input_size, rt_char8 charact
 	if (input_size < size) {
 
 		/* Makes sure the buffer capacity is enough for the padding + input_size + zero terminating character. */
-		if (buffer_capacity < size + 1) {
+		if (RT_UNLIKELY(buffer_capacity < size + 1)) {
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 			goto error;
 		}
@@ -588,7 +588,7 @@ rt_s rt_char8_left_pad(const rt_char8 *input, rt_un input_size, rt_char8 charact
 		/* If the result is the same as the input, then there is nothing to do. */
 		if (input != buffer) {
 			/* The input is already long enough. We copy it to the result. */
-			if (!rt_char8_copy(input, input_size, buffer, buffer_capacity))
+			if (RT_UNLIKELY(!rt_char8_copy(input, input_size, buffer, buffer_capacity)))
 				goto error;
 		}
 		*buffer_size = input_size;
@@ -612,7 +612,7 @@ rt_s rt_char8_right_pad(rt_char8 character, rt_un size, rt_char8 *buffer, rt_un 
 	if (local_buffer_size < size) {
 
 		/* Makes sure the buffer is enough for its current content + padding + zero terminating character. */
-		if (buffer_capacity < size + 1) {
+		if (RT_UNLIKELY(buffer_capacity < size + 1)) {
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 			goto error;
 		}
@@ -746,7 +746,7 @@ rt_s rt_char8_vconcat(rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_siz
 	while (RT_TRUE) {
 		str = va_arg(args_list, rt_char8*);
 		if (str) {
-			if (!rt_char8_append(str, rt_char8_get_size(str), buffer, buffer_capacity, buffer_size))
+			if (RT_UNLIKELY(!rt_char8_append(str, rt_char8_get_size(str), buffer, buffer_capacity, buffer_size)))
 				goto error;
 		} else {
 			break;
@@ -779,7 +779,7 @@ rt_s rt_char8_replace(const rt_char8 *str, rt_un str_size,
 			/* No more occurrences of the searched string, copy remaining characters. */
 			remaining_characters = str_size - in_str;
 			if (remaining_characters) {
-				if (!rt_char8_append(&str[in_str], remaining_characters, buffer, buffer_capacity, buffer_size))
+				if (RT_UNLIKELY(!rt_char8_append(&str[in_str], remaining_characters, buffer, buffer_capacity, buffer_size)))
 					goto error;
 			}
 
@@ -789,13 +789,13 @@ rt_s rt_char8_replace(const rt_char8 *str, rt_un str_size,
 
 		/* Copy from the current position in str to the found index. */
 		if (index) {
-			if (!rt_char8_append(&str[in_str], index, buffer, buffer_capacity, buffer_size))
+			if (RT_UNLIKELY(!rt_char8_append(&str[in_str], index, buffer, buffer_capacity, buffer_size)))
 				goto error;
 		}
 
 		/* Copy the replacement. */
 		if (replacement_size) {
-			if (!rt_char8_append(replacement, replacement_size, buffer, buffer_capacity, buffer_size))
+			if (RT_UNLIKELY(!rt_char8_append(replacement, replacement_size, buffer, buffer_capacity, buffer_size)))
 				goto error;
 		}
 

@@ -20,14 +20,14 @@ static rt_un32 RT_STDCALL zz_test_atomic_callback(RT_UNUSED void *parameter)
 			}
 			rt_sleep_yield();
 
-			if (counter_value != counter) {
+			if (RT_UNLIKELY(counter_value != counter)) {
 				RT_ATOMIC_RELEASE(lock);
 				goto error;
 			}
 			counter = counter_value + 1;
 			rt_sleep_yield();
 
-			if (counter != counter_value + 1) {
+			if (RT_UNLIKELY(counter != counter_value + 1)) {
 				RT_ATOMIC_RELEASE(lock);
 				goto error;
 			}
@@ -58,13 +58,13 @@ static rt_s zz_test_atomic_with_threads()
 	}
 
 	for (i = 0; i < ZZ_TEST_ATOMIC_THREADS_COUNT; i++) {
-		if (!rt_thread_create(&threads[i], &zz_test_atomic_callback, RT_NULL))
+		if (RT_UNLIKELY(!rt_thread_create(&threads[i], &zz_test_atomic_callback, RT_NULL)))
 			goto error;
 		threads_created[i] = RT_TRUE;
 	}
 
 	for (i = 0; i < ZZ_TEST_ATOMIC_THREADS_COUNT; i++) {
-		if (!rt_thread_join_and_check(&threads[i]))
+		if (RT_UNLIKELY(!rt_thread_join_and_check(&threads[i])))
 			goto error;
 	}
 
@@ -73,7 +73,7 @@ free:
 	for (i = 0; i < ZZ_TEST_ATOMIC_THREADS_COUNT; i++) {
 		if (threads_created[i]) {
 			threads_created[i] = RT_FALSE;
-			if (!rt_thread_free(&threads[i]) && ret)
+			if (RT_UNLIKELY(!rt_thread_free(&threads[i]) && ret))
 				goto error;
 		}
 	}
@@ -90,33 +90,33 @@ rt_s zz_test_atomic_basics()
 	rt_s ret;
 
 	var = 12;
-	if (RT_ATOMIC_LOAD(var) != 12) goto error;
+	if (RT_UNLIKELY(RT_ATOMIC_LOAD(var) != 12)) goto error;
 	RT_ATOMIC_STORE(var, 13);
-	if (var != 13) goto error;
+	if (RT_UNLIKELY(var != 13)) goto error;
 
 	var32 = 12;
-	if (RT_ATOMIC_LOAD32(var32) != 12) goto error;
+	if (RT_UNLIKELY(RT_ATOMIC_LOAD32(var32) != 12)) goto error;
 	RT_ATOMIC_STORE32(var32, 13);
-	if (var32 != 13) goto error;
+	if (RT_UNLIKELY(var32 != 13)) goto error;
 
 	var = 0;
-	if (!RT_ATOMIC_TRY_TO_ACQUIRE(var)) goto error;
-	if (RT_ATOMIC_TRY_TO_ACQUIRE(var)) goto error;
-	if (RT_ATOMIC_TRY_TO_ACQUIRE(var)) goto error;
+	if (RT_UNLIKELY(!RT_ATOMIC_TRY_TO_ACQUIRE(var))) goto error;
+	if (RT_UNLIKELY(RT_ATOMIC_TRY_TO_ACQUIRE(var))) goto error;
+	if (RT_UNLIKELY(RT_ATOMIC_TRY_TO_ACQUIRE(var))) goto error;
 	RT_ATOMIC_RELEASE(var);
-	if (!RT_ATOMIC_TRY_TO_ACQUIRE(var)) goto error;
-	if (RT_ATOMIC_TRY_TO_ACQUIRE(var)) goto error;
-	if (RT_ATOMIC_TRY_TO_ACQUIRE(var)) goto error;
+	if (RT_UNLIKELY(!RT_ATOMIC_TRY_TO_ACQUIRE(var))) goto error;
+	if (RT_UNLIKELY(RT_ATOMIC_TRY_TO_ACQUIRE(var))) goto error;
+	if (RT_UNLIKELY(RT_ATOMIC_TRY_TO_ACQUIRE(var))) goto error;
 	RT_ATOMIC_RELEASE(var);
 
 	var32 = 0;
-	if (!RT_ATOMIC_TRY_TO_ACQUIRE32(var32)) goto error;
-	if (RT_ATOMIC_TRY_TO_ACQUIRE32(var32)) goto error;
-	if (RT_ATOMIC_TRY_TO_ACQUIRE32(var32)) goto error;
+	if (RT_UNLIKELY(!RT_ATOMIC_TRY_TO_ACQUIRE32(var32))) goto error;
+	if (RT_UNLIKELY(RT_ATOMIC_TRY_TO_ACQUIRE32(var32))) goto error;
+	if (RT_UNLIKELY(RT_ATOMIC_TRY_TO_ACQUIRE32(var32))) goto error;
 	RT_ATOMIC_RELEASE32(var32);
-	if (!RT_ATOMIC_TRY_TO_ACQUIRE32(var32)) goto error;
-	if (RT_ATOMIC_TRY_TO_ACQUIRE32(var32)) goto error;
-	if (RT_ATOMIC_TRY_TO_ACQUIRE32(var32)) goto error;
+	if (RT_UNLIKELY(!RT_ATOMIC_TRY_TO_ACQUIRE32(var32))) goto error;
+	if (RT_UNLIKELY(RT_ATOMIC_TRY_TO_ACQUIRE32(var32))) goto error;
+	if (RT_UNLIKELY(RT_ATOMIC_TRY_TO_ACQUIRE32(var32))) goto error;
 	RT_ATOMIC_RELEASE32(var32);
 
 	ret = RT_OK;
@@ -132,8 +132,8 @@ rt_s zz_test_atomic()
 {
 	rt_s ret;
 
-	if (!zz_test_atomic_basics()) goto error;
-	if (!zz_test_atomic_with_threads()) goto error;
+	if (RT_UNLIKELY(!zz_test_atomic_basics())) goto error;
+	if (RT_UNLIKELY(!zz_test_atomic_with_threads())) goto error;
 
 	ret = RT_OK;
 free:

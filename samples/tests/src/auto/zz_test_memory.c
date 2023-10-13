@@ -7,11 +7,11 @@ static rt_s zz_test_memory_compare_same(void *area1, void *area2, rt_un size)
 {
 	rt_s ret;
 
-	if (rt_memory_compare(area1, area2, size)) goto error;
-	if (rt_memory_compare(area2, area1, size)) goto error;
+	if (RT_UNLIKELY(rt_memory_compare(area1, area2, size))) goto error;
+	if (RT_UNLIKELY(rt_memory_compare(area2, area1, size))) goto error;
 
-	if (RT_MEMORY_COMPARE(area1, area2, size)) goto error;
-	if (RT_MEMORY_COMPARE(area2, area1, size)) goto error;
+	if (RT_UNLIKELY(RT_MEMORY_COMPARE(area1, area2, size))) goto error;
+	if (RT_UNLIKELY(RT_MEMORY_COMPARE(area2, area1, size))) goto error;
 
 	ret = RT_OK;
 free:
@@ -28,11 +28,11 @@ static rt_s zz_test_memory_compare_different(void *area1, void *area2, rt_un siz
 {
 	rt_s ret;
 
-	if (rt_memory_compare(area1, area2, size) <= 0) goto error;
-	if (rt_memory_compare(area2, area1, size) >= 0) goto error;
+	if (RT_UNLIKELY(rt_memory_compare(area1, area2, size) <= 0)) goto error;
+	if (RT_UNLIKELY(rt_memory_compare(area2, area1, size) >= 0)) goto error;
 
-	if (RT_MEMORY_COMPARE(area1, area2, size) <= 0) goto error;
-	if (RT_MEMORY_COMPARE(area2, area1, size) >= 0) goto error;
+	if (RT_UNLIKELY(RT_MEMORY_COMPARE(area1, area2, size) <= 0)) goto error;
+	if (RT_UNLIKELY(RT_MEMORY_COMPARE(area2, area1, size) >= 0)) goto error;
 
 	ret = RT_OK;
 free:
@@ -50,13 +50,13 @@ static rt_s zz_test_compare_memory()
 	rt_un j;
 	rt_s ret;
 
-	if (!zz_test_memory_compare_same("bar", "bar", 3)) goto error;
-	if (!zz_test_memory_compare_same("bar!", "bar!", 4)) goto error;
-	if (!zz_test_memory_compare_same("foobar", "foobar", 6)) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_compare_same("bar", "bar", 3))) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_compare_same("bar!", "bar!", 4))) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_compare_same("foobar", "foobar", 6))) goto error;
 
-	if (!zz_test_memory_compare_different("foo", "bar", 3)) goto error;
-	if (!zz_test_memory_compare_different("fooo", "foob", 4)) goto error;
-	if (!zz_test_memory_compare_different("foobar", "fooba!", 6)) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_compare_different("foo", "bar", 3))) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_compare_different("fooo", "foob", 4))) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_compare_different("foobar", "fooba!", 6))) goto error;
 
 	for (i = 1; i < 28; i++) {
 		for (j = 0; j < i - 1; j++) {
@@ -67,7 +67,7 @@ static rt_s zz_test_compare_memory()
 		area2[i - 1] = 'A';
 		area1[i] = 0;
 		area2[i] = 0;
-		if (!zz_test_memory_compare_different(area1, area2, i))
+		if (RT_UNLIKELY(!zz_test_memory_compare_different(area1, area2, i)))
 			goto error;
 	}
 
@@ -89,20 +89,20 @@ static rt_s zz_test_copy_memory_do(void *source, rt_un size)
 	rt_s ret;
 
 	returned_value = rt_memory_copy(source, buffer1, size);
-	if (returned_value != buffer1) goto error;
-	if (RT_MEMORY_COMPARE(source, buffer1, size)) goto error;
+	if (RT_UNLIKELY(returned_value != buffer1)) goto error;
+	if (RT_UNLIKELY(RT_MEMORY_COMPARE(source, buffer1, size))) goto error;
 
 	returned_value = RT_MEMORY_COPY(source, buffer2, size);
-	if (returned_value != buffer2) goto error;
-	if (RT_MEMORY_COMPARE(source, buffer2, size)) goto error;
+	if (RT_UNLIKELY(returned_value != buffer2)) goto error;
+	if (RT_UNLIKELY(RT_MEMORY_COMPARE(source, buffer2, size))) goto error;
 
 	returned_value = rt_memory_move(source, buffer3, size);
-	if (returned_value != buffer3) goto error;
-	if (RT_MEMORY_COMPARE(source, buffer3, size)) goto error;
+	if (RT_UNLIKELY(returned_value != buffer3)) goto error;
+	if (RT_UNLIKELY(RT_MEMORY_COMPARE(source, buffer3, size))) goto error;
 
 	returned_value = RT_MEMORY_MOVE(source, buffer4, size);
-	if (returned_value != buffer4) goto error;
-	if (RT_MEMORY_COMPARE(source, buffer4, size)) goto error;
+	if (RT_UNLIKELY(returned_value != buffer4)) goto error;
+	if (RT_UNLIKELY(RT_MEMORY_COMPARE(source, buffer4, size))) goto error;
 
 	ret = RT_OK;
 free:
@@ -116,9 +116,9 @@ static rt_s zz_test_copy_memory()
 {
 	rt_s ret;
 
-	if (!zz_test_copy_memory_do("foo", 3)) goto error;
-	if (!zz_test_copy_memory_do("foob", 4)) goto error;
-	if (!zz_test_copy_memory_do("foobar", 6)) goto error;
+	if (RT_UNLIKELY(!zz_test_copy_memory_do("foo", 3))) goto error;
+	if (RT_UNLIKELY(!zz_test_copy_memory_do("foob", 4))) goto error;
+	if (RT_UNLIKELY(!zz_test_copy_memory_do("foobar", 6))) goto error;
 
 	ret = RT_OK;
 free:
@@ -137,7 +137,7 @@ static rt_s zz_test_move_memory_do(const rt_char8 *input, rt_un source_size, rt_
 
 	for (test = 0; test < 2; test++) {
 		/* Copy input into mutable memory. */
-		if (size > 200) {
+		if (RT_UNLIKELY(size > 200)) {
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 			goto error;
 		}
@@ -148,11 +148,11 @@ static rt_s zz_test_move_memory_do(const rt_char8 *input, rt_un source_size, rt_
 		else
 			result = RT_MEMORY_MOVE(buffer, &buffer[destination_index], source_size);
 
-		if (result != &buffer[destination_index])
+		if (RT_UNLIKELY(result != &buffer[destination_index]))
 			goto error;
 
 		/* Check result against expected. */
-		if (RT_MEMORY_COMPARE(buffer, expected, size))
+		if (RT_UNLIKELY(RT_MEMORY_COMPARE(buffer, expected, size)))
 			goto error;
 	}
 
@@ -168,8 +168,8 @@ static rt_s zz_test_move_memory()
 {
 	rt_s ret;
 
-	if (!zz_test_move_memory_do("123", 2, 1, "112", 3)) goto error;
-	if (!zz_test_move_memory_do("1234567890abcde", 10, 5, "123451234567890", 15)) goto error;
+	if (RT_UNLIKELY(!zz_test_move_memory_do("123", 2, 1, "112", 3))) goto error;
+	if (RT_UNLIKELY(!zz_test_move_memory_do("1234567890abcde", 10, 5, "123451234567890", 15))) goto error;
 
 	ret = RT_OK;
 free:
@@ -185,10 +185,10 @@ static rt_s zz_test_set_memory_check(rt_uchar8 *buffer, rt_un size, rt_uchar8 ex
 	rt_s ret;
 
 	for (i = 0; i < size; i++) {
-		if (buffer[i] != expected)
+		if (RT_UNLIKELY(buffer[i] != expected))
 			goto error;
 	}
-	if (buffer[size] != trailing)
+	if (RT_UNLIKELY(buffer[size] != trailing))
 		goto error;
 
 	ret = RT_OK;
@@ -208,23 +208,23 @@ static rt_s zz_test_set_memory_do(rt_un size)
 
 	for (i = 0; i <= size; i++) buffer[i] = 85;
 	result = rt_memory_set(buffer, 170, size);
-	if (result != buffer) goto error;
-	if (!zz_test_set_memory_check(buffer, size, 170, 85)) goto error;
+	if (RT_UNLIKELY(result != buffer)) goto error;
+	if (RT_UNLIKELY(!zz_test_set_memory_check(buffer, size, 170, 85))) goto error;
 
 	for (i = 0; i <= size; i++) buffer[i] = 85;
 	result = RT_MEMORY_SET(buffer, 170, size);
-	if (result != buffer) goto error;
-	if (!zz_test_set_memory_check(buffer, size, 170, 85)) goto error;
+	if (RT_UNLIKELY(result != buffer)) goto error;
+	if (RT_UNLIKELY(!zz_test_set_memory_check(buffer, size, 170, 85))) goto error;
 
 	for (i = 0; i <= size; i++) buffer[i] = 85;
 	result = rt_memory_zero(buffer, size);
-	if (result != buffer) goto error;
-	if (!zz_test_set_memory_check(buffer, size, 0, 85)) goto error;
+	if (RT_UNLIKELY(result != buffer)) goto error;
+	if (RT_UNLIKELY(!zz_test_set_memory_check(buffer, size, 0, 85))) goto error;
 
 	for (i = 0; i <= size; i++) buffer[i] = 85;
 	result = RT_MEMORY_ZERO(buffer, size);
-	if (result != buffer) goto error;
-	if (!zz_test_set_memory_check(buffer, size, 0, 85)) goto error;
+	if (RT_UNLIKELY(result != buffer)) goto error;
+	if (RT_UNLIKELY(!zz_test_set_memory_check(buffer, size, 0, 85))) goto error;
 
 	ret = RT_OK;
 free:
@@ -240,7 +240,7 @@ static rt_s zz_test_set_memory()
 	rt_s ret;
 
 	for (i = 1; i < 28; i++) {
-		if (!zz_test_set_memory_do(i)) goto error;
+		if (RT_UNLIKELY(!zz_test_set_memory_do(i))) goto error;
 	}
 
 	ret = RT_OK;
@@ -267,11 +267,11 @@ static rt_s zz_test_memory_swap_do(rt_un size)
 
 	rt_memory_swap(area1, area2, size);
 	for (i = 0; i < size; i++) {
-		if (area1[i] != 'A' + i) goto error;
-		if (area2[i] != 'a' + i) goto error;
+		if (RT_UNLIKELY(area1[i] != 'A' + i)) goto error;
+		if (RT_UNLIKELY(area2[i] != 'a' + i)) goto error;
 	}
-	if (area1[size] != 1) goto error;
-	if (area2[size] != 2) goto error;
+	if (RT_UNLIKELY(area1[size] != 1)) goto error;
+	if (RT_UNLIKELY(area2[size] != 2)) goto error;
 
 	ret = RT_OK;
 free:
@@ -287,7 +287,7 @@ static rt_s zz_test_memory_swap()
 	rt_s ret;
 
 	for (i = 0; i < 27; i++) {
-		if (!zz_test_memory_swap_do(i))
+		if (RT_UNLIKELY(!zz_test_memory_swap_do(i)))
 			goto error;
 	}
 
@@ -308,7 +308,7 @@ static rt_s zz_test_memory_get_chunks_count_values(rt_un size, rt_un chunk_size)
 	if (size % chunk_size)
 		expected++;
 
-	if (RT_MEMORY_GET_CHUNKS_COUNT(size, chunk_size) != expected)
+	if (RT_UNLIKELY(RT_MEMORY_GET_CHUNKS_COUNT(size, chunk_size) != expected))
 		goto error;
 
 	ret = RT_OK;
@@ -325,14 +325,14 @@ static rt_s zz_test_memory_get_chunks_count()
 	rt_s ret;
 
 	for (i = 2; i < 80000; i++) {
-		if (!zz_test_memory_get_chunks_count_values(i, 1))   goto error;
-		if (!zz_test_memory_get_chunks_count_values(i, 2))   goto error;
-		if (!zz_test_memory_get_chunks_count_values(i, 4))   goto error;
-		if (!zz_test_memory_get_chunks_count_values(i, 8))   goto error;
-		if (!zz_test_memory_get_chunks_count_values(i, 16))  goto error;
-		if (!zz_test_memory_get_chunks_count_values(i, 32))  goto error;
-		if (!zz_test_memory_get_chunks_count_values(i, 64))  goto error;
-		if (!zz_test_memory_get_chunks_count_values(i, 128)) goto error;
+		if (RT_UNLIKELY(!zz_test_memory_get_chunks_count_values(i, 1)))   goto error;
+		if (RT_UNLIKELY(!zz_test_memory_get_chunks_count_values(i, 2)))   goto error;
+		if (RT_UNLIKELY(!zz_test_memory_get_chunks_count_values(i, 4)))   goto error;
+		if (RT_UNLIKELY(!zz_test_memory_get_chunks_count_values(i, 8)))   goto error;
+		if (RT_UNLIKELY(!zz_test_memory_get_chunks_count_values(i, 16)))  goto error;
+		if (RT_UNLIKELY(!zz_test_memory_get_chunks_count_values(i, 32)))  goto error;
+		if (RT_UNLIKELY(!zz_test_memory_get_chunks_count_values(i, 64)))  goto error;
+		if (RT_UNLIKELY(!zz_test_memory_get_chunks_count_values(i, 128))) goto error;
 	}
 
 	ret = RT_OK;
@@ -350,16 +350,16 @@ static rt_s zz_test_memory_modulo()
 
 	for (i = 0; i < 80000; i++) {
 
-		if (i % sizeof(rt_n) != RT_MEMORY_MODULO_RT_UN_SIZE(i)) goto error;
+		if (RT_UNLIKELY(i % sizeof(rt_n) != RT_MEMORY_MODULO_RT_UN_SIZE(i))) goto error;
 
-		if (i % 1   != RT_MEMORY_MODULO_POWER_OF_TWO(i, 1))   goto error;
-		if (i % 2   != RT_MEMORY_MODULO_POWER_OF_TWO(i, 2))   goto error;
-		if (i % 4   != RT_MEMORY_MODULO_POWER_OF_TWO(i, 4))   goto error;
-		if (i % 8   != RT_MEMORY_MODULO_POWER_OF_TWO(i, 8))   goto error;
-		if (i % 16  != RT_MEMORY_MODULO_POWER_OF_TWO(i, 16))  goto error;
-		if (i % 32  != RT_MEMORY_MODULO_POWER_OF_TWO(i, 32))  goto error;
-		if (i % 64  != RT_MEMORY_MODULO_POWER_OF_TWO(i, 64))  goto error;
-		if (i % 128 != RT_MEMORY_MODULO_POWER_OF_TWO(i, 128)) goto error;
+		if (RT_UNLIKELY(i % 1   != RT_MEMORY_MODULO_POWER_OF_TWO(i, 1)))   goto error;
+		if (RT_UNLIKELY(i % 2   != RT_MEMORY_MODULO_POWER_OF_TWO(i, 2)))   goto error;
+		if (RT_UNLIKELY(i % 4   != RT_MEMORY_MODULO_POWER_OF_TWO(i, 4)))   goto error;
+		if (RT_UNLIKELY(i % 8   != RT_MEMORY_MODULO_POWER_OF_TWO(i, 8)))   goto error;
+		if (RT_UNLIKELY(i % 16  != RT_MEMORY_MODULO_POWER_OF_TWO(i, 16)))  goto error;
+		if (RT_UNLIKELY(i % 32  != RT_MEMORY_MODULO_POWER_OF_TWO(i, 32)))  goto error;
+		if (RT_UNLIKELY(i % 64  != RT_MEMORY_MODULO_POWER_OF_TWO(i, 64)))  goto error;
+		if (RT_UNLIKELY(i % 128 != RT_MEMORY_MODULO_POWER_OF_TWO(i, 128))) goto error;
 
 		switch (i) {
 		case 1:
@@ -379,10 +379,10 @@ static rt_s zz_test_memory_modulo()
 		case 16384:
 		case 32768:
 		case 65536:
-			if (!RT_MEMORY_IS_POWER_OF_TWO(i)) goto error;
+			if (RT_UNLIKELY(!RT_MEMORY_IS_POWER_OF_TWO(i))) goto error;
 			break;
 		default:
-			if (RT_MEMORY_IS_POWER_OF_TWO(i)) goto error;
+			if (RT_UNLIKELY(RT_MEMORY_IS_POWER_OF_TWO(i))) goto error;
 		}
 	}
 
@@ -405,13 +405,13 @@ static rt_s zz_test_memory_set_char16_do(rt_un size)
 		buffer[i] = L'à';
 
 	result = rt_memory_set_char16(buffer, L'é', size);
-	if (result != buffer) goto error;
+	if (RT_UNLIKELY(result != buffer)) goto error;
 
 	for (i = 0; i < size; i++) {
-		if (buffer[i] != L'é')
+		if (RT_UNLIKELY(buffer[i] != L'é'))
 			goto error;
 	}
-	if (buffer[size] != L'à')
+	if (RT_UNLIKELY(buffer[size] != L'à'))
 		goto error;
 
 	ret = RT_OK;
@@ -428,7 +428,7 @@ static rt_s zz_test_memory_set_char16()
 	rt_s ret;
 
 	for (i = 1; i < 28; i++) {
-		if (!zz_test_memory_set_char16_do(i)) goto error;
+		if (RT_UNLIKELY(!zz_test_memory_set_char16_do(i))) goto error;
 	}
 
 	ret = RT_OK;
@@ -452,15 +452,15 @@ static rt_s zz_test_memory_set_char()
 			buffer[i] = _R('b');
 
 		result = RT_MEMORY_SET_CHAR(buffer, _R('a'), 7);
-		if (result != buffer)
+		if (RT_UNLIKELY(result != buffer))
 			goto error;
 
 		for (i = 0; i < 7; i++)
-			if (buffer[i] != _R('a'))
+			if (RT_UNLIKELY(buffer[i] != _R('a')))
 				goto error;
 
 		for (i = 7; i < 20; i++)
-			if (buffer[i] != _R('b'))
+			if (RT_UNLIKELY(buffer[i] != _R('b')))
 				goto error;
 	}
 
@@ -479,17 +479,17 @@ static rt_s zz_test_memory_xnor()
 	rt_b two = 2;
 	rt_s ret;
 
-	if (!RT_MEMORY_XNOR(zero, zero)) goto error;
-	if (RT_MEMORY_XNOR(zero, one)) goto error;
-	if (RT_MEMORY_XNOR(zero, two)) goto error;
+	if (RT_UNLIKELY(!RT_MEMORY_XNOR(zero, zero))) goto error;
+	if (RT_UNLIKELY(RT_MEMORY_XNOR(zero, one))) goto error;
+	if (RT_UNLIKELY(RT_MEMORY_XNOR(zero, two))) goto error;
 
-	if (RT_MEMORY_XNOR(one, zero)) goto error;
-	if (!RT_MEMORY_XNOR(one, one)) goto error;
-	if (!RT_MEMORY_XNOR(one, two)) goto error;
+	if (RT_UNLIKELY(RT_MEMORY_XNOR(one, zero))) goto error;
+	if (RT_UNLIKELY(!RT_MEMORY_XNOR(one, one))) goto error;
+	if (RT_UNLIKELY(!RT_MEMORY_XNOR(one, two))) goto error;
 
-	if (RT_MEMORY_XNOR(two, zero)) goto error;
-	if (!RT_MEMORY_XNOR(two, one)) goto error;
-	if (!RT_MEMORY_XNOR(two, two)) goto error;
+	if (RT_UNLIKELY(RT_MEMORY_XNOR(two, zero))) goto error;
+	if (RT_UNLIKELY(!RT_MEMORY_XNOR(two, one))) goto error;
+	if (RT_UNLIKELY(!RT_MEMORY_XNOR(two, two))) goto error;
 
 	ret = RT_OK;
 free:
@@ -508,11 +508,11 @@ static rt_s zz_test_memory_swap_bytes16()
 	rt_s ret;
 
 	result = rt_memory_swap_bytes16(source, source, 2);
-	if (result != source)
+	if (RT_UNLIKELY(result != source))
 		goto error;
 
 	for (i = 0; i < 4; i++)
-		if (data[i] != i + 1)
+		if (RT_UNLIKELY(data[i] != i + 1))
 			goto error;
 
 	ret = RT_OK;
@@ -532,11 +532,11 @@ static rt_s zz_test_memory_swap_bytes32()
 	rt_s ret;
 
 	result = rt_memory_swap_bytes32(source, source, 2);
-	if (result != source)
+	if (RT_UNLIKELY(result != source))
 		goto error;
 
 	for (i = 0; i < 8; i++)
-		if (data[i] != i + 1)
+		if (RT_UNLIKELY(data[i] != i + 1))
 			goto error;
 
 	ret = RT_OK;
@@ -551,18 +551,18 @@ rt_s zz_test_memory()
 {
 	rt_s ret;
 
-	if (!zz_test_compare_memory()) goto error;
-	if (!zz_test_copy_memory()) goto error;
-	if (!zz_test_move_memory()) goto error;
-	if (!zz_test_set_memory()) goto error;
-	if (!zz_test_memory_swap()) goto error;
-	if (!zz_test_memory_get_chunks_count()) goto error;
-	if (!zz_test_memory_modulo()) goto error;
-	if (!zz_test_memory_set_char16()) goto error;
-	if (!zz_test_memory_set_char()) goto error;
-	if (!zz_test_memory_xnor()) goto error;
-	if (!zz_test_memory_swap_bytes16()) goto error;
-	if (!zz_test_memory_swap_bytes32()) goto error;
+	if (RT_UNLIKELY(!zz_test_compare_memory())) goto error;
+	if (RT_UNLIKELY(!zz_test_copy_memory())) goto error;
+	if (RT_UNLIKELY(!zz_test_move_memory())) goto error;
+	if (RT_UNLIKELY(!zz_test_set_memory())) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_swap())) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_get_chunks_count())) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_modulo())) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_set_char16())) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_set_char())) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_xnor())) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_swap_bytes16())) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_swap_bytes32())) goto error;
 
 	ret = RT_OK;
 free:

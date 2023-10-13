@@ -47,7 +47,7 @@ rt_s rt_buffered_input_stream_read(struct rt_input_stream *input_stream, rt_char
 		/* At this point the cache is empty. */
 		if (bytes_to_read >= cache_capacity) {
 			/* The cache is not big enough. Directly use the buffer. */
-			if (!real_input_stream->read(real_input_stream, &buffer[total_bytes_read], bytes_to_read, bytes_read))
+			if (RT_UNLIKELY(!real_input_stream->read(real_input_stream, &buffer[total_bytes_read], bytes_to_read, bytes_read)))
 				goto error;
 			total_bytes_read += *bytes_read;
 
@@ -57,7 +57,7 @@ rt_s rt_buffered_input_stream_read(struct rt_input_stream *input_stream, rt_char
 
 		} else {
 			/* Put some new data into the cache. */
-			if (!real_input_stream->read(real_input_stream, cache, cache_capacity, &cache_size))
+			if (RT_UNLIKELY(!real_input_stream->read(real_input_stream, cache, cache_capacity, &cache_size)))
 				goto error;
 
 			if (bytes_to_read > cache_size)

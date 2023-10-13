@@ -13,11 +13,11 @@ rt_s zz_test_virtual_memory()
 	/* Allocate 18 pages by requesting 17 pages + 1 byte. */
 	size = page_size * 17 + 1;
 
-	if (!rt_virtual_memory_alloc((void**)&area, size))
+	if (RT_UNLIKELY(!rt_virtual_memory_alloc((void**)&area, size)))
 		goto error;
 
 	/* The area should be page aligned. */
-	if (RT_TYPE_MAKE_UINTEGER(area) % page_size)
+	if (RT_UNLIKELY(RT_TYPE_MAKE_UINTEGER(area) % page_size))
 		goto error;
 
 	/* Make sure we can write all 17 pages plus the extra one. */
@@ -28,7 +28,7 @@ rt_s zz_test_virtual_memory()
 	ret = RT_OK;
 free:
 	if (area) {
-		if (!rt_virtual_memory_free((void**)&area, size) && ret)
+		if (RT_UNLIKELY(!rt_virtual_memory_free((void**)&area, size) && ret))
 			goto error;
 	}
 	return ret;

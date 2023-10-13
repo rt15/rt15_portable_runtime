@@ -86,11 +86,11 @@ rt_s rt_thread_join_and_check(struct rt_thread *thread)
 	rt_un32 thread_exit_code;
 	rt_s ret;
 
-	if (!rt_thread_join(thread))
+	if (RT_UNLIKELY(!rt_thread_join(thread)))
 		goto error;
-	if (!rt_thread_get_exit_code(thread, &thread_exit_code))
+	if (RT_UNLIKELY(!rt_thread_get_exit_code(thread, &thread_exit_code)))
 		goto error;
-	if (!thread_exit_code) {
+	if (RT_UNLIKELY(!thread_exit_code)) {
 		/* Unknown error in the joined thread which cannot set last error for this thread. */
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
 		goto error;

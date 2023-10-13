@@ -46,7 +46,7 @@ static rt_s rt_os_version_parse(rt_char *version, rt_un *major, rt_un *minor, rt
 		end++;
 	end_character = *end;
 	*end = 0;
-	if (!rt_char_convert_to_un(start, major))
+	if (RT_UNLIKELY(!rt_char_convert_to_un(start, major)))
 		goto error;
 	if (end_character == _R('.')) {
 
@@ -59,7 +59,7 @@ static rt_s rt_os_version_parse(rt_char *version, rt_un *major, rt_un *minor, rt
 		if (start != end) {
 			end_character = *end;
 			*end = 0;
-			if (!rt_char_convert_to_un(start, minor))
+			if (RT_UNLIKELY(!rt_char_convert_to_un(start, minor)))
 				goto error;
 
 			if (end_character == _R('.')) {
@@ -73,7 +73,7 @@ static rt_s rt_os_version_parse(rt_char *version, rt_un *major, rt_un *minor, rt
 				if (start != end) {
 					end_character = *end;
 					*end = 0;
-					if (!rt_char_convert_to_un(start, patch))
+					if (RT_UNLIKELY(!rt_char_convert_to_un(start, patch)))
 						goto error;
 				}
 			}
@@ -151,7 +151,7 @@ initialized:
 		rt_fast_initialization_notify_done(&rt_os_version_initialization);
 	}
 
-	if (rt_os_version_initialization_successful) {
+	if (RT_LIKELY(rt_os_version_initialization_successful)) {
 		*major = rt_os_version_major;
 		if (minor) {
 			*minor = rt_os_version_minor;
@@ -185,7 +185,7 @@ rt_s rt_os_version_is_greater_or_equal_to(rt_un major, rt_un minor, rt_un patch,
 	rt_un current_patch;
 	rt_s ret;
 
-	if (!rt_os_version_get(&current_major, &current_minor, &current_patch))
+	if (RT_UNLIKELY(!rt_os_version_get(&current_major, &current_minor, &current_patch)))
 		goto error;
 
 	if (current_major > major) {

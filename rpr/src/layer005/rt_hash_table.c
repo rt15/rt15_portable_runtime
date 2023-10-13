@@ -11,7 +11,7 @@ rt_s rt_hash_table_create(struct rt_hash_table_entry **hash_table, rt_hash_callb
 
 	*hash_table = RT_NULL;
 
-	if (!RT_MEMORY_IS_POWER_OF_TWO(initial_capacity)) {
+	if (RT_UNLIKELY(!RT_MEMORY_IS_POWER_OF_TWO(initial_capacity))) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto error;
 	}
@@ -19,7 +19,7 @@ rt_s rt_hash_table_create(struct rt_hash_table_entry **hash_table, rt_hash_callb
 	if (!header_size)
 		header_size = sizeof(struct rt_hash_table_header);
 
-	if (!rt_array_create((void**)hash_table, initial_capacity, sizeof(struct rt_hash_table_entry), header_size, heap))
+	if (RT_UNLIKELY(!rt_array_create((void**)hash_table, initial_capacity, sizeof(struct rt_hash_table_entry), header_size, heap)))
 		goto error;
 
 	header = RT_HASH_TABLE_GET_HEADER(*hash_table);
@@ -68,7 +68,7 @@ static rt_s rt_hash_table_expand(struct rt_hash_table_entry **hash_table)
 	array_size = header->array_header.size;
 	new_array_size = array_size * 2;
 
-	if (!rt_array_create((void**)&new_hash_table, new_array_size, sizeof(struct rt_hash_table_entry), header_size, header->array_header.heap)) goto error;
+	if (RT_UNLIKELY(!rt_array_create((void**)&new_hash_table, new_array_size, sizeof(struct rt_hash_table_entry), header_size, header->array_header.heap))) goto error;
 
 	new_header = RT_HASH_TABLE_GET_HEADER(new_hash_table);
 
@@ -134,7 +134,7 @@ rt_s rt_hash_table_set(struct rt_hash_table_entry **hash_table, const void *key,
 
 	/* Expand the hash table if it is already more than 50% full. */
 	if (header->size > header->array_header.size / 2) {
-		if (!rt_hash_table_expand(hash_table))
+		if (RT_UNLIKELY(!rt_hash_table_expand(hash_table)))
 			goto error;
 
 		header = RT_HASH_TABLE_GET_HEADER(*hash_table);
@@ -142,7 +142,7 @@ rt_s rt_hash_table_set(struct rt_hash_table_entry **hash_table, const void *key,
 
 	array_size = header->array_header.size;
 
-	if (!header->hash_callback(key, key_size, header->context, &full_hash))
+	if (RT_UNLIKELY(!header->hash_callback(key, key_size, header->context, &full_hash)))
 		goto error;
 
 	index = (full_hash & (array_size - 1));
@@ -151,7 +151,7 @@ rt_s rt_hash_table_set(struct rt_hash_table_entry **hash_table, const void *key,
 	/* We search for the first free spot. We know that there is one since we have expanded the hash table size if needed. */
 	while (entry->key) {
 		if (entry->key_hash == full_hash) {
-			if (!header->comparison_callback(entry->key, entry->key_size, key, key_size, header->context, &comparison_result))
+			if (RT_UNLIKELY(!header->comparison_callback(entry->key, entry->key_size, key, key_size, header->context, &comparison_result)))
 				goto error;
 			if (!comparison_result) {
 				/* Same key, we will replace the existing value. */
@@ -205,14 +205,14 @@ rt_s rt_hash_table_get(struct rt_hash_table_entry *hash_table, const void *key, 
 	header = RT_HASH_TABLE_GET_HEADER(hash_table);
 	array_size = header->array_header.size;
 
-	if (!header->hash_callback(key, key_size, header->context, &full_hash))
+	if (RT_UNLIKELY(!header->hash_callback(key, key_size, header->context, &full_hash)))
 		goto error;
 
 	index = (full_hash & (array_size - 1));
 	entry = &hash_table[index];
 	while (entry->key) {
 		if (entry->key_hash == full_hash) {
-			if (!header->comparison_callback(entry->key, entry->key_size, key, key_size, header->context, &comparison_result))
+			if (RT_UNLIKELY(!header->comparison_callback(entry->key, entry->key_size, key, key_size, header->context, &comparison_result)))
 				goto error;
 			if (!comparison_result) {
 				*value = (void*)entry->value;
@@ -253,14 +253,14 @@ rt_s rt_hash_table_delete(struct rt_hash_table_entry **hash_table, const void *k
 	header = RT_HASH_TABLE_GET_HEADER(*hash_table);
 	array_size = header->array_header.size;
 
-	if (!header->hash_callback(key, key_size, header->context, &full_hash))
+	if (RT_UNLIKELY(!header->hash_callback(key, key_size, header->context, &full_hash)))
 		goto error;
 
 	delete_index = (full_hash & (array_size - 1));
 	delete_entry = &(*hash_table)[delete_index];
 	while (delete_entry->key) {
 		if (delete_entry->key_hash == full_hash) {
-			if (!header->comparison_callback(delete_entry->key, delete_entry->key_size, key, key_size, header->context, &comparison_result))
+			if (RT_UNLIKELY(!header->comparison_callback(delete_entry->key, delete_entry->key_size, key, key_size, header->context, &comparison_result)))
 				goto error;
 			if (!comparison_result) {
 

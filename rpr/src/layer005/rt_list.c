@@ -14,7 +14,7 @@ rt_s rt_list_create(void **list, rt_un size, rt_un item_size, rt_un chunk_size, 
 
 	*list = RT_NULL;
 
-	if (!RT_MEMORY_IS_POWER_OF_TWO(chunk_size)) {
+	if (RT_UNLIKELY(!RT_MEMORY_IS_POWER_OF_TWO(chunk_size))) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto error;
 	}
@@ -24,7 +24,7 @@ rt_s rt_list_create(void **list, rt_un size, rt_un item_size, rt_un chunk_size, 
 	if (header_size == 0)
 		header_size = sizeof(struct rt_list_header);
 
-	if (!rt_array_create(list, chunks_count, sizeof(void*), header_size, heap))
+	if (RT_UNLIKELY(!rt_array_create(list, chunks_count, sizeof(void*), header_size, heap)))
 		goto error;
 
 	chunks = (void**)*list;
@@ -40,7 +40,7 @@ rt_s rt_list_create(void **list, rt_un size, rt_un item_size, rt_un chunk_size, 
 
 	/* Allocate the chunks. */
 	for (i = 0; i < chunks_count; i++) {
-		if (!heap->alloc(heap, &chunks[i], chunk_allocation_size))
+		if (RT_UNLIKELY(!heap->alloc(heap, &chunks[i], chunk_allocation_size)))
 			goto error;
 	}
 
@@ -105,19 +105,19 @@ rt_s rt_list_set_size(void **list, rt_un size)
 		/* Free the excess chunks at the end of the array. */
 		/* If it fails, there will be some null pointers in the array. */
 		for (i = new_chunks_count; i < chunks_count; i++) {
-			if (!heap->free(heap, &chunks[i]))
+			if (RT_UNLIKELY(!heap->free(heap, &chunks[i])))
 				goto error;
 		}
 
 		/* Resize the array. If it fails, there will be some null pointers at the end of the array. */
-		if (!rt_array_set_size(list, new_chunks_count))
+		if (RT_UNLIKELY(!rt_array_set_size(list, new_chunks_count)))
 			goto error;
 
 	} else if (new_chunks_count > chunks_count) {
 
 		/* Attempt to allocate some space at the end of the array. */
 		/* If it fails, the array remains the same. */
-		if (!rt_array_set_size(list, new_chunks_count))
+		if (RT_UNLIKELY(!rt_array_set_size(list, new_chunks_count)))
 			goto error;
 
 		chunks = (void**)*list;
@@ -131,7 +131,7 @@ rt_s rt_list_set_size(void **list, rt_un size)
 		/* Try to allocate the chunks. */
 		/* If an allocation fails, there will be some null pointers at the end of the array. */
 		for (i = chunks_count; i < new_chunks_count; i++) {
-			if (!heap->alloc(heap, &chunks[i], chunk_allocation_size))
+			if (RT_UNLIKELY(!heap->alloc(heap, &chunks[i], chunk_allocation_size)))
 				goto error;
 		}
 	}
@@ -166,16 +166,16 @@ rt_s rt_list_delete_item_index(void **list, rt_un item_index)
 	last_item_index = size - 1;
 
 	if (item_index != last_item_index) {
-		if (!rt_list_get_item(*list, item_index, &item))
+		if (RT_UNLIKELY(!rt_list_get_item(*list, item_index, &item)))
 			goto error;
-		if (!rt_list_get_item(*list, last_item_index, &last_item))
+		if (RT_UNLIKELY(!rt_list_get_item(*list, last_item_index, &last_item)))
 			goto error;
 
 		/* Copy the last item into the item to delete. */
 		RT_MEMORY_COPY(last_item, item, item_size);
 	}
 
-	if (!rt_list_set_size(list, size - 1))
+	if (RT_UNLIKELY(!rt_list_set_size(list, size - 1)))
 		goto error;
 
 	ret = RT_OK;
@@ -196,10 +196,10 @@ rt_s rt_list_new_item(void **list, void **item)
 	header = RT_LIST_GET_HEADER(*list);
 	size = header->size;
 
-	if (!rt_list_set_size(list, size + 1))
+	if (RT_UNLIKELY(!rt_list_set_size(list, size + 1)))
 		goto error;
 
-	if (!rt_list_get_item(*list, size, item))
+	if (RT_UNLIKELY(!rt_list_get_item(*list, size, item)))
 		goto error;
 
 	ret = RT_OK;
@@ -220,7 +220,7 @@ rt_s rt_list_new_item_index(void **list, rt_un *item_index)
 	header = RT_LIST_GET_HEADER(*list);
 	size = header->size;
 
-	if (!rt_list_set_size(list, size + 1))
+	if (RT_UNLIKELY(!rt_list_set_size(list, size + 1)))
 		goto error;
 
 	*item_index = size;

@@ -9,12 +9,12 @@ static rt_s zz_manual_test_display_error_message(const rt_char *error_name, rt_u
 	rt_error_set_last(error_number);
 
 	buffer_size = rt_char_get_size(error_name);
-	if (!rt_char_copy(error_name, buffer_size, buffer, RT_CHAR_HALF_BIG_STRING_SIZE)) goto error;
-	if (!rt_char_append(_R(" = "), 3, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)) goto error;
-	if (!rt_error_message_append_last(buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)) goto error;
-	if (rt_char_get_size(buffer) != buffer_size) goto error;
-	if (!rt_char_append_char(_R('\n'), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)) goto error;
-	if (!rt_console_write_string_with_size(buffer, buffer_size)) goto error;
+	if (RT_UNLIKELY(!rt_char_copy(error_name, buffer_size, buffer, RT_CHAR_HALF_BIG_STRING_SIZE))) goto error;
+	if (RT_UNLIKELY(!rt_char_append(_R(" = "), 3, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_error_message_append_last(buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto error;
+	if (RT_UNLIKELY(rt_char_get_size(buffer) != buffer_size)) goto error;
+	if (RT_UNLIKELY(!rt_char_append_char(_R('\n'), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_string_with_size(buffer, buffer_size))) goto error;
 
 	ret = RT_OK;
 free:
@@ -30,27 +30,27 @@ rt_s zz_manual_test_error_message()
 	rt_char buffer[RT_CHAR_HALF_BIG_STRING_SIZE];
 	rt_s ret;
 
-	if (!rt_console_write_string(_R("## Error messages:\n"))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_string(_R("## Error messages:\n")))) goto error;
 
 	/* Intentionally generate an error (RT_ERROR_INSUFFICIENT_BUFFER). */
-	if (rt_char_copy(_R("Too long string."), 16, buffer, 3))
+	if (RT_UNLIKELY(rt_char_copy(_R("Too long string."), 16, buffer, 3)))
 		goto error;
 
-	if (!rt_error_message_write_last(RT_NULL)) goto error;
-	if (!rt_error_message_write_last(_R("Normal error: "))) goto error;
+	if (RT_UNLIKELY(!rt_error_message_write_last(RT_NULL))) goto error;
+	if (RT_UNLIKELY(!rt_error_message_write_last(_R("Normal error: ")))) goto error;
 
-	if (!zz_manual_test_display_error_message(_R("RT_ERROR_SUCCESS"),             RT_ERROR_SUCCESS))             goto error;
-	if (!zz_manual_test_display_error_message(_R("RT_ERROR_INSUFFICIENT_BUFFER"), RT_ERROR_INSUFFICIENT_BUFFER)) goto error;
-	if (!zz_manual_test_display_error_message(_R("RT_ERROR_BAD_ARGUMENTS"),       RT_ERROR_BAD_ARGUMENTS))       goto error;
-	if (!zz_manual_test_display_error_message(_R("RT_ERROR_NOT_ENOUGH_MEMORY"),   RT_ERROR_NOT_ENOUGH_MEMORY))   goto error;
-	if (!zz_manual_test_display_error_message(_R("RT_ERROR_FILE_ALREADY_EXISTS"), RT_ERROR_FILE_ALREADY_EXISTS)) goto error;
-	if (!zz_manual_test_display_error_message(_R("RT_ERROR_ALREADY_EXISTS"),      RT_ERROR_ALREADY_EXISTS))      goto error;
-	if (!zz_manual_test_display_error_message(_R("RT_ERROR_FUNCTION_FAILED"),     RT_ERROR_FUNCTION_FAILED))     goto error;
-	if (!zz_manual_test_display_error_message(_R("RT_ERROR_ARITHMETIC_OVERFLOW"), RT_ERROR_ARITHMETIC_OVERFLOW)) goto error;
-	if (!zz_manual_test_display_error_message(_R("RT_ERROR_WOULD_BLOCK"),         RT_ERROR_WOULD_BLOCK))         goto error;
-	if (!zz_manual_test_display_error_message(_R("RT_ERROR_SOCKET_WOULD_BLOCK"),  RT_ERROR_SOCKET_WOULD_BLOCK))  goto error;
+	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_SUCCESS"),             RT_ERROR_SUCCESS)))             goto error;
+	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_INSUFFICIENT_BUFFER"), RT_ERROR_INSUFFICIENT_BUFFER))) goto error;
+	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_BAD_ARGUMENTS"),       RT_ERROR_BAD_ARGUMENTS)))       goto error;
+	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_NOT_ENOUGH_MEMORY"),   RT_ERROR_NOT_ENOUGH_MEMORY)))   goto error;
+	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_FILE_ALREADY_EXISTS"), RT_ERROR_FILE_ALREADY_EXISTS))) goto error;
+	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_ALREADY_EXISTS"),      RT_ERROR_ALREADY_EXISTS)))      goto error;
+	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_FUNCTION_FAILED"),     RT_ERROR_FUNCTION_FAILED)))     goto error;
+	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_ARITHMETIC_OVERFLOW"), RT_ERROR_ARITHMETIC_OVERFLOW))) goto error;
+	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_WOULD_BLOCK"),         RT_ERROR_WOULD_BLOCK)))         goto error;
+	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_SOCKET_WOULD_BLOCK"),  RT_ERROR_SOCKET_WOULD_BLOCK)))  goto error;
 
-	if (!rt_console_write_string_with_size(_R("\n"), 1)) goto error;
+	if (RT_UNLIKELY(!rt_console_write_string_with_size(_R("\n"), 1))) goto error;
 
 	ret = RT_OK;
 free:

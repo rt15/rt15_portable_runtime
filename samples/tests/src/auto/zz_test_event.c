@@ -15,12 +15,12 @@ static rt_un32 zz_test_event_thread_callback(void *parameter)
 
 	event = (struct rt_event*)parameter;
 
-	if (!rt_event_wait_for(event))
+	if (RT_UNLIKELY(!rt_event_wait_for(event)))
 		goto error;
 
 	thread_status = ZZ_THREAD_STATUS_SIGNAL_1;
 
-	if (!rt_event_wait_for(event))
+	if (RT_UNLIKELY(!rt_event_wait_for(event)))
 		goto error;
 
 	thread_status = ZZ_THREAD_STATUS_SIGNAL_2;
@@ -44,47 +44,47 @@ static rt_s zz_test_event_already_signaled()
 
 	thread_status = ZZ_THREAD_STATUS_INIT;
 
-	if (!rt_event_create(&event))
+	if (RT_UNLIKELY(!rt_event_create(&event)))
 		goto error;
 	event_created = RT_TRUE;
 
 	/* Signal the event even before creating the thread. */
-	if (!rt_event_signal(&event))
+	if (RT_UNLIKELY(!rt_event_signal(&event)))
 		goto error;
 
-	if (thread_status != ZZ_THREAD_STATUS_INIT)
+	if (RT_UNLIKELY(thread_status != ZZ_THREAD_STATUS_INIT))
 		goto error;
 
-	if (!rt_thread_create(&thread, &zz_test_event_thread_callback, &event))
+	if (RT_UNLIKELY(!rt_thread_create(&thread, &zz_test_event_thread_callback, &event)))
 		goto error;
 	thread_created = RT_TRUE;
 
 	/* Let other thread deals with the first event which is already set. */
 	rt_sleep_sleep(10);
-	if (thread_status != ZZ_THREAD_STATUS_SIGNAL_1)
+	if (RT_UNLIKELY(thread_status != ZZ_THREAD_STATUS_SIGNAL_1))
 		goto error;
 
-	if (!rt_event_signal(&event))
+	if (RT_UNLIKELY(!rt_event_signal(&event)))
 		goto error;
 
 	/* Wait for thread to set status flag. */
 	rt_sleep_sleep(10);
-	if (thread_status != ZZ_THREAD_STATUS_SIGNAL_2)
+	if (RT_UNLIKELY(thread_status != ZZ_THREAD_STATUS_SIGNAL_2))
 		goto error;
 
-	if (!rt_thread_join_and_check(&thread))
+	if (RT_UNLIKELY(!rt_thread_join_and_check(&thread)))
 		goto error;
 
 	ret = RT_OK;
 free:
 	if (thread_created) {
 		thread_created = RT_FALSE;
-		if (!rt_thread_free(&thread) && ret)
+		if (RT_UNLIKELY(!rt_thread_free(&thread) && ret))
 			goto error;
 	}
 	if (event_created) {
 		event_created = RT_FALSE;
-		if (!rt_event_free(&event) && ret)
+		if (RT_UNLIKELY(!rt_event_free(&event) && ret))
 			goto error;
 	}
 	return ret;
@@ -104,49 +104,49 @@ static rt_s zz_test_event_not_signaled_yet()
 
 	thread_status = ZZ_THREAD_STATUS_INIT;
 
-	if (!rt_event_create(&event))
+	if (RT_UNLIKELY(!rt_event_create(&event)))
 		goto error;
 	event_created = RT_TRUE;
 
-	if (!rt_thread_create(&thread, &zz_test_event_thread_callback, &event))
+	if (RT_UNLIKELY(!rt_thread_create(&thread, &zz_test_event_thread_callback, &event)))
 		goto error;
 	thread_created = RT_TRUE;
 
 	/* Let other thread wait for the event. */
 	rt_sleep_sleep(10);
 
-	if (thread_status != ZZ_THREAD_STATUS_INIT)
+	if (RT_UNLIKELY(thread_status != ZZ_THREAD_STATUS_INIT))
 		goto error;
 
-	if (!rt_event_signal(&event))
-		goto error;
-
-	/* Wait for thread to set status flag. */
-	rt_sleep_sleep(10);
-	if (thread_status != ZZ_THREAD_STATUS_SIGNAL_1)
-		goto error;
-
-	if (!rt_event_signal(&event))
+	if (RT_UNLIKELY(!rt_event_signal(&event)))
 		goto error;
 
 	/* Wait for thread to set status flag. */
 	rt_sleep_sleep(10);
-	if (thread_status != ZZ_THREAD_STATUS_SIGNAL_2)
+	if (RT_UNLIKELY(thread_status != ZZ_THREAD_STATUS_SIGNAL_1))
 		goto error;
 
-	if (!rt_thread_join_and_check(&thread))
+	if (RT_UNLIKELY(!rt_event_signal(&event)))
+		goto error;
+
+	/* Wait for thread to set status flag. */
+	rt_sleep_sleep(10);
+	if (RT_UNLIKELY(thread_status != ZZ_THREAD_STATUS_SIGNAL_2))
+		goto error;
+
+	if (RT_UNLIKELY(!rt_thread_join_and_check(&thread)))
 		goto error;
 
 	ret = RT_OK;
 free:
 	if (thread_created) {
 		thread_created = RT_FALSE;
-		if (!rt_thread_free(&thread) && ret)
+		if (RT_UNLIKELY(!rt_thread_free(&thread) && ret))
 			goto error;
 	}
 	if (event_created) {
 		event_created = RT_FALSE;
-		if (!rt_event_free(&event) && ret)
+		if (RT_UNLIKELY(!rt_event_free(&event) && ret))
 			goto error;
 	}
 	return ret;
@@ -160,8 +160,8 @@ rt_s zz_test_event()
 {
 	rt_s ret;
 
-	if (!zz_test_event_already_signaled()) goto error;
-	if (!zz_test_event_not_signaled_yet()) goto error;
+	if (RT_UNLIKELY(!zz_test_event_already_signaled())) goto error;
+	if (RT_UNLIKELY(!zz_test_event_not_signaled_yet())) goto error;
 
 	ret = RT_OK;
 free:

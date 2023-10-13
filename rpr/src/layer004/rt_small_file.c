@@ -12,22 +12,22 @@ rt_s rt_small_file_read(const rt_char *file_path, rt_char8 *buffer, rt_un buffer
 	struct rt_input_stream *input_stream;
 	rt_s ret;
 
-	if (!rt_file_create(&file, file_path, RT_FILE_MODE_READ))
+	if (RT_UNLIKELY(!rt_file_create(&file, file_path, RT_FILE_MODE_READ)))
 		goto error;
 	file_created = RT_TRUE;
 
-	if (!rt_file_get_size(&file, &file_size))
+	if (RT_UNLIKELY(!rt_file_get_size(&file, &file_size)))
 		goto error;
 
-	if (!rt_heap_alloc_if_needed(buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, (void**)output, file_size + 1, heap))
+	if (RT_UNLIKELY(!rt_heap_alloc_if_needed(buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, (void**)output, file_size + 1, heap)))
 		goto error;
 
 	input_stream = &file.io_device.input_stream;
-	if (!input_stream->read(input_stream, *output, file_size, output_size))
+	if (RT_UNLIKELY(!input_stream->read(input_stream, *output, file_size, output_size)))
 		goto error;
 
 	/* We know the size of the file so we should be able to read it completely. */
-	if (*output_size != file_size) {
+	if (RT_UNLIKELY(*output_size != file_size)) {
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
 		goto error;
 	}
@@ -39,7 +39,7 @@ rt_s rt_small_file_read(const rt_char *file_path, rt_char8 *buffer, rt_un buffer
 free:
 	if (file_created) {
 		file_created = RT_FALSE;
-		if (!rt_io_device_free(&file.io_device) && ret)
+		if (RT_UNLIKELY(!rt_io_device_free(&file.io_device) && ret))
 			goto error;
 	}
 	return ret;
@@ -72,24 +72,24 @@ rt_s rt_small_file_write(const rt_char *file_path, enum rt_small_file_mode mode,
 		goto error;
 	}
 
-	if (!rt_file_create(&file, file_path, file_mode))
+	if (RT_UNLIKELY(!rt_file_create(&file, file_path, file_mode)))
 		goto error;
 	file_created = RT_TRUE;
 
 	if (mode == RT_SMALL_FILE_MODE_APPEND) {
-		if (!rt_file_set_pointer(&file, 0, RT_FILE_POSITION_END))
+		if (RT_UNLIKELY(!rt_file_set_pointer(&file, 0, RT_FILE_POSITION_END)))
 			goto error;
 	}
 
 	output_stream = &file.io_device.output_stream;
-	if (!output_stream->write(output_stream, data, bytes_to_write))
+	if (RT_UNLIKELY(!output_stream->write(output_stream, data, bytes_to_write)))
 		goto error;
 
 	ret = RT_OK;
 free:
 	if (file_created) {
 		file_created = RT_FALSE;
-		if (!rt_io_device_free(&file.io_device) && ret)
+		if (RT_UNLIKELY(!rt_io_device_free(&file.io_device) && ret))
 			goto error;
 	}
 	return ret;

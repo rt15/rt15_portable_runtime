@@ -61,12 +61,12 @@ rt_s rt_base64_encode(const rt_char8 *data, rt_un data_size, rt_char8 *buffer, r
 		six_bits3 = (rt_uchar8)number & 63;
 
 		/* If we have one byte available (8 bits), then its encoding is spread out over two characters (2 * 6 bits). */
-		if (index_in_buffer >= buffer_capacity) {
+		if (RT_UNLIKELY(index_in_buffer >= buffer_capacity)) {
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 			goto error;
 		}
 		buffer[index_in_buffer++] = rt_base64_characters[six_bits0];
-		if (index_in_buffer >= buffer_capacity) {
+		if (RT_UNLIKELY(index_in_buffer >= buffer_capacity)) {
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 			goto error;
 		}
@@ -74,7 +74,7 @@ rt_s rt_base64_encode(const rt_char8 *data, rt_un data_size, rt_char8 *buffer, r
 
 		/* If we have only two bytes available (16 bits), then their encoding is spread out over three characters (3 * 6 bits) . */
 		if ((i + 1) < data_size) {
-			if (index_in_buffer >= buffer_capacity) {
+			if (RT_UNLIKELY(index_in_buffer >= buffer_capacity)) {
 				rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 				goto error;
 			}
@@ -83,7 +83,7 @@ rt_s rt_base64_encode(const rt_char8 *data, rt_un data_size, rt_char8 *buffer, r
 
 		/* If we have all three bytes available (24 bits), then their encoding is spread out over four characters (4 * 6 bits). */
 		if ((i + 2) < data_size) {
-			if (index_in_buffer >= buffer_capacity) {
+			if (RT_UNLIKELY(index_in_buffer >= buffer_capacity)) {
 				rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 				goto error;
 			}
@@ -93,7 +93,7 @@ rt_s rt_base64_encode(const rt_char8 *data, rt_un data_size, rt_char8 *buffer, r
 
 	/* Add padding that is required if we did not have a multiple of 4 number of characters in output. */
 	while (RT_MEMORY_MODULO_POWER_OF_TWO(index_in_buffer, 4)) {
-		if (index_in_buffer >= buffer_capacity) {
+		if (RT_UNLIKELY(index_in_buffer >= buffer_capacity)) {
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 			goto error;
 		}
@@ -101,7 +101,7 @@ rt_s rt_base64_encode(const rt_char8 *data, rt_un data_size, rt_char8 *buffer, r
 	}
 
 	/* Zero terminating character. */
-	if (index_in_buffer >= buffer_capacity) {
+	if (RT_UNLIKELY(index_in_buffer >= buffer_capacity)) {
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 		goto error;
 	}
@@ -147,7 +147,7 @@ rt_s rt_base64_decode(const rt_char8 *base64, rt_un base64_size, rt_char8 *buffe
 			i++;
 			/* If the buffer is full, split it into bytes */
 			if (i == 4) {
-				if ((output_size += 3) > buffer_capacity) {
+				if (RT_UNLIKELY((output_size += 3) > buffer_capacity)) {
 					rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 					goto error;
 				}
@@ -162,7 +162,7 @@ rt_s rt_base64_decode(const rt_char8 *base64, rt_un base64_size, rt_char8 *buffe
 
 	if (i == 3) {
 
-		if ((output_size += 2) > buffer_capacity) {
+		if (RT_UNLIKELY((output_size += 2) > buffer_capacity)) {
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 			goto error;
 		}
@@ -171,7 +171,7 @@ rt_s rt_base64_decode(const rt_char8 *base64, rt_un base64_size, rt_char8 *buffe
 
 	} else if (i == 2) {
 
-		if (++output_size > buffer_capacity) {
+		if (RT_UNLIKELY(++output_size > buffer_capacity)) {
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 			goto error;
 		}
@@ -179,7 +179,7 @@ rt_s rt_base64_decode(const rt_char8 *base64, rt_un base64_size, rt_char8 *buffe
 	}
 
 	/* Zero terminating character. */
-	if (output_size + 1 > buffer_capacity) {
+	if (RT_UNLIKELY(output_size + 1 > buffer_capacity)) {
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 		goto error;
 	}

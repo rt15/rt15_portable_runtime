@@ -25,43 +25,43 @@ rt_s zz_test_memory_compare(struct rt_output_stream *output_stream)
 	area2[ZZ_BUFFER_SIZE - 1] = 'a';
 
 	/* Test memcmp. */
-	if (!zz_start_chrono(&chrono))
+	if (RT_UNLIKELY(!zz_start_chrono(&chrono)))
 		goto error;
 	for (i = 0; i < ZZ_TESTS_COUNT; i++) {
-		if (memcmp(area1, area2, ZZ_BUFFER_SIZE) <= 0)
+		if (RT_UNLIKELY(memcmp(area1, area2, ZZ_BUFFER_SIZE) <= 0))
 			goto error;
 	}
-	if (!zz_stop_chrono("memcmp", &chrono, output_stream))
+	if (RT_UNLIKELY(!zz_stop_chrono("memcmp", &chrono, output_stream)))
 		goto error;
 
 	/* Test memcmp in function. */
-	if (!zz_start_chrono(&chrono))
+	if (RT_UNLIKELY(!zz_start_chrono(&chrono)))
 		goto error;
 	for (i = 0; i < ZZ_TESTS_COUNT; i++) {
-		if (zz_memory_compare(area1, area2, ZZ_BUFFER_SIZE) <= 0)
+		if (RT_UNLIKELY(zz_memory_compare(area1, area2, ZZ_BUFFER_SIZE) <= 0))
 			goto error;
 	}
-	if (!zz_stop_chrono("memcmp in function", &chrono, output_stream))
+	if (RT_UNLIKELY(!zz_stop_chrono("memcmp in function", &chrono, output_stream)))
 		goto error;
 
 	/* Test rt_memory_Compare. */
-	if (!zz_start_chrono(&chrono))
+	if (RT_UNLIKELY(!zz_start_chrono(&chrono)))
 		goto error;
 	for (i = 0; i < ZZ_TESTS_COUNT; i++) {
-		if (rt_memory_compare(area1, area2, ZZ_BUFFER_SIZE) <= 0)
+		if (RT_UNLIKELY(rt_memory_compare(area1, area2, ZZ_BUFFER_SIZE) <= 0))
 			goto error;
 	}
-	if (!zz_stop_chrono("rt_memory_Compare", &chrono, output_stream))
+	if (RT_UNLIKELY(!zz_stop_chrono("rt_memory_Compare", &chrono, output_stream)))
 		goto error;
 
 	/* Test RT_MEMORY_COMPARE. */
-	if (!zz_start_chrono(&chrono))
+	if (RT_UNLIKELY(!zz_start_chrono(&chrono)))
 		goto error;
 	for (i = 0; i < ZZ_TESTS_COUNT; i++) {
-		if (RT_MEMORY_COMPARE(area1, area2, ZZ_BUFFER_SIZE) <= 0)
+		if (RT_UNLIKELY(RT_MEMORY_COMPARE(area1, area2, ZZ_BUFFER_SIZE) <= 0))
 			goto error;
 	}
-	if (!zz_stop_chrono("RT_MEMORY_COMPARE", &chrono, output_stream))
+	if (RT_UNLIKELY(!zz_stop_chrono("RT_MEMORY_COMPARE", &chrono, output_stream)))
 		goto error;
 
 	ret = RT_OK;

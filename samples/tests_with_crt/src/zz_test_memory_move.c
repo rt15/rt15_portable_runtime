@@ -32,9 +32,9 @@ static rt_s zz_check_buffer(rt_uchar8 *buffer)
 	rt_s ret;
 
 	for (i = 0; i < ZZ_BUFFER_SIZE * 3 / 4; i++)
-		if (buffer[i] != 'a') goto error;
+		if (RT_UNLIKELY(buffer[i] != 'a')) goto error;
 	for (i = ZZ_BUFFER_SIZE * 3 / 4; i < ZZ_BUFFER_SIZE; i++)
-		if (buffer[i] != 'c') goto error;
+		if (RT_UNLIKELY(buffer[i] != 'c')) goto error;
 
 	ret = RT_OK;
 free:
@@ -58,53 +58,53 @@ rt_s zz_test_memory_move(struct rt_output_stream *output_stream)
 
 	/* Test memmove. */
 	zz_init_buffer(source);
-	if (!zz_start_chrono(&chrono))
+	if (RT_UNLIKELY(!zz_start_chrono(&chrono)))
 		goto error;
 	for (i = 0; i < ZZ_TESTS_COUNT; i++) {
 		/* VC is inlining code based on ZZ_BUFFER_SIZE. */
 		memmove(destination, source, ZZ_BUFFER_SIZE / 2);
 	}
-	if (!zz_stop_chrono("memmove", &chrono, output_stream))
+	if (RT_UNLIKELY(!zz_stop_chrono("memmove", &chrono, output_stream)))
 		goto error;
-	if (!zz_check_buffer(source))
+	if (RT_UNLIKELY(!zz_check_buffer(source)))
 		goto error;
 
 	/* Test memmove in function. */
 	zz_init_buffer(source);
-	if (!zz_start_chrono(&chrono))
+	if (RT_UNLIKELY(!zz_start_chrono(&chrono)))
 		goto error;
 	for (i = 0; i < ZZ_TESTS_COUNT; i++) {
 		/* Avoid inlining and size prediction, should force CRT usage. */
 		zz_memory_move(source, destination, ZZ_BUFFER_SIZE / 2);
 	}
-	if (!zz_stop_chrono("memmove in function", &chrono, output_stream))
+	if (RT_UNLIKELY(!zz_stop_chrono("memmove in function", &chrono, output_stream)))
 		goto error;
-	if (!zz_check_buffer(source))
+	if (RT_UNLIKELY(!zz_check_buffer(source)))
 		goto error;
 
 	/* Test rt_memory_Move. */
 	zz_init_buffer(source);
-	if (!zz_start_chrono(&chrono))
+	if (RT_UNLIKELY(!zz_start_chrono(&chrono)))
 		goto error;
 	for (i = 0; i < ZZ_TESTS_COUNT; i++) {
 		rt_memory_move(source, destination, ZZ_BUFFER_SIZE / 2);
 	}
-	if (!zz_stop_chrono("rt_memory_Move", &chrono, output_stream))
+	if (RT_UNLIKELY(!zz_stop_chrono("rt_memory_Move", &chrono, output_stream)))
 		goto error;
-	if (!zz_check_buffer(source))
+	if (RT_UNLIKELY(!zz_check_buffer(source)))
 		goto error;
 
 	/* Test RT_MEMORY_MOVE. */
 	zz_init_buffer(source);
-	if (!zz_start_chrono(&chrono))
+	if (RT_UNLIKELY(!zz_start_chrono(&chrono)))
 		goto error;
 	for (i = 0; i < ZZ_TESTS_COUNT; i++) {
 		/* Intrinsic should be used, CRT otherwise. */
 		RT_MEMORY_MOVE(source, destination, ZZ_BUFFER_SIZE / 2);
 	}
-	if (!zz_stop_chrono("RT_MEMORY_MOVE", &chrono, output_stream))
+	if (RT_UNLIKELY(!zz_stop_chrono("RT_MEMORY_MOVE", &chrono, output_stream)))
 		goto error;
-	if (!zz_check_buffer(source))
+	if (RT_UNLIKELY(!zz_check_buffer(source)))
 		goto error;
 
 	ret = RT_OK;

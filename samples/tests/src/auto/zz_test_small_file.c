@@ -17,24 +17,24 @@ rt_s zz_test_small_file_read_do(const rt_char *file_path, struct rt_heap *heap)
 		buffer[i] = 'z';
 
 	/* Buffer just the right size. */
-	if (!rt_small_file_read(file_path, buffer, data_size + 1, RT_NULL, RT_NULL, &output, &output_size, RT_NULL)) goto error;
-	if (output_size != rt_char8_get_size(output)) goto error;
-	if (!rt_char8_equals(output, output_size, "APPEND1APPEND2", data_size)) goto error;
+	if (RT_UNLIKELY(!rt_small_file_read(file_path, buffer, data_size + 1, RT_NULL, RT_NULL, &output, &output_size, RT_NULL))) goto error;
+	if (RT_UNLIKELY(output_size != rt_char8_get_size(output))) goto error;
+	if (RT_UNLIKELY(!rt_char8_equals(output, output_size, "APPEND1APPEND2", data_size))) goto error;
 
 	/* Buffer too small. */
-	if (rt_small_file_read(file_path, buffer, data_size, RT_NULL, RT_NULL, &output, &output_size, RT_NULL)) goto error;
+	if (RT_UNLIKELY(rt_small_file_read(file_path, buffer, data_size, RT_NULL, RT_NULL, &output, &output_size, RT_NULL))) goto error;
 
 	/* Buffer too small, heap provided. */
-	if (!rt_small_file_read(file_path, buffer, data_size, &heap_buffer, &heap_buffer_capacity, &output, &output_size, heap)) goto error;
-	if (!heap_buffer) goto error;
-	if (output != heap_buffer) goto error;
-	if (output_size != rt_char8_get_size(output)) goto error;
-	if (!rt_char8_equals(output, output_size, "APPEND1APPEND2", data_size)) goto error;
+	if (RT_UNLIKELY(!rt_small_file_read(file_path, buffer, data_size, &heap_buffer, &heap_buffer_capacity, &output, &output_size, heap))) goto error;
+	if (RT_UNLIKELY(!heap_buffer)) goto error;
+	if (RT_UNLIKELY(output != heap_buffer)) goto error;
+	if (RT_UNLIKELY(output_size != rt_char8_get_size(output))) goto error;
+	if (RT_UNLIKELY(!rt_char8_equals(output, output_size, "APPEND1APPEND2", data_size))) goto error;
 
 	ret = RT_OK;
 free:
 	if (heap_buffer) {
-		if (!heap->free(heap, &heap_buffer) && ret)
+		if (RT_UNLIKELY(!heap->free(heap, &heap_buffer) && ret))
 			goto error;
 	}
 
@@ -50,18 +50,18 @@ rt_s zz_test_small_file_read(const rt_char *file_path)
 	rt_b runtime_heap_created = RT_FALSE;
 	rt_s ret;
 
-	if (!rt_runtime_heap_create(&runtime_heap))
+	if (RT_UNLIKELY(!rt_runtime_heap_create(&runtime_heap)))
 		goto error;
 	runtime_heap_created = RT_TRUE;
 
-	if (!zz_test_small_file_read_do(file_path, &runtime_heap.heap))
+	if (RT_UNLIKELY(!zz_test_small_file_read_do(file_path, &runtime_heap.heap)))
 		goto error;
 
 	ret = RT_OK;
 free:
 	if (runtime_heap_created) {
 		runtime_heap_created = RT_FALSE;
-		if (!runtime_heap.heap.close(&runtime_heap.heap) && ret)
+		if (RT_UNLIKELY(!runtime_heap.heap.close(&runtime_heap.heap) && ret))
 			goto error;
 	}
 	return ret;
@@ -74,7 +74,7 @@ rt_s zz_test_small_file_write(const rt_char *file_path, enum rt_small_file_mode 
 {
 	rt_s ret;
 
-	if (!rt_small_file_write(file_path, mode, data, rt_char8_get_size(data)))
+	if (RT_UNLIKELY(!rt_small_file_write(file_path, mode, data, rt_char8_get_size(data))))
 		goto error;
 
 	ret = RT_OK;
@@ -90,33 +90,33 @@ rt_s zz_test_small_file_do(const rt_char *file_path)
 	rt_s ret;
 
 	/* NEW, without existing file. */
-	if (!rt_file_system_delete_file_if_exists(file_path)) goto error;
-	if (!zz_test_small_file_write(file_path, RT_SMALL_FILE_MODE_NEW, "NEW1")) goto error;
-	if (!zz_check_file_content(file_path, "NEW1")) goto error;
+	if (RT_UNLIKELY(!rt_file_system_delete_file_if_exists(file_path))) goto error;
+	if (RT_UNLIKELY(!zz_test_small_file_write(file_path, RT_SMALL_FILE_MODE_NEW, "NEW1"))) goto error;
+	if (RT_UNLIKELY(!zz_check_file_content(file_path, "NEW1"))) goto error;
 
 	/* NEW, with existing file. */
-	if (zz_test_small_file_write(file_path, RT_SMALL_FILE_MODE_NEW, "NEW2")) goto error;
-	if (!zz_check_file_content(file_path, "NEW1")) goto error;
+	if (RT_UNLIKELY(zz_test_small_file_write(file_path, RT_SMALL_FILE_MODE_NEW, "NEW2"))) goto error;
+	if (RT_UNLIKELY(!zz_check_file_content(file_path, "NEW1"))) goto error;
 
 	/* TRUNCATE, without existing file. */
-	if (!rt_file_system_delete_file_if_exists(file_path)) goto error;
-	if (!zz_test_small_file_write(file_path, RT_SMALL_FILE_MODE_TRUNCATE, "TRUNCATE1")) goto error;
-	if (!zz_check_file_content(file_path, "TRUNCATE1")) goto error;
+	if (RT_UNLIKELY(!rt_file_system_delete_file_if_exists(file_path))) goto error;
+	if (RT_UNLIKELY(!zz_test_small_file_write(file_path, RT_SMALL_FILE_MODE_TRUNCATE, "TRUNCATE1"))) goto error;
+	if (RT_UNLIKELY(!zz_check_file_content(file_path, "TRUNCATE1"))) goto error;
 
 	/* TRUNCATE, with existing file. */
-	if (!zz_test_small_file_write(file_path, RT_SMALL_FILE_MODE_TRUNCATE, "TRUNCATE2")) goto error;
-	if (!zz_check_file_content(file_path, "TRUNCATE2")) goto error;
+	if (RT_UNLIKELY(!zz_test_small_file_write(file_path, RT_SMALL_FILE_MODE_TRUNCATE, "TRUNCATE2"))) goto error;
+	if (RT_UNLIKELY(!zz_check_file_content(file_path, "TRUNCATE2"))) goto error;
 
 	/* APPEND, without existing file. */
-	if (!rt_file_system_delete_file_if_exists(file_path)) goto error;
-	if (!zz_test_small_file_write(file_path, RT_SMALL_FILE_MODE_APPEND, "APPEND1")) goto error;
-	if (!zz_check_file_content(file_path, "APPEND1")) goto error;
+	if (RT_UNLIKELY(!rt_file_system_delete_file_if_exists(file_path))) goto error;
+	if (RT_UNLIKELY(!zz_test_small_file_write(file_path, RT_SMALL_FILE_MODE_APPEND, "APPEND1"))) goto error;
+	if (RT_UNLIKELY(!zz_check_file_content(file_path, "APPEND1"))) goto error;
 
 	/* APPEND, with existing file. */
-	if (!zz_test_small_file_write(file_path, RT_SMALL_FILE_MODE_APPEND, "APPEND2")) goto error;
-	if (!zz_check_file_content(file_path, "APPEND1APPEND2")) goto error;
+	if (RT_UNLIKELY(!zz_test_small_file_write(file_path, RT_SMALL_FILE_MODE_APPEND, "APPEND2"))) goto error;
+	if (RT_UNLIKELY(!zz_check_file_content(file_path, "APPEND1APPEND2"))) goto error;
 
-	if (!zz_test_small_file_read(file_path)) goto error;
+	if (RT_UNLIKELY(!zz_test_small_file_read(file_path))) goto error;
 
 	ret = RT_OK;
 free:
@@ -132,11 +132,11 @@ rt_s zz_test_small_file()
 	rt_un file_path_size;
 	rt_s ret;
 
-	if (!zz_get_tmp_dir(file_path, RT_FILE_PATH_SIZE, &file_path_size)) goto error;
-	if (!rt_file_path_append_separator(file_path, RT_FILE_PATH_SIZE, &file_path_size)) goto error;
-	if (!rt_char_append(_R("small.txt"), 9, file_path, RT_FILE_PATH_SIZE, &file_path_size)) goto error;
+	if (RT_UNLIKELY(!zz_get_tmp_dir(file_path, RT_FILE_PATH_SIZE, &file_path_size))) goto error;
+	if (RT_UNLIKELY(!rt_file_path_append_separator(file_path, RT_FILE_PATH_SIZE, &file_path_size))) goto error;
+	if (RT_UNLIKELY(!rt_char_append(_R("small.txt"), 9, file_path, RT_FILE_PATH_SIZE, &file_path_size))) goto error;
 
-	if (!zz_test_small_file_do(file_path)) goto error;
+	if (RT_UNLIKELY(!zz_test_small_file_do(file_path))) goto error;
 
 	ret = RT_OK;
 free:

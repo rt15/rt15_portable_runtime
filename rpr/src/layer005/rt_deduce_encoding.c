@@ -187,18 +187,18 @@ rt_s rt_deduce_encoding_with_file(struct rt_file *file, rt_char8 *buffer, rt_un 
 	rt_s ret;
 
 	/* Backup the current position */
-	if (!rt_file_get_pointer(file, &old_position)) goto error;
+	if (RT_UNLIKELY(!rt_file_get_pointer(file, &old_position))) goto error;
 
 	/* Go to the beginning of the file. */
-	if (!rt_file_set_pointer(file, 0, RT_FILE_POSITION_BEGIN)) goto error;
+	if (RT_UNLIKELY(!rt_file_set_pointer(file, 0, RT_FILE_POSITION_BEGIN))) goto error;
 
 	/* Read the beginning of the file. */
-	if (!rt_io_device_read(&file->io_device.input_stream, buffer, buffer_capacity, &bytes_read)) goto error;
+	if (RT_UNLIKELY(!rt_io_device_read(&file->io_device.input_stream, buffer, buffer_capacity, &bytes_read))) goto error;
 
-	if (!rt_deduce_encoding(buffer, bytes_read, encoding, bom_size)) goto error;
+	if (RT_UNLIKELY(!rt_deduce_encoding(buffer, bytes_read, encoding, bom_size))) goto error;
 
 	/* Go back to original position. */
-	if (!rt_file_set_pointer(file, old_position, RT_FILE_POSITION_BEGIN)) goto error;
+	if (RT_UNLIKELY(!rt_file_set_pointer(file, old_position, RT_FILE_POSITION_BEGIN))) goto error;
 
 	ret = RT_OK;
 free:

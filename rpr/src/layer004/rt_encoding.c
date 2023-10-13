@@ -408,12 +408,12 @@ static rt_s rt_encoding_get_linux_system(rt_char *buffer, rt_un buffer_capacity,
 	encoding_name = nl_langinfo(CODESET);
 	/* There are very few chances that nl_langinfo failed. */
 	/* It may not set errno. */
-	if (encoding_name) {
+	if (RT_LIKELY(encoding_name)) {
 		encoding_name_size = rt_char_get_size(encoding_name);
 		/* There are very few chances that encoding_name is empty. */
-		if (encoding_name_size) {
+		if (RT_LIKELY(encoding_name_size)) {
 			/* The pointer nl_langinfo is not thread safe so we make a copy really quick. */
-			if (!rt_char_copy(encoding_name, encoding_name_size, buffer, buffer_capacity))
+			if (RT_UNLIKELY(!rt_char_copy(encoding_name, encoding_name_size, buffer, buffer_capacity)))
 				goto error;
 			*buffer_size = encoding_name_size;
 		} else {
@@ -459,7 +459,7 @@ rt_s rt_encoding_get_system(enum rt_encoding *encoding)
 		}
 #else
 		/* Retrieve the encoding name as a string. */
-		if (!rt_encoding_get_linux_system(system_encoding_name, 64, &system_encoding_name_size))
+		if (RT_UNLIKELY(!rt_encoding_get_linux_system(system_encoding_name, 64, &system_encoding_name_size)))
 			goto error;
 
 		for (i = 1; i < RT_ENCODING_ENCODINGS_COUNT; i++) {
@@ -477,7 +477,7 @@ rt_s rt_encoding_get_system(enum rt_encoding *encoding)
 	*encoding = rt_encoding_system;
 
 	/* At this point rt_encoding_system is either zero (its initial value) or the correct encoding. */
-	if (!rt_encoding_system) {
+	if (RT_UNLIKELY(!rt_encoding_system)) {
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
 		goto error;
 	}
@@ -499,7 +499,7 @@ static rt_s rt_encoding_get_actual(enum rt_encoding encoding, enum rt_encoding *
 	rt_s ret;
 
 	if (encoding == RT_ENCODING_SYSTEM_DEFAULT) {
-		if (!rt_encoding_get_system(actual_encoding))
+		if (RT_UNLIKELY(!rt_encoding_get_system(actual_encoding)))
 			goto error;
 	} else if (encoding < RT_ENCODING_ENCODINGS_COUNT) {
 		*actual_encoding = encoding;
@@ -525,7 +525,7 @@ rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *en
 	enum rt_encoding actual_encoding;
 	rt_s ret;
 
-	if (!rt_encoding_get_actual(encoding, &actual_encoding))
+	if (RT_UNLIKELY(!rt_encoding_get_actual(encoding, &actual_encoding)))
 		goto error;
 
 	encoding_info->code_page = rt_encoding_code_pages[actual_encoding];
@@ -536,42 +536,42 @@ rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *en
 #ifdef RT_DEFINE_WINDOWS
 	switch (actual_encoding) {
 	case RT_ENCODING_UTF_16:
-		if (!rt_char_copy(_R("1200 (UTF-16)"), 13, encoding_info->label, RT_ENCODING_LABEL_SIZE))
+		if (RT_UNLIKELY(!rt_char_copy(_R("1200 (UTF-16)"), 13, encoding_info->label, RT_ENCODING_LABEL_SIZE)))
 			goto error;
 		break;
 	case RT_ENCODING_UTF_16LE:
-		if (!rt_char_copy(_R("1200 (UTF-16 little-endian)"), 27, encoding_info->label, RT_ENCODING_LABEL_SIZE))
+		if (RT_UNLIKELY(!rt_char_copy(_R("1200 (UTF-16 little-endian)"), 27, encoding_info->label, RT_ENCODING_LABEL_SIZE)))
 			goto error;
 		break;
 	case RT_ENCODING_UTF_16BE:
-		if (!rt_char_copy(_R("1201 (UTF-16 big-endian)"), 24, encoding_info->label, RT_ENCODING_LABEL_SIZE))
+		if (RT_UNLIKELY(!rt_char_copy(_R("1201 (UTF-16 big-endian)"), 24, encoding_info->label, RT_ENCODING_LABEL_SIZE)))
 			goto error;
 		break;
 	case RT_ENCODING_UTF_32:
-		if (!rt_char_copy(_R("12000 (UTF-32)"), 14, encoding_info->label, RT_ENCODING_LABEL_SIZE))
+		if (RT_UNLIKELY(!rt_char_copy(_R("12000 (UTF-32)"), 14, encoding_info->label, RT_ENCODING_LABEL_SIZE)))
 			goto error;
 		break;
 	case RT_ENCODING_UTF_32LE:
-		if (!rt_char_copy(_R("12000 (UTF-32 little-endian)"), 28, encoding_info->label, RT_ENCODING_LABEL_SIZE))
+		if (RT_UNLIKELY(!rt_char_copy(_R("12000 (UTF-32 little-endian)"), 28, encoding_info->label, RT_ENCODING_LABEL_SIZE)))
 			goto error;
 		break;
 	case RT_ENCODING_UTF_32BE:
-		if (!rt_char_copy(_R("12001 (UTF-32 big-endian)"), 25, encoding_info->label, RT_ENCODING_LABEL_SIZE))
+		if (RT_UNLIKELY(!rt_char_copy(_R("12001 (UTF-32 big-endian)"), 25, encoding_info->label, RT_ENCODING_LABEL_SIZE)))
 			goto error;
 		break;
 	default:
 		/* Returns 0 and set last error in case of issue. */
-		if (!GetCPInfoEx(encoding_info->code_page, 0, &cp_info_ex))
+		if (RT_UNLIKELY(!GetCPInfoEx(encoding_info->code_page, 0, &cp_info_ex)))
 			goto error;
 
 		/* Copy the label. */
-		if (!rt_char_copy(cp_info_ex.CodePageName, rt_char_get_size(cp_info_ex.CodePageName), encoding_info->label, RT_ENCODING_LABEL_SIZE))
+		if (RT_UNLIKELY(!rt_char_copy(cp_info_ex.CodePageName, rt_char_get_size(cp_info_ex.CodePageName), encoding_info->label, RT_ENCODING_LABEL_SIZE)))
 			goto error;
 	}
 
 #else
 	/* Use the name as label. */
-	if (!rt_char_copy(encoding_info->name, rt_char_get_size(encoding_info->name), encoding_info->label, RT_ENCODING_LABEL_SIZE))
+	if (RT_UNLIKELY(!rt_char_copy(encoding_info->name, rt_char_get_size(encoding_info->name), encoding_info->label, RT_ENCODING_LABEL_SIZE)))
 		goto error;
 #endif
 
@@ -725,7 +725,7 @@ static rt_s rt_encoding_encode_using_windows(const rt_char *input, rt_un input_s
 			/* Provided buffer was good enough. */
 			*output = buffer;
 		} else {
-			if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+			if (RT_LIKELY(GetLastError() == ERROR_INSUFFICIENT_BUFFER)) {
 				/* The provided buffer was not enough, use the heap. */
 				use_heap = RT_TRUE;
 			} else {
@@ -740,20 +740,20 @@ static rt_s rt_encoding_encode_using_windows(const rt_char *input, rt_un input_s
 	if (use_heap) {
 
 		/* The provided buffer was not enough, use the heap if available. */
-		if (heap) {
+		if (RT_LIKELY(heap)) {
 			/* Compute the required buffer size. */
 			length = WideCharToMultiByte(code_page, 0, input, (int)input_size, RT_NULL, 0, RT_NULL, RT_NULL);
-			if (!length) {
+			if (RT_UNLIKELY(!length)) {
 				goto error;
 			} else {
 
 				/* We need space for the terminating zero. */
 				heap_buffer_size = length + 1;
 
-				if (rt_heap_alloc_if_needed(RT_NULL, 0, heap_buffer, heap_buffer_capacity, (void**)output, heap_buffer_size, heap)) {
+				if (RT_LIKELY(rt_heap_alloc_if_needed(RT_NULL, 0, heap_buffer, heap_buffer_capacity, (void**)output, heap_buffer_size, heap))) {
 
 					length = WideCharToMultiByte(code_page, 0, input, (int)input_size, *output, length, RT_NULL, RT_NULL);
-					if (!length)
+					if (RT_UNLIKELY(!length))
 						goto error;
 					/* Output size is the size of the buffer minus the terminating zero. */
 					*output_size = heap_buffer_size - 1;
@@ -811,7 +811,7 @@ static rt_s rt_encoding_decode_using_windows(const rt_char8 *input, rt_un input_
 			/* Provided buffer was good enough. */
 			*output = buffer;
 		} else {
-			if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+			if (RT_LIKELY(GetLastError() == ERROR_INSUFFICIENT_BUFFER)) {
 				/* The provided buffer was not enough, use the heap. */
 				use_heap = RT_TRUE;
 			} else {
@@ -826,20 +826,20 @@ static rt_s rt_encoding_decode_using_windows(const rt_char8 *input, rt_un input_
 	if (use_heap) {
 
 		/* The provided buffer was not enough, use the heap if available. */
-		if (heap) {
+		if (RT_LIKELY(heap)) {
 			/* Compute the required buffer size. */
 			length = MultiByteToWideChar(code_page, 0, input, (int)input_size, RT_NULL, 0);
-			if (!length) {
+			if (RT_UNLIKELY(!length)) {
 				goto error;
 			} else {
 
 				/* We need space for the terminating zero. */
 				heap_buffer_size = length + 1;
 
-				if (rt_heap_alloc_if_needed(RT_NULL, 0, heap_buffer, heap_buffer_capacity, (void**)output, heap_buffer_size * sizeof(rt_char), heap)) {
+				if (RT_LIKELY(rt_heap_alloc_if_needed(RT_NULL, 0, heap_buffer, heap_buffer_capacity, (void**)output, heap_buffer_size * sizeof(rt_char), heap))) {
 
 					length = MultiByteToWideChar(code_page, 0, input, (int)input_size, *output, length);
-					if (!length)
+					if (RT_UNLIKELY(!length))
 						goto error;
 					/* Output size is the size of the buffer minus the terminating zero. */
 					*output_size = heap_buffer_size - 1;
@@ -897,7 +897,7 @@ static rt_un rt_encoding_encode_or_decode_unicode_without_bom(const rt_char8 *in
 	}
 
 	/* Allocate resulting buffer, adding one for zero terminating character. */
-	if (!rt_heap_alloc_if_needed(buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, (void**)output, (local_output_size + 1) * output_code_unit_size, heap))
+	if (RT_UNLIKELY(!rt_heap_alloc_if_needed(buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, (void**)output, (local_output_size + 1) * output_code_unit_size, heap)))
 		goto error;
 
 	/* Add little endian BOM if needed and set output payload pointer. */
@@ -1093,7 +1093,7 @@ static rt_un rt_encoding_encode_or_decode_unicode(const rt_char8 *input, rt_un i
 		input_payload_size = input_size;
 	}
 
-	if (!rt_encoding_encode_or_decode_unicode_without_bom(input_payload, input_payload_size, input_payload_encoding, input_code_unit_size, output_encoding, output_code_unit_size, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap))
+	if (RT_UNLIKELY(!rt_encoding_encode_or_decode_unicode_without_bom(input_payload, input_payload_size, input_payload_encoding, input_code_unit_size, output_encoding, output_code_unit_size, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap)))
 		goto error;
 
 	ret = RT_OK;
@@ -1148,12 +1148,12 @@ buffer_flush:
 			/* Output buffer too small. errno == E2BIG. */
 			/* Invalid character sequence. errno == EILSEQ. */
 			/* Incomplete character sequence. errno == EINVAL. */
-			if (errno == E2BIG) {
+			if (RT_LIKELY(errno == E2BIG)) {
 				/* Buffer was too small. */
 				use_heap = RT_TRUE;
 
 				/* Make sure a first heap buffer is ready. */
-				if (!rt_heap_alloc_if_needed(RT_NULL, 0, heap_buffer, heap_buffer_capacity, (void**)output, buffer_capacity * 2, heap))
+				if (RT_UNLIKELY(!rt_heap_alloc_if_needed(RT_NULL, 0, heap_buffer, heap_buffer_capacity, (void**)output, buffer_capacity * 2, heap)))
 					goto error;
 
 				/* Copy from the stack buffer to the heap buffer as we will resume the encoding in there. */
@@ -1185,7 +1185,7 @@ buffer_flush:
 		use_heap = RT_TRUE;
 
 		/* Allocate an heap buffer twice as big as the input. */
-		if (!rt_heap_alloc_if_needed(RT_NULL, 0, heap_buffer, heap_buffer_capacity, (void**)output, input_size * 2, heap))
+		if (RT_UNLIKELY(!rt_heap_alloc_if_needed(RT_NULL, 0, heap_buffer, heap_buffer_capacity, (void**)output, input_size * 2, heap)))
 			goto error;
 
 		/* Adjust iconv_buffer and iconv_buffer_capacity for next iconv call. */
@@ -1197,7 +1197,7 @@ buffer_flush:
 
 	/* If buffer was not enough. */
 	if (use_heap) {
-		if (heap) {
+		if (RT_LIKELY(heap)) {
 			while (RT_TRUE) {
 heap_buffer_flush:
 				previous_iconv_buffer = iconv_buffer;
@@ -1211,7 +1211,7 @@ heap_buffer_flush:
 					/* Output buffer too small. errno == E2BIG. */
 					/* Invalid character sequence. errno == EILSEQ. */
 					/* Incomplete character sequence. errno == EINVAL. */
-					if (errno != E2BIG) {
+					if (RT_UNLIKELY(errno != E2BIG)) {
 						/* Invalid/incomplete character sequence. */
 						goto error;
 					}
@@ -1232,7 +1232,7 @@ heap_buffer_flush:
 				*output_size += iconv_buffer - previous_iconv_buffer;
 
 				/* Allocate a bigger heap buffer then the loop will try again. */
-				if (!heap->realloc(heap, heap_buffer, *heap_buffer_capacity * 2))
+				if (RT_UNLIKELY(!heap->realloc(heap, heap_buffer, *heap_buffer_capacity * 2)))
 					goto error;
 
 				/* Adjust iconv_buffer and iconv_buffer_capacity for next iconv call. */
@@ -1277,7 +1277,7 @@ static rt_s rt_encoding_iconv_with_encoding(const rt_char8 *input, rt_un input_s
 
 	/* Retrieve the encoding name as a string. */
 	/* Either input_encoding or output_encoding is RT_ENCODING_SYSTEM_DEFAULT so we will use the result of this function call. */
-	if (!rt_encoding_get_linux_system(system_encoding_name, 64, &system_encoding_name_size))
+	if (RT_UNLIKELY(!rt_encoding_get_linux_system(system_encoding_name, 64, &system_encoding_name_size)))
 		goto error;
 
 	if (input_encoding == RT_ENCODING_SYSTEM_DEFAULT) {
@@ -1293,19 +1293,19 @@ static rt_s rt_encoding_iconv_with_encoding(const rt_char8 *input, rt_un input_s
 
 	/* In case of error, iconv_open sets errno and returns (iconv_t)-1. */
 	conversion_descriptor = iconv_open(output_encoding_name, input_encoding_name);
-	if (conversion_descriptor == (iconv_t)-1) {
+	if (RT_UNLIKELY(conversion_descriptor == (iconv_t)-1)) {
 		goto error;
 	}
 	conversion_descriptor_open = RT_TRUE;
 
-	if (!rt_encoding_iconv_with_descriptor(input, input_size, conversion_descriptor, output_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap))
+	if (RT_UNLIKELY(!rt_encoding_iconv_with_descriptor(input, input_size, conversion_descriptor, output_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap)))
 		goto error;
 
 	ret = RT_OK;
 free:
 	if (conversion_descriptor_open) {
 		 /* In case of error, iconv_close sets errno and returns -1. */
-		if ((iconv_close(conversion_descriptor) == -1) && ret) {
+		if (RT_UNLIKELY((iconv_close(conversion_descriptor) == -1) && ret)) {
 			conversion_descriptor_open = RT_FALSE;
 			goto error;
 		}
@@ -1339,16 +1339,16 @@ rt_s rt_encoding_encode(const rt_char *input, rt_un input_size, enum rt_encoding
 
 				output_code_unit_size = rt_encoding_code_unit_sizes[output_encoding];
 
-				if (!rt_encoding_encode_or_decode_unicode((rt_char8*)input, input_size, RT_ENCODING_UTF_16LE, sizeof(rt_char), output_encoding, output_code_unit_size, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap))
+				if (RT_UNLIKELY(!rt_encoding_encode_or_decode_unicode((rt_char8*)input, input_size, RT_ENCODING_UTF_16LE, sizeof(rt_char), output_encoding, output_code_unit_size, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap)))
 					goto error;
 		} else {
-			if (!rt_encoding_encode_using_windows(input, input_size, output_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap))
+			if (RT_UNLIKELY(!rt_encoding_encode_using_windows(input, input_size, output_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap)))
 				goto error;
 		}
 
 #else
 
-		if (!rt_encoding_iconv_with_encoding(input, input_size, RT_ENCODING_SYSTEM_DEFAULT, output_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap))
+		if (RT_UNLIKELY(!rt_encoding_iconv_with_encoding(input, input_size, RT_ENCODING_SYSTEM_DEFAULT, output_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap)))
 			goto error;
 
 #endif
@@ -1368,7 +1368,7 @@ rt_s rt_encoding_encode(const rt_char *input, rt_un input_size, enum rt_encoding
 			empty_size = 1;
 
 		/* Empty input, just write the terminating zero. */
-		if (!rt_heap_alloc_if_needed(buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, (void**)output, empty_size, heap))
+		if (RT_UNLIKELY(!rt_heap_alloc_if_needed(buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, (void**)output, empty_size, heap)))
 			goto error;
 
 		if (output_encoding == RT_ENCODING_UTF_16) {
@@ -1436,25 +1436,25 @@ rt_s rt_encoding_decode(const rt_char8 *input, rt_un input_size, enum rt_encodin
 
 			actual_input_size = input_size / input_code_unit_size;
 
-			if (!rt_encoding_encode_or_decode_unicode(input, actual_input_size, input_encoding, input_code_unit_size, RT_ENCODING_UTF_16LE, sizeof(rt_char), (rt_char8*)buffer, buffer_capacity * sizeof(rt_char), heap_buffer, heap_buffer_capacity, (rt_char8**)output, output_size, heap))
+			if (RT_UNLIKELY(!rt_encoding_encode_or_decode_unicode(input, actual_input_size, input_encoding, input_code_unit_size, RT_ENCODING_UTF_16LE, sizeof(rt_char), (rt_char8*)buffer, buffer_capacity * sizeof(rt_char), heap_buffer, heap_buffer_capacity, (rt_char8**)output, output_size, heap)))
 				goto error;
 
 			(*output_size) /= sizeof(rt_char);
 
 		} else {
-			if (!rt_encoding_decode_using_windows(input, input_size, input_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap))
+			if (RT_UNLIKELY(!rt_encoding_decode_using_windows(input, input_size, input_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap)))
 				goto error;
 		}
 
 #else
 
-		if (!rt_encoding_iconv_with_encoding(input, input_size, input_encoding, RT_ENCODING_SYSTEM_DEFAULT, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap))
+		if (RT_UNLIKELY(!rt_encoding_iconv_with_encoding(input, input_size, input_encoding, RT_ENCODING_SYSTEM_DEFAULT, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap)))
 			goto error;
 
 #endif
 	} else {
 		/* Empty input, just write the terminating zero. */
-		if (!rt_heap_alloc_if_needed(buffer, buffer_capacity * sizeof(rt_char), heap_buffer, heap_buffer_capacity, (void**)output, sizeof(rt_char), heap))
+		if (RT_UNLIKELY(!rt_heap_alloc_if_needed(buffer, buffer_capacity * sizeof(rt_char), heap_buffer, heap_buffer_capacity, (void**)output, sizeof(rt_char), heap)))
 			goto error;
 
 		(*output)[0] = 0;

@@ -31,7 +31,7 @@ rt_s rt_io_device_create_from_std_input(struct rt_io_device *io_device)
 #ifdef RT_DEFINE_WINDOWS
 	handle = GetStdHandle(STD_INPUT_HANDLE);
 	/* GetStdHandle can return NULL but we do not consider it an error. */
-	if (handle == INVALID_HANDLE_VALUE)
+	if (RT_UNLIKELY(handle == INVALID_HANDLE_VALUE))
 		goto error;
 
 	rt_io_device_create_from_handle(io_device, handle);
@@ -59,7 +59,7 @@ rt_s rt_io_device_create_from_std_output(struct rt_io_device *io_device)
 #ifdef RT_DEFINE_WINDOWS
 	handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	/* GetStdHandle can return NULL but we do not consider it an error. */
-	if (handle == INVALID_HANDLE_VALUE)
+	if (RT_UNLIKELY(handle == INVALID_HANDLE_VALUE))
 		goto error;
 
 	rt_io_device_create_from_handle(io_device, handle);
@@ -87,7 +87,7 @@ rt_s rt_io_device_create_from_std_error(struct rt_io_device *io_device)
 #ifdef RT_DEFINE_WINDOWS
 	handle = GetStdHandle(STD_ERROR_HANDLE);
 	/* GetStdHandle can return NULL but we do not consider it an error. */
-	if (handle == INVALID_HANDLE_VALUE)
+	if (RT_UNLIKELY(handle == INVALID_HANDLE_VALUE))
 		goto error;
 
 	rt_io_device_create_from_handle(io_device, handle);
@@ -124,7 +124,7 @@ rt_s rt_io_device_create_from_console_input(struct rt_io_device *io_device)
 			    OPEN_EXISTING,
 			    0,
 			    NULL);
-	if (handle == INVALID_HANDLE_VALUE)
+	if (RT_UNLIKELY(handle == INVALID_HANDLE_VALUE))
 		goto error;
 	rt_io_device_create_from_handle(io_device, handle);
 #else
@@ -134,7 +134,7 @@ rt_s rt_io_device_create_from_console_input(struct rt_io_device *io_device)
 		terminal_name = "/dev/tty";
 	/* This open can fail if the process is attached to gdb. */
 	file_descriptor = open(terminal_name, O_RDONLY | O_CLOEXEC);
-	if (file_descriptor == -1)
+	if (RT_UNLIKELY(file_descriptor == -1))
 		goto error;
 	rt_io_device_create_from_file_descriptor(io_device, file_descriptor);
 #endif
@@ -165,12 +165,12 @@ rt_s rt_io_device_create_from_console_output(struct rt_io_device *io_device)
 			    OPEN_EXISTING,
 			    0,
 			    NULL);
-	if (handle == INVALID_HANDLE_VALUE)
+	if (RT_UNLIKELY(handle == INVALID_HANDLE_VALUE))
 		goto error;
 	rt_io_device_create_from_handle(io_device, handle);
 #else
 	file_descriptor = open("/dev/tty", O_WRONLY | O_CLOEXEC);
-	if (file_descriptor == -1)
+	if (RT_UNLIKELY(file_descriptor == -1))
 		goto error;
 	rt_io_device_create_from_file_descriptor(io_device, file_descriptor);
 #endif
@@ -199,13 +199,13 @@ rt_s rt_io_device_read(struct rt_input_stream *input_stream, rt_char8 *buffer, r
 	io_device = RT_MEMORY_CONTAINER_OF(input_stream, struct rt_io_device, input_stream);
 
 #ifdef RT_DEFINE_WINDOWS
-	if (!ReadFile(io_device->handle, buffer, (DWORD)bytes_to_read, &local_bytes_read, NULL))
+	if (RT_UNLIKELY(!ReadFile(io_device->handle, buffer, (DWORD)bytes_to_read, &local_bytes_read, NULL)))
 		goto error;
 	*bytes_read = local_bytes_read;
 #else
 	/* read returns -1 and set errno in case of issue. */
 	local_bytes_read = read(io_device->file_descriptor, buffer, bytes_to_read);
-	if (local_bytes_read == -1)
+	if (RT_UNLIKELY(local_bytes_read == -1))
 		goto error;
 	*bytes_read = local_bytes_read;
 #endif
@@ -263,7 +263,7 @@ rt_s rt_io_device_is_inheritable(struct rt_io_device *io_device, rt_b *inheritab
 
 #ifdef RT_DEFINE_WINDOWS
 
-	if (!GetHandleInformation(io_device->handle, &flags)) goto error;
+	if (RT_UNLIKELY(!GetHandleInformation(io_device->handle, &flags))) goto error;
 	if (flags & HANDLE_FLAG_INHERIT)
 		*inheritable = RT_TRUE;
 	else
@@ -272,7 +272,7 @@ rt_s rt_io_device_is_inheritable(struct rt_io_device *io_device, rt_b *inheritab
 #else
 
 	flags = fcntl(io_device->file_descriptor, F_GETFD, 0);
-	if (flags == -1) goto error;
+	if (RT_UNLIKELY(flags == -1)) goto error;
 
 	if (flags & FD_CLOEXEC)
 		*inheritable = RT_FALSE;
@@ -298,33 +298,33 @@ rt_s rt_io_device_set_inheritable(struct rt_io_device *io_device, rt_b inheritab
 #endif
 	rt_s ret;
 
-	if (!rt_io_device_is_inheritable(io_device, &current_value))
+	if (RT_UNLIKELY(!rt_io_device_is_inheritable(io_device, &current_value)))
 		goto error;
 
 #ifdef RT_DEFINE_LINUX
 	flags = fcntl(io_device->file_descriptor, F_GETFD, 0);
-	if (flags == -1)
+	if (RT_UNLIKELY(flags == -1))
 		goto error;
 #endif
 
 	if (inheritable && !current_value) {
 #ifdef RT_DEFINE_WINDOWS
 		/* Add inheritance. */
-		if (!SetHandleInformation(io_device->handle, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT))
+		if (RT_UNLIKELY(!SetHandleInformation(io_device->handle, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT)))
 			goto error;
 #else
 		/* Remove FD_CLOEXEC flag so that the descriptor will be valid in children. */
-		if (fcntl(io_device->file_descriptor, F_SETFD, flags & ~FD_CLOEXEC) == -1)
+		if (RT_UNLIKELY(fcntl(io_device->file_descriptor, F_SETFD, flags & ~FD_CLOEXEC) == -1))
 			goto error;
 #endif
 	} else if (!inheritable && current_value) {
 #ifdef RT_DEFINE_WINDOWS
 		/* Remove inheritance. */
-		if (!SetHandleInformation(io_device->handle, HANDLE_FLAG_INHERIT, 0))
+		if (RT_UNLIKELY(!SetHandleInformation(io_device->handle, HANDLE_FLAG_INHERIT, 0)))
 			goto error;
 #else
 		/* Add FD_CLOEXEC flag so that the descriptor will not be available in children. */
-		if (fcntl(io_device->file_descriptor, F_SETFD, flags | FD_CLOEXEC) == -1)
+		if (RT_UNLIKELY(fcntl(io_device->file_descriptor, F_SETFD, flags | FD_CLOEXEC) == -1))
 			goto error;
 #endif
 	}
@@ -351,7 +351,7 @@ rt_s rt_io_device_is_console(struct rt_io_device *io_device, rt_b *is_console)
 #ifdef RT_DEFINE_WINDOWS
 	/* Returns FILE_TYPE_UNKNOWN and set last error different from NO_ERROR in case of error. */
 	file_type = GetFileType(handle);
-	if (file_type == FILE_TYPE_UNKNOWN && GetLastError() != NO_ERROR)
+	if (RT_UNLIKELY(file_type == FILE_TYPE_UNKNOWN && GetLastError() != NO_ERROR))
 		goto error;
 
 	*is_console = (file_type == FILE_TYPE_CHAR);
@@ -361,7 +361,7 @@ rt_s rt_io_device_is_console(struct rt_io_device *io_device, rt_b *is_console)
 	} else {
 		/* If it is not a terminal, then errno = EINVAL on old kernel and ENOTTY on new ones. */
 		/* If the descriptor is wrong, errno = EBADF. */
-		if (errno == EINVAL || errno == ENOTTY)
+		if (RT_LIKELY(errno == EINVAL || errno == ENOTTY))
 			*is_console = RT_FALSE;
 		else
 			goto error;
@@ -387,16 +387,16 @@ rt_s rt_io_device_kernel_flush(struct rt_io_device *io_device)
 #endif
 	rt_s ret;
 
-	if (!rt_io_device_is_console(io_device, &is_console))
+	if (RT_UNLIKELY(!rt_io_device_is_console(io_device, &is_console)))
 		goto error;
 	if (!is_console) {
 #ifdef RT_DEFINE_WINDOWS
 		/* Returns zero and set last error in case of issue. */
-		if (!FlushFileBuffers(handle))
+		if (RT_UNLIKELY(!FlushFileBuffers(handle)))
 			goto error;
 #else
 		/* Returns zero on success. Set errno in case of error. */
-		if (fsync(file_descriptor))
+		if (RT_UNLIKELY(fsync(file_descriptor)))
 			goto error;
 #endif
 	}
@@ -415,11 +415,11 @@ rt_s rt_io_device_free(struct rt_io_device *io_device)
 
 #ifdef RT_DEFINE_WINDOWS
 	/* If the function succeeds, the return value is nonzero. Otherwise, zero is returned and last error is set. */
-	if (!CloseHandle(io_device->handle))
+	if (RT_UNLIKELY(!CloseHandle(io_device->handle)))
 		goto error;
 #else
 	/* Return zero on success. On error, -1 is returned, and errno is set appropriately. */
-	if (close(io_device->file_descriptor))
+	if (RT_UNLIKELY(close(io_device->file_descriptor)))
 		goto error;
 #endif
 	ret = RT_OK;

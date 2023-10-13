@@ -10,41 +10,41 @@ rt_s zz_test_static_heap()
 	rt_un i;
 	rt_s ret;
 
-	if (!rt_static_heap_free(&heap_buffer)) goto error;
-	if (heap_buffer) goto error;
+	if (RT_UNLIKELY(!rt_static_heap_free(&heap_buffer))) goto error;
+	if (RT_UNLIKELY(heap_buffer)) goto error;
 
 	/* Smaller than buffer. */
-	if (!rt_static_heap_alloc_if_needed(buffer, 200, &heap_buffer, &heap_buffer_capacity, (void**)&area, 100)) goto error;
-	if (area != buffer) goto error;
-	if (heap_buffer) goto error;
-	if (heap_buffer_capacity) goto error;
+	if (RT_UNLIKELY(!rt_static_heap_alloc_if_needed(buffer, 200, &heap_buffer, &heap_buffer_capacity, (void**)&area, 100))) goto error;
+	if (RT_UNLIKELY(area != buffer)) goto error;
+	if (RT_UNLIKELY(heap_buffer)) goto error;
+	if (RT_UNLIKELY(heap_buffer_capacity)) goto error;
 	for (i = 0; i < 100; i++)
 		area[i] = 12;
 
 	/* Same size as buffer. */
-	if (!rt_static_heap_alloc_if_needed(buffer, 200, &heap_buffer, &heap_buffer_capacity, (void**)&area, 200)) goto error;
-	if (area != buffer) goto error;
-	if (heap_buffer) goto error;
-	if (heap_buffer_capacity) goto error;
+	if (RT_UNLIKELY(!rt_static_heap_alloc_if_needed(buffer, 200, &heap_buffer, &heap_buffer_capacity, (void**)&area, 200))) goto error;
+	if (RT_UNLIKELY(area != buffer)) goto error;
+	if (RT_UNLIKELY(heap_buffer)) goto error;
+	if (RT_UNLIKELY(heap_buffer_capacity)) goto error;
 	for (i = 0; i < 200; i++)
 		area[i] = 12;
 
 	/* Bigger than buffer. */
-	if (!rt_static_heap_alloc_if_needed(buffer, 200, &heap_buffer, &heap_buffer_capacity, (void**)&area, 201)) goto error;
-	if (area == buffer) goto error;
-	if (area != heap_buffer) goto error;
-	if (heap_buffer_capacity != 201) goto error;
+	if (RT_UNLIKELY(!rt_static_heap_alloc_if_needed(buffer, 200, &heap_buffer, &heap_buffer_capacity, (void**)&area, 201))) goto error;
+	if (RT_UNLIKELY(area == buffer)) goto error;
+	if (RT_UNLIKELY(area != heap_buffer)) goto error;
+	if (RT_UNLIKELY(heap_buffer_capacity != 201)) goto error;
 	for (i = 0; i < 201; i++)
 		area[i] = 12;
 
 	/* Bigger than heap buffer. */
-	if (!rt_static_heap_alloc_if_needed(buffer, 200, &heap_buffer, &heap_buffer_capacity, (void**)&area, 5000)) goto error;
-	if (area == buffer) goto error;
-	if (area != heap_buffer) goto error;
-	if (heap_buffer_capacity != 5000) goto error;
+	if (RT_UNLIKELY(!rt_static_heap_alloc_if_needed(buffer, 200, &heap_buffer, &heap_buffer_capacity, (void**)&area, 5000))) goto error;
+	if (RT_UNLIKELY(area == buffer)) goto error;
+	if (RT_UNLIKELY(area != heap_buffer)) goto error;
+	if (RT_UNLIKELY(heap_buffer_capacity != 5000)) goto error;
 	/* Realloc should have been used. */
 	for (i = 0; i < 201; i++) {
-		if (area[i] != 12)
+		if (RT_UNLIKELY(area[i] != 12))
 			goto error;
 	}
 	for (i = 0; i < 5000; i++)
@@ -52,21 +52,21 @@ rt_s zz_test_static_heap()
 	old_heap_buffer = heap_buffer;
 
 	/* Smaller than heap buffer. */
-	if (!rt_static_heap_alloc_if_needed(buffer, 200, &heap_buffer, &heap_buffer_capacity, (void**)&area, 4500)) goto error;
-	if (area == buffer) goto error;
-	if (area != heap_buffer) goto error;
-	if (heap_buffer != old_heap_buffer) goto error;
-	if (heap_buffer_capacity != 5000) goto error;
+	if (RT_UNLIKELY(!rt_static_heap_alloc_if_needed(buffer, 200, &heap_buffer, &heap_buffer_capacity, (void**)&area, 4500))) goto error;
+	if (RT_UNLIKELY(area == buffer)) goto error;
+	if (RT_UNLIKELY(area != heap_buffer)) goto error;
+	if (RT_UNLIKELY(heap_buffer != old_heap_buffer)) goto error;
+	if (RT_UNLIKELY(heap_buffer_capacity != 5000)) goto error;
 	for (i = 0; i < 4500; i++)
 		area[i] = 12;
 
 	ret = RT_OK;
 free:
 	if (heap_buffer) {
-		if (!rt_static_heap_free(&heap_buffer) && ret)
+		if (RT_UNLIKELY(!rt_static_heap_free(&heap_buffer) && ret))
 			goto error;
 	}
-	if (heap_buffer)
+	if (RT_UNLIKELY(heap_buffer))
 		goto error;
 	return ret;
 

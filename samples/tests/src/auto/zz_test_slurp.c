@@ -11,19 +11,19 @@ static rt_s zz_test_slurp_do(const rt_char8 *input)
 	rt_un i;
 	rt_s ret;
 
-	if (!rt_memory_input_stream_create(&memory_input_stream, input, 200)) goto error;
-	if (!rt_memory_output_stream_create(&memory_output_stream, memory_output_stream_buffer, RT_CHAR8_QUARTER_BIG_STRING_SIZE, RT_NULL, RT_CHAR8_QUARTER_BIG_STRING_SIZE)) goto error;
+	if (RT_UNLIKELY(!rt_memory_input_stream_create(&memory_input_stream, input, 200))) goto error;
+	if (RT_UNLIKELY(!rt_memory_output_stream_create(&memory_output_stream, memory_output_stream_buffer, RT_CHAR8_QUARTER_BIG_STRING_SIZE, RT_NULL, RT_CHAR8_QUARTER_BIG_STRING_SIZE))) goto error;
 	memory_output_stream_created = RT_TRUE;
 
-	if (!rt_slurp(&memory_input_stream.input_stream, &memory_output_stream.output_stream, slurp_buffer, 16))
+	if (RT_UNLIKELY(!rt_slurp(&memory_input_stream.input_stream, &memory_output_stream.output_stream, slurp_buffer, 16)))
 		goto error;
 
-	if (memory_output_stream.size != 200)
+	if (RT_UNLIKELY(memory_output_stream.size != 200))
 		goto error;
 
 	output_stream_data = rt_memory_output_stream_get_data(&memory_output_stream);
 	for (i = 0; i < 200; i++) {
-		if (output_stream_data[i] != 'a')
+		if (RT_UNLIKELY(output_stream_data[i] != 'a'))
 			goto error;
 	}
 
@@ -31,7 +31,7 @@ static rt_s zz_test_slurp_do(const rt_char8 *input)
 free:
 	if (memory_output_stream_created) {
 		memory_output_stream_created = RT_FALSE;
-		if (!rt_memory_output_stream_free(&memory_output_stream) && ret)
+		if (RT_UNLIKELY(!rt_memory_output_stream_free(&memory_output_stream) && ret))
 			goto error;
 	}
 	return ret;
@@ -50,7 +50,7 @@ rt_s zz_test_slurp()
 	for (i = 0; i < RT_CHAR8_HALF_BIG_STRING_SIZE; i++)
 		input[i] = 'a';
 
-	if (!zz_test_slurp_do(input)) goto error;
+	if (RT_UNLIKELY(!zz_test_slurp_do(input))) goto error;
 
 	ret = RT_OK;
 free:

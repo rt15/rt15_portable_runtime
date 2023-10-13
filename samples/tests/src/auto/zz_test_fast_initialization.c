@@ -9,9 +9,9 @@ static rt_un32 RT_STDCALL zz_test_fast_initialization_thread_callback(RT_UNUSED 
 {
 	rt_s ret;
 
-	if (!rt_event_wait_for(&event)) goto error;
-	if (rt_fast_initialization_is_required(&fast_initialization)) goto error;
-	if (!rt_fast_initialization_is_done(&fast_initialization)) goto error;
+	if (RT_UNLIKELY(!rt_event_wait_for(&event))) goto error;
+	if (RT_UNLIKELY(rt_fast_initialization_is_required(&fast_initialization))) goto error;
+	if (RT_UNLIKELY(!rt_fast_initialization_is_done(&fast_initialization))) goto error;
 
 	thread_finished = RT_TRUE;
 
@@ -30,24 +30,24 @@ static rt_s zz_test_fast_initialization_with_thread()
 	rt_b event_created = RT_FALSE;
 	rt_s ret;
 
-	if (!rt_event_create(&event))
+	if (RT_UNLIKELY(!rt_event_create(&event)))
 		goto error;
 	event_created = RT_TRUE;
 
-	if (!rt_thread_create(&thread, &zz_test_fast_initialization_thread_callback, RT_NULL))
+	if (RT_UNLIKELY(!rt_thread_create(&thread, &zz_test_fast_initialization_thread_callback, RT_NULL)))
 		goto error;
 	thread_created = RT_TRUE;
 
 	if (rt_fast_initialization_is_required(&fast_initialization)) {
 
-		if (!rt_event_signal(&event)) {
+		if (RT_UNLIKELY(!rt_event_signal(&event))) {
 			rt_fast_initialization_notify_done(&fast_initialization);
 			goto error;
 		}
 
 		rt_sleep_sleep(50);
 
-		if (thread_finished) {
+		if (RT_UNLIKELY(thread_finished)) {
 			rt_fast_initialization_notify_done(&fast_initialization);
 			goto error;
 		}
@@ -57,25 +57,25 @@ static rt_s zz_test_fast_initialization_with_thread()
 
 	rt_sleep_sleep(50);
 
-	if (!thread_finished)
+	if (RT_UNLIKELY(!thread_finished))
 		goto error;
 
-	if (!rt_fast_initialization_is_done(&fast_initialization))
+	if (RT_UNLIKELY(!rt_fast_initialization_is_done(&fast_initialization)))
 		goto error;
 
-	if (!rt_thread_join_and_check(&thread))
+	if (RT_UNLIKELY(!rt_thread_join_and_check(&thread)))
 		goto error;
 
 	ret = RT_OK;
 free:
 	if (thread_created) {
 		thread_created = RT_FALSE;
-		if (!rt_thread_free(&thread) && ret)
+		if (RT_UNLIKELY(!rt_thread_free(&thread) && ret))
 			goto error;
 	}
 	if (event_created) {
 		event_created = RT_FALSE;
-		if (!rt_event_free(&event) && ret)
+		if (RT_UNLIKELY(!rt_event_free(&event) && ret))
 			goto error;
 	}
 	return ret;
@@ -89,7 +89,7 @@ rt_s zz_test_fast_initialization()
 {
 	rt_s ret;
 
-	if (!zz_test_fast_initialization_with_thread()) goto error;
+	if (RT_UNLIKELY(!zz_test_fast_initialization_with_thread())) goto error;
 
 	ret = RT_OK;
 free:

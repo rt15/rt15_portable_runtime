@@ -12,37 +12,37 @@ static rt_s zz_parse_args_callback(enum rt_command_line_args_type arg_type, rt_b
 	if (arg_type == RT_COMMAND_LINE_ARGS_TYPE_SHORT) {
 
 		message_size = 1;
-		if (!rt_char_copy(&short_option, message_size, message, RT_CHAR_BIG_STRING_SIZE)) goto error;
-		if (!rt_char_append(_R(", short"), 7, message, RT_CHAR_BIG_STRING_SIZE, &message_size)) goto error;
+		if (RT_UNLIKELY(!rt_char_copy(&short_option, message_size, message, RT_CHAR_BIG_STRING_SIZE))) goto error;
+		if (RT_UNLIKELY(!rt_char_append(_R(", short"), 7, message, RT_CHAR_BIG_STRING_SIZE, &message_size))) goto error;
 
 	} else {
 
 		message_size = rt_char_get_size(long_option);
-		if (!rt_char_copy(long_option, message_size, message, RT_CHAR_BIG_STRING_SIZE)) goto error;
-		if (!rt_char_append(_R(", long"), 6, message, RT_CHAR_BIG_STRING_SIZE, &message_size)) goto error;
+		if (RT_UNLIKELY(!rt_char_copy(long_option, message_size, message, RT_CHAR_BIG_STRING_SIZE))) goto error;
+		if (RT_UNLIKELY(!rt_char_append(_R(", long"), 6, message, RT_CHAR_BIG_STRING_SIZE, &message_size))) goto error;
 
 	}
 
 	if (valid) {
-		if (!rt_char_append(_R(", valid"), 7, message, RT_CHAR_BIG_STRING_SIZE, &message_size))
+		if (RT_UNLIKELY(!rt_char_append(_R(", valid"), 7, message, RT_CHAR_BIG_STRING_SIZE, &message_size)))
 			goto error;
 	} else {
-		if (!rt_char_append(_R(", invalid"), 9, message, RT_CHAR_BIG_STRING_SIZE, &message_size))
+		if (RT_UNLIKELY(!rt_char_append(_R(", invalid"), 9, message, RT_CHAR_BIG_STRING_SIZE, &message_size)))
 			goto error;
 	}
 
 	switch (value_cardinality)
 	{
 		case RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE:
-			if (!rt_char_append(_R(", without value"), 15, message, RT_CHAR_BIG_STRING_SIZE, &message_size))
+			if (RT_UNLIKELY(!rt_char_append(_R(", without value"), 15, message, RT_CHAR_BIG_STRING_SIZE, &message_size)))
 				goto error;
 			break;
 		case RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_OPTIONAL:
-			if (!rt_char_append(_R(", with optional value"), 21, message, RT_CHAR_BIG_STRING_SIZE, &message_size))
+			if (RT_UNLIKELY(!rt_char_append(_R(", with optional value"), 21, message, RT_CHAR_BIG_STRING_SIZE, &message_size)))
 				goto error;
 			break;
 		case RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_REQUIRED:
-			if (!rt_char_append(_R(", with required value"), 21, message, RT_CHAR_BIG_STRING_SIZE, &message_size))
+			if (RT_UNLIKELY(!rt_char_append(_R(", with required value"), 21, message, RT_CHAR_BIG_STRING_SIZE, &message_size)))
 				goto error;
 			break;
 		default:
@@ -50,19 +50,19 @@ static rt_s zz_parse_args_callback(enum rt_command_line_args_type arg_type, rt_b
 	}
 
 	if (value) {
-		if (!rt_char_append(_R(" => "), 4, message, RT_CHAR_BIG_STRING_SIZE, &message_size))
+		if (RT_UNLIKELY(!rt_char_append(_R(" => "), 4, message, RT_CHAR_BIG_STRING_SIZE, &message_size)))
 			goto error;
-		if (!rt_char_append(value, rt_char_get_size(value), message, RT_CHAR_BIG_STRING_SIZE, &message_size))
+		if (RT_UNLIKELY(!rt_char_append(value, rt_char_get_size(value), message, RT_CHAR_BIG_STRING_SIZE, &message_size)))
 			goto error;
 	} else {
-		if (!rt_char_append(_R(", empty"), 7, message, RT_CHAR_BIG_STRING_SIZE, &message_size))
+		if (RT_UNLIKELY(!rt_char_append(_R(", empty"), 7, message, RT_CHAR_BIG_STRING_SIZE, &message_size)))
 			goto error;
 	}
 
-	if (!rt_char_append(_R("\n"), 1, message, RT_CHAR_BIG_STRING_SIZE, &message_size))
+	if (RT_UNLIKELY(!rt_char_append(_R("\n"), 1, message, RT_CHAR_BIG_STRING_SIZE, &message_size)))
 		goto error;
 
-	if (!rt_console_write_string_with_size(message, message_size))
+	if (RT_UNLIKELY(!rt_console_write_string_with_size(message, message_size)))
 		goto error;
 
 	ret = RT_OK;
@@ -104,18 +104,18 @@ rt_s zz_parse_args(rt_un argc, const rt_char *argv[])
 	long_options_with_arg[4] = _R("required5");
 	long_options_with_arg[5] = RT_NULL;
 
-	if (!rt_command_line_args_parse(&argc, argv, &zz_parse_args_callback, RT_NULL,
-					_R("abcdefg"), _R("hijklmn"), _R("opqrstu"),
-					long_options_without_arg, long_options_with_optional_arg, long_options_with_arg,
-					&non_options_index))
+	if (RT_UNLIKELY(!rt_command_line_args_parse(&argc, argv, &zz_parse_args_callback, RT_NULL,
+						    _R("abcdefg"), _R("hijklmn"), _R("opqrstu"),
+						    long_options_without_arg, long_options_with_optional_arg, long_options_with_arg,
+						    &non_options_index)))
 		goto error;
 
-	if (!rt_console_write_string(_R("\nNon-options:\n")))
+	if (RT_UNLIKELY(!rt_console_write_string(_R("\nNon-options:\n"))))
 		goto error;
 
 	for (i = non_options_index; i < argc; i++) {
-		if (!rt_console_write_string(argv[i])) goto error;
-		if (!rt_console_write_string(_R("\n"))) goto error;
+		if (RT_UNLIKELY(!rt_console_write_string(argv[i]))) goto error;
+		if (RT_UNLIKELY(!rt_console_write_string(_R("\n")))) goto error;
 	}
 
 	ret = RT_OK;

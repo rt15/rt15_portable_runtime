@@ -44,7 +44,7 @@ static rt_s rt_random_initialize()
 	rt_s ret;
 
 	library_handle = LoadLibrary(_R("advapi32.dll"));
-	if (!library_handle)
+	if (RT_UNLIKELY(!library_handle))
 		goto error;
 #ifdef RT_DEFINE_GCC
 #pragma GCC diagnostic ignored "-Wcast-function-type"
@@ -53,7 +53,7 @@ static rt_s rt_random_initialize()
 #ifdef RT_DEFINE_GCC
 #pragma GCC diagnostic pop
 #endif
-	if (!rt_random_rtl_gen_random)
+	if (RT_UNLIKELY(!rt_random_rtl_gen_random))
 		goto error;
 
 	ret = RT_OK;
@@ -76,7 +76,7 @@ rt_s rt_random_get_bytes(void *area, rt_un32 size)
 		rt_random_initialization_successful = rt_random_initialize();
 		rt_fast_initialization_notify_done(&rt_random_initialization);
 	}
-	if (!rt_random_initialization_successful) {
+	if (RT_UNLIKELY(!rt_random_initialization_successful)) {
 		/* Set last error as when the initialization has failed. */
 		SetLastError(rt_random_initialization_error);
 		goto error;
@@ -84,10 +84,10 @@ rt_s rt_random_get_bytes(void *area, rt_un32 size)
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
-	if (!rt_random_rtl_gen_random(area, size))
+	if (RT_UNLIKELY(!rt_random_rtl_gen_random(area, size)))
 		goto error;
 #else
-	if (!RAND_bytes(area, size)) {
+	if (RT_UNLIKELY(!RAND_bytes(area, size))) {
 		/* RAND_bytes uses err_get_error and does not set errno so we use rt_error_set_last. */
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
 		goto error;
@@ -117,7 +117,7 @@ rt_s rt_random_get_unsigned_integer_with_boundaries(rt_un lower_bound, rt_un upp
 	rt_un unsigned_integer;
 	rt_s ret;
 
-	if (!rt_random_get_unsigned_integer(&unsigned_integer))
+	if (RT_UNLIKELY(!rt_random_get_unsigned_integer(&unsigned_integer)))
 		goto error;
 	unsigned_integer = unsigned_integer % (upper_bound + 1 - lower_bound);
 	*result = unsigned_integer + lower_bound;
@@ -135,7 +135,7 @@ rt_s rt_random_get_integer_with_boundaries(rt_n lower_bound, rt_n upper_bound, r
 	rt_un unsigned_integer;
 	rt_s ret;
 
-	if (!rt_random_get_unsigned_integer(&unsigned_integer))
+	if (RT_UNLIKELY(!rt_random_get_unsigned_integer(&unsigned_integer)))
 		goto error;
 	unsigned_integer = unsigned_integer % (rt_un)(upper_bound + 1 - lower_bound);
 	*result = unsigned_integer + lower_bound;

@@ -26,16 +26,16 @@ rt_s rt_buffered_output_stream_write(struct rt_output_stream *output_stream, con
 	if (bytes_to_write > buffer_capacity) {
 		/* The buffer is too small, we won't use it. But we must write its content first. */
 		if (buffer_size) {
-			if (!real_output_stream->write(real_output_stream, buffer, buffer_size))
+			if (RT_UNLIKELY(!real_output_stream->write(real_output_stream, buffer, buffer_size)))
 				goto error;
 			buffered_output_stream->buffer_size = 0;
 		}
-		if (!real_output_stream->write(real_output_stream, data, bytes_to_write))
+		if (RT_UNLIKELY(!real_output_stream->write(real_output_stream, data, bytes_to_write)))
 			goto error;
 	} else {
 		if (bytes_to_write > buffer_capacity - buffer_size) {
 			/* Not enough space left in the buffer, let's write it. */
-			if (!real_output_stream->write(real_output_stream, buffer, buffer_size))
+			if (RT_UNLIKELY(!real_output_stream->write(real_output_stream, buffer, buffer_size)))
 				goto error;
 
 			/* The buffer is free, let's use it. */
@@ -66,7 +66,7 @@ rt_s rt_buffered_output_stream_flush(struct rt_output_stream *output_stream)
 	rt_s ret;
 
 	if (buffer_size) {
-		if (!real_output_stream->write(real_output_stream, buffer, buffer_size))
+		if (RT_UNLIKELY(!real_output_stream->write(real_output_stream, buffer, buffer_size)))
 			goto error;
 		buffered_output_stream->buffer_size = 0;
 	}

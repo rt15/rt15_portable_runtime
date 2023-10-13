@@ -20,7 +20,7 @@ void *rt_static_heap_alloc(void **area, rt_un size)
 
 	if (rt_fast_initialization_is_required(&rt_static_heap_initialization)) {
 		rt_static_heap_process_heap_handle = GetProcessHeap();
-		if (!rt_static_heap_process_heap_handle) {
+		if (RT_UNLIKELY(!rt_static_heap_process_heap_handle)) {
 			/* GetProcessHeap returns null and calls SetLastError in case of failure. */
 			goto error;
 		}

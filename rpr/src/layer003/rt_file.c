@@ -70,12 +70,12 @@ rt_s rt_file_create(struct rt_file *file, const rt_char *file_path, enum rt_file
 				 creation_disposition,
 				 FILE_ATTRIBUTE_NORMAL,
 				 NULL);
-	if (file_handle == INVALID_HANDLE_VALUE)
+	if (RT_UNLIKELY(file_handle == INVALID_HANDLE_VALUE))
 		goto error;
 
 #else
 	file_descriptor = open(file_path, flags, RT_FILE_RIGHTS);
-	if (file_descriptor == -1)
+	if (RT_UNLIKELY(file_descriptor == -1))
 		goto error;
 #endif
 
@@ -100,16 +100,16 @@ rt_s rt_file_get_size(struct rt_file *file, rt_un64 *file_size)
 	rt_s ret;
 
 	/* Backup the current position */
-	if (!rt_file_get_pointer(file, &old_position)) goto error;
+	if (RT_UNLIKELY(!rt_file_get_pointer(file, &old_position))) goto error;
 
 	/* Go to end of file. */
-	if (!rt_file_set_pointer(file, 0, RT_FILE_POSITION_END)) goto error;
+	if (RT_UNLIKELY(!rt_file_set_pointer(file, 0, RT_FILE_POSITION_END))) goto error;
 
 	/* Get the new position which is the file size. */
-	if (!rt_file_get_pointer(file, file_size)) goto error;
+	if (RT_UNLIKELY(!rt_file_get_pointer(file, file_size))) goto error;
 
 	/* Go back to original position. */
-	if (!rt_file_set_pointer(file, old_position, RT_FILE_POSITION_BEGIN)) goto error;
+	if (RT_UNLIKELY(!rt_file_set_pointer(file, old_position, RT_FILE_POSITION_BEGIN))) goto error;
 
 	ret = RT_OK;
 free:
@@ -169,11 +169,11 @@ rt_s rt_file_get_pointer(struct rt_file *file, rt_un64 *offset)
 #ifdef RT_DEFINE_WINDOWS
 	distance_to_move.QuadPart = 0;
 	/* If the function fails, the return value is zero and last error is set. */
-	if (!SetFilePointerEx(file->io_device.handle, distance_to_move, &new_file_pointer, FILE_CURRENT)) goto error;
+	if (RT_UNLIKELY(!SetFilePointerEx(file->io_device.handle, distance_to_move, &new_file_pointer, FILE_CURRENT))) goto error;
 	*offset = new_file_pointer.QuadPart;
 #else
 	returned_value = lseek(file->io_device.file_descriptor, 0, SEEK_CUR);
-	if (returned_value < 0)
+	if (RT_UNLIKELY(returned_value < 0))
 		goto error;
 	*offset = returned_value;
 #endif

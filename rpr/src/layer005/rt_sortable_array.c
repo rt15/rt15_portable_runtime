@@ -12,7 +12,7 @@ rt_s rt_sortable_array_create(void **sortable_array, rt_un size, rt_un item_size
 	if (!header_size)
 		header_size = sizeof(struct rt_sortable_array_header);
 
-	if (!rt_array_create(sortable_array, size, item_size, header_size, heap))
+	if (RT_UNLIKELY(!rt_array_create(sortable_array, size, item_size, header_size, heap)))
 		goto error;
 
 	header = RT_SORTABLE_ARRAY_GET_HEADER(*sortable_array);
@@ -54,7 +54,7 @@ rt_s rt_sortable_array_add_item(void **sortable_array, const void *new_item, rt_
 
 	if (!size || !header->sorted) {
 		/* Allocate a new item. */
-		if (!rt_array_new_item_index(sortable_array, &new_item_index))
+		if (RT_UNLIKELY(!rt_array_new_item_index(sortable_array, &new_item_index)))
 			goto error;
 
 		/* Put the new item at the end of the array. */
@@ -64,11 +64,11 @@ rt_s rt_sortable_array_add_item(void **sortable_array, const void *new_item, rt_
 		/* Search for the insertion index. */
 		callback = header->callback;
 		context = header->context;
-		if (!rt_binary_search_insertion_index(*sortable_array, new_item, size, item_size, callback, context, &insertion_index))
+		if (RT_UNLIKELY(!rt_binary_search_insertion_index(*sortable_array, new_item, size, item_size, callback, context, &insertion_index)))
 			goto error;
 
 		/* Allocate a new item at the end of the array. */
-		if (!rt_array_new_item_index(sortable_array, &new_item_index))
+		if (RT_UNLIKELY(!rt_array_new_item_index(sortable_array, &new_item_index)))
 			goto error;
 		size++;
 
@@ -120,13 +120,13 @@ rt_s rt_sortable_array_delete_item_index(void **sortable_array, rt_un item_index
 			RT_MEMORY_MOVE(source, destination, item_size * (size - (item_index + 1)));
 		}
 
-		if (!rt_array_set_size(sortable_array, size - 1))
+		if (RT_UNLIKELY(!rt_array_set_size(sortable_array, size - 1)))
 			goto error;
 
 	} else {
 
 		/* Array is not sorted, simply remove it with the classical function. */
-		if (!rt_array_delete_item_index(sortable_array, item_index))
+		if (RT_UNLIKELY(!rt_array_delete_item_index(sortable_array, item_index)))
 			goto error;
 
 	}
@@ -148,7 +148,7 @@ rt_s rt_sortable_array_sort(void *sortable_array)
 	header = RT_SORTABLE_ARRAY_GET_HEADER(sortable_array);
 
 	if (!header->sorted) {
-		if (!rt_quick_sort(sortable_array, header->array_header.size, header->array_header.item_size, header->callback, header->context))
+		if (RT_UNLIKELY(!rt_quick_sort(sortable_array, header->array_header.size, header->array_header.item_size, header->callback, header->context)))
 			goto error;
 		header->sorted = RT_TRUE;
 	}
@@ -170,11 +170,11 @@ rt_s rt_sortable_array_search_item_index(void *sortable_array, const void *item,
 	header = RT_SORTABLE_ARRAY_GET_HEADER(sortable_array);
 
 	if (!header->sorted) {
-		if (!rt_sortable_array_sort(sortable_array))
+		if (RT_UNLIKELY(!rt_sortable_array_sort(sortable_array)))
 			goto error;
 	}
 
-	if (!rt_binary_search_index(sortable_array, item, header->array_header.size, header->array_header.item_size, header->callback, header->context, item_index))
+	if (RT_UNLIKELY(!rt_binary_search_index(sortable_array, item, header->array_header.size, header->array_header.item_size, header->callback, header->context, item_index)))
 		goto error;
 
 	ret = RT_OK;

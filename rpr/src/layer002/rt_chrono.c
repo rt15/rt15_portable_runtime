@@ -45,11 +45,11 @@ rt_s rt_chrono_create(struct rt_chrono *chrono)
 	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
-	if (!QueryPerformanceCounter((LARGE_INTEGER*)chrono))
+	if (RT_UNLIKELY(!QueryPerformanceCounter((LARGE_INTEGER*)chrono)))
 		goto error;
 #else
 	/* clock_gettime returns -1 and set errno in case of failure. */
-	if (clock_gettime(CLOCK_MONOTONIC_RAW, (struct timespec*)chrono) == -1)
+	if (RT_UNLIKELY(clock_gettime(CLOCK_MONOTONIC_RAW, (struct timespec*)chrono) == -1))
 		goto error;
 #endif
 
@@ -78,11 +78,11 @@ rt_s rt_chrono_get_duration(struct rt_chrono *chrono, rt_un *micro_seconds)
 #ifdef RT_DEFINE_WINDOWS
 	start_counter = (LARGE_INTEGER*)chrono;
 
-	if (!QueryPerformanceCounter(&counter_value))
+	if (RT_UNLIKELY(!QueryPerformanceCounter(&counter_value)))
 		goto error;
 
 	/* Beware that returned frequency can be greater than processor frequency and RT_TYPE_MAX_UN32. */
-	if (!QueryPerformanceFrequency(&frequency))
+	if (RT_UNLIKELY(!QueryPerformanceFrequency(&frequency)))
 		goto error;
 
 	*micro_seconds = (rt_un)((counter_value.QuadPart - start_counter->QuadPart) * 1000000 / frequency.QuadPart);
@@ -90,7 +90,7 @@ rt_s rt_chrono_get_duration(struct rt_chrono *chrono, rt_un *micro_seconds)
 	start_counter = (struct timespec*)chrono;
 
 	/* clock_gettime returns -1 and set errno in case of failure. */
-	if (clock_gettime(CLOCK_MONOTONIC_RAW, &counter_value) == -1)
+	if (RT_UNLIKELY(clock_gettime(CLOCK_MONOTONIC_RAW, &counter_value) == -1))
 		goto error;
 
 	rt_chrono_substract_timespecs(&counter_value, start_counter, &difference);

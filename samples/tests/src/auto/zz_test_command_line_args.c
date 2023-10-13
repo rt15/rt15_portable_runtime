@@ -11,12 +11,12 @@ static rt_s zz_test_command_line_args_check(enum rt_command_line_args_type expec
 {
 	rt_s ret;
 
-	if (arg_type != expected_arg_type) goto error;
-	if ((valid && !expected_valid) || (!valid && expected_valid)) goto error;
-	if (short_option != expected_short_option) goto error;
-	if (!zz_char_equals_with_nulls(long_option, expected_long_option)) goto error;
-	if (value_cardinality != expected_value_cardinality) goto error;
-	if (!zz_char_equals_with_nulls(value, expected_value)) goto error;
+	if (RT_UNLIKELY(arg_type != expected_arg_type)) goto error;
+	if (RT_UNLIKELY((valid && !expected_valid) || (!valid && expected_valid))) goto error;
+	if (RT_UNLIKELY(short_option != expected_short_option)) goto error;
+	if (RT_UNLIKELY(!zz_char_equals_with_nulls(long_option, expected_long_option))) goto error;
+	if (RT_UNLIKELY(value_cardinality != expected_value_cardinality)) goto error;
+	if (RT_UNLIKELY(!zz_char_equals_with_nulls(value, expected_value))) goto error;
 
 	ret = RT_OK;
 free:
@@ -36,88 +36,88 @@ static rt_s zz_test_command_line_args_callback(enum rt_command_line_args_type ar
 	switch (*argument_index)
 	{
 		case 0:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_TRUE, _R('a'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, RT_NULL,
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_TRUE, _R('a'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, RT_NULL,
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		case 1:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_TRUE, _R('b'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, RT_NULL,
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_TRUE, _R('b'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, RT_NULL,
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		case 2:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_TRUE, _R('h'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_OPTIONAL, _R("HVAL"),
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_TRUE, _R('h'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_OPTIONAL, _R("HVAL"),
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		case 3:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_TRUE, _R('c'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, RT_NULL,
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_TRUE, _R('c'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, RT_NULL,
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		case 4:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_TRUE, _R('o'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_REQUIRED, _R("OVAL"),
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_TRUE, _R('o'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_REQUIRED, _R("OVAL"),
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		case 5:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_TRUE, _R('d'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, RT_NULL,
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_TRUE, _R('d'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, RT_NULL,
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		case 6:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_TRUE, _R('p'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_REQUIRED, _R("PVAL"),
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_TRUE, _R('p'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_REQUIRED, _R("PVAL"),
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		case 7:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_LONG, RT_TRUE, 0, _R("optional1"), RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_OPTIONAL, RT_NULL,
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_LONG, RT_TRUE, 0, _R("optional1"), RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_OPTIONAL, RT_NULL,
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		case 8:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_LONG, RT_TRUE, 0, _R("optional2"), RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_OPTIONAL, _R("OPTIONAL2"),
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_LONG, RT_TRUE, 0, _R("optional2"), RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_OPTIONAL, _R("OPTIONAL2"),
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		case 9:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_LONG, RT_FALSE, 0, _R("unknown"), RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, _R("UNKNOWN"),
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_LONG, RT_FALSE, 0, _R("unknown"), RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, _R("UNKNOWN"),
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		case 10:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_FALSE, _R('v'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, RT_NULL,
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_FALSE, _R('v'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, RT_NULL,
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		case 11:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_LONG, RT_TRUE, 0, _R("required1"), RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_REQUIRED, _R("REQUIRED1"),
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_LONG, RT_TRUE, 0, _R("required1"), RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_REQUIRED, _R("REQUIRED1"),
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		case 12:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_LONG, RT_TRUE, 0, _R("required2"), RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_REQUIRED, _R("REQUIRED2"),
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_LONG, RT_TRUE, 0, _R("required2"), RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_REQUIRED, _R("REQUIRED2"),
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		case 13:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_LONG, RT_TRUE, 0, _R("none1"), RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, RT_NULL,
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_LONG, RT_TRUE, 0, _R("none1"), RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, RT_NULL,
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		case 14:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_LONG, RT_TRUE, 0, _R("none2"), RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, _R("BAD_VALUE"),
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_LONG, RT_TRUE, 0, _R("none2"), RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, _R("BAD_VALUE"),
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		case 15:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_TRUE, _R('e'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, RT_NULL,
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_SHORT, RT_TRUE, _R('e'), RT_NULL, RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE, RT_NULL,
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		case 16:
-			if (!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_LONG, RT_TRUE, 0, _R("required3"), RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_REQUIRED, _R("REQUIRED3"),
-							     arg_type, valid, short_option, long_option, value_cardinality, value))
+			if (RT_UNLIKELY(!zz_test_command_line_args_check(RT_COMMAND_LINE_ARGS_TYPE_LONG, RT_TRUE, 0, _R("required3"), RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_REQUIRED, _R("REQUIRED3"),
+							     arg_type, valid, short_option, long_option, value_cardinality, value)))
 				goto error;
 			break;
 		default:
@@ -188,13 +188,13 @@ rt_s zz_test_command_line_args()
 	long_options_with_arg[3] = RT_NULL;
 
 	argument_index = 0;
-	if (!rt_command_line_args_parse(&argc, argv, &zz_test_command_line_args_callback, &argument_index,
-	    _R("abcdefg"), _R("hijklmn"), _R("opqrstu"),
-	    long_options_without_arg, long_options_with_optional_arg, long_options_with_arg,
-	    &non_options_index))
+	if (RT_UNLIKELY(!rt_command_line_args_parse(&argc, argv, &zz_test_command_line_args_callback, &argument_index,
+						    _R("abcdefg"), _R("hijklmn"), _R("opqrstu"),
+						    long_options_without_arg, long_options_with_optional_arg, long_options_with_arg,
+						    &non_options_index)))
 		goto error;
 
-	if (argc - non_options_index != sizeof(non_options) / sizeof(rt_char*))
+	if (RT_UNLIKELY(argc - non_options_index != sizeof(non_options) / sizeof(rt_char*)))
 		goto error;
 
 	non_options[0] = _R("NON_OPTION1");
@@ -204,7 +204,7 @@ rt_s zz_test_command_line_args()
 
 	j = 0;
 	for (i = non_options_index; i < argc; i++) {
-		if (!rt_char_equals(non_options[j], rt_char_get_size(non_options[j]), argv[i], rt_char_get_size(argv[i])))
+		if (RT_UNLIKELY(!rt_char_equals(non_options[j], rt_char_get_size(non_options[j]), argv[i], rt_char_get_size(argv[i]))))
 			goto error;
 		j++;
 	}

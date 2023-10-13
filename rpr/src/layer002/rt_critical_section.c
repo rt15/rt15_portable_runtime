@@ -39,11 +39,11 @@ rt_s rt_critical_section_create(struct rt_critical_section *critical_section, RT
 	if (recursive) {
 		/* pthread_mutexattr_init returns an errno. */
 		error = pthread_mutexattr_init(&mutex_attributes);
-		if (error) goto error;
+		if (RT_UNLIKELY(error)) goto error;
 
 		/* pthread_mutexattr_settype returns an errno. */
 		error = pthread_mutexattr_settype(&mutex_attributes, PTHREAD_MUTEX_RECURSIVE);
-		if (error) goto error;
+		if (RT_UNLIKELY(error)) goto error;
 
 		mutex_attributes_pointer = &mutex_attributes;
 	} else {
@@ -52,7 +52,7 @@ rt_s rt_critical_section_create(struct rt_critical_section *critical_section, RT
 
 	/* pthread_mutex_init returns an errno. */
 	error = pthread_mutex_init((pthread_mutex_t*)critical_section, mutex_attributes_pointer);
-	if (error) goto error;
+	if (RT_UNLIKELY(error)) goto error;
 
 	ret = RT_OK;
 free:

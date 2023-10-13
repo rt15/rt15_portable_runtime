@@ -10,14 +10,14 @@ static rt_s rt_memory_output_stream_set_capacity(struct rt_memory_output_stream 
 
 	if (memory_output_stream->buffer_capacity < capacity && memory_output_stream->heap_buffer_capacity < capacity) {
 		heap = memory_output_stream->heap;
-		if (heap) {
+		if (RT_LIKELY(heap)) {
 			if (memory_output_stream->heap_buffer) {
 				/* There was already a heap buffer, but not big enough. */
-				if (!heap->realloc(heap, &memory_output_stream->heap_buffer, capacity))
+				if (RT_UNLIKELY(!heap->realloc(heap, &memory_output_stream->heap_buffer, capacity)))
 					goto error;
 			} else {
 				/* No heap buffer yet. */
-				if (!heap->alloc(heap, &memory_output_stream->heap_buffer, capacity))
+				if (RT_UNLIKELY(!heap->alloc(heap, &memory_output_stream->heap_buffer, capacity)))
 					goto error;
 
 				/* Copy existing data from buffer to heap buffer. */
@@ -58,7 +58,7 @@ rt_s rt_memory_output_stream_write(struct rt_output_stream *output_stream, const
 
 
 	if (required_size > capacity) {
-		if (!rt_memory_output_stream_set_capacity(memory_output_stream, required_size * 2))
+		if (RT_UNLIKELY(!rt_memory_output_stream_set_capacity(memory_output_stream, required_size * 2)))
 			goto error;
 	}
 

@@ -19,7 +19,7 @@ rt_s rt_binary_search_index(const void *area, const void *item, rt_un size, rt_u
 			/* Code must guarantee the interval is reduced at each iteration. */
 			middle = lower_bound + (upper_bound - lower_bound) / 2;
 
-			if (!callback(&area_chars[middle * item_size], item, context, &comparison_result))
+			if (RT_UNLIKELY(!callback(&area_chars[middle * item_size], item, context, &comparison_result)))
 				goto error;
 			if (comparison_result < 0) {
 				lower_bound = middle + 1;
@@ -31,7 +31,7 @@ rt_s rt_binary_search_index(const void *area, const void *item, rt_un size, rt_u
 		/* At this point lower_bound should be equal to upper_bound. */
 
 		/* Deferred test for equality. */
-		if (!callback(&area_chars[lower_bound * item_size], item, context, &comparison_result))
+		if (RT_UNLIKELY(!callback(&area_chars[lower_bound * item_size], item, context, &comparison_result)))
 			goto error;
 		if (comparison_result) {
 			*item_index = RT_TYPE_MAX_UN;
@@ -70,7 +70,7 @@ rt_s rt_binary_search_insertion_index(const void *area, const void *item, rt_un 
 			/* Code must guarantee the interval is reduced at each iteration. */
 			middle = lower_bound + (upper_bound - lower_bound) / 2;
 
-			if (!callback(&area_chars[middle * item_size], item, context, &comparison_result))
+			if (RT_UNLIKELY(!callback(&area_chars[middle * item_size], item, context, &comparison_result)))
 				goto error;
 			if (comparison_result < 0) {
 				lower_bound = middle + 1;
@@ -78,7 +78,7 @@ rt_s rt_binary_search_insertion_index(const void *area, const void *item, rt_un 
 				upper_bound = middle;
 			}
 		}
-		if (!callback(&area_chars[upper_bound * item_size], item, context, &comparison_result))
+		if (RT_UNLIKELY(!callback(&area_chars[upper_bound * item_size], item, context, &comparison_result)))
 			goto error;
 		if (comparison_result < 0) {
 			*insertion_index = upper_bound + 1;

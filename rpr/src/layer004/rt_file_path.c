@@ -21,14 +21,14 @@ rt_s rt_file_path_browse(const rt_char *dir_path, rt_file_path_browse_callback_t
 #ifdef RT_DEFINE_WINDOWS
 
 	buffer_size = rt_char_get_size(dir_path);
-	if (!rt_char_copy(dir_path, buffer_size, child, RT_FILE_PATH_SIZE)) goto error;
-	if (!rt_file_path_namespace(child, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
-	if (!rt_file_path_append_separator(child, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
-	if (!rt_char_append_char(_R('*'), child, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
+	if (RT_UNLIKELY(!rt_char_copy(dir_path, buffer_size, child, RT_FILE_PATH_SIZE))) goto error;
+	if (RT_UNLIKELY(!rt_file_path_namespace(child, RT_FILE_PATH_SIZE, &buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_file_path_append_separator(child, RT_FILE_PATH_SIZE, &buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_char_append_char(_R('*'), child, RT_FILE_PATH_SIZE, &buffer_size))) goto error;
 
 	find_handle = FindFirstFile(child, &find_file_data);
 	if (find_handle == INVALID_HANDLE_VALUE) {
-		if (GetLastError() == ERROR_FILE_NOT_FOUND) {
+		if (RT_LIKELY(GetLastError() == ERROR_FILE_NOT_FOUND)) {
 			ret = RT_OK;
 			goto free;
 		} else {
@@ -41,40 +41,40 @@ rt_s rt_file_path_browse(const rt_char *dir_path, rt_file_path_browse_callback_t
 		    lstrcmp(_R(".."), find_file_data.cFileName)) {
 
 			buffer_size = rt_char_get_size(dir_path);
-			if (!rt_char_copy(dir_path, buffer_size, child, RT_FILE_PATH_SIZE)) goto error;
-			if (!rt_file_path_append_separator(child, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
-			if (!rt_char_append(find_file_data.cFileName, rt_char_get_size(find_file_data.cFileName), child, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
+			if (RT_UNLIKELY(!rt_char_copy(dir_path, buffer_size, child, RT_FILE_PATH_SIZE))) goto error;
+			if (RT_UNLIKELY(!rt_file_path_append_separator(child, RT_FILE_PATH_SIZE, &buffer_size))) goto error;
+			if (RT_UNLIKELY(!rt_char_append(find_file_data.cFileName, rt_char_get_size(find_file_data.cFileName), child, RT_FILE_PATH_SIZE, &buffer_size))) goto error;
 
 			if (find_file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 				if (!children_first) {
-					if (!callback(child, RT_FILE_PATH_TYPE_DIR, context))
+					if (RT_UNLIKELY(!callback(child, RT_FILE_PATH_TYPE_DIR, context)))
 						goto error;
 				}
 
 				if (recursively) {
-					if (!rt_file_path_browse(child, callback, recursively, children_first, context))
+					if (RT_UNLIKELY(!rt_file_path_browse(child, callback, recursively, children_first, context)))
 						goto error;
 				}
 
 				if (children_first) {
-					if (!callback(child, RT_FILE_PATH_TYPE_DIR, context))
+					if (RT_UNLIKELY(!callback(child, RT_FILE_PATH_TYPE_DIR, context)))
 						goto error;
 				}
 			} else {
-				if (!callback(child, RT_FILE_PATH_TYPE_FILE, context))
+				if (RT_UNLIKELY(!callback(child, RT_FILE_PATH_TYPE_FILE, context)))
 					goto error;
 			}
 		}
 	} while (FindNextFile(find_handle, &find_file_data));
 
 	/* Check that we have exited loop because there are no more files. */
-	if (GetLastError() != ERROR_NO_MORE_FILES)
+	if (RT_UNLIKELY(GetLastError() != ERROR_NO_MORE_FILES))
 		goto error;
 
 	ret = RT_OK;
 free:
 	if (find_handle != INVALID_HANDLE_VALUE) {
-		if (!FindClose(find_handle) && ret) {
+		if (RT_UNLIKELY(!FindClose(find_handle) && ret)) {
 			find_handle = INVALID_HANDLE_VALUE;
 			goto error;
 		}
@@ -91,7 +91,7 @@ error:
 	dir = RT_NULL;
 
 	dir = opendir(dir_path);
-	if (!dir)
+	if (RT_UNLIKELY(!dir))
 		goto error;
 
 	while (RT_TRUE) {
@@ -99,7 +99,7 @@ error:
 		dir_entry = readdir(dir);
 		/* NULL is returned in case of error or if the the directory content has been read. */
 		if (!dir_entry) {
-			if (errno != 0)
+			if (RT_UNLIKELY(errno != 0))
 				goto error;
 			break;
 		} else {
@@ -107,27 +107,27 @@ error:
 			    strcmp(_R(".."), dir_entry->d_name)) {
 
 				buffer_size = rt_char_get_size(dir_path);
-				if (!rt_char_copy(dir_path, buffer_size, child, RT_FILE_PATH_SIZE)) goto error;
-				if (!rt_file_path_append_separator(child, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
-				if (!rt_char_append(dir_entry->d_name, rt_char_get_size(dir_entry->d_name), child, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
+				if (RT_UNLIKELY(!rt_char_copy(dir_path, buffer_size, child, RT_FILE_PATH_SIZE))) goto error;
+				if (RT_UNLIKELY(!rt_file_path_append_separator(child, RT_FILE_PATH_SIZE, &buffer_size))) goto error;
+				if (RT_UNLIKELY(!rt_char_append(dir_entry->d_name, rt_char_get_size(dir_entry->d_name), child, RT_FILE_PATH_SIZE, &buffer_size))) goto error;
 
 				if (dir_entry->d_type == DT_DIR) {
 					if (!children_first) {
-						if (!callback(child, RT_FILE_PATH_TYPE_DIR, context))
+						if (RT_UNLIKELY(!callback(child, RT_FILE_PATH_TYPE_DIR, context)))
 							goto error;
 					}
 
 					if (recursively) {
-						if (!rt_file_path_browse(child, callback, recursively, children_first, context))
+						if (RT_UNLIKELY(!rt_file_path_browse(child, callback, recursively, children_first, context)))
 							goto error;
 					}
 
 					if (children_first) {
-						if (!callback(child, RT_FILE_PATH_TYPE_DIR, context))
+						if (RT_UNLIKELY(!callback(child, RT_FILE_PATH_TYPE_DIR, context)))
 							goto error;
 					}
 				} else {
-					if (!callback(child, RT_FILE_PATH_TYPE_FILE, context))
+					if (RT_UNLIKELY(!callback(child, RT_FILE_PATH_TYPE_FILE, context)))
 						goto error;
 				}
 			}
@@ -138,7 +138,7 @@ error:
 free:
 	if (dir) {
 		/* The closedir() function returns 0 on success. */
-		if (closedir(dir) && ret) {
+		if (RT_UNLIKELY(closedir(dir) && ret)) {
 			dir = RT_NULL;
 			goto error;
 		}
@@ -159,20 +159,20 @@ rt_s rt_file_path_get_current_dir(rt_char *buffer, rt_un buffer_capacity, rt_un 
 
 #ifdef RT_DEFINE_WINDOWS
 	written = GetCurrentDirectory((DWORD)buffer_capacity, buffer);
-	if (!written)
+	if (RT_UNLIKELY(!written))
 		goto error;
 	/* GetCurrentDirectory returns the required buffer size if the buffer is too small. */
-	if (written > buffer_capacity) {
+	if (RT_UNLIKELY(written > buffer_capacity)) {
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 		goto error;
 	}
-	if (!rt_file_path_strip_namespace(buffer, buffer_capacity, &written))
+	if (RT_UNLIKELY(!rt_file_path_strip_namespace(buffer, buffer_capacity, &written)))
 		goto error;
 
 #else
 
 	/* Returns NULL in case of error and set errno. Returns buffer in case of success. */
-	if (!getcwd(buffer, buffer_capacity))
+	if (RT_UNLIKELY(!getcwd(buffer, buffer_capacity)))
 		goto error;
 	written = strlen(buffer);
 #endif
@@ -193,11 +193,11 @@ rt_s rt_file_path_set_current_dir(const rt_char *dir_path)
 #ifdef RT_DEFINE_WINDOWS
 	/* Returns zero if failed, set last error. */
 	/* Setting a namespaced path as current directory is kinda buggy. */
-	if (!SetCurrentDirectory(dir_path))
+	if (RT_UNLIKELY(!SetCurrentDirectory(dir_path)))
 		goto error;
 #else
 	/* Returns zero in case of success, set errno. */
-	if (chdir(dir_path))
+	if (RT_UNLIKELY(chdir(dir_path)))
 		goto error;
 #endif
 	ret = RT_OK;
@@ -217,7 +217,7 @@ rt_s rt_file_path_append_separator(rt_char *dir_path, rt_un buffer_capacity, rt_
 	if (local_buffer_size) {
 		last_char = dir_path[local_buffer_size - 1];
 		if (!RT_FILE_PATH_IS_SEPARATOR(last_char)) {
-			if (!rt_char_append_char(RT_FILE_PATH_SEPARATOR, dir_path, buffer_capacity, buffer_size))
+			if (RT_UNLIKELY(!rt_char_append_char(RT_FILE_PATH_SEPARATOR, dir_path, buffer_capacity, buffer_size)))
 				goto error;
 		}
 	}
@@ -299,14 +299,14 @@ static rt_s rt_file_path_realpath(const rt_char *path, rt_un path_size, rt_char 
 	rt_s ret;
 
 	/* Make sure that given path looks absolute. */
-	if (!path_size || path[0] != _R('/')) {
+	if (RT_UNLIKELY(!path_size || path[0] != _R('/'))) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto error;
 	}
 
 	/* Prepare the result with just a single slash. */
 	*buffer_size = 0;
-	if (!rt_char_append_char(_R('/'), buffer, buffer_capacity, buffer_size))
+	if (RT_UNLIKELY(!rt_char_append_char(_R('/'), buffer, buffer_capacity, buffer_size)))
 		goto error;
 
 	/* Go through all input path characters, except the first one which is slash. */
@@ -319,7 +319,7 @@ static rt_s rt_file_path_realpath(const rt_char *path, rt_un path_size, rt_char 
 				break;
 			case RT_FILE_PATH_REALPATH_NAME:
 				/* End of a name, append the slash. */
-				if (!rt_char_append_char(_R('/'), buffer, buffer_capacity, buffer_size))
+				if (RT_UNLIKELY(!rt_char_append_char(_R('/'), buffer, buffer_capacity, buffer_size)))
 					goto error;
 				break;
 			case RT_FILE_PATH_REALPATH_DOT:
@@ -339,7 +339,7 @@ static rt_s rt_file_path_realpath(const rt_char *path, rt_un path_size, rt_char 
 				break;
 			case RT_FILE_PATH_REALPATH_NAME:
 				/* "/x.", file name with a dot. */
-				if (!rt_char_append_char(_R('.'), buffer, buffer_capacity, buffer_size))
+				if (RT_UNLIKELY(!rt_char_append_char(_R('.'), buffer, buffer_capacity, buffer_size)))
 					goto error;
 				break;
 			case RT_FILE_PATH_REALPATH_DOT:
@@ -348,7 +348,7 @@ static rt_s rt_file_path_realpath(const rt_char *path, rt_un path_size, rt_char 
 				break;
 			case RT_FILE_PATH_REALPATH_TWO_DOTS:
 				/* "/...", it is a name. */
-				if (!rt_char_append(_R("..."), 3, buffer, buffer_capacity, buffer_size))
+				if (RT_UNLIKELY(!rt_char_append(_R("..."), 3, buffer, buffer_capacity, buffer_size)))
 					goto error;
 				state = RT_FILE_PATH_REALPATH_NAME;
 				break;
@@ -357,28 +357,28 @@ static rt_s rt_file_path_realpath(const rt_char *path, rt_un path_size, rt_char 
 			switch (state) {
 			case RT_FILE_PATH_REALPATH_SLASH:
 				/* "/x", beginning of file name. */
-				if (!rt_char_append_char(path_char, buffer, buffer_capacity, buffer_size))
+				if (RT_UNLIKELY(!rt_char_append_char(path_char, buffer, buffer_capacity, buffer_size)))
 					goto error;
 				state = RT_FILE_PATH_REALPATH_NAME;
 				break;
 			case RT_FILE_PATH_REALPATH_NAME:
 				/* "/xx", file name. */
-				if (!rt_char_append_char(path_char, buffer, buffer_capacity, buffer_size))
+				if (RT_UNLIKELY(!rt_char_append_char(path_char, buffer, buffer_capacity, buffer_size)))
 					goto error;
 				break;
 			case RT_FILE_PATH_REALPATH_DOT:
 				/* "/.x", hidden file. */
-				if (!rt_char_append_char(_R('.'), buffer, buffer_capacity, buffer_size))
+				if (RT_UNLIKELY(!rt_char_append_char(_R('.'), buffer, buffer_capacity, buffer_size)))
 					goto error;
-				if (!rt_char_append_char(path_char, buffer, buffer_capacity, buffer_size))
+				if (RT_UNLIKELY(!rt_char_append_char(path_char, buffer, buffer_capacity, buffer_size)))
 					goto error;
 				state = RT_FILE_PATH_REALPATH_NAME;
 				break;
 			case RT_FILE_PATH_REALPATH_TWO_DOTS:
 				/* "/..x", strange file name. */
-				if (!rt_char_append(_R(".."), 2, buffer, buffer_capacity, buffer_size))
+				if (RT_UNLIKELY(!rt_char_append(_R(".."), 2, buffer, buffer_capacity, buffer_size)))
 					goto error;
-				if (!rt_char_append_char(path_char, buffer, buffer_capacity, buffer_size))
+				if (RT_UNLIKELY(!rt_char_append_char(path_char, buffer, buffer_capacity, buffer_size)))
 					goto error;
 				state = RT_FILE_PATH_REALPATH_NAME;
 				break;
@@ -422,36 +422,36 @@ rt_s rt_file_path_full(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size)
 #ifdef RT_DEFINE_WINDOWS
 		result = GetFullPathName(path, RT_FILE_PATH_SIZE, local_buffer, &file_part);
 		/* In case of error, GetFullPathName returns zero and set last error. */
-		if (result == 0)
+		if (RT_UNLIKELY(result == 0))
 			goto error;
 
 		/* If the buffer is too small, GetFullPathName returns the required buffer size. */
-		if (result > RT_FILE_PATH_SIZE) {
+		if (RT_UNLIKELY(result > RT_FILE_PATH_SIZE)) {
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 			goto error;
 		}
 		local_buffer_size = result;
-		if (!rt_char_copy(local_buffer, local_buffer_size, path, buffer_capacity)) goto error;
+		if (RT_UNLIKELY(!rt_char_copy(local_buffer, local_buffer_size, path, buffer_capacity))) goto error;
 		*buffer_size = local_buffer_size;
 		/* GetFullPathName can return a namespaced path if current directory is namespaced. */
-		if (!rt_file_path_strip_namespace(path, buffer_capacity, buffer_size)) goto error;
+		if (RT_UNLIKELY(!rt_file_path_strip_namespace(path, buffer_capacity, buffer_size))) goto error;
 #else
 		if (path[0] != '/') {
 			/* Append path to current directory into buffer. */
-			if (!rt_file_path_get_current_dir(local_buffer, RT_FILE_PATH_SIZE, &local_buffer_size)) goto error;
-			if (!rt_file_path_append_separator(local_buffer, RT_FILE_PATH_SIZE, &local_buffer_size)) goto error;
-			if (!rt_char_append(path, input_path_size, local_buffer, RT_FILE_PATH_SIZE, &local_buffer_size)) goto error;
+			if (RT_UNLIKELY(!rt_file_path_get_current_dir(local_buffer, RT_FILE_PATH_SIZE, &local_buffer_size))) goto error;
+			if (RT_UNLIKELY(!rt_file_path_append_separator(local_buffer, RT_FILE_PATH_SIZE, &local_buffer_size))) goto error;
+			if (RT_UNLIKELY(!rt_char_append(path, input_path_size, local_buffer, RT_FILE_PATH_SIZE, &local_buffer_size))) goto error;
 		} else {
-			if (!rt_char_copy(path, input_path_size, local_buffer, RT_FILE_PATH_SIZE))
+			if (RT_UNLIKELY(!rt_char_copy(path, input_path_size, local_buffer, RT_FILE_PATH_SIZE)))
 				goto error;
 			local_buffer_size = input_path_size;
 		}
-		if (!rt_file_path_realpath(local_buffer, local_buffer_size, path, buffer_capacity, buffer_size))
+		if (RT_UNLIKELY(!rt_file_path_realpath(local_buffer, local_buffer_size, path, buffer_capacity, buffer_size)))
 			goto error;
 #endif
 	} else {
 		/* Empty input path, return the current directory. */
-		if (!rt_file_path_get_current_dir(path, buffer_capacity, buffer_size))
+		if (RT_UNLIKELY(!rt_file_path_get_current_dir(path, buffer_capacity, buffer_size)))
 			goto error;
 	}
 
@@ -495,15 +495,15 @@ rt_s rt_file_path_namespace(rt_char *path, rt_un buffer_capacity, rt_un *buffer_
 		goto end;
 	}
 
-	if (!rt_file_path_full(path, buffer_capacity, buffer_size))
+	if (RT_UNLIKELY(!rt_file_path_full(path, buffer_capacity, buffer_size)))
 		goto error;
 
 	/* After rt_file_path_full call, the path should start with either "x:" or "\\", but let's check it. */
 	local_buffer_size = *buffer_size;
-	if (local_buffer_size >= 2) {
+	if (RT_LIKELY(local_buffer_size >= 2)) {
 		if (path[1] == _R(':')) {
 			/* Check that there is room for the 4 characters prefix and the zero terminating character. */
-			if (local_buffer_size + 5 <= buffer_capacity) {
+			if (RT_LIKELY(local_buffer_size + 5 <= buffer_capacity)) {
 				/* Move the path plus the zero character. */
 				RT_MEMORY_MOVE(path, &path[4], (local_buffer_size + 1) * sizeof(rt_char));
 				local_buffer_size += 4;
@@ -520,7 +520,7 @@ rt_s rt_file_path_namespace(rt_char *path, rt_un buffer_capacity, rt_un *buffer_
 			}
 		} else if (path[0] == _R('\\') && path[1] == _R('\\')) {
 			/* We are replacing "\" by "\\?\UNC" so we need 6 characters and the zero terminating character. */
-			if (local_buffer_size + 7 <= buffer_capacity) {
+			if (RT_LIKELY(local_buffer_size + 7 <= buffer_capacity)) {
 				/* Move the path without the first backslash plus the zero character. */
 				RT_MEMORY_MOVE(&path[1], &path[7], local_buffer_size * sizeof(rt_char));
 				local_buffer_size += 6;
@@ -624,15 +624,15 @@ rt_b rt_file_path_get_type(const rt_char *path, enum rt_file_path_type *type)
 		actual_path = path;
 	} else {
 		buffer_size = rt_char_get_size(path);
-		if (!rt_char_copy(path, buffer_size, namespaced_path, RT_FILE_PATH_SIZE)) goto error;
-		if (!rt_file_path_namespace(namespaced_path, RT_FILE_PATH_SIZE, &buffer_size)) goto error;
+		if (RT_UNLIKELY(!rt_char_copy(path, buffer_size, namespaced_path, RT_FILE_PATH_SIZE))) goto error;
+		if (RT_UNLIKELY(!rt_file_path_namespace(namespaced_path, RT_FILE_PATH_SIZE, &buffer_size))) goto error;
 		actual_path = namespaced_path;
 	}
 
 	attributes = GetFileAttributes(actual_path);
 	if (attributes == INVALID_FILE_ATTRIBUTES) {
 		last_error = GetLastError();
-		if (last_error == ERROR_PATH_NOT_FOUND || last_error == ERROR_FILE_NOT_FOUND) {
+		if (RT_LIKELY(last_error == ERROR_PATH_NOT_FOUND || last_error == ERROR_FILE_NOT_FOUND)) {
 			*type = RT_FILE_PATH_TYPE_NONE;
 		} else {
 			goto error;
@@ -647,7 +647,7 @@ rt_b rt_file_path_get_type(const rt_char *path, enum rt_file_path_type *type)
 #else
 
 	if (stat(path, &stats)) {
-		if (errno == ENOENT) {
+		if (RT_LIKELY(errno == ENOENT)) {
 			*type = RT_FILE_PATH_TYPE_NONE;
 		} else {
 			goto error;
@@ -697,7 +697,7 @@ rt_s rt_file_path_get_parent(rt_char *path, rt_un buffer_capacity, rt_un *buffer
 	rt_un last_separator_index;
 	rt_s ret;
 
-	if (!rt_file_path_full(path, buffer_capacity, buffer_size)) goto error;
+	if (RT_UNLIKELY(!rt_file_path_full(path, buffer_capacity, buffer_size))) goto error;
 
 	last_separator_index = rt_file_path_get_last_separator_index(path, *buffer_size);
 	if (last_separator_index != RT_TYPE_MAX_UN) {
@@ -738,9 +738,9 @@ rt_s rt_file_path_get_executable_path(rt_char *buffer, rt_un buffer_capacity, rt
 #ifdef RT_DEFINE_WINDOWS
 	/* Returns zero and set last error in case of issue (except if the buffer is too small). */
 	written = GetModuleFileName(NULL, buffer, (DWORD)buffer_capacity);
-	if (!written) goto error;
+	if (RT_UNLIKELY(!written)) goto error;
 	/* GetModuleFileName does not fail if the buffer is too small. */
-	if (written == buffer_capacity) {
+	if (RT_UNLIKELY(written == buffer_capacity)) {
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 		goto error;
 	}
@@ -748,12 +748,12 @@ rt_s rt_file_path_get_executable_path(rt_char *buffer, rt_un buffer_capacity, rt
 	/* readlink does not add the zero character. */
 	/* On error, -1 is returned and errno is set to indicate the error. */
 	written = readlink("/proc/self/exe", buffer, buffer_capacity);
-	if (written == -1) {
+	if (RT_UNLIKELY(written == -1)) {
 		written = 0;
 		goto error;
 	}
 
-	if ((rt_un)written >= buffer_capacity) {
+	if (RT_UNLIKELY((rt_un)written >= buffer_capacity)) {
 		/* There is no room for the zero character. */
 		buffer[buffer_capacity - 1] = 0;
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
@@ -782,20 +782,20 @@ rt_s rt_file_path_get_name(const rt_char *path, rt_un path_size, rt_char *buffer
 
 	if (path_size == 0) {
 		*buffer_size = 0;
-		if (!rt_char_append_char(_R('.'), buffer, buffer_capacity, buffer_size))
+		if (RT_UNLIKELY(!rt_char_append_char(_R('.'), buffer, buffer_capacity, buffer_size)))
 			goto error;
 	} else {
 		last_separator_index = rt_file_path_get_last_separator_index(path, path_size);
 		if (last_separator_index == RT_TYPE_MAX_UN) {
 			/* No interesting last separator, copy everything. */
 			*buffer_size = path_size;
-			if (!rt_char_copy(path, *buffer_size, buffer, buffer_capacity))
+			if (RT_UNLIKELY(!rt_char_copy(path, *buffer_size, buffer, buffer_capacity)))
 				goto error;
 		} else {
 			/* Copy everything after the last interesting separator. */
 			*buffer_size = path_size - (last_separator_index + 1);
 			/* Because of rt_file_path_get_last_separator_index, there must be characters after the last interesting separator. */
-			if (!rt_char_copy(&path[last_separator_index + 1], *buffer_size, buffer, buffer_capacity))
+			if (RT_UNLIKELY(!rt_char_copy(&path[last_separator_index + 1], *buffer_size, buffer, buffer_capacity)))
 				goto error;
 		}
 
@@ -835,11 +835,11 @@ rt_s rt_file_path_get_temp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *bu
 	/* Returns the characters copied to buffer, not including the zero terminating character. */
 	returned_value = GetTempPath((DWORD)buffer_capacity, buffer);
 	/* GetTempPath returns zero and set last error in case of error. */
-	if (!returned_value)
+	if (RT_UNLIKELY(!returned_value))
 		goto error;
 
 	/* If the buffer is too small GetTempPath returns the required buffer size. */
-	if (returned_value > buffer_capacity) {
+	if (RT_UNLIKELY(returned_value > buffer_capacity)) {
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 		goto error;
 	}
@@ -847,17 +847,17 @@ rt_s rt_file_path_get_temp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *bu
 
 #else
 	if (!rt_env_var_get(_R("TMPDIR"), buffer, buffer_capacity, buffer_size)) {
-		if (errno != EINVAL)
+		if (RT_UNLIKELY(errno != EINVAL))
 			goto error;
 #ifdef P_tmpdir
 		/* The variable has not be found. Use P_tmpdir macro instead. */
 		*buffer_size = rt_char_get_size(P_tmpdir);
-		if (!rt_char_copy(P_tmpdir, *buffer_size, buffer, buffer_capacity))
+		if (RT_UNLIKELY(!rt_char_copy(P_tmpdir, *buffer_size, buffer, buffer_capacity)))
 			goto error;
 #else
 		/* The variable has not be found and P_tmpdir macro is not defined. Use /tmp. */
 		*buffer_size = 4;
-		if (!rt_char_copy(_R("/tmp"), *buffer_size, buffer, buffer_capacity))
+		if (RT_UNLIKELY(!rt_char_copy(_R("/tmp"), *buffer_size, buffer, buffer_capacity)))
 			goto error;
 #endif
 	}
@@ -880,13 +880,13 @@ static rt_s rt_file_path_sh_get_folder_path(int csidl, rt_char *buffer, rt_un bu
 	rt_s ret;
 
 	/* SHGetFolderPath expect buffer length to be at least MAX_PATH. */
-	if (buffer_capacity < MAX_PATH) {
+	if (RT_UNLIKELY(buffer_capacity < MAX_PATH)) {
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 		goto error;
 	}
 
 	result_handle = SHGetFolderPath(RT_NULL, csidl, RT_NULL, 0, buffer);
-	if (FAILED(result_handle)) {
+	if (RT_UNLIKELY(FAILED(result_handle))) {
 		SetLastError(HRESULT_CODE(result_handle));
 		goto error;
 	}
@@ -931,13 +931,13 @@ rt_s rt_file_path_get_home_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *bu
 
 		/* Allocate buffer. */
 		password_buffer = malloc(password_buffer_size);
-		if (!password_buffer)
+		if (RT_UNLIKELY(!password_buffer))
 			goto error;
 
 		/* The getpwuid_r function must be used in place of getpwuid in a multithreaded environment. */
 		returned_value = getpwuid_r(user_id, &password_info_struct, password_buffer, password_buffer_size, &password_info);
 		/* In case of issue (Error or no matching password), password_info is set to NULL. */
-		if (!password_info) {
+		if (RT_UNLIKELY(!password_info)) {
 			if (returned_value) {
 				/* In case of error getpwuid_r return an error code. */
 				errno = returned_value;
@@ -950,7 +950,7 @@ rt_s rt_file_path_get_home_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *bu
 		}
 
 		*buffer_size = rt_char_get_size(password_info_struct.pw_dir);
-		if (!rt_char_copy(password_info_struct.pw_dir, *buffer_size, buffer, buffer_capacity)) {
+		if (RT_UNLIKELY(!rt_char_copy(password_info_struct.pw_dir, *buffer_size, buffer, buffer_capacity))) {
 			free(password_buffer);
 			goto error;
 		}
@@ -977,20 +977,20 @@ rt_s rt_file_path_get_application_data_dir(const rt_char *application_name, rt_c
 
 #ifdef RT_DEFINE_WINDOWS
 
-	if (!rt_file_path_sh_get_folder_path(CSIDL_APPDATA, buffer, buffer_capacity, buffer_size)) goto error;
-	if (!rt_file_path_append_separator(buffer, buffer_capacity, buffer_size)) goto error;
-	if (!rt_char_append(application_name, rt_char_get_size(application_name), buffer, buffer_capacity, buffer_size)) goto error;
+	if (RT_UNLIKELY(!rt_file_path_sh_get_folder_path(CSIDL_APPDATA, buffer, buffer_capacity, buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_file_path_append_separator(buffer, buffer_capacity, buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_char_append(application_name, rt_char_get_size(application_name), buffer, buffer_capacity, buffer_size))) goto error;
 
 #else
 
-	if (!rt_file_path_get_home_dir(buffer, buffer_capacity, buffer_size)) goto error;
-	if (!rt_file_path_append_separator(buffer, buffer_capacity, buffer_size)) goto error;
-	if (!rt_char_append_char(_R('.'), buffer, buffer_capacity, buffer_size)) goto error;
+	if (RT_UNLIKELY(!rt_file_path_get_home_dir(buffer, buffer_capacity, buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_file_path_append_separator(buffer, buffer_capacity, buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_char_append_char(_R('.'), buffer, buffer_capacity, buffer_size))) goto error;
 
 	application_name_size = rt_char_get_size(application_name);
-	if (!rt_char_copy(application_name, application_name_size, local_application_name, RT_FILE_PATH_NAME_SIZE)) goto error;
+	if (RT_UNLIKELY(!rt_char_copy(application_name, application_name_size, local_application_name, RT_FILE_PATH_NAME_SIZE))) goto error;
 	rt_char_fast_lower(local_application_name);
-	if (!rt_char_append(local_application_name, application_name_size, buffer, buffer_capacity, buffer_size)) goto error;
+	if (RT_UNLIKELY(!rt_char_append(local_application_name, application_name_size, buffer, buffer_capacity, buffer_size))) goto error;
 
 #endif
 

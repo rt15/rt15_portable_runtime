@@ -41,7 +41,7 @@ rt_s rt_array_set_size(void **array, rt_un size)
 	header_size = header->header_size;
 	heap = header->heap;
 
-	if (!heap->realloc(heap, &area, header_size + size * header->item_size))
+	if (RT_UNLIKELY(!heap->realloc(heap, &area, header_size + size * header->item_size)))
 		goto error;
 
 	/* Make the array point after the custom header. */
@@ -70,7 +70,7 @@ rt_s rt_array_new_item(void **array, void **item)
 	initial_size = header->size;
 	item_size = header->item_size;
 
-	if (!rt_array_set_size(array, initial_size + 1))
+	if (RT_UNLIKELY(!rt_array_set_size(array, initial_size + 1)))
 		goto error;
 
 	*item = ((rt_uchar8*)*array) + initial_size * item_size;
@@ -93,7 +93,7 @@ rt_s rt_array_new_item_index(void **array, rt_un *item_index)
 	header = RT_ARRAY_GET_HEADER(*array);
 	initial_size = header->size;
 
-	if (!rt_array_set_size(array, initial_size + 1))
+	if (RT_UNLIKELY(!rt_array_set_size(array, initial_size + 1)))
 		goto error;
 
 	*item_index = initial_size;
@@ -121,7 +121,7 @@ rt_s rt_array_delete_item_index(void **array, rt_un item_index)
 	item_size = header->item_size;
 
 	/* Check that the item index is within range. */
-	if (item_index >= header->size) {
+	if (RT_UNLIKELY(item_index >= header->size)) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto error;
 	}
@@ -133,7 +133,7 @@ rt_s rt_array_delete_item_index(void **array, rt_un item_index)
 		RT_MEMORY_COPY(source, destination, item_size);
 	}
 
-	if (!rt_array_set_size(array, last_item_index))
+	if (RT_UNLIKELY(!rt_array_set_size(array, last_item_index)))
 		goto error;
 
 	ret = RT_OK;
@@ -153,7 +153,7 @@ rt_s rt_array_get_last_item(void *array, void **item)
 	header = RT_ARRAY_GET_HEADER(array);
 
 	/* Makes sure there is something to return. */
-	if (!header->size) {
+	if (RT_UNLIKELY(!header->size)) {
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
 		goto error;
 	}
@@ -177,7 +177,7 @@ rt_s rt_array_get_item(void *array, rt_un item_index, void **item)
 	header = RT_ARRAY_GET_HEADER(array);
 
 	/* Check that the item index is within range. */
-	if (item_index >= header->size) {
+	if (RT_UNLIKELY(item_index >= header->size)) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto error;
 	}
@@ -201,12 +201,12 @@ rt_s rt_array_delete_last_item(void **array)
 	header = RT_ARRAY_GET_HEADER(*array);
 
 	/* Makes sure there is something to delete. */
-	if (!header->size) {
+	if (RT_UNLIKELY(!header->size)) {
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
 		goto error;
 	}
 
-	if (!rt_array_set_size(array, header->size - 1))
+	if (RT_UNLIKELY(!rt_array_set_size(array, header->size - 1)))
 		goto error;
 
 	ret = RT_OK;
@@ -232,7 +232,7 @@ rt_s rt_array_free(void **array)
 		*array = RT_NULL;
 
 		heap = header->heap;
-		if (!heap->free(heap, &area))
+		if (RT_UNLIKELY(!heap->free(heap, &area)))
 			goto error;
 	}
 

@@ -16,12 +16,12 @@ static rt_s zz_test_unicode_code_point_encode_to_utf8(rt_un32 code_point, const 
 	rt_un i;
 	rt_s ret;
 
-	if (rt_unicode_code_point_encode_to_utf8(code_point, buffer, expected_size, &buffer_size)) goto error;
-	if (!rt_unicode_code_point_encode_to_utf8(code_point, buffer, expected_size + 1, &buffer_size)) goto error;
-	if (buffer_size != expected_size) goto error;
+	if (RT_UNLIKELY(rt_unicode_code_point_encode_to_utf8(code_point, buffer, expected_size, &buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_unicode_code_point_encode_to_utf8(code_point, buffer, expected_size + 1, &buffer_size))) goto error;
+	if (RT_UNLIKELY(buffer_size != expected_size)) goto error;
 	/* This loop also checks the terminating zero. */
 	for (i = 0; i <= expected_size; i++) {
-		if (buffer[i] != expected[i])
+		if (RT_UNLIKELY(buffer[i] != expected[i]))
 			goto error;
 	}
 
@@ -29,12 +29,12 @@ static rt_s zz_test_unicode_code_point_encode_to_utf8(rt_un32 code_point, const 
 	/* This test assumes that the system encoding is UTF-8. */
 	for (i = 0; i < 8; i++)
 		buffer[i] = 12;
-	if (rt_unicode_code_point_encode(code_point, buffer, expected_size, &buffer_size)) goto error;
-	if (!rt_unicode_code_point_encode(code_point, buffer, expected_size + 1, &buffer_size)) goto error;
-	if (buffer_size != expected_size) goto error;
+	if (RT_UNLIKELY(rt_unicode_code_point_encode(code_point, buffer, expected_size, &buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_unicode_code_point_encode(code_point, buffer, expected_size + 1, &buffer_size))) goto error;
+	if (RT_UNLIKELY(buffer_size != expected_size)) goto error;
 	/* This loop also checks the terminating zero. */
 	for (i = 0; i <= expected_size; i++) {
-		if (buffer[i] != expected[i])
+		if (RT_UNLIKELY(buffer[i] != expected[i]))
 			goto error;
 	}
 #endif
@@ -55,24 +55,24 @@ static rt_s zz_test_unicode_code_point_encode_to_utf16(rt_un32 code_point, const
 	rt_un i;
 	rt_s ret;
 
-	if (rt_unicode_code_point_encode_to_utf16(code_point, buffer, expected_size, &buffer_size)) goto error;
-	if (!rt_unicode_code_point_encode_to_utf16(code_point, buffer, expected_size + 1, &buffer_size)) goto error;
-	if (buffer_size != expected_size) goto error;
+	if (RT_UNLIKELY(rt_unicode_code_point_encode_to_utf16(code_point, buffer, expected_size, &buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_unicode_code_point_encode_to_utf16(code_point, buffer, expected_size + 1, &buffer_size))) goto error;
+	if (RT_UNLIKELY(buffer_size != expected_size)) goto error;
 	/* This loop also checks the terminating zero. */
 	for (i = 0; i <= expected_size; i++) {
-		if (buffer[i] != expected[i])
+		if (RT_UNLIKELY(buffer[i] != expected[i]))
 			goto error;
 	}
 
 #ifdef RT_DEFINE_WINDOWS
 	for (i = 0; i < 8; i++)
 		buffer[i] = 12;
-	if (rt_unicode_code_point_encode(code_point, buffer, expected_size, &buffer_size)) goto error;
-	if (!rt_unicode_code_point_encode(code_point, buffer, expected_size + 1, &buffer_size)) goto error;
-	if (buffer_size != expected_size) goto error;
+	if (RT_UNLIKELY(rt_unicode_code_point_encode(code_point, buffer, expected_size, &buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_unicode_code_point_encode(code_point, buffer, expected_size + 1, &buffer_size))) goto error;
+	if (RT_UNLIKELY(buffer_size != expected_size)) goto error;
 	/* This loop also checks the terminating zero. */
 	for (i = 0; i <= expected_size; i++) {
-		if (buffer[i] != expected[i])
+		if (RT_UNLIKELY(buffer[i] != expected[i]))
 			goto error;
 	}
 #endif
@@ -89,13 +89,13 @@ rt_s zz_test_unicode_code_point()
 {
 	rt_s ret;
 
-	if (!zz_test_unicode_code_point_encode_to_utf8(0x61, (rt_char8*)zz_utf8_1)) goto error;
-	if (!zz_test_unicode_code_point_encode_to_utf8(0xE9, (rt_char8*)zz_utf8_2)) goto error;
-	if (!zz_test_unicode_code_point_encode_to_utf8(0x1158, (rt_char8*)zz_utf8_3)) goto error;
-	if (!zz_test_unicode_code_point_encode_to_utf8(0x10338, (rt_char8*)zz_utf8_4)) goto error;
+	if (RT_UNLIKELY(!zz_test_unicode_code_point_encode_to_utf8(0x61, (rt_char8*)zz_utf8_1))) goto error;
+	if (RT_UNLIKELY(!zz_test_unicode_code_point_encode_to_utf8(0xE9, (rt_char8*)zz_utf8_2))) goto error;
+	if (RT_UNLIKELY(!zz_test_unicode_code_point_encode_to_utf8(0x1158, (rt_char8*)zz_utf8_3))) goto error;
+	if (RT_UNLIKELY(!zz_test_unicode_code_point_encode_to_utf8(0x10338, (rt_char8*)zz_utf8_4))) goto error;
 
-	if (!zz_test_unicode_code_point_encode_to_utf16(0xE9, zz_utf16_basic_plane)) goto error;
-	if (!zz_test_unicode_code_point_encode_to_utf16(0x10338, zz_utf16_supplementary_plane)) goto error;
+	if (RT_UNLIKELY(!zz_test_unicode_code_point_encode_to_utf16(0xE9, zz_utf16_basic_plane))) goto error;
+	if (RT_UNLIKELY(!zz_test_unicode_code_point_encode_to_utf16(0x10338, zz_utf16_supplementary_plane))) goto error;
 
 	ret = RT_OK;
 free:
