@@ -3,16 +3,6 @@
 #include "layer001/rt_memory.h"
 #include "layer002/rt_error.h"
 
-/* Copy to rt_char8.h, rt_char8.c, zz_test_char8.c. */
-/* Remove these instructions from rt_char8.c. */
-/* Replace rt_char by rt_char8 (matching case but not whole word). */
-/* Replace rt_uchar by rt_uchar8 (matching case and whole word). */
-/* Replace test_char by test_char8 (matching case but not whole word). */
-/* Replace RT_CHAR by RT_CHAR8 (matching case but not whole word). */
-/* Replace RT_MEMORY_SET_CHAR by RT_MEMORY_SET. */
-/* Adjust RT_CHAR8_XX_STRING_SIZE. */
-/* Remove macros from _R("XXX") and _R('X'). */
-
 #ifdef RT_DEFINE_32
 #define RT_CHAR_FNV_OFFSET_BASIS 2166136261u
 #define RT_CHAR_FNV_PRIME 16777619u

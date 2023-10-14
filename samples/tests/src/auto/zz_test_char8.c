@@ -1,5 +1,7 @@
 #include <rpr.h>
 
+#define ZZ_TEST_CHAR8_ACCENTED_CHARACTERS_CASE 0
+
 static rt_s zz_test_char8_equals_single(rt_char8 *str1, rt_char8 *str2, rt_b expected)
 {
 	rt_s ret;
@@ -452,11 +454,12 @@ static rt_s zz_test_char8_fast_lower_char()
 	if (RT_UNLIKELY(RT_CHAR8_FAST_LOWER_CHAR('a') != 'a')) goto error;
 	if (RT_UNLIKELY(RT_CHAR8_FAST_LOWER_CHAR('z') != 'z')) goto error;
 	if (RT_UNLIKELY(RT_CHAR8_FAST_LOWER_CHAR('{') != '{')) goto error;
-
-	/* Execution charset is uTF-8 so this cannot work.
+#ifdef RT_DEFINE_WINDOWS
+#if ZZ_TEST_CHAR8_ACCENTED_CHARACTERS_CASE
 	if (RT_UNLIKELY(RT_CHAR8_FAST_LOWER_CHAR('é') != 'é')) goto error;
 	if (RT_UNLIKELY(RT_CHAR8_FAST_LOWER_CHAR('É') != 'É')) goto error;
-	*/
+#endif
+#endif
 
 	ret = RT_OK;
 free:
@@ -478,11 +481,12 @@ static rt_s zz_test_char8_fast_upper_char()
 	if (RT_UNLIKELY(RT_CHAR8_FAST_UPPER_CHAR('a') != 'A')) goto error;
 	if (RT_UNLIKELY(RT_CHAR8_FAST_UPPER_CHAR('z') != 'Z')) goto error;
 	if (RT_UNLIKELY(RT_CHAR8_FAST_UPPER_CHAR('{') != '{')) goto error;
-
-	/* Execution charset is uTF-8 so this cannot work.
+#ifdef RT_DEFINE_WINDOWS
+#if ZZ_TEST_CHAR8_ACCENTED_CHARACTERS_CASE
 	if (RT_UNLIKELY(RT_CHAR8_FAST_UPPER_CHAR('é') != 'é')) goto error;
 	if (RT_UNLIKELY(RT_CHAR8_FAST_UPPER_CHAR('É') != 'É')) goto error;
-	*/
+#endif
+#endif
 
 	ret = RT_OK;
 free:

@@ -8,6 +8,7 @@ rt_s zz_display_args(rt_un argc, const rt_char *argv[]);
 rt_s zz_display_env_vars();
 rt_s zz_display_env_var(const rt_char *name);
 rt_s zz_read_line();
+rt_s zz_generate_char8();
 
 static rt_s zz_display_help(rt_s ret)
 {
@@ -26,6 +27,8 @@ static rt_s zz_display_help(rt_s ret)
 	if (!rt_console_write(_R("tests <--manual|-m>\n"), error))
 		ret = RT_FAILED;
 	if (!rt_console_write(_R("tests <--clear-screen|-c>\n"), error))
+		ret = RT_FAILED;
+	if (!rt_console_write(_R("tests <--generate-char8|-g>\n"), error))
 		ret = RT_FAILED;
 
 	return ret;
@@ -91,6 +94,12 @@ static rt_s zz_main(rt_un argc, const rt_char *argv[])
 				   rt_char_equals(argv[1], arg_size, _R("-c"), 2)) {
 
 				if (RT_UNLIKELY(!rt_console_clear()))
+					goto error;
+
+			} else if (rt_char_equals(argv[1], arg_size, _R("--generate-char8"), 16) ||
+				   rt_char_equals(argv[1], arg_size, _R("-g"), 2)) {
+
+				if (RT_UNLIKELY(!zz_generate_char8()))
 					goto error;
 
 			} else {

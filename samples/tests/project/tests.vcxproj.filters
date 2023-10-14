@@ -196,6 +196,9 @@
     <ClCompile Include="..\src\auto\zz_test_deduce_encoding.c">
       <Filter>src\auto</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\zz_generate_char8.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
