@@ -19,7 +19,7 @@
 					<Add option="-D_CONSOLE" />
 				</Compiler>
 				<Linker>
-					<Add option="-nostartfiles -nodefaultlibs -nostdlib -ffreestanding" />
+					<Add option="-nostartfiles -nodefaultlibs -nostdlib -ffreestanding -Xlinker --stack=0x100000,0x100000" />
 					<Add library="rprd" />
 					<Add library="ws2_32" />
 					<Add library="shell32" />
@@ -40,8 +40,7 @@
 					<Add option="-D_CONSOLE" />
 				</Compiler>
 				<Linker>
-					<Add option="-s" />
-					<Add option="-nostartfiles -nodefaultlibs -nostdlib -ffreestanding" />
+					<Add option="-s -nostartfiles -nodefaultlibs -nostdlib -ffreestanding -Xlinker --stack=0x100000,0x100000" />
 					<Add library="rpr" />
 					<Add library="ws2_32" />
 					<Add library="shell32" />
