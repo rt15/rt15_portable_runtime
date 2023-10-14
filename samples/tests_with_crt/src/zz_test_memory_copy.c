@@ -47,7 +47,7 @@ rt_s zz_test_memory_copy(struct rt_output_stream *output_stream)
 	for (i = 0; i < ZZ_TESTS_COUNT; i++) {
 		rt_memory_copy(source, destination, ZZ_BUFFER_SIZE);
 	}
-	if (RT_UNLIKELY(!zz_stop_chrono("rt_memory_Copy", &chrono, output_stream)))
+	if (RT_UNLIKELY(!zz_stop_chrono("rt_memory_copy", &chrono, output_stream)))
 		goto error;
 
 	/* Test RT_MEMORY_COPY. */

@@ -51,7 +51,7 @@ rt_s zz_test_memory_compare(struct rt_output_stream *output_stream)
 		if (RT_UNLIKELY(rt_memory_compare(area1, area2, ZZ_BUFFER_SIZE) <= 0))
 			goto error;
 	}
-	if (RT_UNLIKELY(!zz_stop_chrono("rt_memory_Compare", &chrono, output_stream)))
+	if (RT_UNLIKELY(!zz_stop_chrono("rt_memory_compare", &chrono, output_stream)))
 		goto error;
 
 	/* Test RT_MEMORY_COMPARE. */

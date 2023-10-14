@@ -89,7 +89,7 @@ rt_s zz_test_memory_move(struct rt_output_stream *output_stream)
 	for (i = 0; i < ZZ_TESTS_COUNT; i++) {
 		rt_memory_move(source, destination, ZZ_BUFFER_SIZE / 2);
 	}
-	if (RT_UNLIKELY(!zz_stop_chrono("rt_memory_Move", &chrono, output_stream)))
+	if (RT_UNLIKELY(!zz_stop_chrono("rt_memory_move", &chrono, output_stream)))
 		goto error;
 	if (RT_UNLIKELY(!zz_check_buffer(source)))
 		goto error;
