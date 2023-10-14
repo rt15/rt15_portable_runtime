@@ -670,7 +670,6 @@ rt_s rt_char_ends_with(const rt_char *str, rt_un str_size, const rt_char *search
 	return ret;
 }
 
-
 rt_un rt_char_search(const rt_char *str, const rt_char *searched)
 {
 	rt_char first_searched_character = searched[0];
@@ -711,18 +710,72 @@ end:
 	return ret;
 }
 
-rt_un rt_char_search_char(const rt_char *str, rt_char searched)
+rt_un rt_char_search_with_size(const rt_char *str, rt_un str_size, const rt_char *searched, rt_un searched_size)
 {
-	rt_un result;
+	rt_char first_searched_character;
+	rt_un i, j, k;
+	rt_un ret = RT_TYPE_MAX_UN;
 
-	result = 0;
-	while (str[result] && str[result] != searched)
-		result++;
-	if (!str[result]) {
-		result = RT_TYPE_MAX_UN;
+	if (searched_size) {
+		first_searched_character = searched[0];
+		for (i = 0; i < str_size; i++) {
+			if (str[i] == first_searched_character) {
+				j = i + 1;
+				k = 1;
+				while (RT_TRUE) {
+					if (k >= searched_size) {
+						/* We found all characters of searched. */
+						ret = i;
+						break;
+					}
+
+					/* We reached the end of str. */
+					if (j >= str_size)
+						break;
+
+					if (str[j] != searched[k]) {
+						break;
+					}
+
+					j++;
+					k++;
+				}
+
+				/* We found searched, we quit the for loop. */
+				if (ret != RT_TYPE_MAX_UN)
+					break;
+			}
+		}
 	}
 
-	return result;
+	return ret;
+}
+
+rt_un rt_char_search_char(const rt_char *str, rt_char searched)
+{
+	rt_un ret;
+
+	ret = 0;
+	while (str[ret] && str[ret] != searched)
+		ret++;
+	if (!str[ret]) {
+		ret = RT_TYPE_MAX_UN;
+	}
+
+	return ret;
+}
+
+rt_un rt_char_search_char_with_size(const rt_char *str, rt_un str_size, rt_char searched)
+{
+	rt_un ret;
+
+	for (ret = 0; ret < str_size; ret++) {
+		if (str[ret] == searched)
+			break;
+	}
+	if (ret == str_size)
+		ret = RT_TYPE_MAX_UN;
+	return ret;
 }
 
 rt_un rt_char_count_occurrences(const rt_char *str, const rt_char *searched)
@@ -730,18 +783,35 @@ rt_un rt_char_count_occurrences(const rt_char *str, const rt_char *searched)
 	const rt_char *in_str = str;
 	rt_un index;
 	rt_un searched_size = rt_char_get_size(searched);
-	rt_un res = 0;
+	rt_un ret = 0;
 
 	while (RT_TRUE) {
 		index = rt_char_search(in_str, searched);
 		if (index == RT_TYPE_MAX_UN)
 			break;
 
-		res++;
+		ret++;
 		in_str = &in_str[index + searched_size];
 	}
 
-	return res;
+	return ret;
+}
+
+rt_un rt_char_count_occurrences_with_size(const rt_char *str, rt_un str_size, const rt_char *searched, rt_un searched_size)
+{
+	rt_un index;
+	rt_un i = 0;
+	rt_un ret = 0;
+
+	while (i <= str_size - searched_size) {
+		index = rt_char_search_with_size(&str[i], str_size - i, searched, searched_size);
+		if (index == RT_TYPE_MAX_UN)
+			break;
+
+		ret++;
+		i += index + searched_size;
+	}
+	return ret;
 }
 
 rt_s RT_CDECL rt_char_concat(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size, ...)
@@ -791,11 +861,11 @@ rt_s rt_char_replace(const rt_char *str, rt_un str_size,
 	rt_s ret;
 
 	while (RT_TRUE) {
-		index = rt_char_search(&str[in_str], searched);
+		remaining_characters = str_size - in_str;
+		index = rt_char_search_with_size(&str[in_str], remaining_characters, searched, searched_size);
 
 		if (index == RT_TYPE_MAX_UN) {
 			/* No more occurrences of the searched string, copy remaining characters. */
-			remaining_characters = str_size - in_str;
 			if (remaining_characters) {
 				if (RT_UNLIKELY(!rt_char_append(&str[in_str], remaining_characters, buffer, buffer_capacity, buffer_size)))
 					goto error;

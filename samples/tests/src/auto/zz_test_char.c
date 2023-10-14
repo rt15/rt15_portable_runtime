@@ -957,21 +957,51 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_char_search_do(const rt_char *str, const rt_char *searched, rt_un expected)
+{
+	rt_s ret;
+
+	if (RT_UNLIKELY(rt_char_search(str, searched) != expected)) goto error;
+	if (RT_UNLIKELY(rt_char_search_with_size(str, rt_char_get_size(str), searched, rt_char_get_size(searched)) != expected)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 static rt_s zz_test_char_search()
 {
 	rt_s ret;
 
-	if (RT_UNLIKELY(rt_char_search(_R(""), _R("")) != RT_TYPE_MAX_UN)) goto error;
-	if (RT_UNLIKELY(rt_char_search(_R(""), _R("o")) != RT_TYPE_MAX_UN)) goto error;
-	if (RT_UNLIKELY(rt_char_search(_R("o"), _R("")) != RT_TYPE_MAX_UN)) goto error;
-	if (RT_UNLIKELY(rt_char_search(_R("Foo"), _R("oo")) != 1)) goto error;
-	if (RT_UNLIKELY(rt_char_search(_R("Foo"), _R("o")) != 1)) goto error;
-	if (RT_UNLIKELY(rt_char_search(_R("Foo"), _R("Fo")) != 0)) goto error;
-	if (RT_UNLIKELY(rt_char_search(_R("Foo"), _R("ob")) != RT_TYPE_MAX_UN)) goto error;
-	if (RT_UNLIKELY(rt_char_search(_R("BarFo"), _R("Foo")) != RT_TYPE_MAX_UN)) goto error;
-	if (RT_UNLIKELY(rt_char_search(_R("BarFoo"), _R("Fo")) != 3)) goto error;
-	if (RT_UNLIKELY(rt_char_search(_R("FoFoFoFoFoo"), _R("Foo")) != 8)) goto error;
-	if (RT_UNLIKELY(rt_char_search(_R("FoFoFoFFoo"), _R("Foo")) != 7)) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_do(_R(""), _R(""), RT_TYPE_MAX_UN))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_do(_R(""), _R("o"), RT_TYPE_MAX_UN))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_do(_R("o"), _R(""), RT_TYPE_MAX_UN))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_do(_R("Foo"), _R("oo"), 1))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_do(_R("Foo"), _R("o"), 1))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_do(_R("Foo"), _R("Fo"), 0))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_do(_R("Foo"), _R("ob"), RT_TYPE_MAX_UN))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_do(_R("BarFo"), _R("Foo"), RT_TYPE_MAX_UN))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_do(_R("BarFoo"), _R("Fo"), 3))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_do(_R("FoFoFoFoFoo"), _R("Foo"), 8))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_do(_R("FoFoFoFFoo"), _R("Foo"), 7))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char_search_char_do(const rt_char *str, rt_char searched, rt_un expected)
+{
+	rt_s ret;
+
+	if (RT_UNLIKELY(rt_char_search_char(str, searched) != expected)) goto error;
+	if (RT_UNLIKELY(rt_char_search_char_with_size(str, rt_char_get_size(str), searched) != expected)) goto error;
 
 	ret = RT_OK;
 free:
@@ -985,16 +1015,32 @@ static rt_s zz_test_char_search_char()
 {
 	rt_s ret;
 
-	if (RT_UNLIKELY(rt_char_search_char(_R(""), _R('a')) != RT_TYPE_MAX_UN)) goto error;
-	if (RT_UNLIKELY(rt_char_search_char(_R("b"), _R('a')) != RT_TYPE_MAX_UN)) goto error;
-	if (RT_UNLIKELY(rt_char_search_char(_R("a"), _R('a')) != 0)) goto error;
-	if (RT_UNLIKELY(rt_char_search_char(_R("ab"), _R('a')) != 0)) goto error;
-	if (RT_UNLIKELY(rt_char_search_char(_R("ba"), _R('a')) != 1)) goto error;
-	if (RT_UNLIKELY(rt_char_search_char(_R("aba"), _R('a')) != 0)) goto error;
-	if (RT_UNLIKELY(rt_char_search_char(_R("abcde"), _R('a')) != 0)) goto error;
-	if (RT_UNLIKELY(rt_char_search_char(_R("abcde"), _R('b')) != 1)) goto error;
-	if (RT_UNLIKELY(rt_char_search_char(_R("abcde"), _R('d')) != 3)) goto error;
-	if (RT_UNLIKELY(rt_char_search_char(_R("abcde"), _R('e')) != 4)) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_char_do(_R(""), _R('a'), RT_TYPE_MAX_UN))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_char_do(_R("b"), _R('a'), RT_TYPE_MAX_UN))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_char_do(_R("a"), _R('a'), 0))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_char_do(_R("ab"), _R('a'), 0))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_char_do(_R("ba"), _R('a'), 1))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_char_do(_R("aba"), _R('a'), 0))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_char_do(_R("abcde"), _R('a'), 0))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_char_do(_R("abcde"), _R('b'), 1))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_char_do(_R("abcde"), _R('d'), 3))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_search_char_do(_R("abcde"), _R('e'), 4))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+
+static rt_s zz_test_char_count_occurrences_do(const rt_char *str, const rt_char *searched, rt_un expected)
+{
+	rt_s ret;
+
+	if (RT_UNLIKELY(rt_char_count_occurrences(str, searched) != expected)) goto error;
+	if (RT_UNLIKELY(rt_char_count_occurrences_with_size(str, rt_char_get_size(str), searched, rt_char_get_size(searched)) != expected)) goto error;
 
 	ret = RT_OK;
 free:
@@ -1008,12 +1054,12 @@ static rt_s zz_test_char_count_occurrences()
 {
 	rt_s ret;
 
-	if (RT_UNLIKELY(rt_char_count_occurrences(_R("foo"), _R("foo")) != 1)) goto error;
-	if (RT_UNLIKELY(rt_char_count_occurrences(_R("foofoo"), _R("foo")) != 2)) goto error;
-	if (RT_UNLIKELY(rt_char_count_occurrences(_R("ofoofoo"), _R("o")) != 5)) goto error;
-	if (RT_UNLIKELY(rt_char_count_occurrences(_R("foof"), _R("o")) != 2)) goto error;
-	if (RT_UNLIKELY(rt_char_count_occurrences(_R("FoFoF"), _R("FoF")) != 1)) goto error;
-	if (RT_UNLIKELY(rt_char_count_occurrences(_R("FoFFoF"), _R("FoF")) != 2)) goto error;
+	if (RT_UNLIKELY(!zz_test_char_count_occurrences_do(_R("foo"), _R("foo"), 1))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_count_occurrences_do(_R("foofoo"), _R("foo"), 2))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_count_occurrences_do(_R("ofoofoo"), _R("o"), 5))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_count_occurrences_do(_R("foof"), _R("o"), 2))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_count_occurrences_do(_R("FoFoF"), _R("FoF"), 1))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_count_occurrences_do(_R("FoFFoF"), _R("FoF"), 2))) goto error;
 
 	ret = RT_OK;
 free:

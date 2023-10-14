@@ -213,15 +213,37 @@ rt_s rt_char8_ends_with(const rt_char8 *str, rt_un str_size, const rt_char8 *sea
 rt_un rt_char8_search(const rt_char8 *str, const rt_char8 *searched);
 
 /**
+ * Search <tt>searched</tt> in <tt>str</tt>.
+ *
+ * <p>
+ * If <tt>searched</tt> (or <tt>str</tt>) is empty, then RT_TYPE_MAX_UN is returned.
+ * </p>
+ *
+ * @return index of <tt>searched</tt> in <tt>str</tt> or RT_TYPE_MAX_UN if not found.
+ */
+rt_un rt_char8_search_with_size(const rt_char8 *str, rt_un str_size, const rt_char8 *searched, rt_un searched_size);
+
+/**
  * Find <tt>searched</tt> character into <tt>str</tt>.
  * @return index of <tt>searched</tt> in <tt>str</tt> or RT_TYPE_MAX_UN if not found.
  */
 rt_un rt_char8_search_char(const rt_char8 *str, rt_char8 searched);
 
 /**
+ * Find <tt>searched</tt> character into <tt>str</tt>.
+ * @return index of <tt>searched</tt> in <tt>str</tt> or RT_TYPE_MAX_UN if not found.
+ */
+rt_un rt_char8_search_char_with_size(const rt_char8 *str, rt_un str_size, rt_char8 searched);
+
+/**
  * @return Number of occurrences of <tt>searched</tt> in <tt>str</tt>.
  */
 rt_un rt_char8_count_occurrences(const rt_char8 *str, const rt_char8 *searched);
+
+/**
+ * @return Number of occurrences of <tt>searched</tt> in <tt>str</tt>.
+ */
+rt_un rt_char8_count_occurrences_with_size(const rt_char8 *str, rt_un str_size, const rt_char8 *searched, rt_un searched_size);
 
 /**
  * Concatenate the variadic arguments at the end of given <tt>buffer</tt>.
