@@ -60,6 +60,25 @@ rt_s zz_test_socket();
 rt_s zz_test_process();
 rt_s zz_test_select();
 
+static rt_s zz_auto_tests_log(const rt_char8 *test, struct rt_output_stream *output_stream)
+{
+	rt_s ret;
+
+	if (RT_UNLIKELY(!output_stream->write(output_stream, test, rt_char8_get_size(test))))
+		goto error;
+
+	if (RT_UNLIKELY(!output_stream->write(output_stream, "...\n", 4)))
+		goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+
+}
+
 rt_s zz_auto_tests()
 {
 	rt_s ret;
@@ -70,72 +89,119 @@ rt_s zz_auto_tests()
 		goto error;
 
 	output_stream = &io_device.output_stream;
-	if (RT_UNLIKELY(!output_stream->write(output_stream, "Testing...\n", rt_char8_get_size("Testing...\n"))))
+	if (RT_UNLIKELY(!output_stream->write(output_stream, "Testing...\n", 11)))
 		goto error;
 
+	if (RT_UNLIKELY(!zz_auto_tests_log("rt_check_rpr", output_stream))) goto error;
 	if (RT_UNLIKELY(!rt_check_rpr())) goto error;
 
 	/* Layer 001. */
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_atomic", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_atomic())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_memory", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_memory())) goto error;
 
 	/* Layer 002. */
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_binary_search", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_binary_search())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_buffered_input_stream", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_buffered_input_stream())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_critical_section", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_critical_section())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_event", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_event())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_io_device", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_io_device())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_memory_input_stream", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_memory_input_stream())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_quick_sort", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_quick_sort())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_sleep", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_sleep())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_slurp", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_slurp())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_virtual_memory", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_virtual_memory())) goto error;
 
 	/* Layer 003. */
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_char", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_char())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_char8", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_char8())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_env_var", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_env_var())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_fast_initialization", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_fast_initialization())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_file", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_file())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_heap", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_heap())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_pipe", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_pipe())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_read_lines", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_read_lines())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_thread", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_thread())) goto error;
 
 	/* Layer 004. */
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_address", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_address())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_array", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_array())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_base64", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_base64())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_command_line_args", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_command_line_args())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_encoding", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_encoding())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_file_path", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_file_path())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_memory_output_stream", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_memory_output_stream())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_os_version", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_os_version())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_random", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_random())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_small_file", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_small_file())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_static_heap", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_static_heap())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_url", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_url())) goto error;
 
 	/* Layer 005. */
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_deduce_encoding", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_deduce_encoding())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_env_vars", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_env_vars())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_file_system", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_file_system())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_hash_table", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_hash_table())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_list", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_list())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_socket_address", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_socket_address())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_sortable_array", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_sortable_array())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_unicode_code_point", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_unicode_code_point())) goto error;
 
 	/* Layer 006. */
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_error_message", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_error_message())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_properties", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_properties())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_socket", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_socket())) goto error;
 
 	/* Layer 007. */
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_process", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_process())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_select", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_select())) goto error;
 
-	if (RT_UNLIKELY(!output_stream->write(output_stream, "Tests successful!\n", rt_char8_get_size("Tests successful!\n"))))
+	if (RT_UNLIKELY(!output_stream->write(output_stream, "Tests successful!\n", 18)))
 		goto error;
 
 	ret = RT_OK;

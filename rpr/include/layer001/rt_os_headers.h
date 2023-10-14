@@ -31,10 +31,12 @@
 #ifdef FD_SETSIZE
 #undef FD_SETSIZE
 #endif
-/* Makes sure that 3 of them stick into the stack. */
-/* 160 * 3 * 8 = 3840. */
-/* On Linux, it is 1024, not configurable, but there is no stack issue. */
-#define FD_SETSIZE 160
+
+/* On Linux, it is 1024, not configurable. */
+/* On Windows, it can be configured by defining it before including winsock2.h. */
+/* It impacts the size of fd_set structure. */
+/* It messes up with the stack if too big under Windows. */
+#define FD_SETSIZE 512
 
 #ifdef _WIN32_WINNT
 #undef _WIN32_WINNT

@@ -13,6 +13,14 @@
 /* Adjust RT_CHAR8_XX_STRING_SIZE. */
 /* Remove macros from _R("XXX") and _R('X'). */
 
+#ifdef RT_DEFINE_32
+#define RT_CHAR_FNV_OFFSET_BASIS 2166136261u
+#define RT_CHAR_FNV_PRIME 16777619u
+#else
+#define RT_CHAR_FNV_OFFSET_BASIS 14695981039346656037ull
+#define RT_CHAR_FNV_PRIME 1099511628211ull
+#endif
+
 rt_b rt_char_equals(const rt_char *str1, rt_un str1_size, const rt_char *str2, rt_un str2_size)
 {
 	rt_b ret;
@@ -863,11 +871,11 @@ rt_s rt_char_comparison_with_size_callback(const void *item1, rt_un item1_size, 
 rt_un rt_char_hash(const rt_char *data, rt_un data_size)
 {
 	rt_un i;
-	rt_un ret = 14695981039346656037ull;
+	rt_un ret = RT_CHAR_FNV_OFFSET_BASIS;
 
 	for (i = 0; i < data_size; i++) {
 		ret ^= data[i];
-		ret *= 1099511628211ull;
+		ret *= RT_CHAR_FNV_PRIME;
 	}
 
 	return ret;
@@ -876,12 +884,12 @@ rt_un rt_char_hash(const rt_char *data, rt_un data_size)
 rt_s rt_char_hash_callback(const void *data, rt_un data_size, RT_UNUSED void *context, rt_un *hash)
 {
 	rt_char *chars = (rt_char*)data;
-	rt_un local_hash = 14695981039346656037ull;
+	rt_un local_hash = RT_CHAR_FNV_OFFSET_BASIS;
 	rt_un i;
 
 	for (i = 0; i < data_size; i++) {
 		local_hash ^= chars[i];
-		local_hash *= 1099511628211ull;
+		local_hash *= RT_CHAR_FNV_PRIME;
 	}
 
 	*hash = local_hash;

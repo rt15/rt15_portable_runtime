@@ -1167,8 +1167,13 @@ static rt_s zz_test_char8_hash()
 {
 	rt_s ret;
 
+#ifdef RT_DEFINE_32
+	if (RT_UNLIKELY(!zz_test_char8_hash_do("Foo", 209589879u))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_hash_do("Bar", 3686563258u))) goto error;
+#else
 	if (RT_UNLIKELY(!zz_test_char8_hash_do("Foo", 17490737515057045975ul))) goto error;
 	if (RT_UNLIKELY(!zz_test_char8_hash_do("Bar", 1603655411640082298ul))) goto error;
+#endif
 
 	ret = RT_OK;
 free:

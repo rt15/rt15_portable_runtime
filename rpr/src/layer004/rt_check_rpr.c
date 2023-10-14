@@ -101,14 +101,22 @@ static rt_s rt_check_types()
 
 	if (RT_UNLIKELY(sizeof(rt_h) != sizeof(HANDLE))) goto error;
 
-	if (RT_UNLIKELY(FD_SETSIZE != 160)) goto error;
+	if (RT_UNLIKELY(FD_SETSIZE != 512)) goto error;
+#ifdef RT_DEFINE_32
+	if (RT_UNLIKELY(sizeof(fd_set) != sizeof(rt_un32) + sizeof(rt_un) * FD_SETSIZE)) goto error;
+#else
 	if (RT_UNLIKELY(sizeof(fd_set) != sizeof(rt_un32) + sizeof(rt_un) * FD_SETSIZE + 4 /* padding. */)) goto error;
+#endif
 #else
 	/* _FILE_OFFSET_BITS should be set to 64 even in 32 bits case. */
 	if (RT_UNLIKELY(sizeof(rt_n64) != sizeof(off_t))) goto error;
 	if (RT_UNLIKELY(sizeof(rt_n) != sizeof(ssize_t))) goto error;
 	if (RT_UNLIKELY(FD_SETSIZE != 1024)) goto error;
 	if (RT_UNLIKELY(sizeof(fd_set) != sizeof(rt_n) * FD_SETSIZE / 64 /* __FD_SETSIZE / __NFDBITS */)) goto error;
+
+	/* Under VC, in 32 bits, time_t is 64 bits unless _USE_32BIT_TIME_T is used. */
+	/* Under Linux, it is 32 bits if the glibc is 32 bits. */
+	if (RT_UNLIKELY(sizeof(rt_n) != sizeof(time_t))) goto error;
 #endif
 
 	/* Socket address structures. */
@@ -119,8 +127,6 @@ static rt_s rt_check_types()
 	if (RT_UNLIKELY(sizeof(struct sockaddr_in6) != 28)) goto error;
 
 	if (RT_UNLIKELY(sizeof(rt_un) != sizeof(size_t))) goto error;
-	if (RT_UNLIKELY(sizeof(rt_n) != sizeof(time_t))) goto error;
-
 	/* socklen_t is signed under Windows and unsigned under Linux. */
 	if (RT_UNLIKELY(sizeof(rt_n32) != sizeof(socklen_t))) goto error;
 

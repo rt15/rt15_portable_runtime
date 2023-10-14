@@ -19,11 +19,11 @@ rt_s rt_small_file_read(const rt_char *file_path, rt_char8 *buffer, rt_un buffer
 	if (RT_UNLIKELY(!rt_file_get_size(&file, &file_size)))
 		goto error;
 
-	if (RT_UNLIKELY(!rt_heap_alloc_if_needed(buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, (void**)output, file_size + 1, heap)))
+	if (RT_UNLIKELY(!rt_heap_alloc_if_needed(buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, (void**)output, (rt_un)(file_size + 1), heap)))
 		goto error;
 
 	input_stream = &file.io_device.input_stream;
-	if (RT_UNLIKELY(!input_stream->read(input_stream, *output, file_size, output_size)))
+	if (RT_UNLIKELY(!input_stream->read(input_stream, *output, (rt_un)file_size, output_size)))
 		goto error;
 
 	/* We know the size of the file so we should be able to read it completely. */

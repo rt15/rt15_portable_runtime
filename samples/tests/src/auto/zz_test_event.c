@@ -8,7 +8,7 @@ enum zz_thread_status {
 
 static enum zz_thread_status thread_status;
 
-static rt_un32 zz_test_event_thread_callback(void *parameter)
+static rt_un32 RT_STDCALL zz_test_event_thread_callback(void *parameter)
 {
 	struct rt_event *event;
 	rt_un32 result;
