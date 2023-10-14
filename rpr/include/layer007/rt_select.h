@@ -13,11 +13,7 @@
  * </p>
  */
 
-#ifdef RT_DEFINE_WINDOWS
-#define RT_SELECT_MAX_ITEMS 512
-#else
 #define RT_SELECT_MAX_ITEMS 1024
-#endif
 
 struct rt_select_item {
 #ifdef RT_DEFINE_WINDOWS

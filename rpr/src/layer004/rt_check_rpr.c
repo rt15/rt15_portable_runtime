@@ -75,6 +75,8 @@ static rt_s rt_check_types()
 
 	if (RT_UNLIKELY(sizeof(rt_h) != pointer_size)) goto error;
 
+	if (RT_UNLIKELY(FD_SETSIZE != 1024)) goto error;
+
 #ifdef RT_DEFINE_WINDOWS
 	if (RT_UNLIKELY(sizeof(rt_uchar8) != sizeof(BYTE))) goto error;
 	if (RT_UNLIKELY(sizeof(rt_n16) != sizeof(WORD))) goto error;
@@ -101,7 +103,6 @@ static rt_s rt_check_types()
 
 	if (RT_UNLIKELY(sizeof(rt_h) != sizeof(HANDLE))) goto error;
 
-	if (RT_UNLIKELY(FD_SETSIZE != 512)) goto error;
 #ifdef RT_DEFINE_32
 	if (RT_UNLIKELY(sizeof(fd_set) != sizeof(rt_un32) + sizeof(rt_un) * FD_SETSIZE)) goto error;
 #else
@@ -111,7 +112,6 @@ static rt_s rt_check_types()
 	/* _FILE_OFFSET_BITS should be set to 64 even in 32 bits case. */
 	if (RT_UNLIKELY(sizeof(rt_n64) != sizeof(off_t))) goto error;
 	if (RT_UNLIKELY(sizeof(rt_n) != sizeof(ssize_t))) goto error;
-	if (RT_UNLIKELY(FD_SETSIZE != 1024)) goto error;
 	if (RT_UNLIKELY(sizeof(fd_set) != sizeof(rt_n) * FD_SETSIZE / 64 /* __FD_SETSIZE / __NFDBITS */)) goto error;
 
 	/* Under VC, in 32 bits, time_t is 64 bits unless _USE_32BIT_TIME_T is used. */

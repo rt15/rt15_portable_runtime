@@ -35,8 +35,7 @@
 /* On Linux, it is 1024, not configurable. */
 /* On Windows, it can be configured by defining it before including winsock2.h. */
 /* It impacts the size of fd_set structure. */
-/* It messes up with the stack if too big under Windows. */
-#define FD_SETSIZE 512
+#define FD_SETSIZE 1024
 
 #ifdef _WIN32_WINNT
 #undef _WIN32_WINNT
