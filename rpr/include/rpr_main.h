@@ -68,7 +68,7 @@ void rpr_main_set_locale();
 
 #ifdef RT_DEFINE_WINDOWS
 #ifdef RT_DEFINE_USE_CRT
-int RT_CDECL main(int argc, char* argv[])
+int RT_CDECL main()
 #else /* NOT RT_DEFINE_USE_CRT */
 #ifdef _WINDOWS
 int RT_CDECL WinMainCRTStartup()
