@@ -6,6 +6,7 @@ rmdir /S /Q rpr\obj\Release
 rmdir /S /Q rpr\obj\Debug
 del /S /Q rpr\lib\*.a
 del /S /Q rpr\lib\*.lib
+del /S /Q rpr\lib\*.pdb
 rmdir /S /Q rpr\project\.vs
 del /Q rpr\project\*.layout
 del /Q rpr\project\*.depend
