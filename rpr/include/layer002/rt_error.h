@@ -33,7 +33,11 @@ enum rt_error {
 	/* The function call would have blocked if the descriptor was a blocking one. See also RT_ERROR_SOCKET_WOULD_BLOCK. */
 	RT_ERROR_WOULD_BLOCK,
 	/* The function call would have blocked if the socket was a blocking one. See also RT_ERROR_WOULD_BLOCK. */
-	RT_ERROR_SOCKET_WOULD_BLOCK
+	RT_ERROR_SOCKET_WOULD_BLOCK,
+	/* A file has not been found. */
+	RT_ERROR_FILE_NOT_FOUND,
+	/* A directory has not been found. */
+	RT_ERROR_DIR_NOT_FOUND
 };
 
 

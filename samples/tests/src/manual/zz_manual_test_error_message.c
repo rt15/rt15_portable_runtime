@@ -49,6 +49,8 @@ rt_s zz_manual_test_error_message()
 	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_ARITHMETIC_OVERFLOW"), RT_ERROR_ARITHMETIC_OVERFLOW))) goto error;
 	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_WOULD_BLOCK"),         RT_ERROR_WOULD_BLOCK)))         goto error;
 	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_SOCKET_WOULD_BLOCK"),  RT_ERROR_SOCKET_WOULD_BLOCK)))  goto error;
+	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_FILE_NOT_FOUND"),      RT_ERROR_FILE_NOT_FOUND)))      goto error;
+	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_DIR_NOT_FOUND"),       RT_ERROR_DIR_NOT_FOUND)))       goto error;
 
 	if (RT_UNLIKELY(!rt_console_write_string_with_size(_R("\n"), 1))) goto error;
 

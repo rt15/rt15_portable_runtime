@@ -2,13 +2,37 @@
 
 #include "layer001/rt_os_headers.h"
 
-/* The count of errors types defined in rt_Error.h. */
-#define RT_ERROR_ERRORS_COUNT 10
+/* The count of errors types defined in rt_eror.h. */
+#define RT_ERROR_ERRORS_COUNT 12
 
 #ifdef RT_DEFINE_WINDOWS
-static const rt_un32 rt_error_os_errors[RT_ERROR_ERRORS_COUNT] = { ERROR_SUCCESS, ERROR_INSUFFICIENT_BUFFER, ERROR_BAD_ARGUMENTS, ERROR_NOT_ENOUGH_MEMORY, ERROR_FILE_EXISTS, ERROR_ALREADY_EXISTS, ERROR_INVALID_FUNCTION, ERROR_ARITHMETIC_OVERFLOW, ERROR_IO_PENDING, WSAEWOULDBLOCK };
+static const rt_un32 rt_error_os_errors[RT_ERROR_ERRORS_COUNT] = { ERROR_SUCCESS,
+								   ERROR_INSUFFICIENT_BUFFER,
+								   ERROR_BAD_ARGUMENTS,
+								   ERROR_NOT_ENOUGH_MEMORY,
+								   ERROR_FILE_EXISTS,
+								   ERROR_ALREADY_EXISTS,
+								   ERROR_INVALID_FUNCTION,
+								   ERROR_ARITHMETIC_OVERFLOW,
+								   ERROR_IO_PENDING,
+								   WSAEWOULDBLOCK,
+								   ERROR_FILE_NOT_FOUND,
+								   ERROR_PATH_NOT_FOUND
+								 };
 #else
-static const rt_n32 rt_error_os_errors[RT_ERROR_ERRORS_COUNT] = { 0, ERANGE, EINVAL, ENOMEM, EEXIST, EEXIST, EPERM, EOVERFLOW, EWOULDBLOCK, EWOULDBLOCK };
+static const rt_n32 rt_error_os_errors[RT_ERROR_ERRORS_COUNT] = { 0,
+								  ERANGE,
+								  EINVAL,
+								  ENOMEM,
+								  EEXIST,
+								  EEXIST,
+								  EPERM,
+								  EOVERFLOW,
+								  EWOULDBLOCK,
+								  EWOULDBLOCK,
+								  ENOENT,
+								  ENOENT
+								};
 #endif
 
 void rt_error_set_last(enum rt_error error)
