@@ -33,9 +33,6 @@
 					<Add option="-DNDEBUG" />
 					<Add option="-DWIN32" />
 				</Compiler>
-				<Linker>
-					<Add option="-s" />
-				</Linker>
 			</Target>
 			<Target title="Linux64Debug">
 				<Option platforms="Unix;" />
@@ -62,9 +59,6 @@
 					<Add option="-O2" />
 					<Add option="-DNDEBUG" />
 				</Compiler>
-				<Linker>
-					<Add option="-s" />
-				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
