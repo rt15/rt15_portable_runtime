@@ -2,16 +2,15 @@
 *.gitattributes text eol=lf
 *.gitignore text eol=lf
 *.md text eol=lf
-*.cbp text eol=lf
 *.c text eol=lf
 *.h text eol=lf
-*.workspace text eol=lf
 *.properties eol=lf
 CMakeLists.txt eol=lf
 
 # Text files using CRLF:
 *.bat text eol=crlf
 *.vcxproj text eol=crlf
+*.filters text eol=crlf
 
 # Binary files:
 *.dat binary
