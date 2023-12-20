@@ -38,7 +38,6 @@
 #include "layer004/rt_address.h"
 #include "layer004/rt_array.h"
 #include "layer004/rt_base64.h"
-#include "layer004/rt_check_rpr.h"
 #include "layer004/rt_command_line_args.h"
 #include "layer004/rt_encoding.h"
 #include "layer004/rt_file_path.h"
@@ -49,7 +48,9 @@
 #include "layer004/rt_small_file.h"
 #include "layer004/rt_static_heap.h"
 #include "layer004/rt_url.h"
+#include "layer004/rt_uuid.h"
 
+#include "layer005/rt_check_rpr.h"
 #include "layer005/rt_console.h"
 #include "layer005/rt_deduce_encoding.h"
 #include "layer005/rt_env_vars.h"

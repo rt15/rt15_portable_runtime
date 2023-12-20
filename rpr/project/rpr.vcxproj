@@ -45,7 +45,6 @@
     <ClCompile Include="..\src\layer004\rt_address.c" />
     <ClCompile Include="..\src\layer004\rt_array.c" />
     <ClCompile Include="..\src\layer004\rt_base64.c" />
-    <ClCompile Include="..\src\layer004\rt_check_rpr.c" />
     <ClCompile Include="..\src\layer004\rt_command_line_args.c" />
     <ClCompile Include="..\src\layer004\rt_encoding.c" />
     <ClCompile Include="..\src\layer004\rt_file_path.c" />
@@ -56,6 +55,8 @@
     <ClCompile Include="..\src\layer004\rt_small_file.c" />
     <ClCompile Include="..\src\layer004\rt_static_heap.c" />
     <ClCompile Include="..\src\layer004\rt_url.c" />
+    <ClCompile Include="..\src\layer004\rt_uuid.c" />
+    <ClCompile Include="..\src\layer005\rt_check_rpr.c" />
     <ClCompile Include="..\src\layer005\rt_console.c" />
     <ClCompile Include="..\src\layer005\rt_deduce_encoding.c" />
     <ClCompile Include="..\src\layer005\rt_env_vars.c" />
@@ -110,7 +111,6 @@
     <ClInclude Include="..\include\layer004\rt_address.h" />
     <ClInclude Include="..\include\layer004\rt_array.h" />
     <ClInclude Include="..\include\layer004\rt_base64.h" />
-    <ClInclude Include="..\include\layer004\rt_check_rpr.h" />
     <ClInclude Include="..\include\layer004\rt_command_line_args.h" />
     <ClInclude Include="..\include\layer004\rt_encoding.h" />
     <ClInclude Include="..\include\layer004\rt_file_path.h" />
@@ -121,6 +121,8 @@
     <ClInclude Include="..\include\layer004\rt_small_file.h" />
     <ClInclude Include="..\include\layer004\rt_static_heap.h" />
     <ClInclude Include="..\include\layer004\rt_url.h" />
+    <ClInclude Include="..\include\layer004\rt_uuid.h" />
+    <ClInclude Include="..\include\layer005\rt_check_rpr.h" />
     <ClInclude Include="..\include\layer005\rt_console.h" />
     <ClInclude Include="..\include\layer005\rt_deduce_encoding.h" />
     <ClInclude Include="..\include\layer005\rt_env_vars.h" />

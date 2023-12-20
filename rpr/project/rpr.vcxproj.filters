@@ -49,9 +49,6 @@
     <ClCompile Include="..\src\layer003\rt_thread.c">
       <Filter>src\layer003</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\layer004\rt_check_rpr.c">
-      <Filter>src\layer004</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\layer004\rt_file_path.c">
       <Filter>src\layer004</Filter>
     </ClCompile>
@@ -166,6 +163,12 @@
     <ClCompile Include="..\src\layer002\rt_buffered_output_stream.c">
       <Filter>src\layer002</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer004\rt_uuid.c">
+      <Filter>src\layer004</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer005\rt_check_rpr.c">
+      <Filter>src\layer005</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -233,9 +236,6 @@
     </ClInclude>
     <ClInclude Include="..\include\layer003\rt_thread.h">
       <Filter>include\layer003</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\layer004\rt_check_rpr.h">
-      <Filter>include\layer004</Filter>
     </ClInclude>
     <ClInclude Include="..\include\layer004\rt_file_path.h">
       <Filter>include\layer004</Filter>
@@ -359,6 +359,12 @@
     </ClInclude>
     <ClInclude Include="..\include\layer002\rt_buffered_output_stream.h">
       <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer004\rt_uuid.h">
+      <Filter>include\layer004</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer005\rt_check_rpr.h">
+      <Filter>include\layer005</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

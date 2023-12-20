@@ -1,9 +1,10 @@
-#include "layer004/rt_check_rpr.h"
+#include "layer005/rt_check_rpr.h"
 
 #include "layer001/rt_os_headers.h"
 #include "layer002/rt_chrono.h"
 #include "layer002/rt_critical_section.h"
 #include "layer003/rt_thread.h"
+#include "layer004/rt_uuid.h"
 
 static rt_s rt_check_flags()
 {
@@ -103,6 +104,9 @@ static rt_s rt_check_types()
 
 	if (RT_UNLIKELY(sizeof(rt_h) != sizeof(HANDLE))) goto error;
 
+	/* UUID. */
+	if (RT_UNLIKELY(sizeof(struct rt_uuid) != sizeof(UUID))) goto error;
+
 #ifdef RT_DEFINE_32
 	if (RT_UNLIKELY(sizeof(fd_set) != sizeof(rt_un32) + sizeof(rt_un) * FD_SETSIZE)) goto error;
 #else
@@ -117,6 +121,9 @@ static rt_s rt_check_types()
 	/* Under VC, in 32 bits, time_t is 64 bits unless _USE_32BIT_TIME_T is used. */
 	/* Under Linux, it is 32 bits if the glibc is 32 bits. */
 	if (RT_UNLIKELY(sizeof(rt_n) != sizeof(time_t))) goto error;
+
+	/* UUID. */
+	if (RT_UNLIKELY(sizeof(struct rt_uuid) != sizeof(uuid_t))) goto error;
 #endif
 
 	/* Socket address structures. */

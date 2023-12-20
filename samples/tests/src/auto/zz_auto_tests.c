@@ -40,6 +40,7 @@ rt_s zz_test_random();
 rt_s zz_test_small_file();
 rt_s zz_test_static_heap();
 rt_s zz_test_url();
+rt_s zz_test_uuid();
 
 /* Layer 005. */
 rt_s zz_test_deduce_encoding();
@@ -168,6 +169,8 @@ rt_s zz_auto_tests()
 	if (RT_UNLIKELY(!zz_test_static_heap())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_url", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_url())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_uuid", output_stream))) goto error;
+	if (RT_UNLIKELY(!zz_test_uuid())) goto error;
 
 	/* Layer 005. */
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_deduce_encoding", output_stream))) goto error;

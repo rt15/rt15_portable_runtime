@@ -65,6 +65,7 @@
     <ClCompile Include="..\src\auto\zz_test_thread.c" />
     <ClCompile Include="..\src\auto\zz_test_unicode_code_point.c" />
     <ClCompile Include="..\src\auto\zz_test_url.c" />
+    <ClCompile Include="..\src\auto\zz_test_uuid.c" />
     <ClCompile Include="..\src\auto\zz_test_virtual_memory.c" />
     <ClCompile Include="..\src\manual\zz_manual_tests.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_console.c" />
@@ -238,7 +239,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <AdditionalLibraryDirectories>..\..\..\rpr\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>rprd.lib;ws2_32.lib;shell32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>rprd.lib;ws2_32.lib;rpcrt4.lib;shell32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <StackReserveSize>1048576</StackReserveSize>
       <StackCommitSize>1048576</StackCommitSize>
     </Link>
@@ -265,7 +266,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <AdditionalLibraryDirectories>..\..\..\rpr\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>rpr.lib;ws2_32.lib;shell32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>rpr.lib;ws2_32.lib;rpcrt4.lib;shell32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <StackReserveSize>1048576</StackReserveSize>
       <StackCommitSize>1048576</StackCommitSize>
     </Link>

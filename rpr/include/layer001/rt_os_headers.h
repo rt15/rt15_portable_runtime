@@ -130,6 +130,9 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
+/* yum install libuuid libuuid-devel */
+#include <uuid/uuid.h>
+
 /* sudo apt-get install libssl-dev */
 /* sudo yum install openssl-devel */
 #include <openssl/rand.h>
