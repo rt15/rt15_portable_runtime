@@ -4,6 +4,7 @@ project(rpr)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m64")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -ansi -pedantic -Wextra")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-long-long")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -finput-charset=cp1252")
