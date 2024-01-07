@@ -5,11 +5,34 @@ struct zz_test_thread_parameter {
 	struct rt_thread_local_storage *thread_local_storage;
 };
 
+static rt_s zz_test_thread_check_last_error_message(const rt_char *expected)
+{
+	rt_char buffer[200];
+	rt_un buffer_size;
+	rt_s ret;
+
+	buffer_size = 0;
+	if (RT_UNLIKELY(!rt_last_error_message_append(buffer, 200, &buffer_size))) goto error;
+	if (RT_UNLIKELY(rt_char_get_size(buffer) != buffer_size)) goto error;
+	if (RT_UNLIKELY(!rt_char_equals(buffer, buffer_size, expected, rt_char_get_size(expected)))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 static rt_un32 RT_STDCALL zz_test_thread_callback(void *parameter)
 {
 	struct zz_test_thread_parameter *local_parameter = (struct zz_test_thread_parameter*)parameter;
 	void* data;
 	rt_un32 exit_code;
+
+	if (RT_UNLIKELY(!rt_last_error_message_set(_R("Second last error message."))))
+		goto error;
 
 	rt_sleep_sleep(500);
 	if (local_parameter->value != 12)
@@ -30,8 +53,14 @@ static rt_un32 RT_STDCALL zz_test_thread_callback(void *parameter)
 	if ((rt_un)data != 2)
 		goto error;
 
+	if (RT_UNLIKELY(!zz_test_thread_check_last_error_message(_R("Second last error message."))))
+		goto error;
+
 	exit_code = 42;
 free:
+	if (RT_UNLIKELY(!rt_last_error_message_cleanup_thread_buffer()))
+		exit_code = 1;
+
 	return exit_code;
 
 error:
@@ -51,6 +80,9 @@ rt_s zz_test_thread()
 	struct rt_thread thread;
 	rt_un32 exit_code;
 	rt_s ret;
+
+	if (RT_UNLIKELY(!rt_last_error_message_set(_R("Last error message."))))
+		goto error;
 
 	if (RT_UNLIKELY(!rt_chrono_create(&chrono)))
 		goto error;
@@ -94,6 +126,9 @@ rt_s zz_test_thread()
 		goto error;
 
 	if ((rt_un)data != 1)
+		goto error;
+
+	if (RT_UNLIKELY(!zz_test_thread_check_last_error_message(_R("Last error message."))))
 		goto error;
 
 	ret = RT_OK;

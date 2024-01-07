@@ -27,6 +27,7 @@
     <ClCompile Include="..\src\layer002\rt_critical_section.c" />
     <ClCompile Include="..\src\layer002\rt_error.c" />
     <ClCompile Include="..\src\layer002\rt_event.c" />
+    <ClCompile Include="..\src\layer002\rt_get_process_id.c" />
     <ClCompile Include="..\src\layer002\rt_io_device.c" />
     <ClCompile Include="..\src\layer002\rt_memory_input_stream.c" />
     <ClCompile Include="..\src\layer002\rt_quick_sort.c" />
@@ -72,6 +73,7 @@
     <ClCompile Include="..\src\layer006\rt_error_message.c" />
     <ClCompile Include="..\src\layer006\rt_properties.c" />
     <ClCompile Include="..\src\layer006\rt_socket.c" />
+    <ClCompile Include="..\src\layer007\rt_last_error_message.c" />
     <ClCompile Include="..\src\layer007\rt_process.c" />
     <ClCompile Include="..\src\layer007\rt_select.c" />
     <ClCompile Include="..\src\rpr_internal.c" />
@@ -94,6 +96,7 @@
     <ClInclude Include="..\include\layer002\rt_critical_section.h" />
     <ClInclude Include="..\include\layer002\rt_error.h" />
     <ClInclude Include="..\include\layer002\rt_event.h" />
+    <ClInclude Include="..\include\layer002\rt_get_process_id.h" />
     <ClInclude Include="..\include\layer002\rt_io_device.h" />
     <ClInclude Include="..\include\layer002\rt_memory_input_stream.h" />
     <ClInclude Include="..\include\layer002\rt_quick_sort.h" />
@@ -139,6 +142,7 @@
     <ClInclude Include="..\include\layer006\rt_error_message.h" />
     <ClInclude Include="..\include\layer006\rt_properties.h" />
     <ClInclude Include="..\include\layer006\rt_socket.h" />
+    <ClInclude Include="..\include\layer007\rt_last_error_message.h" />
     <ClInclude Include="..\include\layer007\rt_process.h" />
     <ClInclude Include="..\include\layer007\rt_select.h" />
     <ClInclude Include="..\include\rpr.h" />

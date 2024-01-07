@@ -3,6 +3,9 @@
 /* Layer 000. */
 rt_s zz_manual_test_types();
 
+/* Layer 002. */
+rt_s zz_manual_test_get_process_id();
+
 /* Layer 003. */
 rt_s zz_manual_test_env_var();
 
@@ -28,6 +31,9 @@ rt_s zz_manual_tests()
 
 	/* Layer 000. */
 	if (RT_UNLIKELY(!zz_manual_test_types())) goto error;
+
+	/* Layer 002. */
+	if (RT_UNLIKELY(!zz_manual_test_get_process_id())) goto error;
 
 	/* Layer 003. */
 	if (RT_UNLIKELY(!zz_manual_test_env_var())) goto error;

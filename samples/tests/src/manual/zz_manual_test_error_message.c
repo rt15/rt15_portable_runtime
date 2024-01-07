@@ -39,6 +39,9 @@ rt_s zz_manual_test_error_message()
 	if (RT_UNLIKELY(!rt_error_message_write_last(RT_NULL))) goto error;
 	if (RT_UNLIKELY(!rt_error_message_write_last(_R("Normal error: ")))) goto error;
 
+	if (RT_UNLIKELY(!rt_last_error_message_set_with_last_error())) goto error;
+	if (RT_UNLIKELY(!rt_last_error_message_write(_R("Normal error too: ")))) goto error;
+
 	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_SUCCESS"),             RT_ERROR_SUCCESS)))             goto error;
 	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_INSUFFICIENT_BUFFER"), RT_ERROR_INSUFFICIENT_BUFFER))) goto error;
 	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_BAD_ARGUMENTS"),       RT_ERROR_BAD_ARGUMENTS)))       goto error;

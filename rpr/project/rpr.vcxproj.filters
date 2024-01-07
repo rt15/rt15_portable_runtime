@@ -172,6 +172,12 @@
     <ClCompile Include="..\src\layer002\rt_thread_local_storage.c">
       <Filter>src\layer002</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer002\rt_get_process_id.c">
+      <Filter>src\layer002</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer007\rt_last_error_message.c">
+      <Filter>src\layer007</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -371,6 +377,12 @@
     </ClInclude>
     <ClInclude Include="..\include\layer002\rt_thread_local_storage.h">
       <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer002\rt_get_process_id.h">
+      <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer007\rt_last_error_message.h">
+      <Filter>include\layer007</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

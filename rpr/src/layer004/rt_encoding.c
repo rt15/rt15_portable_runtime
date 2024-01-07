@@ -12,7 +12,7 @@
  * <p>
  * It would be pretty hard to implement a input/output encoding streams.<br>
  * For example an issue is that multiple UTF-8 characters (actually code points) can be equivalent to one character in the other encoding.<br>
- * For example, "é" can be encoded as 0xC3, 0xA9, one code point and two bytes.<br>
+ * For example, "Ã©" can be encoded as 0xC3, 0xA9, one code point and two bytes.<br>
  * But it can also be encoded as e + acute accent, 0x65, 0xCC, 0x81, two code points, the first of one byte, the second of two bytes.<br>
  * This can cause issue while encoding from UTF-16 or UTF-8 to ISO-8859-1 because the 'e' can be sent to the output stream alone and the accent later on.<br>
  * But it may not that much of an issue because it is already how WideCharToMultiByte and MultiByteToWideChar work today.<br>
@@ -459,8 +459,10 @@ rt_s rt_encoding_get_system(enum rt_encoding *encoding)
 		}
 #else
 		/* Retrieve the encoding name as a string. */
-		if (RT_UNLIKELY(!rt_encoding_get_linux_system(system_encoding_name, 64, &system_encoding_name_size)))
+		if (RT_UNLIKELY(!rt_encoding_get_linux_system(system_encoding_name, 64, &system_encoding_name_size))) {
+			rt_fast_initialization_notify_done(&rt_encoding_system_initialization);
 			goto error;
+		}
 
 		for (i = 1; i < RT_ENCODING_ENCODINGS_COUNT; i++) {
 			current_encoding = rt_encoding_code_names[i];

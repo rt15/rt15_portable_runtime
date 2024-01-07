@@ -18,6 +18,7 @@
 #include "layer002/rt_critical_section.h"
 #include "layer002/rt_error.h"
 #include "layer002/rt_event.h"
+#include "layer002/rt_get_process_id.h"
 #include "layer002/rt_io_device.h"
 #include "layer002/rt_memory_input_stream.h"
 #include "layer002/rt_quick_sort.h"
@@ -68,6 +69,7 @@
 #include "layer006/rt_properties.h"
 #include "layer006/rt_socket.h"
 
+#include "layer007/rt_last_error_message.h"
 #include "layer007/rt_process.h"
 #include "layer007/rt_select.h"
 

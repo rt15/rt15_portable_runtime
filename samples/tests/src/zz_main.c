@@ -114,6 +114,13 @@ static rt_s zz_main(rt_un argc, const rt_char *argv[])
 
 	ret = RT_OK;
 free:
+
+	if (RT_UNLIKELY(!rt_last_error_message_cleanup_thread_buffer()))
+		ret = RT_FAILED;
+
+	if (RT_UNLIKELY(!rt_last_error_message_cleanup()))
+		ret = RT_FAILED;
+
 	return ret;
 error:
 	ret = RT_FAILED;

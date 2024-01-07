@@ -202,6 +202,9 @@
     <ClCompile Include="..\src\auto\zz_test_uuid.c">
       <Filter>src\auto</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\manual\zz_manual_test_get_process_id.c">
+      <Filter>src\manual</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

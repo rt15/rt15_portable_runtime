@@ -78,7 +78,6 @@ rt_s rt_error_message_write_last(const rt_char *prefix)
 	rt_un buffer_size;
 	rt_s ret;
 
-
 	if (prefix) {
 		buffer_size = rt_char_get_size(prefix);
 		if (RT_UNLIKELY(!rt_char_copy(prefix, buffer_size, buffer, RT_CHAR_BIG_STRING_SIZE)))

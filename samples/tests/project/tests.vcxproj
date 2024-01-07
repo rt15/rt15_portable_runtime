@@ -73,6 +73,7 @@
     <ClCompile Include="..\src\manual\zz_manual_test_env_var.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_error_message.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_file_path.c" />
+    <ClCompile Include="..\src\manual\zz_manual_test_get_process_id.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_os_version.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_process.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_temp_file.c" />

@@ -13,13 +13,8 @@
  */
 
 struct rt_thread_local_storage {
-#ifdef RT_DEFINE_WINDOWS
-	/* TlsAlloc returns a DWORD under Windows. */
-	rt_un32 tls_index;
-#else
-	/* Under Linux, pthread_key_t is an unsigned int. */
-	rt_un32 key;
-#endif
+	/* TlsAlloc returns a DWORD under Windows, and pthread_key_t is an unsigned int under Linux. */
+	rt_un32 index;
 };
 
 rt_s rt_thread_local_storage_create(struct rt_thread_local_storage *thread_local_storage);
