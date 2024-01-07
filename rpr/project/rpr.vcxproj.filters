@@ -169,6 +169,9 @@
     <ClCompile Include="..\src\layer005\rt_check_rpr.c">
       <Filter>src\layer005</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer002\rt_thread_local_storage.c">
+      <Filter>src\layer002</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -365,6 +368,9 @@
     </ClInclude>
     <ClInclude Include="..\include\layer005\rt_check_rpr.h">
       <Filter>include\layer005</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer002\rt_thread_local_storage.h">
+      <Filter>include\layer002</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

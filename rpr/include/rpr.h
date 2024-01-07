@@ -23,6 +23,7 @@
 #include "layer002/rt_quick_sort.h"
 #include "layer002/rt_sleep.h"
 #include "layer002/rt_slurp.h"
+#include "layer002/rt_thread_local_storage.h"
 #include "layer002/rt_virtual_memory.h"
 
 #include "layer003/rt_char.h"

@@ -124,6 +124,9 @@ static rt_s rt_check_types()
 
 	/* UUID. */
 	if (RT_UNLIKELY(sizeof(struct rt_uuid) != sizeof(uuid_t))) goto error;
+
+	/* Linux thread local storage key. */
+	if (RT_UNLIKELY(sizeof(rt_un32) != sizeof(pthread_key_t))) goto error;
 #endif
 
 	/* Socket address structures. */
