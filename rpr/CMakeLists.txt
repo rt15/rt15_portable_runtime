@@ -4,6 +4,7 @@ project(rpr)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m64")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -ansi -pedantic -Wextra")
@@ -33,13 +34,14 @@ file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
 add_library(${PROJECT_NAME}${BINARY_SUFFIX} SHARED ${SOURCES})
 add_library(static${PROJECT_NAME}${BINARY_SUFFIX} STATIC ${SOURCES})
 
-target_link_libraries(${PROJECT_NAME}${BINARY_SUFFIX} ws2_32)
-target_link_libraries(${PROJECT_NAME}${BINARY_SUFFIX} rpcrt4)
 
 # Remove the lib prefix from the dll name.
 if(WIN32)
         set_property(TARGET ${PROJECT_NAME}${BINARY_SUFFIX} PROPERTY PREFIX "")
         target_link_options(${PROJECT_NAME}${BINARY_SUFFIX} PUBLIC "-nostartfiles" "-nodefaultlibs" "-nostdlib" "-ffreestanding" "-Xlinker" "--stack=0x0fffff,0x100000")
+
+        target_link_libraries(${PROJECT_NAME}${BINARY_SUFFIX} ws2_32)
+        target_link_libraries(${PROJECT_NAME}${BINARY_SUFFIX} rpcrt4)
 endif()
 
 target_compile_definitions(${PROJECT_NAME}${BINARY_SUFFIX} PUBLIC RT_SHARED_LIBRARY)

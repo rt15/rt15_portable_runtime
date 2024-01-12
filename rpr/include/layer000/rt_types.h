@@ -74,7 +74,11 @@
 #define RT_STDCALL
 #endif
 
+#ifdef RT_DEFINE_WINDOWS
 #define RT_EXPORT __declspec(dllexport)
+#else
+#define RT_EXPORT __attribute__((visibility("default")))
+#endif
 
 #ifdef RT_SHARED_LIBRARY
 #define RT_API RT_EXPORT
