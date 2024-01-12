@@ -42,6 +42,10 @@ if(WIN32)
 
         target_link_libraries(${PROJECT_NAME}${BINARY_SUFFIX} ws2_32)
         target_link_libraries(${PROJECT_NAME}${BINARY_SUFFIX} rpcrt4)
+else()
+        target_link_libraries(${PROJECT_NAME}${BINARY_SUFFIX} uuid)
+        target_link_libraries(${PROJECT_NAME}${BINARY_SUFFIX} pthread)
+        target_link_libraries(${PROJECT_NAME}${BINARY_SUFFIX} crypto)
 endif()
 
 target_compile_definitions(${PROJECT_NAME}${BINARY_SUFFIX} PUBLIC RT_SHARED_LIBRARY)
