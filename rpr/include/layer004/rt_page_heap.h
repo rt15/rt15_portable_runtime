@@ -25,17 +25,17 @@ struct rt_page_heap {
 	struct rt_heap heap;
 };
 
-rt_s rt_page_heap_create(struct rt_page_heap *page_heap);
+RT_API rt_s rt_page_heap_create(struct rt_page_heap *page_heap);
 
-void *rt_page_heap_alloc(void **area, rt_un size);
+RT_API void *rt_page_heap_alloc(void **area, rt_un size);
 
 /**
  * Do nothing if the old area has enough pages to store given <tt>size</tt>.
  *
  * @return Allocated area of RT_NULL in case of error.
  */
-void *rt_page_heap_realloc(void **area, rt_un size);
+RT_API void *rt_page_heap_realloc(void **area, rt_un size);
 
-rt_s rt_page_heap_free(void **area);
+RT_API rt_s rt_page_heap_free(void **area);
 
 #endif /* RT_PAGE_HEAP_H */

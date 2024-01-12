@@ -54,16 +54,16 @@ struct rt_env_vars {
  * Do not forget to call <tt>rt_env_vars_free</tt>.
  * </p>
  */
-rt_s rt_env_vars_create(struct rt_env_vars *env_vars);
+RT_API rt_s rt_env_vars_create(struct rt_env_vars *env_vars);
 
-rt_s rt_env_vars_get_block(struct rt_env_vars *env_vars, rt_char **env_vars_block);
+RT_API rt_s rt_env_vars_get_block(struct rt_env_vars *env_vars, rt_char **env_vars_block);
 
-rt_s rt_env_vars_get_array(struct rt_env_vars *env_vars, rt_char ***env_vars_array);
+RT_API rt_s rt_env_vars_get_array(struct rt_env_vars *env_vars, rt_char ***env_vars_array);
 
 /**
  * Find whether a variable exists in <tt>env_vars</tt>.
  */
-rt_s rt_env_vars_contains_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name, rt_b *contains);
+RT_API rt_s rt_env_vars_contains_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name, rt_b *contains);
 
 /**
  * Return the value of <tt>env_var_name</tt>.
@@ -75,7 +75,7 @@ rt_s rt_env_vars_contains_env_var(struct rt_env_vars *env_vars, const rt_char *e
  *
  * @param buffer_size Out parameter.
  */
-rt_s rt_env_vars_get_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_env_vars_get_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  * Be sure that the variable does not exist yet.<br>
@@ -85,20 +85,20 @@ rt_s rt_env_vars_get_env_var(struct rt_env_vars *env_vars, const rt_char *env_va
  * The <tt>rt_env_vars</tt> structure should be considered corrupted in case of failure.
  * </p>
  */
-rt_s rt_env_vars_add_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name, const rt_char *value);
+RT_API rt_s rt_env_vars_add_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name, const rt_char *value);
 
 /**
  * Remove an environment variable of given <tt>rt_env_vars</tt> structure if it exists.<br>
  * Can be used to ensure that an environment variable does not exist before adding it.
  */
-rt_s rt_env_vars_remove_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name);
+RT_API rt_s rt_env_vars_remove_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name);
 
 /**
  * If the variable already exists, replace the value.<br>
  * If the variable does not exist, add the variable.
  */
-rt_s rt_env_vars_merge_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name, const rt_char *value);
+RT_API rt_s rt_env_vars_merge_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name, const rt_char *value);
 
-rt_s rt_env_vars_free(struct rt_env_vars *env_vars);
+RT_API rt_s rt_env_vars_free(struct rt_env_vars *env_vars);
 
 #endif /* RT_ENV_VARS_H */

@@ -12,6 +12,6 @@
 
 typedef rt_s (*rt_read_lines_callback_t)(const rt_char8 *line, rt_un line_size, enum rt_eol eol, void *context);
 
-rt_s rt_read_lines(struct rt_input_stream *input_stream, rt_char8 *buffer, rt_un buffer_capacity, rt_read_lines_callback_t callback, void *context);
+RT_API rt_s rt_read_lines(struct rt_input_stream *input_stream, rt_char8 *buffer, rt_un buffer_capacity, rt_read_lines_callback_t callback, void *context);
 
 #endif /* RT_READ_LINES_H */

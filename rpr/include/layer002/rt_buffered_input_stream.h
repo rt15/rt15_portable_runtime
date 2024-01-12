@@ -24,8 +24,8 @@ struct rt_buffered_input_stream {
 	rt_un cache_size;
 };
 
-rt_s rt_buffered_input_stream_create(struct rt_buffered_input_stream *buffered_input_stream, struct rt_input_stream *real_input_stream, rt_char8 *cache, rt_un cache_capacity);
+RT_API rt_s rt_buffered_input_stream_create(struct rt_buffered_input_stream *buffered_input_stream, struct rt_input_stream *real_input_stream, rt_char8 *cache, rt_un cache_capacity);
 
-rt_s rt_buffered_input_stream_read(struct rt_input_stream *input_stream, rt_char8 *buffer, rt_un bytes_to_read, rt_un *bytes_read);
+RT_API rt_s rt_buffered_input_stream_read(struct rt_input_stream *input_stream, rt_char8 *buffer, rt_un bytes_to_read, rt_un *bytes_read);
 
 #endif /* RT_BUFFERED_INPUT_STREAM_H */

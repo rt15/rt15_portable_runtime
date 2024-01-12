@@ -34,7 +34,7 @@ struct rt_properties_header {
  *
  * @param initial_capacity Should be at least twice the initial number of entries and must be a power of two.
  */
-rt_s rt_properties_create(struct rt_hash_table_entry **properties, const rt_char *file_path, enum rt_encoding encoding, rt_un initial_capacity, struct rt_heap *heap);
+RT_API rt_s rt_properties_create(struct rt_hash_table_entry **properties, const rt_char *file_path, enum rt_encoding encoding, rt_un initial_capacity, struct rt_heap *heap);
 
 /**
  * Create an hash table parsing given <tt>str</tt>.
@@ -46,7 +46,7 @@ rt_s rt_properties_create(struct rt_hash_table_entry **properties, const rt_char
  * @param str Will be modified by this function.
  * @param initial_capacity Should be at least twice the initial number of entries and must be a power of two.
  */
-rt_s rt_properties_create_from_str(struct rt_hash_table_entry **properties, rt_char *str, rt_un initial_capacity, struct rt_heap *heap);
+RT_API rt_s rt_properties_create_from_str(struct rt_hash_table_entry **properties, rt_char *str, rt_un initial_capacity, struct rt_heap *heap);
 
 /**
  * Free the hash table and, if not RT_NULL, the buffer.
@@ -56,6 +56,6 @@ rt_s rt_properties_create_from_str(struct rt_hash_table_entry **properties, rt_c
  * Does nothing if <tt>*properties</tt> is RT_NULL.
  * </p>
  */
-rt_s rt_properties_free(struct rt_hash_table_entry **properties);
+RT_API rt_s rt_properties_free(struct rt_hash_table_entry **properties);
 
 #endif /* RT_PROPERTIES_H */

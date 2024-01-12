@@ -31,13 +31,13 @@ struct rt_fast_initialization {
  */
 #define RT_FAST_INITIALIZATION_STATIC_INIT {0, 0}
 
-rt_b rt_fast_initialization_is_required(struct rt_fast_initialization *fast_initialization);
-void rt_fast_initialization_notify_done(struct rt_fast_initialization *fast_initialization);
+RT_API rt_b rt_fast_initialization_is_required(struct rt_fast_initialization *fast_initialization);
+RT_API void rt_fast_initialization_notify_done(struct rt_fast_initialization *fast_initialization);
 
 /**
  * After using <tt>rt_fast_initialization_is_required</tt>/<tt>rt_fast_initialization_notify_done</tt>, we might have some clean-up to execute later on.<br>
  * This function can be used to perform this clean-up if it returns RT_TRUE.
  */
-rt_b rt_fast_initialization_is_done(struct rt_fast_initialization *fast_initialization);
+RT_API rt_b rt_fast_initialization_is_done(struct rt_fast_initialization *fast_initialization);
 
 #endif /* RT_FAST_INITIALIZATION_H */

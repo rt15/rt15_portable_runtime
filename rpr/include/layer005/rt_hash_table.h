@@ -50,7 +50,7 @@ struct rt_hash_table_entry {
  * @param initial_capacity Should be at least twice the initial number of entries and must be a power of two.
  * @param header_size Can be zero to use the default header size.
  */
-rt_s rt_hash_table_create(struct rt_hash_table_entry **hash_table, rt_hash_callback_t hash_callback, rt_comparison_with_size_callback_t comparison_callback, void *context, rt_un initial_capacity, rt_un header_size, struct rt_heap *heap);
+RT_API rt_s rt_hash_table_create(struct rt_hash_table_entry **hash_table, rt_hash_callback_t hash_callback, rt_comparison_with_size_callback_t comparison_callback, void *context, rt_un initial_capacity, rt_un header_size, struct rt_heap *heap);
 
 /**
  * Add or set the entry of given <tt>key</tt> with associated given <tt>value</tt>.
@@ -61,14 +61,14 @@ rt_s rt_hash_table_create(struct rt_hash_table_entry **hash_table, rt_hash_callb
  *
  * @param existing_value Out parameter. If not RT_NULL, receives the existing value if the key was already used.
  */
-rt_s rt_hash_table_set(struct rt_hash_table_entry **hash_table, const void *key, rt_un key_size, const void *value, void **existing_value);
+RT_API rt_s rt_hash_table_set(struct rt_hash_table_entry **hash_table, const void *key, rt_un key_size, const void *value, void **existing_value);
 
 /**
  * Retrieve the value for given <tt>key</tt>.
  *
  * @param value Will receive RT_NULL if the entry is not found.
  */
-rt_s rt_hash_table_get(struct rt_hash_table_entry *hash_table, const void *key, rt_un key_size, void **value);
+RT_API rt_s rt_hash_table_get(struct rt_hash_table_entry *hash_table, const void *key, rt_un key_size, void **value);
 
 /**
  * Delete the entry with given <tt>key</tt>.
@@ -79,7 +79,7 @@ rt_s rt_hash_table_get(struct rt_hash_table_entry *hash_table, const void *key, 
  *
  * @param existing_value Out parameter. If not RT_NULL, receives the existing value if the key was used.
  */
-rt_s rt_hash_table_delete(struct rt_hash_table_entry **hash_table, const void *key, rt_un key_size, void **existing_value);
+RT_API rt_s rt_hash_table_delete(struct rt_hash_table_entry **hash_table, const void *key, rt_un key_size, void **existing_value);
 
 /**
  * Same as <tt>rt_array_free</tt>.
@@ -89,6 +89,6 @@ rt_s rt_hash_table_delete(struct rt_hash_table_entry **hash_table, const void *k
  * Does nothing if <tt>*hash_table</tt> is RT_NULL.
  * </p>
  */
-rt_s rt_hash_table_free(struct rt_hash_table_entry **hash_table);
+RT_API rt_s rt_hash_table_free(struct rt_hash_table_entry **hash_table);
 
 #endif /* RT_HASH_TABLE_H */

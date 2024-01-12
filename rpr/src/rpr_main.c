@@ -31,24 +31,24 @@
 
 #ifdef RT_DEFINE_WINDOWS
 
-void rpr_main_exit_process(rt_un32 result)
+RT_API void rpr_main_exit_process(rt_un32 result)
 {
 	ExitProcess(result);
 }
 
-void rpr_main_local_free(rt_char **argv)
+RT_API void rpr_main_local_free(rt_char **argv)
 {
 	LocalFree(argv);
 }
 
-rt_char **rpr_main_command_line_to_argv_w(rt_n32 *argc)
+RT_API rt_char **rpr_main_command_line_to_argv_w(rt_n32 *argc)
 {
 	return CommandLineToArgvW(GetCommandLineW(), argc);
 }
 
 #else
 
-void rpr_main_set_locale()
+RT_API void rpr_main_set_locale()
 {
 	/* Ensure that functions like nl_langinfo return system info and not default "C" locale. */
 	setlocale(LC_ALL, "");

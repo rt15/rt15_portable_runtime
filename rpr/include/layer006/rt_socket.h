@@ -225,7 +225,7 @@ enum rt_socket_shutdown_flag {
  *
  * @return RT_FALSE and set last error in case of issue.
  */
-rt_s rt_socket_initialize();
+RT_API rt_s rt_socket_initialize();
 
 /**
  * Create a socket.
@@ -247,7 +247,7 @@ rt_s rt_socket_initialize();
  * @param protocol Often zero.
  * @param inheritable Whether the socket could be used in a child process. Beware of handles/file descriptors leaks.
  */
-rt_s rt_socket_create(struct rt_socket *socket, enum rt_address_family address_family, enum rt_socket_type type, enum rt_socket_protocol protocol, rt_b blocking, rt_b inheritable);
+RT_API rt_s rt_socket_create(struct rt_socket *socket, enum rt_address_family address_family, enum rt_socket_type type, enum rt_socket_protocol protocol, rt_b blocking, rt_b inheritable);
 
 /**
  * Set a socket boolean option.
@@ -256,8 +256,8 @@ rt_s rt_socket_create(struct rt_socket *socket, enum rt_address_family address_f
  * @param option The option to set like <tt>RT_SOCKET_OPTION_REUSEADDR</tt>.
  * @param value The value to set.
  */
-rt_s rt_socket_set_boolean_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_option option, rt_b value);
-rt_s rt_socket_set_ipv6_boolean_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_ipv6_option ipv6_option, rt_b value);
+RT_API rt_s rt_socket_set_boolean_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_option option, rt_b value);
+RT_API rt_s rt_socket_set_ipv6_boolean_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_ipv6_option ipv6_option, rt_b value);
 
 /**
  * Set a socket option.
@@ -271,11 +271,11 @@ rt_s rt_socket_set_ipv6_boolean_option(struct rt_socket *socket, enum rt_socket_
  * @param value Pointer to the new option value.
  * @param value_size Size of the value pointed by <tt>value</tt>.
  */
-rt_s rt_socket_set_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_option option, void *value, rt_un value_size);
-rt_s rt_socket_set_ipv6_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_ipv6_option ipv6_option, void *value, rt_un value_size);
+RT_API rt_s rt_socket_set_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_option option, void *value, rt_un value_size);
+RT_API rt_s rt_socket_set_ipv6_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_ipv6_option ipv6_option, void *value, rt_un value_size);
 
-rt_s rt_socket_get_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_option option, void *value, rt_un *value_size);
-rt_s rt_socket_get_ipv6_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_ipv6_option ipv6_option, void *value, rt_un *value_size);
+RT_API rt_s rt_socket_get_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_option option, void *value, rt_un *value_size);
+RT_API rt_s rt_socket_get_ipv6_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_ipv6_option ipv6_option, void *value, rt_un *value_size);
 
 /**
  * Make this client socket connect to <tt>host_name</tt> and <tt>port</tt>.
@@ -285,7 +285,7 @@ rt_s rt_socket_get_ipv6_option(struct rt_socket *socket, enum rt_socket_protocol
  * The <tt>rt_socket_address</tt> is IPv4 or IPv6 depending on the host resolution function.
  * </p>
  */
-rt_s rt_socket_connect(struct rt_socket *socket, const rt_char *host_name, rt_un port);
+RT_API rt_s rt_socket_connect(struct rt_socket *socket, const rt_char *host_name, rt_un port);
 
 /**
  * Make this client socket connect to <tt>socket_address</tt>.
@@ -296,21 +296,21 @@ rt_s rt_socket_connect(struct rt_socket *socket, const rt_char *host_name, rt_un
  * If the connection is in progress, you should wait for the socket to be writable to ensure that the connection is successful.
  * </p>
  */
-rt_s rt_socket_connect_with_socket_address(struct rt_socket *socket, struct rt_socket_address *socket_address);
+RT_API rt_s rt_socket_connect_with_socket_address(struct rt_socket *socket, struct rt_socket_address *socket_address);
 
 /**
  * Bind to any address and given <tt>port</tt>.
  */
-rt_s rt_socket_bind(struct rt_socket *socket, rt_un port);
+RT_API rt_s rt_socket_bind(struct rt_socket *socket, rt_un port);
 
 /**
  * Bind to given <tt>socket_address</tt>.
  */
-rt_s rt_socket_bind_with_socket_address(struct rt_socket *socket, struct rt_socket_address *socket_address);
+RT_API rt_s rt_socket_bind_with_socket_address(struct rt_socket *socket, struct rt_socket_address *socket_address);
 
-rt_s rt_socket_listen(struct rt_socket *socket);
+RT_API rt_s rt_socket_listen(struct rt_socket *socket);
 
-rt_s rt_socket_listen_with_backlog(struct rt_socket *socket, rt_un backlog);
+RT_API rt_s rt_socket_listen_with_backlog(struct rt_socket *socket, rt_un backlog);
 
 /**
  *
@@ -326,26 +326,26 @@ rt_s rt_socket_listen_with_backlog(struct rt_socket *socket, rt_un backlog);
  * @param socket_address If not null, will be returned with the address of the connecting entity.
  * @param socket_address_size In/out parameter. Must be null if <tt>socket_address</tt> is null. Set it with the size of <tt>socket_address</tt>. Returned with the size of the address.
  */
-rt_s rt_socket_accept_connection(struct rt_socket *socket, rt_b blocking, struct rt_socket *accepted_socket, struct rt_socket_address *socket_address, rt_n32 *socket_address_size);
+RT_API rt_s rt_socket_accept_connection(struct rt_socket *socket, rt_b blocking, struct rt_socket *accepted_socket, struct rt_socket_address *socket_address, rt_n32 *socket_address_size);
 
 /**
  *
  * @param flags Combination of RT_SOCKET_MESSAGE_FLAG_XXXX flags.
  */
-rt_s rt_socket_send(struct rt_socket *socket, void *data, rt_un data_size, enum rt_socket_message_flag flags, rt_un *bytes_sent);
+RT_API rt_s rt_socket_send(struct rt_socket *socket, void *data, rt_un data_size, enum rt_socket_message_flag flags, rt_un *bytes_sent);
 
 /**
  *
  * @param flags Combination of RT_SOCKET_MESSAGE_FLAG_XXXX flags. RT_SOCKET_MESSAGE_FLAG_WAIT_ALL is a classical one.
  */
-rt_s rt_socket_receive(struct rt_socket *socket, void *buffer, rt_un buffer_capacity, enum rt_socket_message_flag flags, rt_un *bytes_received);
+RT_API rt_s rt_socket_receive(struct rt_socket *socket, void *buffer, rt_un buffer_capacity, enum rt_socket_message_flag flags, rt_un *bytes_received);
 
 /**
  * <tt>rt_socket_receive</tt> can receive incomplete response and RT_SOCKET_MESSAGE_FLAG_WAIT_ALL can be blocking if the remote host does not close the connection.<br>
  * This function is a workaround for this.<br>
  * It ensures that either the buffer is full or either the connection is closed.
  */
-rt_s rt_socket_receive_all(struct rt_socket *socket, void *buffer, rt_un buffer_capacity, rt_un *bytes_received);
+RT_API rt_s rt_socket_receive_all(struct rt_socket *socket, void *buffer, rt_un buffer_capacity, rt_un *bytes_received);
 
 /**
  *
@@ -357,7 +357,7 @@ rt_s rt_socket_receive_all(struct rt_socket *socket, void *buffer, rt_un buffer_
  *
  * @param flag One of RT_SOCKET_SHUTDOWN_FLAG_XXXX, mostly RT_SOCKET_SHUTDOWN_FLAG_BOTH.
  */
-rt_s rt_socket_shutdown(struct rt_socket *socket, enum rt_socket_shutdown_flag flag);
+RT_API rt_s rt_socket_shutdown(struct rt_socket *socket, enum rt_socket_shutdown_flag flag);
 
 /**
  * Close the socket.
@@ -384,12 +384,12 @@ rt_s rt_socket_shutdown(struct rt_socket *socket, enum rt_socket_shutdown_flag f
  * It sounds better to keep it deactivated and to rely on a protocol to make sure that all the data is sent/received.
  * </p>
  */
-rt_s rt_socket_free(struct rt_socket *socket);
+RT_API rt_s rt_socket_free(struct rt_socket *socket);
 
 /**
  * Must be called after a successful call to <tt>rt_socket_initialize</tt> and after all socket functions calls.
  * Call WSACleanup under Windows and does nothing under unix.
  */
-rt_s rt_socket_cleanup();
+RT_API rt_s rt_socket_cleanup();
 
 #endif /* RT_SOCKET_H */

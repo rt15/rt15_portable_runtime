@@ -8,6 +8,6 @@
  * Allow to perform some internal checks on rpr.
  */
 
-rt_s rt_check_rpr();
+RT_API rt_s rt_check_rpr();
 
 #endif /* RT_CHECK_RPR_H */

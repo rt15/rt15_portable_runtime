@@ -19,8 +19,8 @@
  * </p>
  */
 
-rt_s rt_base64_encode(const rt_char8 *data, rt_un data_size, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_base64_encode(const rt_char8 *data, rt_un data_size, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
-rt_s rt_base64_decode(const rt_char8 *base64, rt_un base64_size, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_base64_decode(const rt_char8 *base64, rt_un base64_size, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 #endif /* RT_BASE_64_H */

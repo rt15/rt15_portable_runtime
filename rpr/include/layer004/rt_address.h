@@ -62,29 +62,29 @@ struct rt_address_ipv6 {
  * Create a 127.0.0.1 IPv4 address.<br>
  * Can be use to connect to localhost.
  */
-void rt_address_create_ipv4_loopback(struct rt_address_ipv4 *address);
+RT_API void rt_address_create_ipv4_loopback(struct rt_address_ipv4 *address);
 
 /**
  * Create an IPv4 any address.<br>
  * Can be used while binding a socket.
  */
-void rt_address_create_ipv4_any(struct rt_address_ipv4 *address);
+RT_API void rt_address_create_ipv4_any(struct rt_address_ipv4 *address);
 
-rt_s rt_address_create_ipv4(struct rt_address_ipv4 *address, const rt_char *str);
+RT_API rt_s rt_address_create_ipv4(struct rt_address_ipv4 *address, const rt_char *str);
 
-rt_s rt_address_create_ipv6(struct rt_address_ipv6 *address, const rt_char *str);
+RT_API rt_s rt_address_create_ipv6(struct rt_address_ipv6 *address, const rt_char *str);
 
 /**
  * Create a 127.0.0.1 IPv6 address.<br>
  * Can be use to connect to localhost.
  */
-void rt_address_create_ipv6_loopback(struct rt_address_ipv6 *address);
+RT_API void rt_address_create_ipv6_loopback(struct rt_address_ipv6 *address);
 
 /**
  * Create an IPv6 any address.<br>
  * Can be used while binding a socket.
  */
-void rt_address_create_ipv6_any(struct rt_address_ipv6 *address);
+RT_API void rt_address_create_ipv6_any(struct rt_address_ipv6 *address);
 
 /**
  * Retrieve either the IPv4 or IPv6 address of <tt>host_name</tt>.<br>
@@ -101,14 +101,14 @@ void rt_address_create_ipv6_any(struct rt_address_ipv6 *address);
  *
  * @param address_family Mandatory in/out parameter. If zero, the function can return either an IPv4 or IPv6 address.
  */
-rt_s rt_address_create_from_host_name(const rt_char *host_name, struct rt_address_ipv4 *ipv4_address, struct rt_address_ipv6 *ipv6_address, enum rt_address_family *address_family);
+RT_API rt_s rt_address_create_from_host_name(const rt_char *host_name, struct rt_address_ipv4 *ipv4_address, struct rt_address_ipv6 *ipv6_address, enum rt_address_family *address_family);
 
 /**
  * Append the IPv4 address in classical form (192.168.18.139).
  *
  * @param buffer_size In/out parameter.
  */
-rt_s rt_address_append_ipv4(struct rt_address_ipv4 *address, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_address_append_ipv4(struct rt_address_ipv4 *address, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  * Append the IPv6 address in classical form (2001:db8:85a3:8d3:1319:8a2e:370:7348), 8 times 16 bits in hexa.
@@ -122,6 +122,6 @@ rt_s rt_address_append_ipv4(struct rt_address_ipv4 *address, rt_char *buffer, rt
  *
  * @param buffer_size In/out parameter.
  */
-rt_s rt_address_append_ipv6(struct rt_address_ipv6 *address, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_address_append_ipv6(struct rt_address_ipv6 *address, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 #endif /* RT_ADDRESS_H */

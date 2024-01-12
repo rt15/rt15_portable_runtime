@@ -48,7 +48,7 @@ enum rt_error {
  *
  * @param error The rpr error code (RT_ERROR_XXXXX). If not known, RT_ERROR_BAD_ARGUMENTS is used.
  */
-void rt_error_set_last(enum rt_error error);
+RT_API void rt_error_set_last(enum rt_error error);
 
 /**
  * Returns <tt>RT_TRUE</tt> if the last error is a "would block" error.
@@ -84,6 +84,6 @@ void rt_error_set_last(enum rt_error error);
  * This function returns RT_TRUE if <tt>GetLastError</tt> is <tt>WSAEWOULDBLOCK</tt> or <tt>ERROR_IO_PENDING</tt>.
  * </p>
  */
-rt_b rt_error_would_block();
+RT_API rt_b rt_error_would_block();
 
 #endif /* RT_ERROR_H */

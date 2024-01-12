@@ -38,17 +38,17 @@ enum rt_file_position {
  * The created file is not inheritable.
  * </p>
  */
-rt_s rt_file_create(struct rt_file *file, const rt_char *file_path, enum rt_file_mode mode);
+RT_API rt_s rt_file_create(struct rt_file *file, const rt_char *file_path, enum rt_file_mode mode);
 
 /**
  * Compute the size of an open file.
  *
  * @return RT_FAILED in case of error (And the file pointer might be corrupted).
  */
-rt_s rt_file_get_size(struct rt_file *file, rt_un64 *file_size);
+RT_API rt_s rt_file_get_size(struct rt_file *file, rt_un64 *file_size);
 
-rt_s rt_file_set_pointer(struct rt_file *file, rt_n64 offset, enum rt_file_position position);
+RT_API rt_s rt_file_set_pointer(struct rt_file *file, rt_n64 offset, enum rt_file_position position);
 
-rt_s rt_file_get_pointer(struct rt_file *file, rt_un64 *offset);
+RT_API rt_s rt_file_get_pointer(struct rt_file *file, rt_un64 *offset);
 
 #endif /* RT_FILE_H */

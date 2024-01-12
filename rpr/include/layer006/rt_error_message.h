@@ -18,7 +18,7 @@
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  * @return RT_FAILED in case of error.
  */
-rt_s rt_error_message_append_last(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_error_message_append_last(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  * Write last error message into console standard error stream.
@@ -29,6 +29,6 @@ rt_s rt_error_message_append_last(rt_char *buffer, rt_un buffer_capacity, rt_un 
  * Can be RT_NULL.
  * </p>
  */
-rt_s rt_error_message_write_last(const rt_char *prefix);
+RT_API rt_s rt_error_message_write_last(const rt_char *prefix);
 
 #endif /* RT_ERROR_MESSAGE_H */

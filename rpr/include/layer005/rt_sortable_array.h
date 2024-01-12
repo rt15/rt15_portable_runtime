@@ -21,7 +21,7 @@ struct rt_sortable_array_header {
  * The array is marked as sorted only if it is empty.
  * </p>
  */
-rt_s rt_sortable_array_create(void **sortable_array, rt_un size, rt_un item_size, rt_un header_size, struct rt_heap *heap, rt_comparison_callback_t callback, void *context);
+RT_API rt_s rt_sortable_array_create(void **sortable_array, rt_un size, rt_un item_size, rt_un header_size, struct rt_heap *heap, rt_comparison_callback_t callback, void *context);
 
 /**
  * Add a new item to the sortable array, in its right place (if the array is currently sorted).<br>
@@ -29,13 +29,13 @@ rt_s rt_sortable_array_create(void **sortable_array, rt_un size, rt_un item_size
  *
  * @param item_index Out parameter, the index of the inserted item.
  */
-rt_s rt_sortable_array_add_item(void **sortable_array, const void *new_item, rt_un *item_index);
+RT_API rt_s rt_sortable_array_add_item(void **sortable_array, const void *new_item, rt_un *item_index);
 
 /**
  * Delete an item of the array by overwriting it with the end of the array.<br>
  * The array remains sorted if it was.
  */
-rt_s rt_sortable_array_delete_item_index(void **sortable_array, rt_un item_index);
+RT_API rt_s rt_sortable_array_delete_item_index(void **sortable_array, rt_un item_index);
 
 /**
  * Sort the array and mark it as sorted.
@@ -44,7 +44,7 @@ rt_s rt_sortable_array_delete_item_index(void **sortable_array, rt_un item_index
  * Can fail only if the comparison callback fails.
  * </p>
  */
-rt_s rt_sortable_array_sort(void *sortable_array);
+RT_API rt_s rt_sortable_array_sort(void *sortable_array);
 
 /**
  * Search <tt>item</tt> in <tt>sortable_array</tt>.<br>
@@ -56,6 +56,6 @@ rt_s rt_sortable_array_sort(void *sortable_array);
  *
  * @param item_index RT_TYPE_MAX_UN if the item is not found, the item index otherwise.
  */
-rt_s rt_sortable_array_search_item_index(void *sortable_array, const void *item, rt_un *item_index);
+RT_API rt_s rt_sortable_array_search_item_index(void *sortable_array, const void *item, rt_un *item_index);
 
 #endif /* RT_SORTABLE_ARRAY_H */

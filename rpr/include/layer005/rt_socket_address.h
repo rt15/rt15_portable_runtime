@@ -42,13 +42,13 @@ struct rt_socket_address_ipv6 {
 /**
  * Create an IPv4 socket address from an IPv4 address and a port.
  */
-void rt_socket_address_create_ipv4(struct rt_socket_address_ipv4 *socket_address, struct rt_address_ipv4 *address, rt_un port);
+RT_API void rt_socket_address_create_ipv4(struct rt_socket_address_ipv4 *socket_address, struct rt_address_ipv4 *address, rt_un port);
 
 /**
  * Create an IPv6 socket address from an IPv6 address and a port.
  */
-void rt_socket_address_create_ipv6(struct rt_socket_address_ipv6 *socket_address, struct rt_address_ipv6 *address, rt_un port);
+RT_API void rt_socket_address_create_ipv6(struct rt_socket_address_ipv6 *socket_address, struct rt_address_ipv6 *address, rt_un port);
 
-rt_s rt_socket_address_get_size(struct rt_socket_address *socket_address, rt_un *socket_address_size);
+RT_API rt_s rt_socket_address_get_size(struct rt_socket_address *socket_address, rt_un *socket_address_size);
 
 #endif /* RT_SOCKET_ADDRESS_H */

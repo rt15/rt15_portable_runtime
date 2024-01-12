@@ -11,6 +11,6 @@ struct rt_runtime_heap {
 	struct rt_heap heap;
 };
 
-rt_s rt_runtime_heap_create(struct rt_runtime_heap *runtime_heap);
+RT_API rt_s rt_runtime_heap_create(struct rt_runtime_heap *runtime_heap);
 
 #endif /* RT_RUNTIME_HEAP_H */

@@ -60,6 +60,6 @@ struct rt_heap {
  * @param heap Can be <tt>RT_NULL</tt>. In that case we rely only on <tt>buffer</tt>
  * @return <tt>*area</tt>.
  */
-void *rt_heap_alloc_if_needed(void *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, void **area, rt_un size, struct rt_heap *heap);
+RT_API void *rt_heap_alloc_if_needed(void *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, void **area, rt_un size, struct rt_heap *heap);
 
 #endif /* RT_HEAP_H */

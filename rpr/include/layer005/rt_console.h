@@ -23,14 +23,14 @@ enum rt_console_color {
 	RT_CONSOLE_COLOR_BRIGHT_WHITE = 0x1 | 0x2 | 0x4 | 0x8 /* True white. */
 };
 
-rt_s rt_console_write_string(const rt_char *str);
-rt_s rt_console_write_string_with_size(const rt_char *str, rt_un size);
+RT_API rt_s rt_console_write_string(const rt_char *str);
+RT_API rt_s rt_console_write_string_with_size(const rt_char *str, rt_un size);
 
-rt_s rt_console_write_error(const rt_char *error);
-rt_s rt_console_write_error_with_size(const rt_char *error, rt_un size);
+RT_API rt_s rt_console_write_error(const rt_char *error);
+RT_API rt_s rt_console_write_error_with_size(const rt_char *error, rt_un size);
 
-rt_s rt_console_write(const rt_char *message, rt_b error);
-rt_s rt_console_write_with_size(const rt_char *message, rt_un size, rt_b error);
+RT_API rt_s rt_console_write(const rt_char *message, rt_b error);
+RT_API rt_s rt_console_write_with_size(const rt_char *message, rt_un size, rt_b error);
 
 /**
  * Read a line from the console (the standard input).
@@ -42,7 +42,7 @@ rt_s rt_console_write_with_size(const rt_char *message, rt_un size, rt_b error);
  * @param buffer_capacity Must be at least 2.
  * @param buffer_size Out parameter.
  */
-rt_s rt_console_read_line(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_console_read_line(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  * Wait for the user to press a key.
@@ -55,21 +55,21 @@ rt_s rt_console_read_line(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_
  *
  * @return The "first" entered character.
  */
-rt_s rt_console_read_char(rt_char *character);
+RT_API rt_s rt_console_read_char(rt_char *character);
 
 /**
  * Clear the console screen.
  */
-rt_s rt_console_clear();
+RT_API rt_s rt_console_clear();
 
 /**
  * Set console foreground color.
  */
-rt_s rt_console_set_color(enum rt_console_color console_color);
+RT_API rt_s rt_console_set_color(enum rt_console_color console_color);
 
 /**
  * Reset console foreground color to the default one.
  */
-rt_s rt_console_reset_color();
+RT_API rt_s rt_console_reset_color();
 
 #endif /* RT_CONSOLE_H */

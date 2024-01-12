@@ -35,7 +35,7 @@ include_directories(${PARENT_DIR}/rt15_portable_runtime/rpr/include)
 
 link_directories(${PARENT_DIR}/rt15_portable_runtime/rpr/lib)
 
-link_libraries(rpr${BINARY_SUFFIX})
+link_libraries(staticrpr${BINARY_SUFFIX})
 
 if(WIN32)
         link_libraries(ws2_32)

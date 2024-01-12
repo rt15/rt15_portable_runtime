@@ -40,11 +40,11 @@ enum rt_small_file_mode {
  * 0xFE, 0xFF for big endian.
  * </p>
  */
-rt_s rt_small_file_read(const rt_char *file_path, rt_char8 *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char8 **output, rt_un *output_size, struct rt_heap *heap);
+RT_API rt_s rt_small_file_read(const rt_char *file_path, rt_char8 *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char8 **output, rt_un *output_size, struct rt_heap *heap);
 
 /**
  * Write the content of a buffer into a file.
  */
-rt_s rt_small_file_write(const rt_char *file_path, enum rt_small_file_mode mode, const rt_char8 *data, rt_un bytes_to_write);
+RT_API rt_s rt_small_file_write(const rt_char *file_path, enum rt_small_file_mode mode, const rt_char8 *data, rt_un bytes_to_write);
 
 #endif /* RT_SMALL_FILE_H */

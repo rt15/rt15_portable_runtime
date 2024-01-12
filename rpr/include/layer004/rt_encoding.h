@@ -146,7 +146,7 @@ struct rt_encoding_info {
  * In this case, the returned encoding is zero (RT_ENCODING_SYSTEM_DEFAULT).
  * </p>
  */
-rt_s rt_encoding_get_system(enum rt_encoding *encoding);
+RT_API rt_s rt_encoding_get_system(enum rt_encoding *encoding);
 
 /**
  * Retrieve information about given <tt>encoding</tt>.
@@ -156,7 +156,7 @@ rt_s rt_encoding_get_system(enum rt_encoding *encoding);
  * It will fail if the system encoding is not supported by this library.
  * </p>
  */
-rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *encoding_info);
+RT_API rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *encoding_info);
 
 /**
  * Retrieve the number of code units in <tt>data</tt>.
@@ -173,7 +173,7 @@ rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *en
  *
  * @return The size of the buffer in code units, not including the terminating zero bytes.
  */
-rt_un rt_encoding_get_size(const rt_char8 *data, rt_un code_unit_size);
+RT_API rt_un rt_encoding_get_size(const rt_char8 *data, rt_un code_unit_size);
 
 /**
  * Encode given <tt>input</tt> string into given encoded <tt>output_encoding</tt>.
@@ -200,7 +200,7 @@ rt_un rt_encoding_get_size(const rt_char8 *data, rt_un code_unit_size);
  * @param heap_buffer_capacity Heap buffer capacity, in bytes.
  * @param output_size Output size, in bytes, not including the zero terminating character.
  */
-rt_s rt_encoding_encode(const rt_char *input, rt_un input_size, enum rt_encoding output_encoding, rt_char8 *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char8 **output, rt_un *output_size, struct rt_heap *heap);
+RT_API rt_s rt_encoding_encode(const rt_char *input, rt_un input_size, enum rt_encoding output_encoding, rt_char8 *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char8 **output, rt_un *output_size, struct rt_heap *heap);
 
 /**
  * Decode given <tt>input</tt> encoded as <tt>input_encoding</tt> into a string.
@@ -227,6 +227,6 @@ rt_s rt_encoding_encode(const rt_char *input, rt_un input_size, enum rt_encoding
  * @param heap_buffer_capacity Heap buffer capacity, in bytes.
  * @param output_size Output size, in characters, not including the zero terminating character.
  */
-rt_s rt_encoding_decode(const rt_char8 *input, rt_un input_size, enum rt_encoding input_encoding, rt_char *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char **output, rt_un *output_size, struct rt_heap *heap);
+RT_API rt_s rt_encoding_decode(const rt_char8 *input, rt_un input_size, enum rt_encoding input_encoding, rt_char *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char **output, rt_un *output_size, struct rt_heap *heap);
 
 #endif /* RT_ENCODING_H */

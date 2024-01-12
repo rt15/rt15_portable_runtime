@@ -76,6 +76,12 @@
 
 #define RT_EXPORT __declspec(dllexport)
 
+#ifdef RT_SHARED_LIBRARY
+#define RT_API RT_EXPORT
+#else
+#define RT_API 
+#endif
+
 #ifdef RT_DEFINE_GCC
 #define RT_UNUSED __attribute__((unused))
 #ifdef RT_DEFINE_WINDOWS

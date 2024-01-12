@@ -11,12 +11,12 @@ struct rt_memory_input_stream {
 	rt_un offset;
 };
 
-rt_s rt_memory_input_stream_create(struct rt_memory_input_stream *memory_input_stream, const rt_char8 *memory, rt_un memory_size);
+RT_API rt_s rt_memory_input_stream_create(struct rt_memory_input_stream *memory_input_stream, const rt_char8 *memory, rt_un memory_size);
 
 /**
  * In most cases, you should not need this function.<br>
  * Use <tt>input_stream->read</tt> instead.
  */
-rt_s rt_memory_input_stream_read(struct rt_input_stream *input_stream, rt_char8 *buffer, rt_un bytes_to_read, rt_un *bytes_read);
+RT_API rt_s rt_memory_input_stream_read(struct rt_input_stream *input_stream, rt_char8 *buffer, rt_un bytes_to_read, rt_un *bytes_read);
 
 #endif /* RT_MEMORY_INPUT_STREAM_H */

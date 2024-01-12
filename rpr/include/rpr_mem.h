@@ -1,6 +1,9 @@
 #ifndef RPR_MEM_H
 #define RPR_MEM_H
 
+#include "layer000/rt_types.h"
+#include "layer001/rt_memory.h"
+
 /**
  * @file
  * Sometimes (when?) compiler generates calls to memcmp/memcpy/memmove/memset without using intrinsic functions.<br>

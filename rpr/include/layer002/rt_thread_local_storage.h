@@ -17,9 +17,9 @@ struct rt_thread_local_storage {
 	rt_un32 index;
 };
 
-rt_s rt_thread_local_storage_create(struct rt_thread_local_storage *thread_local_storage);
-rt_s rt_thread_local_storage_set(struct rt_thread_local_storage *thread_local_storage, void *data);
-rt_s rt_thread_local_storage_get(struct rt_thread_local_storage *thread_local_storage, void **data);
-rt_s rt_thread_local_storage_free(struct rt_thread_local_storage *thread_local_storage);
+RT_API rt_s rt_thread_local_storage_create(struct rt_thread_local_storage *thread_local_storage);
+RT_API rt_s rt_thread_local_storage_set(struct rt_thread_local_storage *thread_local_storage, void *data);
+RT_API rt_s rt_thread_local_storage_get(struct rt_thread_local_storage *thread_local_storage, void **data);
+RT_API rt_s rt_thread_local_storage_free(struct rt_thread_local_storage *thread_local_storage);
 
 #endif /* RT_THREAD_LOCAL_STORAGE_H */

@@ -22,10 +22,10 @@ struct rt_buffered_output_stream {
 	rt_un buffer_size;
 };
 
-rt_s rt_buffered_output_stream_create(struct rt_buffered_output_stream *buffered_output_stream, struct rt_output_stream *real_output_stream, rt_char8 *buffer, rt_un buffer_capacity);
+RT_API rt_s rt_buffered_output_stream_create(struct rt_buffered_output_stream *buffered_output_stream, struct rt_output_stream *real_output_stream, rt_char8 *buffer, rt_un buffer_capacity);
 
-rt_s rt_buffered_output_stream_write(struct rt_output_stream *output_stream, const rt_char8 *data, rt_un bytes_to_write);
+RT_API rt_s rt_buffered_output_stream_write(struct rt_output_stream *output_stream, const rt_char8 *data, rt_un bytes_to_write);
 
-rt_s rt_buffered_output_stream_flush(struct rt_output_stream *output_stream);
+RT_API rt_s rt_buffered_output_stream_flush(struct rt_output_stream *output_stream);
 
 #endif /* RT_BUFFERED_OUTPUT_STREAM_H */

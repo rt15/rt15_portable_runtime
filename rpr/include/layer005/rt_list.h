@@ -31,9 +31,9 @@ struct rt_list_header {
  * @param chunk_size Maximum items count in a chunk. Must be a power of two.
  * @param header_size Can be zero to use the default header size.
  */
-rt_s rt_list_create(void **list, rt_un size, rt_un item_size, rt_un chunk_size, rt_un header_size, struct rt_heap *heap);
+RT_API rt_s rt_list_create(void **list, rt_un size, rt_un item_size, rt_un chunk_size, rt_un header_size, struct rt_heap *heap);
 
-rt_s rt_list_get_item(void *list, rt_un item_index, void **item);
+RT_API rt_s rt_list_get_item(void *list, rt_un item_index, void **item);
 
 /**
  * <p>
@@ -42,17 +42,17 @@ rt_s rt_list_get_item(void *list, rt_un item_index, void **item);
  * In any case, it is safe to call <tt>rt_list_free</tt> on the resulting list.
  * </p>
  */
-rt_s rt_list_set_size(void **list, rt_un size);
+RT_API rt_s rt_list_set_size(void **list, rt_un size);
 
 /**
  * This function moves the last item in place of the one to delete.
  * As a result, indexes on the list items might become invalid.
  */
-rt_s rt_list_delete_item_index(void **list, rt_un item_index);
+RT_API rt_s rt_list_delete_item_index(void **list, rt_un item_index);
 
-rt_s rt_list_new_item(void **list, void **item);
+RT_API rt_s rt_list_new_item(void **list, void **item);
 
-rt_s rt_list_new_item_index(void **list, rt_un *item_index);
+RT_API rt_s rt_list_new_item_index(void **list, rt_un *item_index);
 
 /**
  *
@@ -61,6 +61,6 @@ rt_s rt_list_new_item_index(void **list, rt_un *item_index);
  * Does nothing if <tt>*list</tt> is RT_NULL.
  * </p>
  */
-rt_s rt_list_free(void **list);
+RT_API rt_s rt_list_free(void **list);
 
 #endif /* RT_LIST_H */

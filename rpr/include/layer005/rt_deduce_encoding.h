@@ -39,8 +39,8 @@
  * @param encoding The deduced encoding. Out parameter.
  * @param bom_size The size of the found BOM. Zero if there is none. Out parameter.
  */
-rt_s rt_deduce_encoding(rt_char8 *data, rt_un data_size, enum rt_encoding *encoding, rt_un *bom_size);
+RT_API rt_s rt_deduce_encoding(rt_char8 *data, rt_un data_size, enum rt_encoding *encoding, rt_un *bom_size);
 
-rt_s rt_deduce_encoding_with_file(struct rt_file *file, rt_char8 *buffer, rt_un buffer_capacity, enum rt_encoding *encoding, rt_un *bom_size);
+RT_API rt_s rt_deduce_encoding_with_file(struct rt_file *file, rt_char8 *buffer, rt_un buffer_capacity, enum rt_encoding *encoding, rt_un *bom_size);
 
 #endif /* RT_DEDUCE_ENCODING_H */

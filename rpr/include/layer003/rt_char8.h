@@ -35,7 +35,7 @@
  * </p>
  *
  */
-rt_b rt_char8_equals(const rt_char8 *str1, rt_un str1_size, const rt_char8 *str2, rt_un str2_size);
+RT_API rt_b rt_char8_equals(const rt_char8 *str1, rt_un str1_size, const rt_char8 *str2, rt_un str2_size);
 
 /**
  * Equivalent to strcmp.
@@ -53,7 +53,7 @@ rt_b rt_char8_equals(const rt_char8 *str1, rt_un str1_size, const rt_char8 *str2
  * When the size of <tt>str1</tt> and <tt>str2</tt> is known and is the same, use directly <tt>RT_MEMORY_COMPARE</tt>.
  * </p>
  */
-rt_n rt_char8_compare(const rt_char8 *str1, const rt_char8 *str2);
+RT_API rt_n rt_char8_compare(const rt_char8 *str1, const rt_char8 *str2);
 
 /**
  *
@@ -67,13 +67,13 @@ rt_n rt_char8_compare(const rt_char8 *str1, const rt_char8 *str2);
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
-rt_s rt_char8_append(const rt_char8 *suffix, rt_un suffix_size, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_char8_append(const rt_char8 *suffix, rt_un suffix_size, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
-rt_s rt_char8_append_char(rt_char8 character, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_char8_append_char(rt_char8 character, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  *
@@ -85,19 +85,9 @@ rt_s rt_char8_append_char(rt_char8 character, rt_char8 *buffer, rt_un buffer_cap
  * Zero characters in <tt>str</tt> are ignored.
  * </p>
  */
-rt_s rt_char8_copy(const rt_char8 *str, rt_un str_size, rt_char8 *buffer, rt_un buffer_capacity);
+RT_API rt_s rt_char8_copy(const rt_char8 *str, rt_un str_size, rt_char8 *buffer, rt_un buffer_capacity);
 
-rt_un rt_char8_get_size(const rt_char8 *str);
-
-/**
- * <p>
- * Always write a zero terminating character if <tt>buffer_size</tt> is greater than 0.
- * </p>
- *
- * @param base Between 2 and 36, both included.
- * @param buffer_size The number of characters in the buffer (in/out parameter).
- */
-rt_s rt_char8_append_un(rt_un value, rt_un base, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_un rt_char8_get_size(const rt_char8 *str);
 
 /**
  * <p>
@@ -107,7 +97,17 @@ rt_s rt_char8_append_un(rt_un value, rt_un base, rt_char8 *buffer, rt_un buffer_
  * @param base Between 2 and 36, both included.
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
-rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_char8_append_un(rt_un value, rt_un base, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+
+/**
+ * <p>
+ * Always write a zero terminating character if <tt>buffer_size</tt> is greater than 0.
+ * </p>
+ *
+ * @param base Between 2 and 36, both included.
+ * @param buffer_size The number of characters in the buffer (in/out parameter).
+ */
+RT_API rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  * Manage only characters from 'A' to 'Z'.<br>
@@ -115,7 +115,7 @@ rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_ca
  *
  * @return The size of the str.
  */
-rt_un rt_char8_fast_lower(rt_char8 *str);
+RT_API rt_un rt_char8_fast_lower(rt_char8 *str);
 
 /**
  * Manage only characters from 'a' to 'z'.<br>
@@ -123,7 +123,7 @@ rt_un rt_char8_fast_lower(rt_char8 *str);
  *
  * @return The size of the str.
  */
-rt_un rt_char8_fast_upper(rt_char8 *str);
+RT_API rt_un rt_char8_fast_upper(rt_char8 *str);
 
 /**
  *
@@ -131,7 +131,7 @@ rt_un rt_char8_fast_upper(rt_char8 *str);
  * Beware that this function does not check for overflows.
  * </p>
  */
-rt_s rt_char8_convert_to_un(const rt_char8 *str, rt_un *result);
+RT_API rt_s rt_char8_convert_to_un(const rt_char8 *str, rt_un *result);
 
 /**
  *
@@ -139,7 +139,7 @@ rt_s rt_char8_convert_to_un(const rt_char8 *str, rt_un *result);
  * Beware that this function does not check for overflows.
  * </p>
  */
-rt_s rt_char8_convert_to_un_with_size(const rt_char8 *str, rt_un str_size, rt_un *result);
+RT_API rt_s rt_char8_convert_to_un_with_size(const rt_char8 *str, rt_un str_size, rt_un *result);
 
 /**
  *
@@ -147,7 +147,7 @@ rt_s rt_char8_convert_to_un_with_size(const rt_char8 *str, rt_un str_size, rt_un
  * Beware that this function does not check for overflows.
  * </p>
  */
-rt_s rt_char8_convert_to_n(const rt_char8 *str, rt_n *result);
+RT_API rt_s rt_char8_convert_to_n(const rt_char8 *str, rt_n *result);
 
 /**
  *
@@ -155,7 +155,7 @@ rt_s rt_char8_convert_to_n(const rt_char8 *str, rt_n *result);
  * Beware that this function does not check for overflows.
  * </p>
  */
-rt_s rt_char8_convert_to_n_with_size(const rt_char8 *str, rt_un str_size, rt_n *result);
+RT_API rt_s rt_char8_convert_to_n_with_size(const rt_char8 *str, rt_un str_size, rt_n *result);
 
 /**
  *
@@ -163,7 +163,7 @@ rt_s rt_char8_convert_to_n_with_size(const rt_char8 *str, rt_un str_size, rt_n *
  * Beware that this function does not check for overflows.
  * </p>
  */
-rt_s rt_char8_convert_hex_to_un(const rt_char8 *str, rt_un *result);
+RT_API rt_s rt_char8_convert_hex_to_un(const rt_char8 *str, rt_un *result);
 
 /**
  *
@@ -171,14 +171,14 @@ rt_s rt_char8_convert_hex_to_un(const rt_char8 *str, rt_un *result);
  * Beware that this function does not check for overflows.
  * </p>
  */
-rt_s rt_char8_convert_hex_to_un_with_size(const rt_char8 *str, rt_un str_size, rt_un *result);
+RT_API rt_s rt_char8_convert_hex_to_un_with_size(const rt_char8 *str, rt_un str_size, rt_un *result);
 
 /**
  * Remove characters <= ' ' at the left and/or at the right of the string.
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
-void rt_char8_trim(rt_b left, rt_b right, rt_char8 *buffer, rt_un *buffer_size);
+RT_API void rt_char8_trim(rt_b left, rt_b right, rt_char8 *buffer, rt_un *buffer_size);
 
 /**
  * Add some <tt>character</tt> instances at the left of <tt>input</tt> to ensure that <tt>buffer</tt> size is at least <tt>size</tt>.
@@ -190,27 +190,16 @@ void rt_char8_trim(rt_b left, rt_b right, rt_char8 *buffer, rt_un *buffer_size);
  *
  * @param buffer_size Out parameter.
  */
-rt_s rt_char8_left_pad(const rt_char8 *input, rt_un input_size, rt_char8 character, rt_un size, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_char8_left_pad(const rt_char8 *input, rt_un input_size, rt_char8 character, rt_un size, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  * Add some <tt>character</tt> instances at the right of <tt>input</tt> to ensure that <tt>buffer</tt> size is at least <tt>size</tt>.
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
-rt_s rt_char8_right_pad(rt_char8 character, rt_un size, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_char8_right_pad(rt_char8 character, rt_un size, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
-rt_s rt_char8_ends_with(const rt_char8 *str, rt_un str_size, const rt_char8 *searched, rt_un searched_size);
-
-/**
- * Search <tt>searched</tt> in <tt>str</tt>.
- *
- * <p>
- * If <tt>searched</tt> (or <tt>str</tt>) is empty, then RT_TYPE_MAX_UN is returned.
- * </p>
- *
- * @return index of <tt>searched</tt> in <tt>str</tt> or RT_TYPE_MAX_UN if not found.
- */
-rt_un rt_char8_search(const rt_char8 *str, const rt_char8 *searched);
+RT_API rt_s rt_char8_ends_with(const rt_char8 *str, rt_un str_size, const rt_char8 *searched, rt_un searched_size);
 
 /**
  * Search <tt>searched</tt> in <tt>str</tt>.
@@ -221,37 +210,48 @@ rt_un rt_char8_search(const rt_char8 *str, const rt_char8 *searched);
  *
  * @return index of <tt>searched</tt> in <tt>str</tt> or RT_TYPE_MAX_UN if not found.
  */
-rt_un rt_char8_search_with_size(const rt_char8 *str, rt_un str_size, const rt_char8 *searched, rt_un searched_size);
+RT_API rt_un rt_char8_search(const rt_char8 *str, const rt_char8 *searched);
+
+/**
+ * Search <tt>searched</tt> in <tt>str</tt>.
+ *
+ * <p>
+ * If <tt>searched</tt> (or <tt>str</tt>) is empty, then RT_TYPE_MAX_UN is returned.
+ * </p>
+ *
+ * @return index of <tt>searched</tt> in <tt>str</tt> or RT_TYPE_MAX_UN if not found.
+ */
+RT_API rt_un rt_char8_search_with_size(const rt_char8 *str, rt_un str_size, const rt_char8 *searched, rt_un searched_size);
 
 /**
  * Find <tt>searched</tt> character into <tt>str</tt>.
  * @return index of <tt>searched</tt> in <tt>str</tt> or RT_TYPE_MAX_UN if not found.
  */
-rt_un rt_char8_search_char(const rt_char8 *str, rt_char8 searched);
+RT_API rt_un rt_char8_search_char(const rt_char8 *str, rt_char8 searched);
 
 /**
  * Find <tt>searched</tt> character into <tt>str</tt>.
  * @return index of <tt>searched</tt> in <tt>str</tt> or RT_TYPE_MAX_UN if not found.
  */
-rt_un rt_char8_search_char_with_size(const rt_char8 *str, rt_un str_size, rt_char8 searched);
+RT_API rt_un rt_char8_search_char_with_size(const rt_char8 *str, rt_un str_size, rt_char8 searched);
 
 /**
  * @return Number of occurrences of <tt>searched</tt> in <tt>str</tt>.
  */
-rt_un rt_char8_count_occurrences(const rt_char8 *str, const rt_char8 *searched);
+RT_API rt_un rt_char8_count_occurrences(const rt_char8 *str, const rt_char8 *searched);
 
 /**
  * @return Number of occurrences of <tt>searched</tt> in <tt>str</tt>.
  */
-rt_un rt_char8_count_occurrences_with_size(const rt_char8 *str, rt_un str_size, const rt_char8 *searched, rt_un searched_size);
+RT_API rt_un rt_char8_count_occurrences_with_size(const rt_char8 *str, rt_un str_size, const rt_char8 *searched, rt_un searched_size);
 
 /**
  * Concatenate the variadic arguments at the end of given <tt>buffer</tt>.
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
-rt_s RT_CDECL rt_char8_concat(rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size, ...);
-rt_s rt_char8_vconcat(rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size, va_list args_list);
+RT_API rt_s RT_CDECL rt_char8_concat(rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size, ...);
+RT_API rt_s rt_char8_vconcat(rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size, va_list args_list);
 
 /**
  * Replace all occurrences of <tt>searched</tt> in <tt>str</tt> with <tt>replacement</tt>.<br>
@@ -265,7 +265,7 @@ rt_s rt_char8_vconcat(rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_siz
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
-rt_s rt_char8_replace(const rt_char8 *str, rt_un str_size,
+RT_API rt_s rt_char8_replace(const rt_char8 *str, rt_un str_size,
 		     const rt_char8 *searched, rt_un searched_size,
 		     const rt_char8 *replacement, rt_un replacement_size,
 		     rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
@@ -273,12 +273,12 @@ rt_s rt_char8_replace(const rt_char8 *str, rt_un str_size,
 /**
  * Simple <tt>rt_comparison_callback_t</tt> implementation for <tt>rt_char8*</tt> pointers.
  */
-rt_s rt_char8_comparison_callback(const void *item1, const void *item2, void *context, rt_n *comparison_result);
+RT_API rt_s rt_char8_comparison_callback(const void *item1, const void *item2, void *context, rt_n *comparison_result);
 
 /**
  * Simple <tt>rt_comparison_with_size_callback_t</tt> implementation for <tt>rt_char8*</tt> pointers.
  */
-rt_s rt_char8_comparison_with_size_callback(const void *item1, rt_un item1_size, const void *item2, rt_un item2_size, void *context, rt_n *comparison_result);
+RT_API rt_s rt_char8_comparison_with_size_callback(const void *item1, rt_un item1_size, const void *item2, rt_un item2_size, void *context, rt_n *comparison_result);
 
 /**
  * Compute a non-cryptographic hash of given <tt>data</tt>.
@@ -289,7 +289,7 @@ rt_s rt_char8_comparison_with_size_callback(const void *item1, rt_un item1_size,
  *
  * @param data_size Size of <tt>data</tt>, in <tt>rt_char8</tt>.
  */
-rt_un rt_char8_hash(const rt_char8 *data, rt_un data_size);
+RT_API rt_un rt_char8_hash(const rt_char8 *data, rt_un data_size);
 
 /**
  * <tt>rt_hash_callback_t</tt> implementation on for <tt>rt_char8</tt>.
@@ -300,6 +300,6 @@ rt_un rt_char8_hash(const rt_char8 *data, rt_un data_size);
  *
  * @param data_size Size of <tt>data</tt>, in <tt>rt_char8</tt>.
  */
-rt_s rt_char8_hash_callback(const void *data, rt_un data_size, void *context, rt_un *hash);
+RT_API rt_s rt_char8_hash_callback(const void *data, rt_un data_size, void *context, rt_un *hash);
 
 #endif /* RT_CHAR8_H */

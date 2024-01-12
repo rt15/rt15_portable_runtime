@@ -39,14 +39,14 @@ typedef rt_s (*rt_file_path_browse_callback_t)(const rt_char *path, enum rt_file
 /**
  * @param children_first If RT_TRUE, the callback is called with children first.
  */
-rt_s rt_file_path_browse(const rt_char *dir_path, rt_file_path_browse_callback_t callback, rt_b recursively, rt_b children_first, void *context);
+RT_API rt_s rt_file_path_browse(const rt_char *dir_path, rt_file_path_browse_callback_t callback, rt_b recursively, rt_b children_first, void *context);
 
 /**
  * @param buffer_size The number of characters in the buffer (out parameter).
  */
-rt_s rt_file_path_get_current_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_file_path_get_current_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
-rt_s rt_file_path_set_current_dir(const rt_char *dir_path);
+RT_API rt_s rt_file_path_set_current_dir(const rt_char *dir_path);
 
 /**
  * Append a separator to <tt>dir_path</tt> if there is not already one.<br>
@@ -55,7 +55,7 @@ rt_s rt_file_path_set_current_dir(const rt_char *dir_path);
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
-rt_s rt_file_path_append_separator(rt_char *dir_path, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_file_path_append_separator(rt_char *dir_path, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  * Convert input <tt>path</tt> into a full path.<br>
@@ -84,12 +84,12 @@ rt_s rt_file_path_append_separator(rt_char *dir_path, rt_un buffer_capacity, rt_
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
-rt_s rt_file_path_full(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_file_path_full(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  * Can be called to check whether calling <tt>rt_file_path_namespace</tt> make sense.
  */
-rt_b rt_file_path_is_namespaced(const rt_char *path);
+RT_API rt_b rt_file_path_is_namespaced(const rt_char *path);
 
 /**
  * Many Win32 API functions must be called with namespace prefixed paths to handles paths longer than MAX_PATH.
@@ -125,15 +125,15 @@ rt_b rt_file_path_is_namespaced(const rt_char *path);
  *
  * @param buffer_size In/out parameter.
  */
-rt_s rt_file_path_namespace(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_file_path_namespace(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size);
 
 
-rt_s rt_file_path_strip_namespace(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_file_path_strip_namespace(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  * Determine if <tt>path</tt> is referencing a file, a directory, or nothing.
  */
-rt_b rt_file_path_get_type(const rt_char *path, enum rt_file_path_type *type);
+RT_API rt_b rt_file_path_get_type(const rt_char *path, enum rt_file_path_type *type);
 
 /**
  * Find index of the last interesting separator.<br>
@@ -145,7 +145,7 @@ rt_b rt_file_path_get_type(const rt_char *path, enum rt_file_path_type *type);
  * <li>The file name</li>
  * </ul>
  */
-rt_un rt_file_path_get_last_separator_index(const rt_char *path, rt_un path_size);
+RT_API rt_un rt_file_path_get_last_separator_index(const rt_char *path, rt_un path_size);
 
 /**
  * First compute the full path then the parent directory of this full path.
@@ -156,14 +156,14 @@ rt_un rt_file_path_get_last_separator_index(const rt_char *path, rt_un path_size
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
-rt_s rt_file_path_get_parent(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_file_path_get_parent(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  * Return the path to the current executable file path.
  *
  * @param buffer_size The number of characters in the buffer (out parameter).
  */
-rt_s rt_file_path_get_executable_path(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_file_path_get_executable_path(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  * Return the file or directory name from given <tt>path</tt>.
@@ -175,7 +175,7 @@ rt_s rt_file_path_get_executable_path(rt_char *buffer, rt_un buffer_capacity, rt
  *
  * @param buffer_size The number of characters in the buffer (out parameter).
  */
-rt_s rt_file_path_get_name(const rt_char *path, rt_un path_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_file_path_get_name(const rt_char *path, rt_un path_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 
 /**
@@ -187,7 +187,7 @@ rt_s rt_file_path_get_name(const rt_char *path, rt_un path_size, rt_char *buffer
  *
  * @param buffer_size The number of characters in the buffer (out parameter).
  */
-rt_s rt_file_path_get_temp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_file_path_get_temp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  *
@@ -200,7 +200,7 @@ rt_s rt_file_path_get_temp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *bu
  * @param buffer_capacity Under Windows, must be at least MAX_PATH (260).
  * @param buffer_size The number of characters in the buffer (out parameter).
  */
-rt_s rt_file_path_get_home_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_file_path_get_home_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  *
@@ -223,6 +223,6 @@ rt_s rt_file_path_get_home_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *bu
  * @param buffer_capacity Under Windows, must be at least MAX_PATH (260).
  * @param buffer_size The number of characters in the buffer (out parameter).
  */
-rt_s rt_file_path_get_application_data_dir(const rt_char *application_name, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_file_path_get_application_data_dir(const rt_char *application_name, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 #endif /* RT_FILE_PATH_H */

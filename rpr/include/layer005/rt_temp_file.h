@@ -27,7 +27,7 @@
  * @param buffer Receive the path to the file so the caller can delete the file.
  * @param buffer_capacity Must be RT_FILE_PATH_SIZE.
  */
-rt_s rt_temp_file_create(struct rt_file *file, const rt_char *prefix, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_temp_file_create(struct rt_file *file, const rt_char *prefix, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  * Create a temporary file in given path.
@@ -40,6 +40,6 @@ rt_s rt_temp_file_create(struct rt_file *file, const rt_char *prefix, rt_char *b
  * @param buffer Receive the path to the file so the caller can delete the file.
  * @param buffer_capacity Must be RT_FILE_PATH_SIZE.
  */
-rt_s rt_temp_file_create_with_parent_path(struct rt_file *file, const rt_char *prefix, const rt_char *parent_path, rt_un parent_path_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_temp_file_create_with_parent_path(struct rt_file *file, const rt_char *prefix, const rt_char *parent_path, rt_un parent_path_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 #endif /* RT_TEMP_FILE_H */

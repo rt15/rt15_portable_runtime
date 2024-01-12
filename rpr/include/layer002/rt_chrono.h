@@ -23,7 +23,7 @@ struct rt_chrono {
 /**
  * No need for a destructor: the constructor only store the current time.
  */
-rt_s rt_chrono_create(struct rt_chrono *chrono);
-rt_s rt_chrono_get_duration(struct rt_chrono *chrono, rt_un *micro_seconds);
+RT_API rt_s rt_chrono_create(struct rt_chrono *chrono);
+RT_API rt_s rt_chrono_get_duration(struct rt_chrono *chrono, rt_un *micro_seconds);
 
 #endif /* RT_CHRONO_H */

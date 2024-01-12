@@ -21,13 +21,13 @@ struct rt_pipe {
  * Do not forget to close input and output I/O devices when they are no more needed.<br>
  * You can either use <tt>rt_pipe_free</tt> or 2 two calls of <tt>rt_io_device_free</tt>.
  */
-rt_s rt_pipe_create(struct rt_pipe *pipe);
+RT_API rt_s rt_pipe_create(struct rt_pipe *pipe);
 
 /**
  * Free both input and output I/O devices of the pipe.<br>
  * It is not mandatory to call this function.<br>
  * Input and output I/O devices can be closes separately.
  */
-rt_s rt_pipe_free(struct rt_pipe *pipe);
+RT_API rt_s rt_pipe_free(struct rt_pipe *pipe);
 
 #endif /* RT_PIPE_H */

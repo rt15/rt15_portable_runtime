@@ -10,6 +10,6 @@
  *
  * @param buffer Temporary area used to copy chunks of data from one stream to the other.
  */
-rt_s rt_slurp(struct rt_input_stream *input_stream, struct rt_output_stream *output_stream, rt_char8 *buffer, rt_un buffer_capacity);
+RT_API rt_s rt_slurp(struct rt_input_stream *input_stream, struct rt_output_stream *output_stream, rt_char8 *buffer, rt_un buffer_capacity);
 
 #endif /* RT_SLURP_H */

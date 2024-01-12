@@ -20,19 +20,19 @@
 /**
  * Put <tt>message</tt> as last error message of this thread.
  */
-rt_s rt_last_error_message_set(const rt_char *message);
+RT_API rt_s rt_last_error_message_set(const rt_char *message);
 
 /**
  * Update the last error message of this thread with a message from the last operating system error. 
  */
-rt_s rt_last_error_message_set_with_last_error();
+RT_API rt_s rt_last_error_message_set_with_last_error();
 
 /**
  * Append the last error message of this thread in <tt>buffer</tt>. 
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
-rt_s rt_last_error_message_append(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+RT_API rt_s rt_last_error_message_append(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
  * Write the last error message of this thread into console standard error stream.
@@ -43,7 +43,7 @@ rt_s rt_last_error_message_append(rt_char *buffer, rt_un buffer_capacity, rt_un 
  * Can be RT_NULL.
  * </p>
  */
-rt_s rt_last_error_message_write(const rt_char *prefix);
+RT_API rt_s rt_last_error_message_write(const rt_char *prefix);
 
 /**
  * Clean the memory buffer for this thread.
@@ -53,7 +53,7 @@ rt_s rt_last_error_message_write(const rt_char *prefix);
  * So if you do not use this function, there will be a memory leak at the end of each thread.
  * </p>
  */
-rt_s rt_last_error_message_cleanup_thread_buffer();
+RT_API rt_s rt_last_error_message_cleanup_thread_buffer();
 
 /**
  * After cleaning all the thread buffers, you can call this function to free the local storage.
@@ -62,6 +62,6 @@ rt_s rt_last_error_message_cleanup_thread_buffer();
  * It can be called only once.
  * </p>
  */
-rt_s rt_last_error_message_cleanup();
+RT_API rt_s rt_last_error_message_cleanup();
 
 #endif /* RT_LAST_ERROR_MESSAGE_H */

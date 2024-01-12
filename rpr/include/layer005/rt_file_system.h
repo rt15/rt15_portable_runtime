@@ -14,14 +14,14 @@
  * <li>The directory already exists.</li>
  * </ul>
  */
-rt_s rt_file_system_create_dir(const rt_char *dir_path);
+RT_API rt_s rt_file_system_create_dir(const rt_char *dir_path);
 
-rt_s rt_file_system_create_dir_if_not_exists(const rt_char *dir_path);
+RT_API rt_s rt_file_system_create_dir_if_not_exists(const rt_char *dir_path);
 
 /**
  * Create all necessary directories to create given <tt>dir_path</tt>.
  */
-rt_s rt_file_system_create_dirs(const rt_char *dir_path);
+RT_API rt_s rt_file_system_create_dirs(const rt_char *dir_path);
 
 /**
  *
@@ -29,7 +29,7 @@ rt_s rt_file_system_create_dirs(const rt_char *dir_path);
  * The directory must exist and be empty.
  * </p>
  */
-rt_s rt_file_system_delete_dir(const rt_char *dir_path);
+RT_API rt_s rt_file_system_delete_dir(const rt_char *dir_path);
 
 /**
  * Attempt to delete the directory and check error code in case of error.<br>
@@ -39,7 +39,7 @@ rt_s rt_file_system_delete_dir(const rt_char *dir_path);
  * The directory must be empty.
  * </p>
  */
-rt_s rt_file_system_delete_dir_if_exists(const rt_char *dir_path);
+RT_API rt_s rt_file_system_delete_dir_if_exists(const rt_char *dir_path);
 
 /**
  * Delete a file (not a directory).
@@ -48,19 +48,19 @@ rt_s rt_file_system_delete_dir_if_exists(const rt_char *dir_path);
  * The file must exist.
  * </p>
  */
-rt_s rt_file_system_delete_file(const rt_char *file_path);
+RT_API rt_s rt_file_system_delete_file(const rt_char *file_path);
 
 /**
  * Attempt to delete the file and check error code in case of error.<br>
  * Ignore the error if the file has not been found.
  */
-rt_s rt_file_system_delete_file_if_exists(const rt_char *file_path);
+RT_API rt_s rt_file_system_delete_file_if_exists(const rt_char *file_path);
 
 /**
  * If <tt>truncate</tt> is true and corresponding file exists, it is replaced by an empty one.<br>
  * If <tt>truncate</tt> is false, there is an error if the file already exists.
  */
-rt_s rt_file_system_create_empty_file(const rt_char *file_path, rt_b truncate);
+RT_API rt_s rt_file_system_create_empty_file(const rt_char *file_path, rt_b truncate);
 
 /**
  * Delete given directory and its content, recursively.
@@ -69,7 +69,7 @@ rt_s rt_file_system_create_empty_file(const rt_char *file_path, rt_b truncate);
  * The directory can exist or not.
  * </p>
  */
-rt_s rt_file_system_delete_dir_recursively(const rt_char *dir_path);
+RT_API rt_s rt_file_system_delete_dir_recursively(const rt_char *dir_path);
 
 /**
  * Move a directory.
@@ -81,7 +81,7 @@ rt_s rt_file_system_delete_dir_recursively(const rt_char *dir_path);
  * @param source_dir_path Current directory path.
  * @param destination_dir_path Expected new directory path (must be the new actual path, not the parent).
  */
-rt_s rt_file_system_move_dir(const rt_char *source_dir_path, const rt_char *destination_dir_path);
+RT_API rt_s rt_file_system_move_dir(const rt_char *source_dir_path, const rt_char *destination_dir_path);
 
 /**
  * Rename a directory.
@@ -92,7 +92,7 @@ rt_s rt_file_system_move_dir(const rt_char *source_dir_path, const rt_char *dest
  *
  * @param destination_dir_name Directory name.
  */
-rt_s rt_file_system_rename_dir(const rt_char *source_dir_path, const rt_char *destination_dir_name);
+RT_API rt_s rt_file_system_rename_dir(const rt_char *source_dir_path, const rt_char *destination_dir_name);
 
 /**
  * Find out the size of a file without opening it.
@@ -102,14 +102,14 @@ rt_s rt_file_system_rename_dir(const rt_char *source_dir_path, const rt_char *de
  * Under Linux, the size of a directory is the size of its metadata, not the size of its content.
  * </p>
  */
-rt_s rt_file_system_get_file_size(const rt_char *file_path, rt_un64 *file_size);
+RT_API rt_s rt_file_system_get_file_size(const rt_char *file_path, rt_un64 *file_size);
 
 /**
  * Copy a file.
  *
  * @param overwrite Overwrite existing file. Otherwise, fail if the file already exists.
  */
-rt_s rt_file_system_copy_file(const rt_char *source_file_path, const rt_char *destination_file_path, rt_b overwrite);
+RT_API rt_s rt_file_system_copy_file(const rt_char *source_file_path, const rt_char *destination_file_path, rt_b overwrite);
 
 /**
  * Copy a directory, recursively.
@@ -117,7 +117,7 @@ rt_s rt_file_system_copy_file(const rt_char *source_file_path, const rt_char *de
  * @param destination_dir_path New path for the files in <tt>source_dir_path</tt> (must be the new actual path, not the parent).
  * @param overwrite Overwrite existing files. Otherwise, fail if a file already exists.
  */
-rt_s rt_file_system_copy_dir(const rt_char *source_dir_path, const rt_char *destination_dir_path, rt_b overwrite);
+RT_API rt_s rt_file_system_copy_dir(const rt_char *source_dir_path, const rt_char *destination_dir_path, rt_b overwrite);
 
 /**
  * Move a file.
@@ -129,7 +129,7 @@ rt_s rt_file_system_copy_dir(const rt_char *source_dir_path, const rt_char *dest
  * @param source_file_path Current file path.
  * @param destination_file_path Expected new file path (Must not be a directory).
  */
-rt_s rt_file_system_move_file(const rt_char *source_file_path, const rt_char *destination_file_path);
+RT_API rt_s rt_file_system_move_file(const rt_char *source_file_path, const rt_char *destination_file_path);
 
 /**
  * Rename a file.
@@ -140,6 +140,6 @@ rt_s rt_file_system_move_file(const rt_char *source_file_path, const rt_char *de
  *
  * @param destination_file_name File name.
  */
-rt_s rt_file_system_rename_file(const rt_char *source_file_path, const rt_char *destination_file_name);
+RT_API rt_s rt_file_system_rename_file(const rt_char *source_file_path, const rt_char *destination_file_name);
 
 #endif /* RT_FILE_SYSTEM_H */

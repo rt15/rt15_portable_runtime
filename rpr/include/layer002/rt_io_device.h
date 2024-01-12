@@ -30,9 +30,9 @@ struct rt_io_device {
  * Create the correct I/O device instead using <tt>rt_file_create</tt>, <tt>rt_pipe_create</tt> and so on.
  */
 #ifdef RT_DEFINE_WINDOWS
-void rt_io_device_create_from_handle(struct rt_io_device *io_device, rt_h handle);
+RT_API void rt_io_device_create_from_handle(struct rt_io_device *io_device, rt_h handle);
 #else
-void rt_io_device_create_from_file_descriptor(struct rt_io_device *io_device, rt_n32 file_descriptor);
+RT_API void rt_io_device_create_from_file_descriptor(struct rt_io_device *io_device, rt_n32 file_descriptor);
 #endif
 
 /**
@@ -40,21 +40,21 @@ void rt_io_device_create_from_file_descriptor(struct rt_io_device *io_device, rt
  * Do not use <tt>rt_io_device_free</tt> on the created <tt>rt_io_device</tt>.
  * </p>
  */
-rt_s rt_io_device_create_from_std_input(struct rt_io_device *io_device);
+RT_API rt_s rt_io_device_create_from_std_input(struct rt_io_device *io_device);
 
 /**
  * <p>
  * Do not use <tt>rt_io_device_free</tt> on the created <tt>rt_io_device</tt>.
  * </p>
  */
-rt_s rt_io_device_create_from_std_output(struct rt_io_device *io_device);
+RT_API rt_s rt_io_device_create_from_std_output(struct rt_io_device *io_device);
 
 /**
  * <p>
  * Do not use <tt>rt_io_device_free</tt> on the created <tt>rt_io_device</tt>.
  * </p>
  */
-rt_s rt_io_device_create_from_std_error(struct rt_io_device *io_device);
+RT_API rt_s rt_io_device_create_from_std_error(struct rt_io_device *io_device);
 
 /**
  * <p>
@@ -65,7 +65,7 @@ rt_s rt_io_device_create_from_std_error(struct rt_io_device *io_device);
  * Can fail if the process is attached to gdb under Linux.
  * </p>
  */
-rt_s rt_io_device_create_from_console_input(struct rt_io_device *io_device);
+RT_API rt_s rt_io_device_create_from_console_input(struct rt_io_device *io_device);
 
 /**
  * <p>
@@ -76,24 +76,24 @@ rt_s rt_io_device_create_from_console_input(struct rt_io_device *io_device);
  * Can fail if the process is attached to gdb under Linux.
  * </p>
  */
-rt_s rt_io_device_create_from_console_output(struct rt_io_device *io_device);
+RT_API rt_s rt_io_device_create_from_console_output(struct rt_io_device *io_device);
 
 /**
  * In most cases, you should not need this function.<br>
  * Use <tt>input_stream->read</tt> instead.
  */
-rt_s rt_io_device_read(struct rt_input_stream *input_stream, rt_char8 *buffer, rt_un bytes_to_read, rt_un *bytes_read);
+RT_API rt_s rt_io_device_read(struct rt_input_stream *input_stream, rt_char8 *buffer, rt_un bytes_to_read, rt_un *bytes_read);
 
 /**
  * In most cases, you should not need this function.<br>
  * Use <tt>output_stream->write</tt> instead.
  */
-rt_s rt_io_device_write(struct rt_output_stream *output_stream, const rt_char8 *data, rt_un bytes_to_write);
+RT_API rt_s rt_io_device_write(struct rt_output_stream *output_stream, const rt_char8 *data, rt_un bytes_to_write);
 
 /**
  * Does nothing.
  */
-rt_s rt_io_device_flush(struct rt_output_stream *output_stream);
+RT_API rt_s rt_io_device_flush(struct rt_output_stream *output_stream);
 
 /**
  * <p>
@@ -105,7 +105,7 @@ rt_s rt_io_device_flush(struct rt_output_stream *output_stream);
  * It is not closed by a fork.
  * </p>
  */
-rt_s rt_io_device_is_inheritable(struct rt_io_device *io_device, rt_b *inheritable);
+RT_API rt_s rt_io_device_is_inheritable(struct rt_io_device *io_device, rt_b *inheritable);
 
 /**
  * Update inheritability of given I/O Device if needed.
@@ -125,24 +125,24 @@ rt_s rt_io_device_is_inheritable(struct rt_io_device *io_device, rt_b *inheritab
  * It is not closed by a fork.
  * </p>
  */
-rt_s rt_io_device_set_inheritable(struct rt_io_device *io_device, rt_b inheritable);
+RT_API rt_s rt_io_device_set_inheritable(struct rt_io_device *io_device, rt_b inheritable);
 
 /**
  * Can be used to find out if <tt>io_device</tt> is a console/terminal.
  */
-rt_s rt_io_device_is_console(struct rt_io_device *io_device, rt_b *is_console);
+RT_API rt_s rt_io_device_is_console(struct rt_io_device *io_device, rt_b *is_console);
 
 /**
  * Write data from kernel cache onto the disk.<br>
  * Increases the chances for the data to be saved even in case of system crash.<br>
  * Should be used on files only.
  */
-rt_s rt_io_device_kernel_flush(struct rt_io_device *io_device);
+RT_API rt_s rt_io_device_kernel_flush(struct rt_io_device *io_device);
 
 /**
  * Should be called only with generic devices like files and pipes, not sockets.<br>
  * Should not be called with std Input/Output/Error.
  */
-rt_s rt_io_device_free(struct rt_io_device *io_device);
+RT_API rt_s rt_io_device_free(struct rt_io_device *io_device);
 
 #endif /* RT_IO_DEVICE_H */

@@ -99,7 +99,7 @@ typedef rt_s (*rt_command_line_args_parse_callback_t)(enum rt_command_line_args_
  * @param long_options_with_arg Long options without argument. Can be RT_NULL.
  * @param non_options_index Index in argv of the first non-option argument. All non-options are pushed at the end of argv. Set to RT_TYPE_MAX_UN if there are no non-options.
  */
-rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_line_args_parse_callback_t callback, void *context,
+RT_API rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_line_args_parse_callback_t callback, void *context,
 				const rt_char *short_options_without_arg,  const rt_char *short_options_with_optional_arg,  const rt_char *short_options_with_arg,
 				const rt_char *long_options_without_arg[], const rt_char *long_options_with_optional_arg[], const rt_char *long_options_with_arg[],
 				rt_un *non_options_index);

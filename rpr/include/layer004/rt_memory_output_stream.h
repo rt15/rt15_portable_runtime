@@ -28,21 +28,21 @@ struct rt_memory_output_stream {
  * @param heap Can be RT_NULL if you want to work only with <tt>buffer</tt>.
  * @param initial_capacity This function will make sure that it disposes of this initial capacity, either with the provided buffer or using the heap.
  */
-rt_s rt_memory_output_stream_create(struct rt_memory_output_stream *memory_output_stream, rt_char8 *buffer, rt_un buffer_capacity, struct rt_heap *heap, rt_un initial_capacity);
+RT_API rt_s rt_memory_output_stream_create(struct rt_memory_output_stream *memory_output_stream, rt_char8 *buffer, rt_un buffer_capacity, struct rt_heap *heap, rt_un initial_capacity);
 
-rt_char8 *rt_memory_output_stream_get_data(struct rt_memory_output_stream *memory_output_stream);
+RT_API rt_char8 *rt_memory_output_stream_get_data(struct rt_memory_output_stream *memory_output_stream);
 
-rt_s rt_memory_output_stream_free(struct rt_memory_output_stream *memory_output_stream);
+RT_API rt_s rt_memory_output_stream_free(struct rt_memory_output_stream *memory_output_stream);
 
 /**
  * In most cases, you should not need this function.<br>
  * Use <tt>output_stream->write</tt> instead.
  */
-rt_s rt_memory_output_stream_write(struct rt_output_stream *output_stream, const rt_char8 *data, rt_un bytes_to_write);
+RT_API rt_s rt_memory_output_stream_write(struct rt_output_stream *output_stream, const rt_char8 *data, rt_un bytes_to_write);
 
 /**
  * Does nothing.
  */
-rt_s rt_memory_output_stream_flush(struct rt_output_stream *output_stream);
+RT_API rt_s rt_memory_output_stream_flush(struct rt_output_stream *output_stream);
 
 #endif /* RT_MEMORY_OUTPUT_STREAM_H */

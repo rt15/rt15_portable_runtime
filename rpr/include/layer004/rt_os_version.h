@@ -36,8 +36,8 @@
  * @param minor Can be RT_NULL.
  * @param patch Can be RT_NULL.
  */
-rt_s rt_os_version_get(rt_un *major, rt_un *minor, rt_un *patch);
+RT_API rt_s rt_os_version_get(rt_un *major, rt_un *minor, rt_un *patch);
 
-rt_s rt_os_version_is_greater_or_equal_to(rt_un major, rt_un minor, rt_un patch, rt_b *result);
+RT_API rt_s rt_os_version_is_greater_or_equal_to(rt_un major, rt_un minor, rt_un patch, rt_b *result);
 
 #endif /* RT_OS_VERSION_H */

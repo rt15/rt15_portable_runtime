@@ -23,7 +23,7 @@
  *
  * @param item_index RT_TYPE_MAX_UN if the item is not found, the item index otherwise.
  */
-rt_s rt_binary_search_index(const void *area, const void *item, rt_un size, rt_un item_size, rt_comparison_callback_t callback, void *context, rt_un *item_index);
+RT_API rt_s rt_binary_search_index(const void *area, const void *item, rt_un size, rt_un item_size, rt_comparison_callback_t callback, void *context, rt_un *item_index);
 
 /**
  * Search the insertion index corresponding to <tt>item</tt> in <tt>area</tt>.<br>
@@ -44,6 +44,6 @@ rt_s rt_binary_search_index(const void *area, const void *item, rt_un size, rt_u
  *
  * @param insertion_index The index of searched item or an index to which insert it.
  */
-rt_s rt_binary_search_insertion_index(const void *area, const void *item, rt_un size, rt_un item_size, rt_comparison_callback_t callback, void *context, rt_un *insertion_index);
+RT_API rt_s rt_binary_search_insertion_index(const void *area, const void *item, rt_un size, rt_un item_size, rt_comparison_callback_t callback, void *context, rt_un *insertion_index);
 
 #endif /* RT_BINARY_SEARCH_H */

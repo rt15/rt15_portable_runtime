@@ -63,7 +63,7 @@
 #ifdef RT_DEFINE_GCC
 #define RT_MEMORY_BIT_SCAN_FORWARD(CHUNK_SIZE) __builtin_ctzl(CHUNK_SIZE)
 #else
-rt_n32 rt_memory_bit_scan_forward(rt_un x);
+RT_API rt_n32 rt_memory_bit_scan_forward(rt_un x);
 #define RT_MEMORY_BIT_SCAN_FORWARD(CHUNK_SIZE) rt_memory_bit_scan_forward(CHUNK_SIZE)
 #endif
 
@@ -134,13 +134,13 @@ void *memset(void*, int, size_t);
 
 #define RT_MEMORY_ZERO(AREA, SIZE) memset(AREA, 0, SIZE)
 
-rt_n32 rt_memory_compare(const void *area1, const void *area2, rt_un size);
-void *rt_memory_copy(const void *source, void *destination, rt_un size);
-void *rt_memory_move(const void *source, void *destination, rt_un size);
-void *rt_memory_set(void *area, rt_n32 value, rt_un size);
+RT_API rt_n32 rt_memory_compare(const void *area1, const void *area2, rt_un size);
+RT_API void *rt_memory_copy(const void *source, void *destination, rt_un size);
+RT_API void *rt_memory_move(const void *source, void *destination, rt_un size);
+RT_API void *rt_memory_set(void *area, rt_n32 value, rt_un size);
 
-void *rt_memory_zero(void *area, rt_un size);
-void rt_memory_swap(void *area1, void *area2, rt_un size);
+RT_API void *rt_memory_zero(void *area, rt_un size);
+RT_API void rt_memory_swap(void *area1, void *area2, rt_un size);
 
 /**
  * Fill <tt>AREA</tt> with given <tt>VALUE</tt> as character.<br>
@@ -153,7 +153,7 @@ void rt_memory_swap(void *area1, void *area2, rt_un size);
 #define RT_MEMORY_SET_CHAR(AREA, VALUE, SIZE) RT_MEMORY_SET(AREA, VALUE, SIZE)
 #endif
 
-void *rt_memory_set_char16(void *area, rt_n32 value, rt_un size);
+RT_API void *rt_memory_set_char16(void *area, rt_n32 value, rt_un size);
 
 /**
  * Copy from source to destination, swapping bytes.
@@ -165,7 +165,7 @@ void *rt_memory_set_char16(void *area, rt_n32 value, rt_un size);
  * @param size Size in 16 bits words.
  * @return The destination in all cases.
  */
-rt_un16 *rt_memory_swap_bytes16(const rt_un16 *source, rt_un16 *destination, rt_un size);
+RT_API rt_un16 *rt_memory_swap_bytes16(const rt_un16 *source, rt_un16 *destination, rt_un size);
 
 /**
  * Copy from source to destination, swapping bytes.
@@ -177,6 +177,6 @@ rt_un16 *rt_memory_swap_bytes16(const rt_un16 *source, rt_un16 *destination, rt_
  * @param size Size in 32 bits words.
  * @return The destination in all cases.
  */
-rt_un32 *rt_memory_swap_bytes32(const rt_un32 *source, rt_un32 *destination, rt_un size);
+RT_API rt_un32 *rt_memory_swap_bytes32(const rt_un32 *source, rt_un32 *destination, rt_un size);
 
 #endif /* RT_MEMORY_H */

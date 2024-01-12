@@ -57,7 +57,7 @@ struct rt_process {
  * @param current_dir Current directory of the started process. Same as current process if RT_NULL.
  * @param env_vars Can be RT_NULL.
  */
-rt_s rt_process_create(struct rt_process *process, rt_b child, const rt_char *current_dir, struct rt_env_vars *env_vars, const rt_char *const *application_path_and_args);
+RT_API rt_s rt_process_create(struct rt_process *process, rt_b child, const rt_char *current_dir, struct rt_env_vars *env_vars, const rt_char *const *application_path_and_args);
 
 /**
  * Spawn a child process and wait for the end of it.
@@ -66,7 +66,7 @@ rt_s rt_process_create(struct rt_process *process, rt_b child, const rt_char *cu
  * Under Linux, <tt>waitpid</tt> is called to wait for the child process end.
  * </p>
  */
-rt_s rt_process_spawn_sync(const rt_char *current_dir, struct rt_env_vars *env_vars, const rt_char *const *application_path_and_args, rt_un32 *exit_code);
+RT_API rt_s rt_process_spawn_sync(const rt_char *current_dir, struct rt_env_vars *env_vars, const rt_char *const *application_path_and_args, rt_un32 *exit_code);
 
 /**
  * Spawn a non-child process.
@@ -75,7 +75,7 @@ rt_s rt_process_spawn_sync(const rt_char *current_dir, struct rt_env_vars *env_v
  * Under Linux, the parent will be a temporary intermediate process.
  * </p>
  */
-rt_s rt_process_spawn_async(const rt_char *current_dir, struct rt_env_vars *env_vars, const rt_char *const *application_path_and_args);
+RT_API rt_s rt_process_spawn_async(const rt_char *current_dir, struct rt_env_vars *env_vars, const rt_char *const *application_path_and_args);
 
 /**
  * Start a process with redirections.
@@ -94,7 +94,7 @@ rt_s rt_process_spawn_async(const rt_char *current_dir, struct rt_env_vars *env_
  * @param std_output Can be RT_NULL.
  * @param std_error Can be RT_NULL.
  */
-rt_s rt_process_create_with_redirections(struct rt_process *process, rt_b child, const rt_char *current_dir, struct rt_env_vars *env_vars,
+RT_API rt_s rt_process_create_with_redirections(struct rt_process *process, rt_b child, const rt_char *current_dir, struct rt_env_vars *env_vars,
 					 struct rt_io_device *std_input, struct rt_io_device *std_output, struct rt_io_device *std_error,
 					 const rt_char *const *application_path_and_args);
 
@@ -106,7 +106,7 @@ rt_s rt_process_create_with_redirections(struct rt_process *process, rt_b child,
  * The exit code is saved into the <tt>rt_process</tt> structure so that it can be read with <tt>rt_process_get_exit_code</tt> later on.
  * </p>
  */
-rt_s rt_process_join(struct rt_process *process);
+RT_API rt_s rt_process_join(struct rt_process *process);
 
 /**
  * Return the exit code number of the child process.
@@ -120,7 +120,7 @@ rt_s rt_process_join(struct rt_process *process);
  * Under Windows, exit code is a DWORD (32 unsigned bits) although the command line interpreter treats them as signed.<br>
  * </p>
  */
-rt_s rt_process_get_exit_code(struct rt_process *process, rt_un32 *exit_code);
+RT_API rt_s rt_process_get_exit_code(struct rt_process *process, rt_un32 *exit_code);
 
 /**
  * Must always be called after a successful call to <tt>rt_process_create</tt>.
@@ -130,6 +130,6 @@ rt_s rt_process_get_exit_code(struct rt_process *process, rt_un32 *exit_code);
  * Does nothing under Linux.
  * </p>
  */
-rt_s rt_process_free(struct rt_process *process);
+RT_API rt_s rt_process_free(struct rt_process *process);
 
 #endif /* RT_PROCESS_H */

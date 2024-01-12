@@ -33,6 +33,6 @@ struct rt_url_info {
 /**
  * Parse given <tt>url</tt> to fill <tt>url_info</tt>.
  */
-rt_s rt_url_parse(const rt_char *url, struct rt_url_info *url_info);
+RT_API rt_s rt_url_parse(const rt_char *url, struct rt_url_info *url_info);
 
 #endif /* RT_URL_H */

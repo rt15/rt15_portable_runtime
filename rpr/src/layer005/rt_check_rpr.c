@@ -83,6 +83,7 @@ static rt_s rt_check_types()
 	if (RT_UNLIKELY(sizeof(rt_n16) != sizeof(WORD))) goto error;
 
 	if (RT_UNLIKELY(sizeof(rt_n32) != sizeof(INT))) goto error;
+	if (RT_UNLIKELY(sizeof(rt_n32) != sizeof(BOOL))) goto error;
 	if (RT_UNLIKELY(sizeof(rt_n32) != sizeof(INT32))) goto error;
 	if (RT_UNLIKELY(sizeof(rt_n32) != sizeof(LONG))) goto error;
 
