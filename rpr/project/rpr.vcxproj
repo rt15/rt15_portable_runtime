@@ -71,6 +71,7 @@
     <ClCompile Include="..\src\layer005\rt_temp_file.c" />
     <ClCompile Include="..\src\layer005\rt_unicode_code_point.c" />
     <ClCompile Include="..\src\layer006\rt_error_message.c" />
+    <ClCompile Include="..\src\layer006\rt_process_file.c" />
     <ClCompile Include="..\src\layer006\rt_properties.c" />
     <ClCompile Include="..\src\layer006\rt_socket.c" />
     <ClCompile Include="..\src\layer007\rt_last_error_message.c" />
@@ -140,6 +141,7 @@
     <ClInclude Include="..\include\layer005\rt_temp_file.h" />
     <ClInclude Include="..\include\layer005\rt_unicode_code_point.h" />
     <ClInclude Include="..\include\layer006\rt_error_message.h" />
+    <ClInclude Include="..\include\layer006\rt_process_file.h" />
     <ClInclude Include="..\include\layer006\rt_properties.h" />
     <ClInclude Include="..\include\layer006\rt_socket.h" />
     <ClInclude Include="..\include\layer007\rt_last_error_message.h" />
