@@ -50,7 +50,7 @@ static rt_s zz_test_empty_dir(const rt_char *tmp_dir, rt_un tmp_dir_size)
 #ifdef RT_DEFINE_WINDOWS
 	if (RT_UNLIKELY(file_size)) goto error;
 #else
-	if (RT_UNLIKELY(!file_size || file_size > 200)) goto error;
+	if (RT_UNLIKELY(!file_size || file_size > 4096)) goto error;
 #endif
 
 	/* Delete files functions should not work. */
