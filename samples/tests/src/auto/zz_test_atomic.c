@@ -2,6 +2,9 @@
 
 #define ZZ_TEST_ATOMIC_THREADS_COUNT 8
 
+/* For heavy testing, use 800000. */
+#define ZZ_TEST_ATOMIC_LOOP_SIZE 20000
+
 static rt_un counter = 0;
 static rt_un lock = 0;
 
@@ -14,7 +17,7 @@ static rt_un32 RT_STDCALL zz_test_atomic_callback(RT_UNUSED void *parameter)
 		if (RT_ATOMIC_TRY_TO_ACQUIRE(lock)) {
 
 			counter_value = counter;
-			if (counter_value > 800000) {
+			if (counter_value > ZZ_TEST_ATOMIC_LOOP_SIZE) {
 				RT_ATOMIC_RELEASE(lock);
 				break;
 			}
