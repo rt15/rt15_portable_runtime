@@ -1228,6 +1228,66 @@ static rt_s zz_test_char8_hash()
 	ret = RT_OK;
 free:
 	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_split_do(const rt_char8 *str, const rt_char8 *delimiters, ...)
+{
+	va_list args_list;
+	rt_char8 buffer[RT_CHAR8_HALF_BIG_STRING_SIZE];
+	rt_char8 *parts[4];
+	rt_un parts_size;
+	rt_char8 *expected;
+	rt_un i;
+	rt_s ret;
+
+	if (RT_UNLIKELY(!rt_char8_copy(str, rt_char8_get_size(str), buffer, RT_CHAR8_HALF_BIG_STRING_SIZE))) goto error;
+
+	if (RT_UNLIKELY(!rt_char8_split(buffer, delimiters, parts, 4, &parts_size))) goto error;
+
+	va_start(args_list, delimiters);
+
+	for (i = 0; i < parts_size; i++) {
+		expected = va_arg(args_list, rt_char8*);
+		if (RT_UNLIKELY(!expected))
+			goto error;
+
+		if (RT_UNLIKELY(!rt_char8_equals(parts[i], rt_char8_get_size(parts[i]), expected, rt_char8_get_size(expected))))
+			goto error;
+	}
+
+	/* Check that expected is now empty. */
+	expected = va_arg(args_list, rt_char8*);
+	if (RT_UNLIKELY(expected))
+		goto error;
+
+	va_end(args_list);
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_split()
+{
+	rt_s ret;
+
+	if (RT_UNLIKELY(!zz_test_char8_split_do("foo, bar", ", ", "foo", "bar", RT_NULL))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_split_do("foo, bar, team", ", ", "foo", "bar", "team", RT_NULL))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_split_do(" , ", ", ", RT_NULL))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_split_do(", ,foo, ,", " ,", "foo", RT_NULL))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_split_do(", ,foo, ,", ",", " ", "foo", " ", RT_NULL))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
 error:
 	ret = RT_FAILED;
 	goto free;
@@ -1262,6 +1322,7 @@ rt_s zz_test_char8()
 	if (RT_UNLIKELY(!zz_test_char8_replace())) goto error;
 	if (RT_UNLIKELY(!zz_test_char8_comparison_callback())) goto error;
 	if (RT_UNLIKELY(!zz_test_char8_hash())) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_split())) goto error;
 
 	ret = RT_OK;
 free:

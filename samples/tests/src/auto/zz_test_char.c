@@ -1228,6 +1228,66 @@ static rt_s zz_test_char_hash()
 	ret = RT_OK;
 free:
 	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char_split_do(const rt_char *str, const rt_char *delimiters, ...)
+{
+	va_list args_list;
+	rt_char buffer[RT_CHAR_HALF_BIG_STRING_SIZE];
+	rt_char *parts[4];
+	rt_un parts_size;
+	rt_char *expected;
+	rt_un i;
+	rt_s ret;
+
+	if (RT_UNLIKELY(!rt_char_copy(str, rt_char_get_size(str), buffer, RT_CHAR_HALF_BIG_STRING_SIZE))) goto error;
+
+	if (RT_UNLIKELY(!rt_char_split(buffer, delimiters, parts, 4, &parts_size))) goto error;
+
+	va_start(args_list, delimiters);
+
+	for (i = 0; i < parts_size; i++) {
+		expected = va_arg(args_list, rt_char*);
+		if (RT_UNLIKELY(!expected))
+			goto error;
+
+		if (RT_UNLIKELY(!rt_char_equals(parts[i], rt_char_get_size(parts[i]), expected, rt_char_get_size(expected))))
+			goto error;
+	}
+
+	/* Check that expected is now empty. */
+	expected = va_arg(args_list, rt_char*);
+	if (RT_UNLIKELY(expected))
+		goto error;
+
+	va_end(args_list);
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char_split()
+{
+	rt_s ret;
+
+	if (RT_UNLIKELY(!zz_test_char_split_do(_R("foo, bar"), _R(", "), _R("foo"), _R("bar"), RT_NULL))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_split_do(_R("foo, bar, team"), _R(", "), _R("foo"), _R("bar"), _R("team"), RT_NULL))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_split_do(_R(" , "), _R(", "), RT_NULL))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_split_do(_R(", ,foo, ,"), _R(" ,"), _R("foo"), RT_NULL))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_split_do(_R(", ,foo, ,"), _R(","), _R(" "), _R("foo"), _R(" "), RT_NULL))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
 error:
 	ret = RT_FAILED;
 	goto free;
@@ -1262,6 +1322,7 @@ rt_s zz_test_char()
 	if (RT_UNLIKELY(!zz_test_char_replace())) goto error;
 	if (RT_UNLIKELY(!zz_test_char_comparison_callback())) goto error;
 	if (RT_UNLIKELY(!zz_test_char_hash())) goto error;
+	if (RT_UNLIKELY(!zz_test_char_split())) goto error;
 
 	ret = RT_OK;
 free:

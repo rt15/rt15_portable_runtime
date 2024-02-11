@@ -302,4 +302,15 @@ RT_API rt_un rt_char8_hash(const rt_char8 *data, rt_un data_size);
  */
 RT_API rt_s rt_char8_hash_callback(const void *data, rt_un data_size, void *context, rt_un *hash);
 
+/**
+ * Split given <tt>str</tt> into <tt>parts</tt>, using characters from <tt>delimiters</tt>.
+ * 
+ * @param str The string to split. It is modified by this function to add zero terminating characters.
+ * @param delimiters The list of delimiters characters.
+ * @param parts Receive pointers on the different parts.
+ * @param parts_capacity How many pointers can be stored in <tt>parts</tt>.
+ * @param parts_size Number of parts (out parameter).
+ */
+RT_API rt_s rt_char8_split(rt_char8 *str, const rt_char8 *delimiters, rt_char8 **parts, rt_un parts_capacity, rt_un *parts_size);
+
 #endif /* RT_CHAR8_H */

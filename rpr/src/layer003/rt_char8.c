@@ -956,3 +956,64 @@ rt_s rt_char8_hash_callback(const void *data, rt_un data_size, RT_UNUSED void *c
 
 	return RT_OK;
 }
+
+rt_s rt_char8_split(rt_char8 *str, const rt_char8 *delimiters, rt_char8 **parts, rt_un parts_capacity, rt_un *parts_size)
+{
+	rt_char8 character;
+	rt_un in_str_index;
+	rt_un in_delimiters_index;
+	rt_char8 delimiter;
+	rt_b in_delimiters = RT_TRUE;
+	rt_b is_delimiter;
+	rt_s ret;
+
+	*parts_size = 0;
+
+	in_str_index = 0;
+	while (RT_TRUE) {
+		character = str[in_str_index];
+
+		if (!character)
+			break;
+
+		is_delimiter = RT_FALSE;
+		in_delimiters_index = 0;
+		while (RT_TRUE) {
+			delimiter = delimiters[in_delimiters_index];
+
+			if (!delimiter)
+				break;
+
+			if (character == delimiter) {
+				is_delimiter = RT_TRUE;
+				break;
+			}
+
+			in_delimiters_index++;
+		}
+
+		if (is_delimiter) {
+			str[in_str_index] = 0;
+			in_delimiters = RT_TRUE;
+		} else {
+			if (in_delimiters) {
+				if (*parts_size == parts_capacity) {
+					rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
+					goto error;
+				}
+				parts[*parts_size] = &str[in_str_index];
+				(*parts_size)++;
+				in_delimiters = RT_FALSE;
+			}
+		}
+		in_str_index++;
+	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
