@@ -31,7 +31,7 @@ static rt_s zz_test_address_create_from_host_name()
 	buffer_size = 0;
 	if (RT_UNLIKELY(!rt_address_append_ipv4(&ipv4_address, buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &buffer_size))) goto error;
 	if (RT_UNLIKELY(!rt_char_append_char(_R('\n'), buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &buffer_size))) goto error;
-	if (RT_UNLIKELY(!rt_console_write_string_with_size(buffer, buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_str_with_size(buffer, buffer_size))) goto error;
 
 	address_family = RT_ADDRESS_FAMILY_IPV6;
 	if (RT_UNLIKELY(!rt_address_create_from_host_name(_R("localhost"), &ipv4_address, &ipv6_address, &address_family))) goto error;
@@ -39,7 +39,7 @@ static rt_s zz_test_address_create_from_host_name()
 	buffer_size = 0;
 	if (RT_UNLIKELY(!rt_address_append_ipv6(&ipv6_address, buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &buffer_size))) goto error;
 	if (RT_UNLIKELY(!rt_char_append_char(_R('\n'), buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &buffer_size))) goto error;
-	if (RT_UNLIKELY(!rt_console_write_string_with_size(buffer, buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_str_with_size(buffer, buffer_size))) goto error;
 
 	ret = RT_OK;
 free:

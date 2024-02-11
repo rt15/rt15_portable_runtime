@@ -13,7 +13,7 @@
  * @param strs Null terminated array of zero terminated strings. Can be RT_NULL.
  * @return index of <tt>searched</tt> in <tt>strs</tt> or RT_TYPE_MAX_UN if not found.
  */
-static rt_un rt_command_line_args_search_string_in_strings(const rt_char *strs[], const rt_char *searched)
+static rt_un rt_command_line_args_search_str_in_strs(const rt_char *strs[], const rt_char *searched)
 {
 	rt_un result;
 	rt_un searched_size;
@@ -209,13 +209,13 @@ rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_l
 				j++;
 			}
 		} else if (arg_type == RT_COMMAND_LINE_ARGS_TYPE_LONG) {
-			if (rt_command_line_args_search_string_in_strings(long_options_without_arg, options_buffer) != RT_TYPE_MAX_UN) {
+			if (rt_command_line_args_search_str_in_strs(long_options_without_arg, options_buffer) != RT_TYPE_MAX_UN) {
 				valid = RT_TRUE;
 				value_cardinality = RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_NONE;
-			} else if (rt_command_line_args_search_string_in_strings(long_options_with_optional_arg, options_buffer) != RT_TYPE_MAX_UN) {
+			} else if (rt_command_line_args_search_str_in_strs(long_options_with_optional_arg, options_buffer) != RT_TYPE_MAX_UN) {
 				valid = RT_TRUE;
 				value_cardinality = RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_OPTIONAL;
-			} else if (rt_command_line_args_search_string_in_strings(long_options_with_arg, options_buffer) != RT_TYPE_MAX_UN) {
+			} else if (rt_command_line_args_search_str_in_strs(long_options_with_arg, options_buffer) != RT_TYPE_MAX_UN) {
 				valid = RT_TRUE;
 				value_cardinality = RT_COMMAND_LINE_ARGS_VALUE_CARDINALITY_REQUIRED;
 
@@ -280,7 +280,7 @@ rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_l
 						}
 					} else if (arg_type == RT_COMMAND_LINE_ARGS_TYPE_LONG) {
 						/* We skip an argument only if it is an option with arg. Options with optional arguments require equals. */
-						if (rt_command_line_args_search_string_in_strings(long_options_with_arg, options_buffer) != RT_TYPE_MAX_UN) {
+						if (rt_command_line_args_search_str_in_strs(long_options_with_arg, options_buffer) != RT_TYPE_MAX_UN) {
 							if (!value) {
 								/* Skip the argument if not provided yet using '='. */
 								k++;

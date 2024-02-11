@@ -7,12 +7,12 @@
 #include "layer003/rt_char8.h"
 #include "layer004/rt_static_heap.h"
 
-rt_s rt_console_write_string(const rt_char *str)
+rt_s rt_console_write_str(const rt_char *str)
 {
 	return rt_console_write_with_size(str, rt_char_get_size(str), RT_FALSE);
 }
 
-rt_s rt_console_write_string_with_size(const rt_char *str, rt_un size)
+rt_s rt_console_write_str_with_size(const rt_char *str, rt_un size)
 {
 	return rt_console_write_with_size(str, size, RT_FALSE);
 }
@@ -504,7 +504,7 @@ rt_s rt_console_clear()
 {
 	rt_s ret;
 
-	if (RT_UNLIKELY(!rt_console_write_string_with_size("\033[2J", 4)))
+	if (RT_UNLIKELY(!rt_console_write_str_with_size("\033[2J", 4)))
 		goto error;
 
 	ret = RT_OK;
@@ -518,61 +518,61 @@ error:
 
 rt_s rt_console_set_color(enum rt_console_color console_color)
 {
-	char *string;
+	char *str;
 	rt_s ret;
 
 	switch (console_color) {
 	case RT_CONSOLE_COLOR_BLACK:
-		string = "\033[30m";
+		str = "\033[30m";
 		break;
 	case RT_CONSOLE_COLOR_RED:
-		string = "\033[31m";
+		str = "\033[31m";
 		break;
 	case RT_CONSOLE_COLOR_GREEN:
-		string = "\033[32m";
+		str = "\033[32m";
 		break;
 	case RT_CONSOLE_COLOR_YELLOW:
-		string = "\033[33m";
+		str = "\033[33m";
 		break;
 	case RT_CONSOLE_COLOR_BLUE:
-		string = "\033[34m";
+		str = "\033[34m";
 		break;
 	case RT_CONSOLE_COLOR_MAGENTA:
-		string = "\033[35m";
+		str = "\033[35m";
 		break;
 	case RT_CONSOLE_COLOR_CYAN:
-		string = "\033[36m";
+		str = "\033[36m";
 		break;
 	case RT_CONSOLE_COLOR_WHITE:
-		string = "\033[37m";
+		str = "\033[37m";
 		break;
 	case RT_CONSOLE_COLOR_BRIGHT_BLACK:
-		string = "\033[90m";
+		str = "\033[90m";
 		break;
 	case RT_CONSOLE_COLOR_BRIGHT_RED:
-		string = "\033[91m";
+		str = "\033[91m";
 		break;
 	case RT_CONSOLE_COLOR_BRIGHT_GREEN:
-		string = "\033[92m";
+		str = "\033[92m";
 		break;
 	case RT_CONSOLE_COLOR_BRIGHT_YELLOW:
-		string = "\033[93m";
+		str = "\033[93m";
 		break;
 	case RT_CONSOLE_COLOR_BRIGHT_BLUE:
-		string = "\033[94m";
+		str = "\033[94m";
 		break;
 	case RT_CONSOLE_COLOR_BRIGHT_MAGENTA:
-		string = "\033[95m";
+		str = "\033[95m";
 		break;
 	case RT_CONSOLE_COLOR_BRIGHT_CYAN:
-		string = "\033[96m";
+		str = "\033[96m";
 		break;
 	case RT_CONSOLE_COLOR_BRIGHT_WHITE:
-		string = "\033[97m";
+		str = "\033[97m";
 		break;
 	}
 
-	if (RT_UNLIKELY(!rt_console_write_string_with_size(string, 5)))
+	if (RT_UNLIKELY(!rt_console_write_str_with_size(str, 5)))
 		goto error;
 
 	ret = RT_OK;
@@ -588,7 +588,7 @@ rt_s rt_console_reset_color()
 {
 	rt_s ret;
 
-	if (RT_UNLIKELY(!rt_console_write_string_with_size("\033[0m", 4)))
+	if (RT_UNLIKELY(!rt_console_write_str_with_size("\033[0m", 4)))
 		goto error;
 
 	ret = RT_OK;

@@ -62,7 +62,7 @@ static rt_s zz_parse_args_callback(enum rt_command_line_args_type arg_type, rt_b
 	if (RT_UNLIKELY(!rt_char_append(_R("\n"), 1, message, RT_CHAR_BIG_STRING_SIZE, &message_size)))
 		goto error;
 
-	if (RT_UNLIKELY(!rt_console_write_string_with_size(message, message_size)))
+	if (RT_UNLIKELY(!rt_console_write_str_with_size(message, message_size)))
 		goto error;
 
 	ret = RT_OK;
@@ -110,12 +110,12 @@ rt_s zz_parse_args(rt_un argc, const rt_char *argv[])
 						    &non_options_index)))
 		goto error;
 
-	if (RT_UNLIKELY(!rt_console_write_string(_R("\nNon-options:\n"))))
+	if (RT_UNLIKELY(!rt_console_write_str(_R("\nNon-options:\n"))))
 		goto error;
 
 	for (i = non_options_index; i < argc; i++) {
-		if (RT_UNLIKELY(!rt_console_write_string(argv[i]))) goto error;
-		if (RT_UNLIKELY(!rt_console_write_string(_R("\n")))) goto error;
+		if (RT_UNLIKELY(!rt_console_write_str(argv[i]))) goto error;
+		if (RT_UNLIKELY(!rt_console_write_str(_R("\n")))) goto error;
 	}
 
 	ret = RT_OK;

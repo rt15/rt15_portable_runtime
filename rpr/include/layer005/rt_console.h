@@ -23,8 +23,8 @@ enum rt_console_color {
 	RT_CONSOLE_COLOR_BRIGHT_WHITE = 0x1 | 0x2 | 0x4 | 0x8 /* True white. */
 };
 
-RT_API rt_s rt_console_write_string(const rt_char *str);
-RT_API rt_s rt_console_write_string_with_size(const rt_char *str, rt_un size);
+RT_API rt_s rt_console_write_str(const rt_char *str);
+RT_API rt_s rt_console_write_str_with_size(const rt_char *str, rt_un size);
 
 RT_API rt_s rt_console_write_error(const rt_char *error);
 RT_API rt_s rt_console_write_error_with_size(const rt_char *error, rt_un size);

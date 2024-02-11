@@ -24,7 +24,7 @@ static rt_s zz_test_encoding_get_info_do(enum rt_encoding encoding, const rt_cha
 	if (RT_UNLIKELY(!rt_char_append_un(encoding_info.max_code_point_size, 10, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto error;
 	if (RT_UNLIKELY(!rt_char_append_char(_R('\n'), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto error;
 
-	if (RT_UNLIKELY(!rt_console_write_string_with_size(buffer, buffer_size)))
+	if (RT_UNLIKELY(!rt_console_write_str_with_size(buffer, buffer_size)))
 		goto error;
 
 	ret = RT_OK;

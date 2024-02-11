@@ -15,8 +15,8 @@ rt_s zz_display_env_vars()
 		goto error;
 
 	while (*env_vars_array) {
-		if (RT_UNLIKELY(!rt_console_write_string(*env_vars_array))) goto error;
-		if (RT_UNLIKELY(!rt_console_write_string_with_size(_R("\n"), 1))) goto error;
+		if (RT_UNLIKELY(!rt_console_write_str(*env_vars_array))) goto error;
+		if (RT_UNLIKELY(!rt_console_write_str_with_size(_R("\n"), 1))) goto error;
 		env_vars_array++;
 	}
 
@@ -48,7 +48,7 @@ rt_s zz_display_env_var(const rt_char *name)
 	if (RT_UNLIKELY(!rt_env_var_get(name, buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &buffer_size))) goto error;
 	if (RT_UNLIKELY(!rt_char_append(buffer, buffer_size, message, RT_CHAR_HALF_BIG_STRING_SIZE, &message_size))) goto error;
 	if (RT_UNLIKELY(!rt_char_append_char(_R('\n'), message, RT_CHAR_HALF_BIG_STRING_SIZE, &message_size))) goto error;
-	if (RT_UNLIKELY(!rt_console_write_string_with_size(message, message_size))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_str_with_size(message, message_size))) goto error;
 
 	ret = RT_OK;
 free:

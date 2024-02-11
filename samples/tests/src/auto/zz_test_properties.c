@@ -27,10 +27,10 @@ static rt_s zz_test_properties_display(struct rt_hash_table_entry *properties)
 			if (RT_UNLIKELY(!rt_char_append(value_chars, rt_char_get_size(value_chars), buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &buffer_size))) goto error;
 			if (RT_UNLIKELY(!rt_char_append(_R("\"\n"), 2, buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &buffer_size))) goto error;
 
-			if (RT_UNLIKELY(!rt_console_write_string_with_size(buffer, buffer_size))) goto error;
+			if (RT_UNLIKELY(!rt_console_write_str_with_size(buffer, buffer_size))) goto error;
 		}
 	}
-	if (RT_UNLIKELY(!rt_console_write_string_with_size(_R("\n"), 1))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_str_with_size(_R("\n"), 1))) goto error;
 
 	ret = RT_OK;
 free:

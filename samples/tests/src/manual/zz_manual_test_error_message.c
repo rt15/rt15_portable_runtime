@@ -14,7 +14,7 @@ static rt_s zz_manual_test_display_error_message(const rt_char *error_name, rt_u
 	if (RT_UNLIKELY(!rt_error_message_append_last(buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto error;
 	if (RT_UNLIKELY(rt_char_get_size(buffer) != buffer_size)) goto error;
 	if (RT_UNLIKELY(!rt_char_append_char(_R('\n'), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto error;
-	if (RT_UNLIKELY(!rt_console_write_string_with_size(buffer, buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_str_with_size(buffer, buffer_size))) goto error;
 
 	ret = RT_OK;
 free:
@@ -30,7 +30,7 @@ rt_s zz_manual_test_error_message()
 	rt_char buffer[RT_CHAR_HALF_BIG_STRING_SIZE];
 	rt_s ret;
 
-	if (RT_UNLIKELY(!rt_console_write_string(_R("## Error messages:\n")))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_str(_R("## Error messages:\n")))) goto error;
 
 	/* Intentionally generate an error (RT_ERROR_INSUFFICIENT_BUFFER). */
 	if (RT_UNLIKELY(rt_char_copy(_R("Too long string."), 16, buffer, 3)))
@@ -55,7 +55,7 @@ rt_s zz_manual_test_error_message()
 	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_FILE_NOT_FOUND"),      RT_ERROR_FILE_NOT_FOUND)))      goto error;
 	if (RT_UNLIKELY(!zz_manual_test_display_error_message(_R("RT_ERROR_DIR_NOT_FOUND"),       RT_ERROR_DIR_NOT_FOUND)))       goto error;
 
-	if (RT_UNLIKELY(!rt_console_write_string_with_size(_R("\n"), 1))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_str_with_size(_R("\n"), 1))) goto error;
 
 	ret = RT_OK;
 free:

@@ -15,7 +15,7 @@ rt_s zz_read_line()
 	if (RT_UNLIKELY(!rt_char_copy(_R("\""), message_size, message, RT_CHAR_HALF_BIG_STRING_SIZE))) goto error;
 	if (RT_UNLIKELY(!rt_char_append(buffer, buffer_size, message, RT_CHAR_HALF_BIG_STRING_SIZE, &message_size))) goto error;
 	if (RT_UNLIKELY(!rt_char_append(_R("\"\n"), 2, message, RT_CHAR_HALF_BIG_STRING_SIZE, &message_size))) goto error;
-	if (RT_UNLIKELY(!rt_console_write_string_with_size(message, message_size))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_str_with_size(message, message_size))) goto error;
 
 	ret = RT_OK;
 free:

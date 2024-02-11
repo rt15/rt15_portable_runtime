@@ -15,10 +15,10 @@ rt_s zz_manual_test_env_var()
 
 	if (RT_UNLIKELY(!rt_env_var_get(variable_name, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto error;
 
-	if (RT_UNLIKELY(!rt_console_write_string(variable_name))) goto error;
-	if (RT_UNLIKELY(!rt_console_write_string(_R(" = \"")))) goto error;
-	if (RT_UNLIKELY(!rt_console_write_string_with_size(buffer, buffer_size))) goto error;
-	if (RT_UNLIKELY(!rt_console_write_string(_R("\"\n")))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_str(variable_name))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_str(_R(" = \"")))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_str_with_size(buffer, buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_str(_R("\"\n")))) goto error;
 
 	ret = RT_OK;
 free:

@@ -31,9 +31,9 @@ static rt_s zz_manual_test_temp_file_do(const rt_char *tmp_dir, rt_un tmp_dir_si
 	if (RT_UNLIKELY(!rt_file_path_get_type(file1_path, &type))) goto error;
 	if (RT_UNLIKELY(type != RT_FILE_PATH_TYPE_FILE)) goto error;
 
-	if (RT_UNLIKELY(!rt_console_write_string(file1_path)))
+	if (RT_UNLIKELY(!rt_console_write_str(file1_path)))
 		goto error;
-	if (RT_UNLIKELY(!rt_console_write_string(_R("\n"))))
+	if (RT_UNLIKELY(!rt_console_write_str(_R("\n"))))
 		goto error;
 
 	if (!with_parent_path) {
@@ -50,9 +50,9 @@ static rt_s zz_manual_test_temp_file_do(const rt_char *tmp_dir, rt_un tmp_dir_si
 	if (RT_UNLIKELY(!rt_file_path_get_type(file2_path, &type))) goto error;
 	if (RT_UNLIKELY(type != RT_FILE_PATH_TYPE_FILE)) goto error;
 
-	if (RT_UNLIKELY(!rt_console_write_string(file2_path)))
+	if (RT_UNLIKELY(!rt_console_write_str(file2_path)))
 		goto error;
-	if (RT_UNLIKELY(!rt_console_write_string(_R("\n"))))
+	if (RT_UNLIKELY(!rt_console_write_str(_R("\n"))))
 		goto error;
 
 	ret = RT_OK;
@@ -91,7 +91,7 @@ rt_s zz_manual_test_temp_file()
 
 	if (RT_UNLIKELY(!zz_get_tmp_dir(tmp_dir, RT_FILE_PATH_SIZE, &tmp_dir_size))) goto error;
 
-	if (RT_UNLIKELY(!rt_console_write_string(_R("Temp files:\n")))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_str(_R("Temp files:\n")))) goto error;
 
 	if (RT_UNLIKELY(!zz_manual_test_temp_file_do(tmp_dir, tmp_dir_size, RT_FALSE))) goto error;
 	if (RT_UNLIKELY(!zz_manual_test_temp_file_do(tmp_dir, tmp_dir_size, RT_TRUE))) goto error;

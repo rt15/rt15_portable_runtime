@@ -20,7 +20,7 @@ static rt_s zz_manual_test_url_print_info_item(const rt_char *field_name, const 
 
 	if (RT_UNLIKELY(!rt_char_append_char(_R('\n'), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto error;
 
-	if (RT_UNLIKELY(!rt_console_write_string_with_size(buffer, buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_str_with_size(buffer, buffer_size))) goto error;
 
 	ret = RT_OK;
 free:
@@ -68,8 +68,8 @@ rt_s zz_manual_test_url_do(const rt_char *url)
 	struct rt_url_info url_info;
 	rt_s ret;
 
-	if (RT_UNLIKELY(!rt_console_write_string(url))) goto error;
-	if (RT_UNLIKELY(!rt_console_write_string_with_size(_R("\n"), 1))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_str(url))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_str_with_size(_R("\n"), 1))) goto error;
 	if (RT_UNLIKELY(!rt_url_parse(url, &url_info))) goto error;
 	if (RT_UNLIKELY(!zz_manual_test_url_print_info(&url_info))) goto error;
 

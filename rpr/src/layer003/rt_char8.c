@@ -121,13 +121,13 @@ end:
 
 rt_un rt_char8_get_size(const rt_char8 *str)
 {
-	const rt_char8 *in_string;
+	const rt_char8 *in_str;
 	rt_un ret;
 
-	in_string = str;
-	while (*in_string++);
+	in_str = str;
+	while (*in_str++);
 
-	ret = (rt_un)(in_string - str - 1);
+	ret = (rt_un)(in_str - str - 1);
 
 	return ret;
 }
