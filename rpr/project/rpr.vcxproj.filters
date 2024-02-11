@@ -181,6 +181,9 @@
     <ClCompile Include="..\src\layer006\rt_process_file.c">
       <Filter>src\layer006</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer006\rt_console8.c">
+      <Filter>src\layer006</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -388,6 +391,9 @@
       <Filter>include\layer007</Filter>
     </ClInclude>
     <ClInclude Include="..\include\layer006\rt_process_file.h">
+      <Filter>include\layer006</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer006\rt_console8.h">
       <Filter>include\layer006</Filter>
     </ClInclude>
   </ItemGroup>

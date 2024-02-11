@@ -65,6 +65,7 @@
 #include "layer005/rt_temp_file.h"
 #include "layer005/rt_unicode_code_point.h"
 
+#include "layer006/rt_console8.h"
 #include "layer006/rt_error_message.h"
 #include "layer006/rt_process_file.h"
 #include "layer006/rt_properties.h"

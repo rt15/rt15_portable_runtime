@@ -20,6 +20,7 @@ rt_s zz_manual_test_console();
 rt_s zz_manual_test_temp_file();
 
 /* Layer 006. */
+rt_s zz_manual_test_console8();
 rt_s zz_manual_test_error_message();
 
 /* Layer 007. */
@@ -49,6 +50,7 @@ rt_s zz_manual_tests()
 	if (RT_UNLIKELY(!zz_manual_test_temp_file())) goto error;
 
 	/* Layer 006. */
+	if (RT_UNLIKELY(!zz_manual_test_console8())) goto error;
 	if (RT_UNLIKELY(!zz_manual_test_error_message())) goto error;
 
 	/* Layer 007. */

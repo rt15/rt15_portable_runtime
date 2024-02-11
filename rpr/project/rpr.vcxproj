@@ -70,6 +70,7 @@
     <ClCompile Include="..\src\layer005\rt_sortable_array.c" />
     <ClCompile Include="..\src\layer005\rt_temp_file.c" />
     <ClCompile Include="..\src\layer005\rt_unicode_code_point.c" />
+    <ClCompile Include="..\src\layer006\rt_console8.c" />
     <ClCompile Include="..\src\layer006\rt_error_message.c" />
     <ClCompile Include="..\src\layer006\rt_process_file.c" />
     <ClCompile Include="..\src\layer006\rt_properties.c" />
@@ -140,6 +141,7 @@
     <ClInclude Include="..\include\layer005\rt_sortable_array.h" />
     <ClInclude Include="..\include\layer005\rt_temp_file.h" />
     <ClInclude Include="..\include\layer005\rt_unicode_code_point.h" />
+    <ClInclude Include="..\include\layer006\rt_console8.h" />
     <ClInclude Include="..\include\layer006\rt_error_message.h" />
     <ClInclude Include="..\include\layer006\rt_process_file.h" />
     <ClInclude Include="..\include\layer006\rt_properties.h" />

@@ -797,7 +797,7 @@ static rt_s rt_encoding_decode_using_windows(const rt_char8 *input, rt_un input_
 	/* If the default encoding is used, then the code page is CP_ACP (0) which is supported by MultiByteToWideChar. */
 	code_page = rt_encoding_code_pages[input_encoding];
 
-	if (buffer) {
+	if (buffer && buffer_capacity > 1) {
 
 		/* MultiByteToWideChar will not write the terminating zero, so we must save space for it. */
 		actual_buffer_capacity = (int)buffer_capacity - 1;

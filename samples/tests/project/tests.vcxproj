@@ -69,6 +69,7 @@
     <ClCompile Include="..\src\auto\zz_test_virtual_memory.c" />
     <ClCompile Include="..\src\manual\zz_manual_tests.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_console.c" />
+    <ClCompile Include="..\src\manual\zz_manual_test_console8.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_encoding.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_env_var.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_error_message.c" />
