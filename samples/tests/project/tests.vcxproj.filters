@@ -208,6 +208,9 @@
     <ClCompile Include="..\src\manual\zz_manual_test_console8.c">
       <Filter>src\manual</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_date.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

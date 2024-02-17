@@ -37,6 +37,7 @@
     <ClCompile Include="..\src\layer002\rt_virtual_memory.c" />
     <ClCompile Include="..\src\layer003\rt_char.c" />
     <ClCompile Include="..\src\layer003\rt_char8.c" />
+    <ClCompile Include="..\src\layer003\rt_date.c" />
     <ClCompile Include="..\src\layer003\rt_env_var.c" />
     <ClCompile Include="..\src\layer003\rt_fast_initialization.c" />
     <ClCompile Include="..\src\layer003\rt_file.c" />
@@ -108,6 +109,7 @@
     <ClInclude Include="..\include\layer002\rt_virtual_memory.h" />
     <ClInclude Include="..\include\layer003\rt_char.h" />
     <ClInclude Include="..\include\layer003\rt_char8.h" />
+    <ClInclude Include="..\include\layer003\rt_date.h" />
     <ClInclude Include="..\include\layer003\rt_env_var.h" />
     <ClInclude Include="..\include\layer003\rt_fast_initialization.h" />
     <ClInclude Include="..\include\layer003\rt_file.h" />

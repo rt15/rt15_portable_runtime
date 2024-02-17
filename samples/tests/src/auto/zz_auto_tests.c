@@ -19,6 +19,7 @@ rt_s zz_test_virtual_memory();
 /* Layer 003. */
 rt_s zz_test_char();
 rt_s zz_test_char8();
+rt_s zz_test_date();
 rt_s zz_test_env_var();
 rt_s zz_test_fast_initialization();
 rt_s zz_test_file();
@@ -129,6 +130,8 @@ rt_s zz_auto_tests()
 	if (RT_UNLIKELY(!zz_test_char())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_char8", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_char8())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_date", output_stream))) goto error;
+	if (RT_UNLIKELY(!zz_test_date())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_env_var", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_env_var())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_fast_initialization", output_stream))) goto error;

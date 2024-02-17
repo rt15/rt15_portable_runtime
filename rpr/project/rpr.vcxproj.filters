@@ -184,6 +184,9 @@
     <ClCompile Include="..\src\layer006\rt_console8.c">
       <Filter>src\layer006</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer003\rt_date.c">
+      <Filter>src\layer003</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -395,6 +398,9 @@
     </ClInclude>
     <ClInclude Include="..\include\layer006\rt_console8.h">
       <Filter>include\layer006</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer003\rt_date.h">
+      <Filter>include\layer003</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
