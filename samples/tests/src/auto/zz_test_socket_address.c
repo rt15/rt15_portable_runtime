@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-static rt_s zz_test_socket_address_check_stuctures_sizes()
+static rt_s zz_test_socket_address_check_stuctures_sizes(void)
 {
 	rt_s ret;
 
@@ -17,7 +17,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_socket_address()
+rt_s zz_test_socket_address(void)
 {
 	rt_s ret;
 

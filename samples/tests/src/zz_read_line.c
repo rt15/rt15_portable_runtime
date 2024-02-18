@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-rt_s zz_read_line()
+rt_s zz_read_line(void)
 {
 	rt_char buffer[RT_CHAR_HALF_BIG_STRING_SIZE];
 	rt_un buffer_size;

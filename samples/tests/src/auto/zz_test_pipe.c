@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-static rt_s zz_test_pipe_with_close()
+static rt_s zz_test_pipe_with_close(void)
 {
 	rt_char8 buffer[8];
 	struct rt_pipe pipe;
@@ -82,7 +82,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_pipe()
+rt_s zz_test_pipe(void)
 {
 	struct rt_pipe pipe;
 	rt_b pipe_created = RT_FALSE;

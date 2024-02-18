@@ -1,14 +1,14 @@
 #include <rpr.h>
 #include <rpr_main.h>
 
-rt_s zz_auto_tests();
-rt_s zz_manual_tests();
+rt_s zz_auto_tests(void);
+rt_s zz_manual_tests(void);
 rt_s zz_parse_args(rt_un argc, const rt_char *argv[]);
 rt_s zz_display_args(rt_un argc, const rt_char *argv[]);
-rt_s zz_display_env_vars();
+rt_s zz_display_env_vars(void);
 rt_s zz_display_env_var(const rt_char *name);
-rt_s zz_read_line();
-rt_s zz_generate_char8();
+rt_s zz_read_line(void);
+rt_s zz_generate_char8(void);
 
 static rt_s zz_display_help(rt_s ret)
 {

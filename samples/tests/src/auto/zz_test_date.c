@@ -26,7 +26,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_date_add_years()
+static rt_s zz_test_date_add_years(void)
 {
 	rt_s ret;
 
@@ -74,7 +74,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_date_add_months()
+static rt_s zz_test_date_add_months(void)
 {
 	rt_s ret;
 
@@ -131,7 +131,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_date_add_days()
+static rt_s zz_test_date_add_days(void)
 {
 	rt_s ret;
 
@@ -157,7 +157,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_date()
+rt_s zz_test_date(void)
 {
 	rt_s ret;
 

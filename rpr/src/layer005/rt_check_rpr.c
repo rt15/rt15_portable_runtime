@@ -6,7 +6,7 @@
 #include "layer003/rt_thread.h"
 #include "layer004/rt_uuid.h"
 
-static rt_s rt_check_flags()
+static rt_s rt_check_flags(void)
 {
 #if defined(RT_DEFINE_32) && defined(RT_DEFINE_64)
 #error Both RT_DEFINE_32 and RT_DEFINE_64 are defined.
@@ -34,7 +34,7 @@ static rt_s rt_check_flags()
 	return RT_OK;
 }
 
-static rt_s rt_check_types()
+static rt_s rt_check_types(void)
 {
 	rt_un pointer_size;
 	rt_un char_size;
@@ -153,7 +153,7 @@ error:
 	goto free;
 }
 
-static rt_s rt_check_signedness()
+static rt_s rt_check_signedness(void)
 {
 	rt_uchar8 rt_uchar8_variable = -1;
 	rt_un16 rt_un16_variable = -1;
@@ -194,7 +194,7 @@ error:
 	goto free;
 }
 
-static rt_s rt_check_thread()
+static rt_s rt_check_thread(void)
 {
 	rt_s ret;
 	struct rt_thread thread;
@@ -221,7 +221,7 @@ error:
 	goto free;
 }
 
-static rt_s rt_check_chrono()
+static rt_s rt_check_chrono(void)
 {
 	rt_s ret;
 	struct rt_chrono chrono;
@@ -249,7 +249,7 @@ error:
 	goto free;
 }
 
-static rt_s rt_check_critical_section()
+static rt_s rt_check_critical_section(void)
 {
 	rt_s ret;
 	struct rt_critical_section critical_section;
@@ -283,7 +283,7 @@ error:
 	goto free;
 }
 
-rt_s rt_check_rpr()
+rt_s rt_check_rpr(void)
 {
 	rt_s ret;
 

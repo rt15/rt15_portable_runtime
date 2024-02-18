@@ -42,7 +42,7 @@
 
 #ifdef RT_DEFINE_WINDOWS
 
-rt_s rt_socket_initialize()
+rt_s rt_socket_initialize(void)
 {
 	WORD version_requested;
 	int returned_value;
@@ -82,7 +82,7 @@ error:
 
 #else
 
-rt_s rt_socket_initialize()
+rt_s rt_socket_initialize(void)
 {
 	return RT_OK;
 }
@@ -917,7 +917,7 @@ rt_s rt_socket_free(struct rt_socket *socket)
 
 #ifdef RT_DEFINE_WINDOWS
 
-rt_s rt_socket_cleanup()
+rt_s rt_socket_cleanup(void)
 {
 	rt_s ret;
 
@@ -936,7 +936,7 @@ error:
 
 #else
 
-rt_s rt_socket_cleanup()
+rt_s rt_socket_cleanup(void)
 {
 	return RT_OK;
 }

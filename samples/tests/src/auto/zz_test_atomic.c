@@ -49,7 +49,7 @@ error:
 }
 
 
-static rt_s zz_test_atomic_with_threads()
+static rt_s zz_test_atomic_with_threads(void)
 {
 	rt_b threads_created[ZZ_TEST_ATOMIC_THREADS_COUNT];
 	struct rt_thread threads[ZZ_TEST_ATOMIC_THREADS_COUNT];
@@ -86,7 +86,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_atomic_basics()
+rt_s zz_test_atomic_basics(void)
 {
 	rt_n var;
 	rt_n32 var32;
@@ -131,7 +131,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_atomic()
+rt_s zz_test_atomic(void)
 {
 	rt_s ret;
 

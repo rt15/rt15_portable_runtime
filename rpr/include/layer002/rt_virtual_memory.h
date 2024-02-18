@@ -13,7 +13,7 @@
  * Retrieve the size of a page, in bytes.<br>
  * Usually 4096 on Windows.
  */
-RT_API rt_un rt_virtual_memory_get_page_size();
+RT_API rt_un rt_virtual_memory_get_page_size(void);
 
 /**
  * The resulting memory is page aligned.

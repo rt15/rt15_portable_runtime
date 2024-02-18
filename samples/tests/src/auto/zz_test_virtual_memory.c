@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-rt_s zz_test_virtual_memory()
+rt_s zz_test_virtual_memory(void)
 {
 	rt_un page_size;
 	rt_un size;

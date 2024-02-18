@@ -321,7 +321,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_read_lines()
+rt_s zz_test_read_lines(void)
 {
 	rt_char dir[RT_FILE_PATH_SIZE];
 	rt_un dir_size;

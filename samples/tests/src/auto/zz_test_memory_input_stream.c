@@ -36,7 +36,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_memory_input_stream()
+rt_s zz_test_memory_input_stream(void)
 {
 	rt_s ret;
 

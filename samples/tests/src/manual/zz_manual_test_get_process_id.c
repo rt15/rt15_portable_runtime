@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-rt_s zz_manual_test_get_process_id()
+rt_s zz_manual_test_get_process_id(void)
 {
 	rt_un process_id;
 	rt_char buffer[RT_CHAR_QUARTER_BIG_STRING_SIZE];

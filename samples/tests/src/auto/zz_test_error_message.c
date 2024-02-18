@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-rt_s zz_test_error_message()
+rt_s zz_test_error_message(void)
 {
 	rt_char buffer[RT_CHAR_HALF_BIG_STRING_SIZE];
 	rt_un buffer_size;

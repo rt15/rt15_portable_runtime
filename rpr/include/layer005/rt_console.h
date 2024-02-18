@@ -60,7 +60,7 @@ RT_API rt_s rt_console_read_char(rt_char *character);
 /**
  * Clear the console screen.
  */
-RT_API rt_s rt_console_clear();
+RT_API rt_s rt_console_clear(void);
 
 /**
  * Set console foreground color.
@@ -70,6 +70,6 @@ RT_API rt_s rt_console_set_color(enum rt_console_color console_color);
 /**
  * Reset console foreground color to the default one.
  */
-RT_API rt_s rt_console_reset_color();
+RT_API rt_s rt_console_reset_color(void);
 
 #endif /* RT_CONSOLE_H */

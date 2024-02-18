@@ -51,7 +51,7 @@ static rt_char *zz_string_3 = _R("é\u0163");
 static rt_uchar8 zz_iso_88592[3] = { 0xE9, 0xFE, 0x00 };
 static rt_uchar8 zz_utf8_3[5] = { 0xC3, 0xA9, 0xC5, 0xA3, 0x00 };
 
-static rt_s zz_test_encoding_get_system()
+static rt_s zz_test_encoding_get_system(void)
 {
 	enum rt_encoding encoding;
 	rt_s ret;
@@ -67,7 +67,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_encoding_get_info()
+static rt_s zz_test_encoding_get_info(void)
 {
 	struct rt_encoding_info encoding_info;
 	rt_un i;
@@ -86,7 +86,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_encoding_get_size()
+static rt_s zz_test_encoding_get_size(void)
 {
 	rt_char8 chars[4] = { 1, 1, 1, 0 };
 	rt_un16 wide_chars[4] = { 1, 1, 1, 0 };
@@ -249,7 +249,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_encoding_encode_decode()
+static rt_s zz_test_encoding_encode_decode(void)
 {
 	struct rt_runtime_heap runtime_heap;
 	rt_b runtime_heap_created = RT_FALSE;
@@ -349,7 +349,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_encoding()
+rt_s zz_test_encoding(void)
 {
 	rt_s ret;
 

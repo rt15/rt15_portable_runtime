@@ -58,7 +58,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_deduce_encoding()
+rt_s zz_test_deduce_encoding(void)
 {
 	rt_char encoding_dir[RT_FILE_PATH_SIZE];
 	rt_un encoding_dir_size;

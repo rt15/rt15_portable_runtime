@@ -47,7 +47,7 @@ error:
 }
 
 
-rt_s zz_manual_test_console8()
+rt_s zz_manual_test_console8(void)
 {
 	rt_s ret;
 

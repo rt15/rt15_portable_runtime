@@ -30,7 +30,7 @@ static rt_s zz_test_base64_do(const rt_char8 *data, const rt_char8 *base64)
 	return zz_test_base64_with_size(data, rt_char8_get_size(data), base64);
 }
 
-rt_s zz_test_base64()
+rt_s zz_test_base64(void)
 {
 	rt_s ret;
 

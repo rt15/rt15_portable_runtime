@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-rt_s zz_test_static_heap()
+rt_s zz_test_static_heap(void)
 {
 	rt_un heap_buffer_capacity = 0;
 	void *heap_buffer = RT_NULL;

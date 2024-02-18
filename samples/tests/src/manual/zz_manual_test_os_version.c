@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-rt_s zz_manual_test_os_version()
+rt_s zz_manual_test_os_version(void)
 {
 	rt_un major;
 	rt_un minor;

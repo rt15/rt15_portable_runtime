@@ -39,7 +39,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_random_get_unsigned_integer_with_boundaries()
+rt_s zz_test_random_get_unsigned_integer_with_boundaries(void)
 {
 	rt_s ret;
 
@@ -99,7 +99,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_random_get_integer_with_boundaries()
+static rt_s zz_test_random_get_integer_with_boundaries(void)
 {
 	rt_s ret;
 
@@ -122,7 +122,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_random()
+rt_s zz_test_random(void)
 {
 	rt_s ret;
 

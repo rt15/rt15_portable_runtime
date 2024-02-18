@@ -84,6 +84,6 @@ RT_API void rt_error_set_last(enum rt_error error);
  * This function returns RT_TRUE if <tt>GetLastError</tt> is <tt>WSAEWOULDBLOCK</tt> or <tt>ERROR_IO_PENDING</tt>.
  * </p>
  */
-RT_API rt_b rt_error_would_block();
+RT_API rt_b rt_error_would_block(void);
 
 #endif /* RT_ERROR_H */

@@ -186,7 +186,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_critical_section()
+rt_s zz_test_critical_section(void)
 {
 	rt_s ret;
 

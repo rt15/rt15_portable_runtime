@@ -81,7 +81,7 @@ error:
 	goto free;
 }
 
-rt_s zz_manual_test_url()
+rt_s zz_manual_test_url(void)
 {
 	rt_s ret;
 

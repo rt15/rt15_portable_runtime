@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-rt_s zz_display_env_vars()
+rt_s zz_display_env_vars(void)
 {
 	struct rt_env_vars env_vars;
 	rt_b env_vars_created = RT_FALSE;

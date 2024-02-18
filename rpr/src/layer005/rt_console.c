@@ -425,7 +425,7 @@ error:
 
 #ifdef RT_DEFINE_WINDOWS
 
-rt_s rt_console_clear()
+rt_s rt_console_clear(void)
 {
 	rt_h std_output_handle;
 	COORD cursor_position;
@@ -493,14 +493,14 @@ rt_s rt_console_set_color(enum rt_console_color console_color)
 	return rt_console_set_windows_color(console_color);
 }
 
-rt_s rt_console_reset_color()
+rt_s rt_console_reset_color(void)
 {
 	return rt_console_set_windows_color(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 }
 
 #else
 
-rt_s rt_console_clear()
+rt_s rt_console_clear(void)
 {
 	rt_s ret;
 
@@ -584,7 +584,7 @@ error:
 	goto free;
 }
 
-rt_s rt_console_reset_color()
+rt_s rt_console_reset_color(void)
 {
 	rt_s ret;
 

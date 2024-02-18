@@ -42,7 +42,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_compare_memory()
+static rt_s zz_test_compare_memory(void)
 {
 	rt_char8 area1[32];
 	rt_char8 area2[32];
@@ -112,7 +112,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_copy_memory()
+static rt_s zz_test_copy_memory(void)
 {
 	rt_s ret;
 
@@ -164,7 +164,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_move_memory()
+static rt_s zz_test_move_memory(void)
 {
 	rt_s ret;
 
@@ -234,7 +234,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_set_memory()
+static rt_s zz_test_set_memory(void)
 {
 	rt_un i;
 	rt_s ret;
@@ -281,7 +281,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_memory_swap()
+static rt_s zz_test_memory_swap(void)
 {
 	rt_un i;
 	rt_s ret;
@@ -319,7 +319,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_memory_get_chunks_count()
+static rt_s zz_test_memory_get_chunks_count(void)
 {
 	rt_un i;
 	rt_s ret;
@@ -343,7 +343,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_memory_modulo()
+static rt_s zz_test_memory_modulo(void)
 {
 	rt_un i;
 	rt_s ret;
@@ -422,7 +422,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_memory_set_char16()
+static rt_s zz_test_memory_set_char16(void)
 {
 	rt_un i;
 	rt_s ret;
@@ -439,7 +439,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_memory_set_char()
+static rt_s zz_test_memory_set_char(void)
 {
 	rt_char buffer[20];
 	void *result;
@@ -472,7 +472,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_memory_xnor()
+static rt_s zz_test_memory_xnor(void)
 {
 	rt_b zero = 0;
 	rt_b one = 1;
@@ -499,7 +499,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_memory_swap_bytes16()
+static rt_s zz_test_memory_swap_bytes16(void)
 {
 	rt_char8 data[4] = { 0x02, 0x01, 0x04, 0x03 };
 	rt_un16 *source = (rt_un16*)data;
@@ -523,7 +523,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_memory_swap_bytes32()
+static rt_s zz_test_memory_swap_bytes32(void)
 {
 	rt_char8 data[8] = { 0x04, 0x03, 0x02, 0x01, 0x08, 0x07, 0x06, 0x05 };
 	rt_un32 *source = (rt_un32*)data;
@@ -547,7 +547,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_memory()
+rt_s zz_test_memory(void)
 {
 	rt_s ret;
 

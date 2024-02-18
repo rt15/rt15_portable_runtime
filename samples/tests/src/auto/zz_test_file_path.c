@@ -2,7 +2,7 @@
 
 #include "zz_utils.h"
 
-static rt_s zz_test_get_current_dir()
+static rt_s zz_test_get_current_dir(void)
 {
 	rt_char first_buffer[RT_FILE_PATH_SIZE];
 	rt_un first_buffer_size;
@@ -96,7 +96,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_get_executable_path()
+static rt_s zz_test_get_executable_path(void)
 {
 	rt_char first_buffer[RT_FILE_PATH_SIZE];
 	rt_un first_buffer_size;
@@ -128,7 +128,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_get_home_dir()
+static rt_s zz_test_get_home_dir(void)
 {
 	rt_char first_buffer[RT_FILE_PATH_SIZE];
 	rt_un first_buffer_size;
@@ -168,7 +168,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_get_application_data_dir()
+static rt_s zz_test_get_application_data_dir(void)
 {
 	rt_char first_buffer[RT_FILE_PATH_SIZE];
 	rt_un first_buffer_size;
@@ -236,7 +236,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_append_separator()
+static rt_s zz_test_append_separator(void)
 {
 	rt_s ret;
 
@@ -290,7 +290,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_full()
+static rt_s zz_test_full(void)
 {
 	rt_char buffer[RT_FILE_PATH_SIZE];
 	rt_un buffer_size;
@@ -373,7 +373,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_is_namespaced()
+static rt_s zz_test_is_namespaced(void)
 {
 	rt_s ret;
 
@@ -424,7 +424,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_namespace()
+static rt_s zz_test_namespace(void)
 {
 	rt_s ret;
 
@@ -466,7 +466,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_strip_namespace()
+static rt_s zz_test_strip_namespace(void)
 {
 	rt_s ret;
 
@@ -503,7 +503,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_get_type()
+static rt_s zz_test_get_type(void)
 {
 	rt_s ret;
 
@@ -531,7 +531,7 @@ static rt_s zz_test_get_last_separator_index_do(const rt_char *path, rt_un expec
 	return expected == index;
 }
 
-static rt_s zz_test_get_last_separator_index()
+static rt_s zz_test_get_last_separator_index(void)
 {
 	rt_s ret;
 
@@ -583,7 +583,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_get_parent()
+static rt_s zz_test_get_parent(void)
 {
 	rt_char buffer[RT_FILE_PATH_SIZE];
 	rt_un buffer_size;
@@ -644,7 +644,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_get_name()
+static rt_s zz_test_get_name(void)
 {
 	rt_s ret;
 
@@ -753,7 +753,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_get_temp_dir()
+static rt_s zz_test_get_temp_dir(void)
 {
 	rt_char first_buffer[RT_FILE_PATH_SIZE];
 	rt_un first_buffer_size;
@@ -785,7 +785,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_file_path()
+rt_s zz_test_file_path(void)
 {
 	rt_char tmp_dir[RT_FILE_PATH_SIZE];
 	rt_un tmp_dir_size;

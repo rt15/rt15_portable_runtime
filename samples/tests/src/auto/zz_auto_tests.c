@@ -1,67 +1,67 @@
 #include <rpr.h>
 
 /* Layer 001. */
-rt_s zz_test_atomic();
-rt_s zz_test_memory();
+rt_s zz_test_atomic(void);
+rt_s zz_test_memory(void);
 
 /* Layer 002. */
-rt_s zz_test_binary_search();
-rt_s zz_test_buffered_input_stream();
-rt_s zz_test_critical_section();
-rt_s zz_test_event();
-rt_s zz_test_io_device();
-rt_s zz_test_memory_input_stream();
-rt_s zz_test_quick_sort();
-rt_s zz_test_sleep();
-rt_s zz_test_slurp();
-rt_s zz_test_virtual_memory();
+rt_s zz_test_binary_search(void);
+rt_s zz_test_buffered_input_stream(void);
+rt_s zz_test_critical_section(void);
+rt_s zz_test_event(void);
+rt_s zz_test_io_device(void);
+rt_s zz_test_memory_input_stream(void);
+rt_s zz_test_quick_sort(void);
+rt_s zz_test_sleep(void);
+rt_s zz_test_slurp(void);
+rt_s zz_test_virtual_memory(void);
 
 /* Layer 003. */
-rt_s zz_test_char();
-rt_s zz_test_char8();
-rt_s zz_test_date();
-rt_s zz_test_env_var();
-rt_s zz_test_fast_initialization();
-rt_s zz_test_file();
-rt_s zz_test_heap();
-rt_s zz_test_library();
-rt_s zz_test_pipe();
-rt_s zz_test_read_lines();
-rt_s zz_test_thread();
+rt_s zz_test_char(void);
+rt_s zz_test_char8(void);
+rt_s zz_test_date(void);
+rt_s zz_test_env_var(void);
+rt_s zz_test_fast_initialization(void);
+rt_s zz_test_file(void);
+rt_s zz_test_heap(void);
+rt_s zz_test_library(void);
+rt_s zz_test_pipe(void);
+rt_s zz_test_read_lines(void);
+rt_s zz_test_thread(void);
 
 /* Layer 004. */
-rt_s zz_test_address();
-rt_s zz_test_array();
-rt_s zz_test_base64();
-rt_s zz_test_command_line_args();
-rt_s zz_test_encoding();
-rt_s zz_test_file_path();
-rt_s zz_test_memory_output_stream();
-rt_s zz_test_os_version();
-rt_s zz_test_random();
-rt_s zz_test_small_file();
-rt_s zz_test_static_heap();
-rt_s zz_test_url();
-rt_s zz_test_uuid();
+rt_s zz_test_address(void);
+rt_s zz_test_array(void);
+rt_s zz_test_base64(void);
+rt_s zz_test_command_line_args(void);
+rt_s zz_test_encoding(void);
+rt_s zz_test_file_path(void);
+rt_s zz_test_memory_output_stream(void);
+rt_s zz_test_os_version(void);
+rt_s zz_test_random(void);
+rt_s zz_test_small_file(void);
+rt_s zz_test_static_heap(void);
+rt_s zz_test_url(void);
+rt_s zz_test_uuid(void);
 
 /* Layer 005. */
-rt_s zz_test_deduce_encoding();
-rt_s zz_test_env_vars();
-rt_s zz_test_file_system();
-rt_s zz_test_hash_table();
-rt_s zz_test_list();
-rt_s zz_test_socket_address();
-rt_s zz_test_sortable_array();
-rt_s zz_test_unicode_code_point();
+rt_s zz_test_deduce_encoding(void);
+rt_s zz_test_env_vars(void);
+rt_s zz_test_file_system(void);
+rt_s zz_test_hash_table(void);
+rt_s zz_test_list(void);
+rt_s zz_test_socket_address(void);
+rt_s zz_test_sortable_array(void);
+rt_s zz_test_unicode_code_point(void);
 
 /* Layer 006. */
-rt_s zz_test_error_message();
-rt_s zz_test_properties();
-rt_s zz_test_socket();
+rt_s zz_test_error_message(void);
+rt_s zz_test_properties(void);
+rt_s zz_test_socket(void);
 
 /* Layer 007. */
-rt_s zz_test_process();
-rt_s zz_test_select();
+rt_s zz_test_process(void);
+rt_s zz_test_select(void);
 
 static rt_s zz_auto_tests_log(const rt_char8 *test, struct rt_output_stream *output_stream)
 {
@@ -82,7 +82,7 @@ error:
 
 }
 
-rt_s zz_auto_tests()
+rt_s zz_auto_tests(void)
 {
 	rt_s ret;
 	struct rt_io_device io_device;

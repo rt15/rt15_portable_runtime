@@ -68,7 +68,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_thread()
+rt_s zz_test_thread(void)
 {
 	struct rt_chrono chrono;
 	rt_un duration;

@@ -225,7 +225,7 @@ enum rt_socket_shutdown_flag {
  *
  * @return RT_FALSE and set last error in case of issue.
  */
-RT_API rt_s rt_socket_initialize();
+RT_API rt_s rt_socket_initialize(void);
 
 /**
  * Create a socket.
@@ -390,6 +390,6 @@ RT_API rt_s rt_socket_free(struct rt_socket *socket);
  * Must be called after a successful call to <tt>rt_socket_initialize</tt> and after all socket functions calls.
  * Call WSACleanup under Windows and does nothing under unix.
  */
-RT_API rt_s rt_socket_cleanup();
+RT_API rt_s rt_socket_cleanup(void);
 
 #endif /* RT_SOCKET_H */

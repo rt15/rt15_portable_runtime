@@ -62,7 +62,7 @@ rt_char **rpr_main_command_line_to_argv_w(rt_n32 *argc);
 
 #else
 
-void rpr_main_set_locale();
+void rpr_main_set_locale(void);
 
 #endif
 

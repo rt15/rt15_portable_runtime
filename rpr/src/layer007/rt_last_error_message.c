@@ -19,7 +19,7 @@ static struct rt_thread_local_storage rt_last_error_message_storage;
 /**
  * Make sure the thread local storage is created. 
  */
-static rt_s rt_last_error_message_init()
+static rt_s rt_last_error_message_init(void)
 {
 	rt_s ret;
 
@@ -109,7 +109,7 @@ error:
 	goto free;
 }
 
-rt_s rt_last_error_message_set_with_last_error()
+rt_s rt_last_error_message_set_with_last_error(void)
 {
 	rt_char *local_storage;
 	rt_un local_storage_size;
@@ -180,7 +180,7 @@ error:
 	goto free;
 }
 
-rt_s rt_last_error_message_cleanup_thread_buffer()
+rt_s rt_last_error_message_cleanup_thread_buffer(void)
 {
 	void *local_storage;
 	rt_s ret;
@@ -216,7 +216,7 @@ error:
 	goto free;
 }
 
-rt_s rt_last_error_message_cleanup()
+rt_s rt_last_error_message_cleanup(void)
 {
 	rt_s ret;
 

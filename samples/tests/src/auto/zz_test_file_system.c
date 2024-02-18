@@ -517,7 +517,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_file_system()
+rt_s zz_test_file_system(void)
 {
 	rt_char tmp_dir[RT_FILE_PATH_SIZE];
 	rt_un tmp_dir_size;

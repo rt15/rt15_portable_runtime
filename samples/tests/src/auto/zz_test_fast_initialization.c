@@ -23,7 +23,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_fast_initialization_with_thread()
+static rt_s zz_test_fast_initialization_with_thread(void)
 {
 	struct rt_thread thread;
 	rt_b thread_created = RT_FALSE;
@@ -85,7 +85,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_fast_initialization()
+rt_s zz_test_fast_initialization(void)
 {
 	rt_s ret;
 

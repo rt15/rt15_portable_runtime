@@ -166,7 +166,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_memory_output_stream()
+rt_s zz_test_memory_output_stream(void)
 {
 	struct rt_runtime_heap runtime_heap;
 	rt_b runtime_heap_created = RT_FALSE;

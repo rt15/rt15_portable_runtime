@@ -109,7 +109,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_list()
+rt_s zz_test_list(void)
 {
 	struct rt_runtime_heap runtime_heap;
 	rt_b runtime_heap_created = RT_FALSE;

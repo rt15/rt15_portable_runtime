@@ -131,7 +131,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_runtime_heap()
+static rt_s zz_test_runtime_heap(void)
 {
 	struct rt_runtime_heap runtime_heap;
 	rt_b runtime_heap_created = RT_FALSE;
@@ -157,7 +157,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_page_heap()
+static rt_s zz_test_page_heap(void)
 {
 	struct rt_page_heap page_heap;
 	rt_b page_heap_created = RT_FALSE;
@@ -183,7 +183,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_heap()
+rt_s zz_test_heap(void)
 {
 	rt_s ret;
 

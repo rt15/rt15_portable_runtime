@@ -38,7 +38,7 @@ static rt_random_rtl_gen_random_t rt_random_rtl_gen_random;
 
 #ifdef RT_DEFINE_WINDOWS
 
-static rt_s rt_random_initialize()
+static rt_s rt_random_initialize(void)
 {
 	rt_h library_handle;
 	rt_s ret;

@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-rt_s zz_manual_test_process()
+rt_s zz_manual_test_process(void)
 {
 	const rt_char *application_path_and_args[5];
 	rt_un32 exit_code;

@@ -8,7 +8,7 @@
 
 typedef char* (RT_CDECL *zz_test_library_strcpy_t)(char *destination, const char *source);
 
-rt_s zz_test_library()
+rt_s zz_test_library(void)
 {
 	struct rt_library library;
 	rt_b library_created = RT_FALSE;

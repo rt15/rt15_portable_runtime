@@ -2,7 +2,7 @@
 
 #include "zz_utils.h"
 
-static rt_s zz_manual_test_console_io_device()
+static rt_s zz_manual_test_console_io_device(void)
 {
 	struct rt_io_device console_input;
 	rt_b console_input_created = RT_FALSE;
@@ -92,7 +92,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_manual_test_read_line()
+static rt_s zz_manual_test_read_line(void)
 {
 	rt_char buffer[RT_CHAR_HALF_BIG_STRING_SIZE];
 	rt_un buffer_size;
@@ -119,7 +119,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_manual_test_read_char()
+static rt_s zz_manual_test_read_char(void)
 {
 	rt_char character;
 	rt_char message[RT_CHAR_HALF_BIG_STRING_SIZE];
@@ -146,7 +146,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_manual_test_set_color()
+static rt_s zz_manual_test_set_color(void)
 {
 	rt_s ret;
 
@@ -192,7 +192,7 @@ error:
 	goto free;
 }
 
-rt_s zz_manual_test_console()
+rt_s zz_manual_test_console(void)
 {
 	rt_char test_resources_dir[RT_FILE_PATH_SIZE];
 	rt_un test_resources_dir_size;

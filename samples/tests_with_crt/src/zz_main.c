@@ -11,7 +11,7 @@ rt_s zz_test_memory_move(struct rt_output_stream *output_stream);
 rt_s zz_test_memory_set(struct rt_output_stream *output_stream);
 rt_s zz_test_memory_zero(struct rt_output_stream *output_stream);
 
-rt_s zz_test()
+rt_s zz_test(void)
 {
 	struct rt_io_device io_device;
 	struct rt_output_stream *output_stream;

@@ -135,7 +135,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_command_line_args()
+rt_s zz_test_command_line_args(void)
 {
 	rt_un argc;
 	const rt_char *argv[22];

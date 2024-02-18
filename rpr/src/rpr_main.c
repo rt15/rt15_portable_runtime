@@ -48,7 +48,7 @@ RT_API rt_char **rpr_main_command_line_to_argv_w(rt_n32 *argc)
 
 #else
 
-RT_API void rpr_main_set_locale()
+RT_API void rpr_main_set_locale(void)
 {
 	/* Ensure that functions like nl_langinfo return system info and not default "C" locale. */
 	setlocale(LC_ALL, "");

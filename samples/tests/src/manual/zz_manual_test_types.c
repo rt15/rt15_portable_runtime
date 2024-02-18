@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-static rt_s zz_manual_test_types_display_flags()
+static rt_s zz_manual_test_types_display_flags(void)
 {
 	rt_s ret;
 
@@ -44,7 +44,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_manual_test_types_display_signedness()
+static rt_s zz_manual_test_types_display_signedness(void)
 {
 	rt_char rt_char_variable = -1;
 	rt_s ret;
@@ -71,7 +71,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_manual_test_types_display_page_size()
+static rt_s zz_manual_test_types_display_page_size(void)
 {
 	rt_un page_size;
 	rt_char buffer[RT_CHAR_QUARTER_BIG_STRING_SIZE];
@@ -93,7 +93,7 @@ error:
 	goto free;
 }
 
-rt_s zz_manual_test_types()
+rt_s zz_manual_test_types(void)
 {
 	rt_s ret;
 

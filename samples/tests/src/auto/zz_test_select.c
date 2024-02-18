@@ -77,7 +77,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_select_client()
+static rt_s zz_test_select_client(void)
 {
 	struct rt_socket socket;
 	rt_b socket_created = RT_FALSE;
@@ -141,7 +141,7 @@ error:
 /**
  * Test select assuming rt_socket_initialize/rt_socket_cleanup are called.
  */
-static rt_s zz_test_select_do()
+static rt_s zz_test_select_do(void)
 {
 	struct zz_test_select_server_parameter server_parameter;
 	rt_b event_created = RT_FALSE;
@@ -183,7 +183,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_select()
+rt_s zz_test_select(void)
 {
 	rt_b sockets_initialized = RT_FALSE;
 	rt_s ret;

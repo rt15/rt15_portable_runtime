@@ -292,7 +292,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_process_failed()
+static rt_s zz_test_process_failed(void)
 {
 	const rt_char *application_path_and_args[3];
 	struct rt_process process;
@@ -324,7 +324,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_process()
+rt_s zz_test_process(void)
 {
 	rt_char executable_path[RT_FILE_PATH_SIZE];
 	rt_un buffer_size;

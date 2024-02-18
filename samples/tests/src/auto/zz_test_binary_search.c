@@ -23,7 +23,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_binary_search_index()
+rt_s zz_test_binary_search_index(void)
 {
 	rt_un item_index;
 	rt_s ret;
@@ -87,7 +87,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_binary_search_insertion_index()
+rt_s zz_test_binary_search_insertion_index(void)
 {
 	rt_un insertion_index;
 	rt_s ret;
@@ -134,7 +134,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_binary_search()
+rt_s zz_test_binary_search(void)
 {
 	rt_s ret;
 

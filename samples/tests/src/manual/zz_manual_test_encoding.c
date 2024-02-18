@@ -35,7 +35,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_encoding_get_info()
+static rt_s zz_test_encoding_get_info(void)
 {
 	rt_s ret;
 
@@ -130,7 +130,7 @@ error:
 	goto free;
 }
 
-rt_s zz_manual_test_encoding()
+rt_s zz_manual_test_encoding(void)
 {
 	rt_s ret;
 

@@ -41,7 +41,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_slurp()
+rt_s zz_test_slurp(void)
 {
 	rt_char8 input[RT_CHAR8_HALF_BIG_STRING_SIZE];
 	rt_un i;

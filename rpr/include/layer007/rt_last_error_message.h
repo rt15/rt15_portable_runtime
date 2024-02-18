@@ -25,7 +25,7 @@ RT_API rt_s rt_last_error_message_set(const rt_char *message);
 /**
  * Update the last error message of this thread with a message from the last operating system error. 
  */
-RT_API rt_s rt_last_error_message_set_with_last_error();
+RT_API rt_s rt_last_error_message_set_with_last_error(void);
 
 /**
  * Append the last error message of this thread in <tt>buffer</tt>. 
@@ -53,7 +53,7 @@ RT_API rt_s rt_last_error_message_write(const rt_char *prefix);
  * So if you do not use this function, there will be a memory leak at the end of each thread.
  * </p>
  */
-RT_API rt_s rt_last_error_message_cleanup_thread_buffer();
+RT_API rt_s rt_last_error_message_cleanup_thread_buffer(void);
 
 /**
  * After cleaning all the thread buffers, you can call this function to free the local storage.
@@ -62,6 +62,6 @@ RT_API rt_s rt_last_error_message_cleanup_thread_buffer();
  * It can be called only once.
  * </p>
  */
-RT_API rt_s rt_last_error_message_cleanup();
+RT_API rt_s rt_last_error_message_cleanup(void);
 
 #endif /* RT_LAST_ERROR_MESSAGE_H */

@@ -2,7 +2,7 @@
 
 #include "layer001/rt_os_headers.h"
 
-void rt_sleep_yield()
+void rt_sleep_yield(void)
 {
 #ifdef RT_DEFINE_WINDOWS
 	Sleep(0);

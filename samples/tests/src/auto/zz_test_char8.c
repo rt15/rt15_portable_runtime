@@ -17,7 +17,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_equals()
+static rt_s zz_test_char8_equals(void)
 {
 	rt_s ret;
 
@@ -38,7 +38,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_compare()
+static rt_s zz_test_char8_compare(void)
 {
 	rt_s ret;
 
@@ -109,7 +109,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_append()
+static rt_s zz_test_char8_append(void)
 {
 	rt_s ret;
 
@@ -167,7 +167,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_append_char()
+static rt_s zz_test_char8_append_char(void)
 {
 	rt_s ret;
 
@@ -241,7 +241,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_copy()
+static rt_s zz_test_char8_copy(void)
 {
 	rt_s ret;
 
@@ -257,7 +257,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_get_size()
+static rt_s zz_test_char8_get_size(void)
 {
 	rt_s ret;
 
@@ -320,7 +320,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_char8_append_un()
+rt_s zz_test_char8_append_un(void)
 {
 	rt_s ret;
 
@@ -403,7 +403,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_char8_append_n()
+rt_s zz_test_char8_append_n(void)
 {
 	rt_s ret;
 
@@ -442,7 +442,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_fast_lower_char()
+static rt_s zz_test_char8_fast_lower_char(void)
 {
 	rt_s ret;
 
@@ -469,7 +469,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_fast_upper_char()
+static rt_s zz_test_char8_fast_upper_char(void)
 {
 	rt_s ret;
 
@@ -521,7 +521,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_fast_lower_or_upper()
+static rt_s zz_test_char8_fast_lower_or_upper(void)
 {
 	rt_s ret;
 
@@ -575,7 +575,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_convert_to_un()
+static rt_s zz_test_char8_convert_to_un(void)
 {
 	rt_s ret;
 
@@ -639,7 +639,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_convert_to_n()
+static rt_s zz_test_char8_convert_to_n(void)
 {
 	rt_s ret;
 
@@ -706,7 +706,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_convert_hex_to_un()
+static rt_s zz_test_char8_convert_hex_to_un(void)
 {
 	rt_s ret;
 
@@ -757,7 +757,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_trim()
+static rt_s zz_test_char8_trim(void)
 {
 	rt_s ret;
 
@@ -852,7 +852,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_left_pad()
+static rt_s zz_test_char8_left_pad(void)
 {
 	rt_s ret;
 
@@ -904,7 +904,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_right_pad()
+static rt_s zz_test_char8_right_pad(void)
 {
 	rt_s ret;
 
@@ -940,7 +940,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_ends_with()
+static rt_s zz_test_char8_ends_with(void)
 {
 	rt_s ret;
 
@@ -978,7 +978,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_search()
+static rt_s zz_test_char8_search(void)
 {
 	rt_s ret;
 
@@ -1017,7 +1017,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_search_char()
+static rt_s zz_test_char8_search_char(void)
 {
 	rt_s ret;
 
@@ -1056,7 +1056,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_count_occurrences()
+static rt_s zz_test_char8_count_occurrences(void)
 {
 	rt_s ret;
 
@@ -1075,7 +1075,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_concat()
+static rt_s zz_test_char8_concat(void)
 {
 	rt_char8 buffer[RT_CHAR8_QUARTER_BIG_STRING_SIZE];
 	rt_un buffer_size;
@@ -1125,7 +1125,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_replace()
+static rt_s zz_test_char8_replace(void)
 {
 	rt_s ret;
 
@@ -1175,7 +1175,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_comparison_callback()
+static rt_s zz_test_char8_comparison_callback(void)
 {
 	rt_s ret;
 	if (RT_UNLIKELY(!zz_test_char8_comparison_callback_do("Foo", "Foo", 0)))     goto error;
@@ -1213,7 +1213,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_hash()
+static rt_s zz_test_char8_hash(void)
 {
 	rt_s ret;
 
@@ -1275,7 +1275,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_char8_split()
+static rt_s zz_test_char8_split(void)
 {
 	rt_s ret;
 
@@ -1293,7 +1293,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_char8()
+rt_s zz_test_char8(void)
 {
 	rt_s ret;
 

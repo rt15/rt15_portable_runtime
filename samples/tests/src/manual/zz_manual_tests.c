@@ -1,32 +1,32 @@
 #include <rpr.h>
 
 /* Layer 000. */
-rt_s zz_manual_test_types();
+rt_s zz_manual_test_types(void);
 
 /* Layer 002. */
-rt_s zz_manual_test_get_process_id();
+rt_s zz_manual_test_get_process_id(void);
 
 /* Layer 003. */
-rt_s zz_manual_test_env_var();
+rt_s zz_manual_test_env_var(void);
 
 /* Layer 004. */
-rt_s zz_manual_test_encoding();
-rt_s zz_manual_test_file_path();
-rt_s zz_manual_test_os_version();
-rt_s zz_manual_test_url();
+rt_s zz_manual_test_encoding(void);
+rt_s zz_manual_test_file_path(void);
+rt_s zz_manual_test_os_version(void);
+rt_s zz_manual_test_url(void);
 
 /* Layer 005. */
-rt_s zz_manual_test_console();
-rt_s zz_manual_test_temp_file();
+rt_s zz_manual_test_console(void);
+rt_s zz_manual_test_temp_file(void);
 
 /* Layer 006. */
-rt_s zz_manual_test_console8();
-rt_s zz_manual_test_error_message();
+rt_s zz_manual_test_console8(void);
+rt_s zz_manual_test_error_message(void);
 
 /* Layer 007. */
-rt_s zz_manual_test_process();
+rt_s zz_manual_test_process(void);
 
-rt_s zz_manual_tests()
+rt_s zz_manual_tests(void)
 {
 	rt_s ret;
 

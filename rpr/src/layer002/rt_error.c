@@ -51,7 +51,7 @@ void rt_error_set_last(enum rt_error error)
 #endif
 }
 
-rt_b rt_error_would_block()
+rt_b rt_error_would_block(void)
 {
 #ifdef RT_DEFINE_WINDOWS
 	DWORD error;

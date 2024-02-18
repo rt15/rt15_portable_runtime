@@ -5,7 +5,7 @@
 /* Access are not synchronized but it is not big of a deal if two threads write to this variable. */
 static rt_un rt_virtual_memory_page_size;
 
-rt_un rt_virtual_memory_get_page_size()
+rt_un rt_virtual_memory_get_page_size(void)
 {
 #ifdef RT_DEFINE_WINDOWS
 	SYSTEM_INFO system_info;

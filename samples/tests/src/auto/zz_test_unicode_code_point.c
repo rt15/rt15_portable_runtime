@@ -85,7 +85,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_unicode_code_point()
+rt_s zz_test_unicode_code_point(void)
 {
 	rt_s ret;
 

@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-static rt_s zz_test_get_current_dir()
+static rt_s zz_test_get_current_dir(void)
 {
 	rt_char current_dir[RT_FILE_PATH_SIZE];
 	rt_un buffer_size;
@@ -19,7 +19,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_get_executable_path()
+static rt_s zz_test_get_executable_path(void)
 {
 	rt_char executable_path[RT_FILE_PATH_SIZE];
 	rt_un buffer_size;
@@ -38,7 +38,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_get_temp_dir()
+static rt_s zz_test_get_temp_dir(void)
 {
 	rt_char temp_dir[RT_FILE_PATH_SIZE];
 	rt_un buffer_size;
@@ -57,7 +57,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_get_application_data_dir()
+static rt_s zz_test_get_application_data_dir(void)
 {
 	rt_char application_data_dir[RT_FILE_PATH_SIZE];
 	rt_un application_data_dir_size;
@@ -76,7 +76,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_get_home_dir()
+static rt_s zz_test_get_home_dir(void)
 {
 	rt_char home_dir[RT_FILE_PATH_SIZE];
 	rt_un home_dir_size;
@@ -95,7 +95,7 @@ error:
 	goto free;
 }
 
-rt_s zz_manual_test_file_path()
+rt_s zz_manual_test_file_path(void)
 {
 	rt_s ret;
 

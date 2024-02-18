@@ -210,7 +210,7 @@ error:
 	goto free;
 }
 
-rt_s zz_generate_char8()
+rt_s zz_generate_char8(void)
 {
 	rt_char root_dir[RT_FILE_PATH_SIZE];
 	rt_un root_dir_size;

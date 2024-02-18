@@ -15,7 +15,7 @@
  * Ask the scheduler to execute another thread.
  * </p>
  */
-RT_API void rt_sleep_yield();
+RT_API void rt_sleep_yield(void);
 
 RT_API void rt_sleep_sleep(rt_un32 milliseconds);
 

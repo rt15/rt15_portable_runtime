@@ -34,7 +34,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_event_already_signaled()
+static rt_s zz_test_event_already_signaled(void)
 {
 	rt_b event_created = RT_FALSE;
 	struct rt_thread thread;
@@ -94,7 +94,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_event_not_signaled_yet()
+static rt_s zz_test_event_not_signaled_yet(void)
 {
 	rt_b event_created = RT_FALSE;
 	struct rt_thread thread;
@@ -156,7 +156,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_event()
+rt_s zz_test_event(void)
 {
 	rt_s ret;
 

@@ -25,7 +25,7 @@ error:
 	goto free;
 }
 
-rt_s zz_manual_test_error_message()
+rt_s zz_manual_test_error_message(void)
 {
 	rt_char buffer[RT_CHAR_HALF_BIG_STRING_SIZE];
 	rt_s ret;

@@ -48,7 +48,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_url()
+rt_s zz_test_url(void)
 {
 	struct rt_url_info url_info;
 	rt_s ret;

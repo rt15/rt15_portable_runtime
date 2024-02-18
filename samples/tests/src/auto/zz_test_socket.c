@@ -197,7 +197,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_socket()
+rt_s zz_test_socket(void)
 {
 	rt_b sockets_initialized = RT_FALSE;
 	rt_s ret;

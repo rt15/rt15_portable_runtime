@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-rt_s zz_test_sleep()
+rt_s zz_test_sleep(void)
 {
 	struct rt_chrono chrono;
 	rt_un duration;

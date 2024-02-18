@@ -47,7 +47,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_env_vars()
+rt_s zz_test_env_vars(void)
 {
 	struct rt_env_vars env_vars1;
 	struct rt_env_vars env_vars2;

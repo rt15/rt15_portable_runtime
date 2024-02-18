@@ -91,7 +91,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_buffered_input_stream()
+rt_s zz_test_buffered_input_stream(void)
 {
 	rt_char file_path[RT_FILE_PATH_SIZE];
 	rt_un file_path_size;

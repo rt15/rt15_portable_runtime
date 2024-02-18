@@ -48,7 +48,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_uuid()
+rt_s zz_test_uuid(void)
 {
 	const rt_char *uuid_str = _R("8f471bef-30fc-4922-8eb1-82532a65d697");
 	const rt_char8 *uuid_str8 = "8f471bef-30fc-4922-8eb1-82532a65d697";

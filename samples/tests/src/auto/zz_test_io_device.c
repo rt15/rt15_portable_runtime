@@ -38,7 +38,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_io_device()
+rt_s zz_test_io_device(void)
 {
 	struct rt_pipe pipe;
 	rt_b pipe_created = RT_FALSE;

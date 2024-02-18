@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-static rt_s zz_test_address_check_stuctures_sizes()
+static rt_s zz_test_address_check_stuctures_sizes(void)
 {
 	rt_s ret;
 
@@ -16,7 +16,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_address_create_from_host_name()
+static rt_s zz_test_address_create_from_host_name(void)
 {
 	struct rt_address_ipv4 ipv4_address;
 	struct rt_address_ipv6 ipv6_address;
@@ -87,7 +87,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_address_check_ipv4()
+static rt_s zz_test_address_check_ipv4(void)
 {
 	struct rt_address_ipv4 address;
 	rt_s ret;
@@ -155,7 +155,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_address_check_ipv6()
+static rt_s zz_test_address_check_ipv6(void)
 {
 	struct rt_address_ipv6 address;
 	rt_s ret;
@@ -436,7 +436,7 @@ error:
 	goto free;
 }
 
-rt_s zz_test_address()
+rt_s zz_test_address(void)
 {
 	rt_b sockets_initialized = RT_FALSE;
 	rt_s ret;
