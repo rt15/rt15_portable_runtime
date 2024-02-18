@@ -7,7 +7,7 @@ struct rt_library {
 #ifdef RT_DEFINE_WINDOWS
 	rt_h handle;
 #else
-	void *hanlde;
+	void *handle;
 #endif
 };
 

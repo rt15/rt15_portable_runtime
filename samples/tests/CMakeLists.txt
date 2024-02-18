@@ -47,6 +47,7 @@ else()
         link_libraries(uuid)
         link_libraries(pthread)
         link_libraries(crypto)
+        link_libraries(dl)
 endif()
 
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")

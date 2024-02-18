@@ -15,7 +15,7 @@ rt_s rt_library_create(struct rt_library *library, const rt_char *name)
 #else
 	/* dlopen returns NULL in case of issue, but may not set errno as dlerror can be used to retrieve an error message. */
 	errno = 0;
-	library->handle = dlopen(name, RT_DL_LAZY);
+	library->handle = dlopen(name, RTLD_LAZY);
 	if (!library->handle) {
 		if (!errno) {
 			/* dlopen did not set errno. */
@@ -53,7 +53,7 @@ rt_s rt_library_get_function(struct rt_library *library, const rt_char *name, rt
 #else
 	/* We consider dlsym returning NULL as an issue, which is not the actually the case for symbols. */
 	errno = 0;
-	*function = dlsym(library->handle, name);
+	*function = (rt_library_function_t)(uintptr_t)dlsym(library->handle, name);
 	if (!*function) {
 		if (!errno) {
 			/* dlsym did not set errno. */
