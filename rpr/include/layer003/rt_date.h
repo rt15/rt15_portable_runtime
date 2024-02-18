@@ -9,6 +9,13 @@ struct rt_date {
 	rt_uchar8 day;   /* 1 is the first day of the month. */
 };
 
+/**
+ * <p>
+ * You cannot just add or substract years because February can be shorter or longer depending on the year.
+ * </p> 
+ */
+RT_API rt_s rt_date_add_years(struct rt_date *date, rt_n years);
+
 RT_API rt_s rt_date_add_months(struct rt_date *date, rt_n months);
 
 RT_API rt_s rt_date_add_days(struct rt_date *date, rt_n days);

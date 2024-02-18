@@ -2,6 +2,32 @@
 
 #include "layer002/rt_error.h"
 
+rt_s rt_date_add_years(struct rt_date *date, rt_n years)
+{
+	rt_n year = date->year;
+	rt_un days_in_month;
+	rt_s ret;
+
+	year += years;
+
+	if (RT_UNLIKELY(!rt_date_get_days_in_month((rt_un16)year, date->month, &days_in_month)))
+		goto error;
+
+	if (date->day > (rt_n)days_in_month) {
+		date->day = (rt_uchar8)days_in_month;
+	}
+
+	date->year = (rt_un16)year;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s rt_date_add_months(struct rt_date *date, rt_n months)
 {
 	rt_un year = date->year;

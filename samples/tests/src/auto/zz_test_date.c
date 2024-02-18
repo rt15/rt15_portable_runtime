@@ -1,5 +1,53 @@
 #include <rpr.h>
 
+static rt_s zz_test_date_add_years_do(rt_un16 year, rt_uchar8 month, rt_uchar8 day, rt_n years, rt_un16 expected_year, rt_uchar8 expected_month, rt_uchar8 expected_day)
+{
+	struct rt_date date;
+	rt_s ret;
+
+	date.year = year;
+	date.month = month;
+	date.day = day;
+
+	if (RT_UNLIKELY(!rt_date_add_years(&date, years))) goto error;
+
+	if (RT_UNLIKELY(date.year != expected_year)) goto error;
+
+	if (RT_UNLIKELY(date.month != expected_month)) goto error;
+	
+	if (RT_UNLIKELY(date.day != expected_day)) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_date_add_years()
+{
+	rt_s ret;
+
+	if (RT_UNLIKELY(!zz_test_date_add_years_do(2024, 2, 15, 0, 2024, 2, 15))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_add_years_do(2024, 2, 15, 1, 2025, 2, 15))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_add_years_do(2024, 2, 15, -3, 2021, 2, 15))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_add_years_do(2024, 2, 15, 3, 2027, 2, 15))) goto error;
+
+	if (RT_UNLIKELY(!zz_test_date_add_years_do(2024, 2, 29, 1, 2025, 2, 28))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_add_years_do(2024, 2, 29, -1, 2023, 2, 28))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_add_years_do(2024, 2, 29, 4, 2028, 2, 29))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 static rt_s zz_test_date_add_months_do(rt_un16 year, rt_uchar8 month, rt_uchar8 day, rt_n months, rt_un16 expected_year, rt_uchar8 expected_month, rt_uchar8 expected_day)
 {
 	struct rt_date date;
@@ -113,6 +161,7 @@ rt_s zz_test_date()
 {
 	rt_s ret;
 
+	if (RT_UNLIKELY(!zz_test_date_add_years())) goto error;
 	if (RT_UNLIKELY(!zz_test_date_add_months())) goto error;
 	if (RT_UNLIKELY(!zz_test_date_add_days())) goto error;
 
