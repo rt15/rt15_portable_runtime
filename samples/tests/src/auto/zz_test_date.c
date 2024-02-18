@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-static rt_s zz_test_date_add_months_do(rt_un16 year, rt_uchar8 month, rt_uchar8 day, rt_n months, rt_un16 expected_year, rt_uchar8 expected_month)
+static rt_s zz_test_date_add_months_do(rt_un16 year, rt_uchar8 month, rt_uchar8 day, rt_n months, rt_un16 expected_year, rt_uchar8 expected_month, rt_uchar8 expected_day)
 {
 	struct rt_date date;
 	rt_s ret;
@@ -15,7 +15,7 @@ static rt_s zz_test_date_add_months_do(rt_un16 year, rt_uchar8 month, rt_uchar8 
 
 	if (RT_UNLIKELY(date.month != expected_month)) goto error;
 	
-	if (RT_UNLIKELY(date.day != day)) goto error;
+	if (RT_UNLIKELY(date.day != expected_day)) goto error;
 
 	ret = RT_OK;
 free:
@@ -30,12 +30,23 @@ static rt_s zz_test_date_add_months()
 {
 	rt_s ret;
 
-	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 2, 15, 0, 2024, 2))) goto error;
-	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 2, 15, 1, 2024, 3))) goto error;
-	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 2, 15, -3, 2023, 11))) goto error;
-	if (RT_UNLIKELY(!zz_test_date_add_months_do(2023, 11, 15, 3, 2024, 2))) goto error;
-	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 11, 15, 2123, 2201, 10))) goto error;
-	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 11, 15, -2123, 1847, 12))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 2, 15, 0, 2024, 2, 15))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 2, 15, 1, 2024, 3, 15))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 2, 15, -3, 2023, 11, 15))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_add_months_do(2023, 11, 15, 3, 2024, 2, 15))) goto error;
+
+	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 6, 30, 1, 2024, 7, 30))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 7, 31, 1, 2024, 8, 31))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 8, 31, 1, 2024, 9, 30))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 9, 30, 1, 2024, 10, 30))) goto error;
+
+	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 6, 30, -1, 2024, 5, 30))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 7, 31, -1, 2024, 6, 30))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 8, 31, -1, 2024, 7, 31))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 9, 30, -1, 2024, 8, 30))) goto error;
+
+	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 11, 15, 2123, 2201, 10, 15))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_add_months_do(2024, 11, 15, -2123, 1847, 12, 15))) goto error;
 
 	ret = RT_OK;
 free:
