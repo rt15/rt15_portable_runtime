@@ -24,6 +24,7 @@ rt_s zz_test_env_var();
 rt_s zz_test_fast_initialization();
 rt_s zz_test_file();
 rt_s zz_test_heap();
+rt_s zz_test_library();
 rt_s zz_test_pipe();
 rt_s zz_test_read_lines();
 rt_s zz_test_thread();
@@ -140,6 +141,8 @@ rt_s zz_auto_tests()
 	if (RT_UNLIKELY(!zz_test_file())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_heap", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_heap())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_library", output_stream))) goto error;
+	if (RT_UNLIKELY(!zz_test_library())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_pipe", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_pipe())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_read_lines", output_stream))) goto error;
