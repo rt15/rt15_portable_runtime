@@ -1293,6 +1293,46 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_char_is_empty_or_blank_do(const rt_char *str, rt_b expected)
+{
+	rt_b result;
+	rt_s ret;
+
+	result = rt_char_is_empty_or_blank(str);
+	if (RT_UNLIKELY(!RT_MEMORY_XNOR(result, expected))) goto error;
+
+	result = rt_char_is_empty_or_blank_with_size(str, rt_char_get_size(str));
+	if (RT_UNLIKELY(!RT_MEMORY_XNOR(result, expected))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char_is_empty_or_blank(void)
+{
+	rt_s ret;
+
+	if (RT_UNLIKELY(!zz_test_char_is_empty_or_blank_do(_R(""), RT_TRUE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_is_empty_or_blank_do(_R(" "), RT_TRUE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_is_empty_or_blank_do(_R("  "), RT_TRUE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_is_empty_or_blank_do(_R("	"), RT_TRUE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_is_empty_or_blank_do(_R("foo"), RT_FALSE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_is_empty_or_blank_do(_R(" foo"), RT_FALSE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_is_empty_or_blank_do(_R("foo "), RT_FALSE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_is_empty_or_blank_do(_R(" foo "), RT_FALSE))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s zz_test_char(void)
 {
 	rt_s ret;
@@ -1323,6 +1363,7 @@ rt_s zz_test_char(void)
 	if (RT_UNLIKELY(!zz_test_char_comparison_callback())) goto error;
 	if (RT_UNLIKELY(!zz_test_char_hash())) goto error;
 	if (RT_UNLIKELY(!zz_test_char_split())) goto error;
+	if (RT_UNLIKELY(!zz_test_char_is_empty_or_blank())) goto error;
 
 	ret = RT_OK;
 free:

@@ -25,6 +25,8 @@
 #define RT_CHAR8_FAST_LOWER_CHAR(CHARACTER) ((CHARACTER >= 'A' && CHARACTER <= 'Z') ? CHARACTER + 32 : CHARACTER)
 #define RT_CHAR8_FAST_UPPER_CHAR(CHARACTER) ((CHARACTER >= 'a' && CHARACTER <= 'z') ? CHARACTER - 32 : CHARACTER)
 
+#define RT_CHAR8_IS_BLANK(CHARACTER) (CHARACTER <= ' ')
+
 /**
  * Test two strings for equality.
  *
@@ -312,5 +314,9 @@ RT_API rt_s rt_char8_hash_callback(const void *data, rt_un data_size, void *cont
  * @param parts_size Number of parts (out parameter).
  */
 RT_API rt_s rt_char8_split(rt_char8 *str, const rt_char8 *delimiters, rt_char8 **parts, rt_un parts_capacity, rt_un *parts_size);
+
+RT_API rt_b rt_char8_is_empty_or_blank(const rt_char8 *str);
+
+RT_API rt_b rt_char8_is_empty_or_blank_with_size(const rt_char8 *str, rt_un str_size);
 
 #endif /* RT_CHAR8_H */

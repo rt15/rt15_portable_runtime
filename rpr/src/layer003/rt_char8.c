@@ -1017,3 +1017,37 @@ error:
 	ret = RT_FAILED;
 	goto free;
 }
+
+rt_b rt_char8_is_empty_or_blank(const rt_char8 *str)
+{
+	rt_char8 character;
+	rt_un i;
+	rt_b ret = RT_TRUE;
+
+	i = 0;
+	while (RT_TRUE) {
+		character = str[i];
+		if (!character)
+			break;
+		if (!RT_CHAR8_IS_BLANK(character)) {
+			ret = RT_FALSE;
+			break;
+		}
+		i++;
+	}
+	return ret;
+}
+
+rt_b rt_char8_is_empty_or_blank_with_size(const rt_char8 *str, rt_un str_size)
+{
+	rt_un i;
+	rt_b ret = RT_TRUE;
+
+	for (i = 0; i < str_size; i++) {
+		if (!RT_CHAR8_IS_BLANK(str[i])) {
+			ret = RT_FALSE;
+			break;
+		}
+	}
+	return ret;
+}
