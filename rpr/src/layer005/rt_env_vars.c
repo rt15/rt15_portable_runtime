@@ -382,41 +382,48 @@ rt_s rt_env_vars_remove_env_var(struct rt_env_vars *env_vars, const rt_char *env
 	rt_b was_null;
 	rt_s ret;
 
-	/* Search the variable to delete. */
-	if (RT_UNLIKELY(!rt_env_vars_get_pointer(env_vars, env_var_name, &env_var)))
-		goto error;
+	/* The variable might be present multiple times with different cases. */
+	while (RT_TRUE) {
 
-	/* Remove only if it exists. */
-	if (env_var) {
-
-		/* The array will be built back if and when needed. */
-		if (RT_UNLIKELY(!rt_static_heap_free((void**)&env_vars->env_vars_array)))
+		/* Search the variable to delete. */
+		if (RT_UNLIKELY(!rt_env_vars_get_pointer(env_vars, env_var_name, &env_var)))
 			goto error;
 
-		/* We will copy the remaining of the block in place of the variable to remove. */
-		destination = env_var;
+		/* Remove only if it exists. */
+		if (env_var) {
 
-		/* Skip the variable name and value. */
-		while (*env_var)
+			/* The array will be built back if and when needed. */
+			if (RT_UNLIKELY(!rt_static_heap_free((void**)&env_vars->env_vars_array)))
+				goto error;
+
+			/* We will copy the remaining of the block in place of the variable to remove. */
+			destination = env_var;
+
+			/* Skip the variable name and value. */
+			while (*env_var)
+				env_var++;
+			/* Skip the variable terminating zero. */
 			env_var++;
-		/* Skip the variable terminating zero. */
-		env_var++;
 
-		was_null = RT_TRUE;
-		while (RT_TRUE) {
-			if (!*env_var) {
-				if (was_null) {
-					/* Two zeros, we are at the end of the block. Add the second terminating zero. */
-					*destination = 0;
-					break;
+			was_null = RT_TRUE;
+			while (RT_TRUE) {
+				if (!*env_var) {
+					if (was_null) {
+						/* Two zeros, we are at the end of the block. Add the second terminating zero. */
+						*destination = 0;
+						break;
+					}
+					was_null = RT_TRUE;
+				} else {
+					was_null = RT_FALSE;
 				}
-				was_null = RT_TRUE;
-			} else {
-				was_null = RT_FALSE;
+				*destination = *env_var;
+				destination++;
+				env_var++;
 			}
-			*destination = *env_var;
-			destination++;
-			env_var++;
+		} else {
+			/* Variable not found. */
+			break;
 		}
 	}
 
