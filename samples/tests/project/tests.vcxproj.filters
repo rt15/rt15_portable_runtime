@@ -211,6 +211,12 @@
     <ClCompile Include="..\src\auto\zz_test_date.c">
       <Filter>src\auto</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_spinlock.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_library.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

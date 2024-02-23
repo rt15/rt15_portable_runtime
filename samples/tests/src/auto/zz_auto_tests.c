@@ -27,6 +27,7 @@ rt_s zz_test_heap(void);
 rt_s zz_test_library(void);
 rt_s zz_test_pipe(void);
 rt_s zz_test_read_lines(void);
+rt_s zz_test_spinlock(void);
 rt_s zz_test_thread(void);
 
 /* Layer 004. */
@@ -147,6 +148,8 @@ rt_s zz_auto_tests(void)
 	if (RT_UNLIKELY(!zz_test_pipe())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_read_lines", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_read_lines())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_spinlock", output_stream))) goto error;
+	if (RT_UNLIKELY(!zz_test_spinlock())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_thread", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_thread())) goto error;
 

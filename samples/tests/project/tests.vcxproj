@@ -44,6 +44,7 @@
     <ClCompile Include="..\src\auto\zz_test_hash_table.c" />
     <ClCompile Include="..\src\auto\zz_test_heap.c" />
     <ClCompile Include="..\src\auto\zz_test_io_device.c" />
+    <ClCompile Include="..\src\auto\zz_test_library.c" />
     <ClCompile Include="..\src\auto\zz_test_list.c" />
     <ClCompile Include="..\src\auto\zz_test_memory.c" />
     <ClCompile Include="..\src\auto\zz_test_memory_input_stream.c" />
@@ -62,6 +63,7 @@
     <ClCompile Include="..\src\auto\zz_test_socket.c" />
     <ClCompile Include="..\src\auto\zz_test_socket_address.c" />
     <ClCompile Include="..\src\auto\zz_test_sortable_array.c" />
+    <ClCompile Include="..\src\auto\zz_test_spinlock.c" />
     <ClCompile Include="..\src\auto\zz_test_static_heap.c" />
     <ClCompile Include="..\src\auto\zz_test_thread.c" />
     <ClCompile Include="..\src\auto\zz_test_unicode_code_point.c" />
