@@ -102,11 +102,11 @@
 #endif
 
 #ifdef RT_DEFINE_GCC
-#define RT_LIKELY(x) (__builtin_expect(!!(x), 1))
-#define RT_UNLIKELY(x) (__builtin_expect(!!(x), 0))
+#define RT_LIKELY(condition) (__builtin_expect(!!(condition), 1))
+#define RT_UNLIKELY(condition) (__builtin_expect(!!(condition), 0))
 #else
-#define RT_LIKELY(x) (x)
-#define RT_UNLIKELY(x) (x)
+#define RT_LIKELY(condition) (condition)
+#define RT_UNLIKELY(condition) (condition)
 #endif
 
 /* Use gcc __va_copy if va_copy is not available.                                      */
@@ -126,11 +126,11 @@ typedef short rt_n16;
 /* Use 16 bits characters under windows, 8 bits otherwise. */
 /* rt_char is "signed (or occasionaly unsigned) rt_char8" under Linux and "unsigned rt_un16" under Windows. */
 #ifdef RT_DEFINE_WINDOWS
-#define _R(x) L ## x
+#define _R(str) L ## str
 typedef rt_un16 rt_char;
 typedef rt_un16 rt_uchar;
 #else
-#define _R(x) x
+#define _R(str) str
 typedef rt_char8 rt_char;
 typedef rt_uchar8 rt_uchar;
 #endif
