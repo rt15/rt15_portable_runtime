@@ -94,7 +94,7 @@ error:
 	goto free;
 }
 
-static rt_s zz_test_event_not_signaled_yet(void)
+static rt_s zz_test_event_not_signaled_yet(rt_b reset)
 {
 	rt_b event_created = RT_FALSE;
 	struct rt_thread thread;
@@ -107,6 +107,14 @@ static rt_s zz_test_event_not_signaled_yet(void)
 	if (RT_UNLIKELY(!rt_event_create(&event)))
 		goto error;
 	event_created = RT_TRUE;
+
+	if (reset) {
+		if (RT_UNLIKELY(!rt_event_signal(&event)))
+			goto error;
+
+		if (RT_UNLIKELY(!rt_event_reset(&event)))
+			goto error;
+	}
 
 	if (RT_UNLIKELY(!rt_thread_create(&thread, &zz_test_event_thread_callback, &event)))
 		goto error;
@@ -161,7 +169,8 @@ rt_s zz_test_event(void)
 	rt_s ret;
 
 	if (RT_UNLIKELY(!zz_test_event_already_signaled())) goto error;
-	if (RT_UNLIKELY(!zz_test_event_not_signaled_yet())) goto error;
+	if (RT_UNLIKELY(!zz_test_event_not_signaled_yet(RT_FALSE))) goto error;
+	if (RT_UNLIKELY(!zz_test_event_not_signaled_yet(RT_TRUE))) goto error;
 
 	ret = RT_OK;
 free:

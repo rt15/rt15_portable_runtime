@@ -80,6 +80,33 @@ error:
 	goto free;
 }
 
+rt_s rt_event_reset(struct rt_event *event)
+{
+	rt_s ret;
+
+#ifdef RT_DEFINE_WINDOWS
+	if (RT_UNLIKELY(!ResetEvent(event->event_handle)))
+		goto error;
+#else
+	/* Seems like the only way to reset is to re-create the eventfd. */
+	if (RT_UNLIKELY(close(event->file_descriptor))) {
+		event->file_descriptor = -1;
+		goto error;
+	}
+	event->file_descriptor = eventfd(0, EFD_CLOEXEC);
+	if (RT_UNLIKELY(event->file_descriptor == -1))
+		goto error;
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s rt_event_free(struct rt_event *event)
 {
 	rt_s ret;
@@ -88,9 +115,11 @@ rt_s rt_event_free(struct rt_event *event)
 	if (RT_UNLIKELY(!CloseHandle(event->event_handle)))
 		goto error;
 #else
-	/* The close function returns zero on success. */
-	if (RT_UNLIKELY(close(event->file_descriptor)))
-		goto error;
+	if (event->file_descriptor != -1) {
+		/* The close function returns zero on success. */
+		if (RT_UNLIKELY(close(event->file_descriptor)))
+			goto error;
+	}
 #endif
 
 	ret = RT_OK;

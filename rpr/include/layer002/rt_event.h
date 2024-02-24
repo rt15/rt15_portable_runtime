@@ -25,6 +25,8 @@ RT_API rt_s rt_event_signal(struct rt_event *event);
 
 RT_API rt_s rt_event_wait_for(struct rt_event *event);
 
+RT_API rt_s rt_event_reset(struct rt_event *event);
+
 RT_API rt_s rt_event_free(struct rt_event *event);
 
 #endif /* RT_EVENT_H */
