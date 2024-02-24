@@ -50,6 +50,7 @@
 #include "layer004/rt_os_version.h"
 #include "layer004/rt_page_heap.h"
 #include "layer004/rt_random.h"
+#include "layer004/rt_shared_mutex.h"
 #include "layer004/rt_small_file.h"
 #include "layer004/rt_static_heap.h"
 #include "layer004/rt_url.h"

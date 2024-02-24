@@ -8,6 +8,10 @@
  * Critical section implementation for Windows and Linux.
  *
  * <p>
+ * Can be used as a mutex.
+ * </p>
+ * 
+ * <p>
  * A critical section is a portion of instructions that can be executed by only one thread at a given time.
  * </p>
  */

@@ -56,6 +56,7 @@
     <ClCompile Include="..\src\layer004\rt_os_version.c" />
     <ClCompile Include="..\src\layer004\rt_page_heap.c" />
     <ClCompile Include="..\src\layer004\rt_random.c" />
+    <ClCompile Include="..\src\layer004\rt_shared_mutex.c" />
     <ClCompile Include="..\src\layer004\rt_small_file.c" />
     <ClCompile Include="..\src\layer004\rt_static_heap.c" />
     <ClCompile Include="..\src\layer004\rt_url.c" />
@@ -130,6 +131,7 @@
     <ClInclude Include="..\include\layer004\rt_os_version.h" />
     <ClInclude Include="..\include\layer004\rt_page_heap.h" />
     <ClInclude Include="..\include\layer004\rt_random.h" />
+    <ClInclude Include="..\include\layer004\rt_shared_mutex.h" />
     <ClInclude Include="..\include\layer004\rt_small_file.h" />
     <ClInclude Include="..\include\layer004\rt_static_heap.h" />
     <ClInclude Include="..\include\layer004\rt_url.h" />

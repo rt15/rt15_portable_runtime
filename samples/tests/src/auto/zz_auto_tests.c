@@ -40,6 +40,7 @@ rt_s zz_test_file_path(void);
 rt_s zz_test_memory_output_stream(void);
 rt_s zz_test_os_version(void);
 rt_s zz_test_random(void);
+rt_s zz_test_shared_mutex(void);
 rt_s zz_test_small_file(void);
 rt_s zz_test_static_heap(void);
 rt_s zz_test_url(void);
@@ -172,6 +173,8 @@ rt_s zz_auto_tests(void)
 	if (RT_UNLIKELY(!zz_test_os_version())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_random", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_random())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_shared_mutex", output_stream))) goto error;
+	if (RT_UNLIKELY(!zz_test_shared_mutex())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_small_file", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_small_file())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_static_heap", output_stream))) goto error;
