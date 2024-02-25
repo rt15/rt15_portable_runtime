@@ -21,6 +21,7 @@
 #include "layer002/rt_get_process_id.h"
 #include "layer002/rt_io_device.h"
 #include "layer002/rt_memory_input_stream.h"
+#include "layer002/rt_named_mutex.h"
 #include "layer002/rt_quick_sort.h"
 #include "layer002/rt_sleep.h"
 #include "layer002/rt_slurp.h"

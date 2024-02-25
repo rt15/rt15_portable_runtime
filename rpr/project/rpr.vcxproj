@@ -30,6 +30,7 @@
     <ClCompile Include="..\src\layer002\rt_get_process_id.c" />
     <ClCompile Include="..\src\layer002\rt_io_device.c" />
     <ClCompile Include="..\src\layer002\rt_memory_input_stream.c" />
+    <ClCompile Include="..\src\layer002\rt_named_mutex.c" />
     <ClCompile Include="..\src\layer002\rt_quick_sort.c" />
     <ClCompile Include="..\src\layer002\rt_sleep.c" />
     <ClCompile Include="..\src\layer002\rt_slurp.c" />
@@ -104,6 +105,7 @@
     <ClInclude Include="..\include\layer002\rt_get_process_id.h" />
     <ClInclude Include="..\include\layer002\rt_io_device.h" />
     <ClInclude Include="..\include\layer002\rt_memory_input_stream.h" />
+    <ClInclude Include="..\include\layer002\rt_named_mutex.h" />
     <ClInclude Include="..\include\layer002\rt_quick_sort.h" />
     <ClInclude Include="..\include\layer002\rt_sleep.h" />
     <ClInclude Include="..\include\layer002\rt_slurp.h" />

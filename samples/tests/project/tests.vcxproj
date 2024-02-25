@@ -88,6 +88,7 @@
     <ClCompile Include="..\src\zz_display_args.c" />
     <ClCompile Include="..\src\zz_display_env_var.c" />
     <ClCompile Include="..\src\zz_generate_char8.c" />
+    <ClCompile Include="..\src\zz_lock_named_mutex.c" />
     <ClCompile Include="..\src\zz_main.c" />
     <ClCompile Include="..\src\zz_mem.c">
       <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</WholeProgramOptimization>
