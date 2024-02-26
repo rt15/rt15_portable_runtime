@@ -33,6 +33,15 @@ rt_s zz_lock_named_mutex(void)
 	if (RT_UNLIKELY(!rt_console_write_str(_R("Mutex released.\n"))))
 		goto error;
 
+	if (RT_UNLIKELY(!rt_console_write_str(_R("Freeing mutex...\n"))))
+		goto error;
+
+	if (RT_UNLIKELY(!rt_named_mutex_free(&named_mutex)))
+		goto error;
+
+	if (RT_UNLIKELY(!rt_console_write_str(_R("Mutex freed.\n"))))
+		goto error;
+
 	ret = RT_OK;
 free:
 	return ret;

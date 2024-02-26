@@ -130,11 +130,11 @@ rt_s rt_named_mutex_acquire(struct rt_named_mutex *named_mutex)
 #else
 	/* pthread_mutex_lock returns an errno in case of error. */
 	error = pthread_mutex_lock(named_mutex->mutex);
-	if (error) {
+	if (RT_UNLIKELY(error)) {
 		if (error == EOWNERDEAD) {
 			/* The owner of the robust mutex died. We repair the mutex. We own the mutex, by the way. */
 			error = pthread_mutex_consistent(named_mutex->mutex);
-			if (error) {
+			if (RT_UNLIKELY(error)) {
 				errno = error;
 				goto error;
 			}
@@ -167,7 +167,7 @@ rt_s rt_named_mutex_release(struct rt_named_mutex *named_mutex)
 #else
 	/* pthread_mutex_unlock returns an errno in case of error. */
 	error = pthread_mutex_unlock(named_mutex->mutex);
-	if (error) {
+	if (RT_UNLIKELY(error)) {
 		errno = error;
 		goto error;
 	}
@@ -191,7 +191,7 @@ rt_s rt_named_mutex_free(struct rt_named_mutex *named_mutex)
 		ret = RT_FAILED;
 #else
 	/* munmap returns -1 and set errno in case of error. */
-	if (munmap(named_mutex->mutex, sizeof(pthread_mutex_t) == -1))
+	if (RT_UNLIKELY(munmap(named_mutex->mutex, sizeof(pthread_mutex_t)) == -1))
 		ret = RT_FAILED;
 #endif
 
