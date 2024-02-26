@@ -11,6 +11,7 @@ rt_s zz_test_critical_section(void);
 rt_s zz_test_event(void);
 rt_s zz_test_io_device(void);
 rt_s zz_test_memory_input_stream(void);
+rt_s zz_test_named_mutex(void);
 rt_s zz_test_quick_sort(void);
 rt_s zz_test_sleep(void);
 rt_s zz_test_slurp(void);
@@ -119,6 +120,8 @@ rt_s zz_auto_tests(void)
 	if (RT_UNLIKELY(!zz_test_io_device())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_memory_input_stream", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_memory_input_stream())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_named_mutex", output_stream))) goto error;
+	if (RT_UNLIKELY(!zz_test_named_mutex())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_quick_sort", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_quick_sort())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_sleep", output_stream))) goto error;

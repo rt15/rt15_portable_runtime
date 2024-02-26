@@ -223,6 +223,9 @@
     <ClCompile Include="..\src\zz_lock_named_mutex.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_named_mutex.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
