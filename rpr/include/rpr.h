@@ -38,6 +38,7 @@
 #include "layer003/rt_library.h"
 #include "layer003/rt_pipe.h"
 #include "layer003/rt_read_lines.h"
+#include "layer003/rt_shared_memory.h"
 #include "layer003/rt_spinlock.h"
 #include "layer003/rt_thread.h"
 

@@ -6,6 +6,7 @@ rt_s rt_named_mutex_create(struct rt_named_mutex *named_mutex, const rt_char *na
 {
 #ifdef RT_DEFINE_LINUX
 	int shared_memory_file_descriptor;
+	rt_b shared_memory_file_descriptor_created = RT_FALSE;
 	pthread_mutex_t *mutex;
 	pthread_mutexattr_t mutex_attributes;
 	rt_b create = RT_TRUE;
@@ -39,18 +40,17 @@ rt_s rt_named_mutex_create(struct rt_named_mutex *named_mutex, const rt_char *na
 			goto error;
 	}
 	shared_memory_created = RT_TRUE;
+	shared_memory_file_descriptor_created = RT_TRUE;
 
 	/* Set the size of the shared memory. */
 	/* ftruncate returns -1 and set errno in case of error. */
-	if (RT_UNLIKELY(ftruncate(shared_memory_file_descriptor, sizeof(pthread_mutex_t)) == -1)) {
+	if (RT_UNLIKELY(ftruncate(shared_memory_file_descriptor, sizeof(pthread_mutex_t)) == -1))
 		goto error;
-	}
 
 	/* On error, mmap returns MAP_FAILED and set errno. */
 	mutex = mmap(RT_NULL, sizeof(pthread_mutex_t), PROT_READ | PROT_WRITE, MAP_SHARED, shared_memory_file_descriptor, 0);
-	if (RT_UNLIKELY(mutex == MAP_FAILED)) {
+	if (RT_UNLIKELY(mutex == MAP_FAILED))
 		goto error;
-	}
 	memory_mapped = RT_TRUE;
 
 	if (create) {
@@ -99,6 +99,12 @@ free:
 			goto error;
 		}
 	}
+	if (shared_memory_file_descriptor_created) {
+		shared_memory_file_descriptor_created = RT_FALSE;
+		/* close returns -1 and set errno in case of error. */
+		if (RT_UNLIKELY(close(shared_memory_file_descriptor) && ret))
+			goto error;
+	}
 #endif
 	return ret;
 
@@ -107,6 +113,10 @@ error:
 	if (memory_mapped) {
 		memory_mapped = RT_FALSE;
 		munmap(mutex, sizeof(pthread_mutex_t));
+	}
+	if (shared_memory_file_descriptor_created) {
+		shared_memory_file_descriptor_created = RT_FALSE;
+		close(shared_memory_file_descriptor);
 	}
 	if (shared_memory_created) {
 		shared_memory_created = RT_FALSE;
@@ -198,7 +208,7 @@ rt_s rt_named_mutex_free(struct rt_named_mutex *named_mutex)
 	return ret;
 }
 
-rt_s rt_named_mutex_destroy(const rt_char *name)
+rt_s rt_named_mutex_destroy(RT_WINDOWS_UNUSED const rt_char *name)
 {
 	rt_s ret = RT_OK;
 
