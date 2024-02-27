@@ -229,6 +229,9 @@
     <ClCompile Include="..\src\zz_lock_shared_mutex.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\zz_shared_memory_chat.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

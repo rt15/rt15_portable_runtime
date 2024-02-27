@@ -10,6 +10,7 @@ rt_s zz_display_env_var(const rt_char *name);
 rt_s zz_read_line(void);
 rt_s zz_generate_char8(void);
 rt_s zz_lock_shared_mutex(void);
+rt_s zz_shared_memory_chat(void);
 
 static rt_s zz_display_help(rt_s ret)
 {
@@ -32,6 +33,8 @@ static rt_s zz_display_help(rt_s ret)
 	if (!rt_console_write(_R("tests <--generate-char8|-g>\n"), error))
 		ret = RT_FAILED;
 	if (!rt_console_write(_R("tests <--lock-mutex|-l>\n"), error))
+		ret = RT_FAILED;
+	if (!rt_console_write(_R("tests <--shared-memory-chat|-s>\n"), error))
 		ret = RT_FAILED;
 
 	return ret;
@@ -109,6 +112,12 @@ static rt_s zz_main(rt_un argc, const rt_char *argv[])
 				   rt_char_equals(argv[1], arg_size, _R("-l"), 2)) {
 
 				if (RT_UNLIKELY(!zz_lock_shared_mutex()))
+					goto error;
+
+			} else if (rt_char_equals(argv[1], arg_size, _R("--shared-memory-chat"), 20) ||
+				   rt_char_equals(argv[1], arg_size, _R("-s"), 2)) {
+
+				if (RT_UNLIKELY(!zz_shared_memory_chat()))
 					goto error;
 
 			} else {

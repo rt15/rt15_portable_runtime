@@ -98,6 +98,7 @@
     </ClCompile>
     <ClCompile Include="..\src\zz_parse_args.c" />
     <ClCompile Include="..\src\zz_read_line.c" />
+    <ClCompile Include="..\src\zz_shared_memory_chat.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\zz_utils.h" />
