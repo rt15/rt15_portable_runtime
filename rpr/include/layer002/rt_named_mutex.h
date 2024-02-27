@@ -13,7 +13,7 @@
  * 
  * <p>
  * Under Linux, a shared memory is created and a robust mutex is stored into it.<br>
- * The shared memory is listed into /dev/shm, and is not removed after all the processes exit.
+ * The shared memory is listed into /dev/shm, and is not removed after all the processes exit, unless one of them calls rt_named_mutex_destroy.
  * <p>
  */
 
@@ -35,5 +35,10 @@ RT_API rt_s rt_named_mutex_acquire(struct rt_named_mutex *named_mutex);
 RT_API rt_s rt_named_mutex_release(struct rt_named_mutex *named_mutex);
 
 RT_API rt_s rt_named_mutex_free(struct rt_named_mutex *named_mutex);
+
+/**
+ * Can be called once to get ride of the Linux shared memory after all processes are done. 
+ */
+RT_API rt_s rt_named_mutex_destroy(const rt_char *name);
 
 #endif /* RT_NAMED_MUTEX_H */

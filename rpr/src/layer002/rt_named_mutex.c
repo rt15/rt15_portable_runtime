@@ -197,3 +197,15 @@ rt_s rt_named_mutex_free(struct rt_named_mutex *named_mutex)
 
 	return ret;
 }
+
+rt_s rt_named_mutex_destroy(const rt_char *name)
+{
+	rt_s ret = RT_OK;
+
+#ifdef RT_DEFINE_LINUX
+	/* shm_unlink returns -1 and set errno in case of error. */
+	if (RT_UNLIKELY(shm_unlink(name) == -1))
+		ret = RT_FAILED;
+#endif
+	return ret;
+}
