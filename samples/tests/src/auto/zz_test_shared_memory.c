@@ -12,7 +12,7 @@ static rt_s zz_test_shared_memory_do(enum rt_shared_memory_right shared_memory_r
 	rt_b shared_memory_initialized = RT_FALSE;
 	rt_uchar8 *area;
 	rt_un32 sum;
-	rt_un i;
+	rt_un32 i;
 	rt_s ret;
 
 	if (RT_UNLIKELY(!rt_shared_memory_create(&shared_memory, ZZ_TEST_SHARED_MEMORY_NAME, ZZ_TEST_SHARED_MEMORY_SIZE, shared_memory_right)))
