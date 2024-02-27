@@ -225,7 +225,7 @@ rt_s rt_last_error_message_cleanup(void)
 		if (RT_UNLIKELY(!rt_last_error_message_init()))
 			goto error;
 
-		if (RT_UNLIKELY(rt_thread_local_storage_free(&rt_last_error_message_storage)))
+		if (RT_UNLIKELY(!rt_thread_local_storage_free(&rt_last_error_message_storage)))
 			goto error;
 	}
 
