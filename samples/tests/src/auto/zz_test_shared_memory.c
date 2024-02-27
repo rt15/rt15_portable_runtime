@@ -1,7 +1,7 @@
 #include <rpr.h>
 
 #define ZZ_TEST_SHARED_MEMORY_SIZE 6144
-#define ZZ_TEST_SHARED_MEMORY_EXPECTED_SUM 18871296u
+#define ZZ_TEST_SHARED_MEMORY_EXPECTED_SUM 783360u
 
 #define ZZ_TEST_SHARED_MEMORY_NAME _R("/zz_test_shared_memory")
 
@@ -22,15 +22,23 @@ static rt_s zz_test_shared_memory_do(enum rt_shared_memory_right shared_memory_r
 
 	area = shared_memory.area;
 
+	/* Check that the memory has been initialized to zero. */
+	for (i = 0; i < ZZ_TEST_SHARED_MEMORY_SIZE; i++)
+		if (area[i])
+			goto error;
+
+	/* Write in the memory, if possible. */
 	if (shared_memory_right == RT_SHARED_MEMORY_RIGHT_READ_WRITE || shared_memory_right == RT_SHARED_MEMORY_RIGHT_EXECUTE_READ_WRITE) {
 		for (i = 0; i < ZZ_TEST_SHARED_MEMORY_SIZE; i++)
 			area[i] = (rt_uchar8)i;
 	}
 
+	/* Perform a checksum on the written bytes. */
 	sum = 0;
 	for (i = 0; i < ZZ_TEST_SHARED_MEMORY_SIZE; i++)
-		sum += i;
+		sum += area[i];
 
+	/* Check the checksum. */
 	if (shared_memory_right == RT_SHARED_MEMORY_RIGHT_READ_WRITE || shared_memory_right == RT_SHARED_MEMORY_RIGHT_EXECUTE_READ_WRITE) {
 		if (sum != ZZ_TEST_SHARED_MEMORY_EXPECTED_SUM)
 			goto error;
