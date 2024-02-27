@@ -190,14 +190,14 @@
     <ClCompile Include="..\src\layer003\rt_library.c">
       <Filter>src\layer003</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\layer002\rt_named_mutex.c">
-      <Filter>src\layer002</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\layer003\rt_shared_memory.c">
       <Filter>src\layer003</Filter>
     </ClCompile>
     <ClCompile Include="..\src\layer004\rt_readers_writer_mutex.c">
       <Filter>src\layer004</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer002\rt_shared_mutex.c">
+      <Filter>src\layer002</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -420,14 +420,14 @@
     <ClInclude Include="..\include\layer003\rt_library.h">
       <Filter>include\layer003</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\layer002\rt_named_mutex.h">
-      <Filter>include\layer002</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\layer003\rt_shared_memory.h">
       <Filter>include\layer003</Filter>
     </ClInclude>
     <ClInclude Include="..\include\layer004\rt_readers_writer_mutex.h">
       <Filter>include\layer004</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer002\rt_shared_mutex.h">
+      <Filter>include\layer002</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -9,7 +9,7 @@ rt_s zz_display_env_vars(void);
 rt_s zz_display_env_var(const rt_char *name);
 rt_s zz_read_line(void);
 rt_s zz_generate_char8(void);
-rt_s zz_lock_named_mutex(void);
+rt_s zz_lock_shared_mutex(void);
 
 static rt_s zz_display_help(rt_s ret)
 {
@@ -108,7 +108,7 @@ static rt_s zz_main(rt_un argc, const rt_char *argv[])
 			} else if (rt_char_equals(argv[1], arg_size, _R("--lock-mutex"), 12) ||
 				   rt_char_equals(argv[1], arg_size, _R("-l"), 2)) {
 
-				if (RT_UNLIKELY(!zz_lock_named_mutex()))
+				if (RT_UNLIKELY(!zz_lock_shared_mutex()))
 					goto error;
 
 			} else {

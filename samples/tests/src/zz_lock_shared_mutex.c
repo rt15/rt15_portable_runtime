@@ -1,21 +1,21 @@
 #include <rpr.h>
 
-rt_s zz_lock_named_mutex(void)
+rt_s zz_lock_shared_mutex(void)
 {
-	struct rt_named_mutex named_mutex;
+	struct rt_shared_mutex shared_mutex;
 	rt_char character;
 	rt_s ret;
 
 	if (RT_UNLIKELY(!rt_console_write_str(_R("Creating the mutex...\n"))))
 		goto error;
 
-	if (RT_UNLIKELY(!rt_named_mutex_create(&named_mutex, _R("/zz_lock_named_mutex"))))
+	if (RT_UNLIKELY(!rt_shared_mutex_create(&shared_mutex, _R("/zz_lock_shared_mutex"))))
 		goto error;
 
 	if (RT_UNLIKELY(!rt_console_write_str(_R("Acquiring the mutex...\n"))))
 		goto error;
 
-	if (RT_UNLIKELY(!rt_named_mutex_acquire(&named_mutex)))
+	if (RT_UNLIKELY(!rt_shared_mutex_acquire(&shared_mutex)))
 		goto error;
 
 	if (RT_UNLIKELY(!rt_console_write_str(_R("Mutex acquired. Press any key.\n"))))
@@ -27,7 +27,7 @@ rt_s zz_lock_named_mutex(void)
 	if (RT_UNLIKELY(!rt_console_write_str(_R("Releasing mutex...\n"))))
 		goto error;
 
-	if (RT_UNLIKELY(!rt_named_mutex_release(&named_mutex)))
+	if (RT_UNLIKELY(!rt_shared_mutex_release(&shared_mutex)))
 		goto error;
 
 	if (RT_UNLIKELY(!rt_console_write_str(_R("Mutex released.\n"))))
@@ -36,7 +36,7 @@ rt_s zz_lock_named_mutex(void)
 	if (RT_UNLIKELY(!rt_console_write_str(_R("Freeing mutex...\n"))))
 		goto error;
 
-	if (RT_UNLIKELY(!rt_named_mutex_free(&named_mutex)))
+	if (RT_UNLIKELY(!rt_shared_mutex_free(&shared_mutex)))
 		goto error;
 
 	if (RT_UNLIKELY(!rt_console_write_str(_R("Mutex freed.\n"))))

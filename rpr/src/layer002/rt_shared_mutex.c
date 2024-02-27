@@ -1,8 +1,8 @@
-#include "layer002/rt_named_mutex.h"
+#include "layer002/rt_shared_mutex.h"
 
 #include "layer001/rt_os_headers.h"
 
-rt_s rt_named_mutex_create(struct rt_named_mutex *named_mutex, const rt_char *name)
+rt_s rt_shared_mutex_create(struct rt_shared_mutex *shared_mutex, const rt_char *name)
 {
 #ifdef RT_DEFINE_LINUX
 	int shared_memory_file_descriptor;
@@ -20,8 +20,8 @@ rt_s rt_named_mutex_create(struct rt_named_mutex *named_mutex, const rt_char *na
 #ifdef RT_DEFINE_WINDOWS
 	/* The handle cannot be inherited to child processes. */
 	/* In case of error, the function returns null and set last error. */
-	named_mutex->handle = (rt_h)CreateMutex(RT_NULL, RT_FALSE, name);
-	if (RT_UNLIKELY(!named_mutex->handle))
+	shared_mutex->handle = (rt_h)CreateMutex(RT_NULL, RT_FALSE, name);
+	if (RT_UNLIKELY(!shared_mutex->handle))
 		goto error;
 #else
 	/* We try to create a new file descriptor first, but use an existing one if it already exists. */
@@ -84,7 +84,7 @@ rt_s rt_named_mutex_create(struct rt_named_mutex *named_mutex, const rt_char *na
 		}
 
 	}
-	named_mutex->mutex = mutex;
+	shared_mutex->mutex = mutex;
 
 #endif
 	ret = RT_OK;
@@ -127,7 +127,7 @@ error:
 	goto free;
 }
 
-rt_s rt_named_mutex_acquire(struct rt_named_mutex *named_mutex)
+rt_s rt_shared_mutex_acquire(struct rt_shared_mutex *shared_mutex)
 {
 #ifdef RT_DEFINE_LINUX
 	int error;
@@ -135,15 +135,15 @@ rt_s rt_named_mutex_acquire(struct rt_named_mutex *named_mutex)
 	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
-	if (RT_UNLIKELY(WaitForSingleObject(named_mutex->handle, INFINITE) == WAIT_FAILED))
+	if (RT_UNLIKELY(WaitForSingleObject(shared_mutex->handle, INFINITE) == WAIT_FAILED))
 		goto error;
 #else
 	/* pthread_mutex_lock returns an errno in case of error. */
-	error = pthread_mutex_lock(named_mutex->mutex);
+	error = pthread_mutex_lock(shared_mutex->mutex);
 	if (RT_UNLIKELY(error)) {
 		if (error == EOWNERDEAD) {
 			/* The owner of the robust mutex died. We repair the mutex. We own the mutex, by the way. */
-			error = pthread_mutex_consistent(named_mutex->mutex);
+			error = pthread_mutex_consistent(shared_mutex->mutex);
 			if (RT_UNLIKELY(error)) {
 				errno = error;
 				goto error;
@@ -164,7 +164,7 @@ error:
 	goto free;
 }
 
-rt_s rt_named_mutex_release(struct rt_named_mutex *named_mutex)
+rt_s rt_shared_mutex_release(struct rt_shared_mutex *shared_mutex)
 {
 #ifdef RT_DEFINE_LINUX
 	int error;
@@ -172,11 +172,11 @@ rt_s rt_named_mutex_release(struct rt_named_mutex *named_mutex)
 	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
-	if (RT_UNLIKELY(!ReleaseMutex(named_mutex->handle)))
+	if (RT_UNLIKELY(!ReleaseMutex(shared_mutex->handle)))
 		goto error;
 #else
 	/* pthread_mutex_unlock returns an errno in case of error. */
-	error = pthread_mutex_unlock(named_mutex->mutex);
+	error = pthread_mutex_unlock(shared_mutex->mutex);
 	if (RT_UNLIKELY(error)) {
 		errno = error;
 		goto error;
@@ -192,23 +192,23 @@ error:
 	goto free;
 }
 
-rt_s rt_named_mutex_free(struct rt_named_mutex *named_mutex)
+rt_s rt_shared_mutex_free(struct rt_shared_mutex *shared_mutex)
 {
 	rt_s ret = RT_OK;
 
 #ifdef RT_DEFINE_WINDOWS
-	if (RT_UNLIKELY(!CloseHandle((HANDLE)named_mutex->handle)))
+	if (RT_UNLIKELY(!CloseHandle((HANDLE)shared_mutex->handle)))
 		ret = RT_FAILED;
 #else
 	/* munmap returns -1 and set errno in case of error. */
-	if (RT_UNLIKELY(munmap(named_mutex->mutex, sizeof(pthread_mutex_t)) == -1))
+	if (RT_UNLIKELY(munmap(shared_mutex->mutex, sizeof(pthread_mutex_t)) == -1))
 		ret = RT_FAILED;
 #endif
 
 	return ret;
 }
 
-rt_s rt_named_mutex_destroy(RT_WINDOWS_UNUSED const rt_char *name)
+rt_s rt_shared_mutex_destroy(RT_WINDOWS_UNUSED const rt_char *name)
 {
 	rt_s ret = RT_OK;
 
