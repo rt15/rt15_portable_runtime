@@ -34,6 +34,7 @@
 #include "layer003/rt_env_var.h"
 #include "layer003/rt_fast_initialization.h"
 #include "layer003/rt_file.h"
+#include "layer003/rt_file_mapping.h"
 #include "layer003/rt_heap.h"
 #include "layer003/rt_library.h"
 #include "layer003/rt_pipe.h"

@@ -39,6 +39,7 @@
     <ClCompile Include="..\src\auto\zz_test_event.c" />
     <ClCompile Include="..\src\auto\zz_test_fast_initialization.c" />
     <ClCompile Include="..\src\auto\zz_test_file.c" />
+    <ClCompile Include="..\src\auto\zz_test_file_mapping.c" />
     <ClCompile Include="..\src\auto\zz_test_file_path.c" />
     <ClCompile Include="..\src\auto\zz_test_file_system.c" />
     <ClCompile Include="..\src\auto\zz_test_hash_table.c" />

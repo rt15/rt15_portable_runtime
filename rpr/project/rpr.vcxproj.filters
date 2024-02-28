@@ -199,6 +199,9 @@
     <ClCompile Include="..\src\layer002\rt_shared_mutex.c">
       <Filter>src\layer002</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer003\rt_file_mapping.c">
+      <Filter>src\layer003</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -428,6 +431,9 @@
     </ClInclude>
     <ClInclude Include="..\include\layer002\rt_shared_mutex.h">
       <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer003\rt_file_mapping.h">
+      <Filter>include\layer003</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

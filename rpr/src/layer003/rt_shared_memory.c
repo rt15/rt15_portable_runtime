@@ -112,8 +112,7 @@ error:
 #ifdef RT_DEFINE_WINDOWS
 	if (file_mapping_created) {
 		file_mapping_created = RT_FALSE;
-		if (RT_UNLIKELY(!CloseHandle(file_mapping_handle)))
-			goto error;
+		CloseHandle(file_mapping_handle);
 	}
 #else
 	if (shared_memory_file_descriptor_created) {

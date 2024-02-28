@@ -232,6 +232,9 @@
     <ClCompile Include="..\src\zz_shared_memory_chat.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_file_mapping.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

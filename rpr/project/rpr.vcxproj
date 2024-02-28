@@ -42,6 +42,7 @@
     <ClCompile Include="..\src\layer003\rt_env_var.c" />
     <ClCompile Include="..\src\layer003\rt_fast_initialization.c" />
     <ClCompile Include="..\src\layer003\rt_file.c" />
+    <ClCompile Include="..\src\layer003\rt_file_mapping.c" />
     <ClCompile Include="..\src\layer003\rt_heap.c" />
     <ClCompile Include="..\src\layer003\rt_library.c" />
     <ClCompile Include="..\src\layer003\rt_pipe.c" />
@@ -118,6 +119,7 @@
     <ClInclude Include="..\include\layer003\rt_env_var.h" />
     <ClInclude Include="..\include\layer003\rt_fast_initialization.h" />
     <ClInclude Include="..\include\layer003\rt_file.h" />
+    <ClInclude Include="..\include\layer003\rt_file_mapping.h" />
     <ClInclude Include="..\include\layer003\rt_heap.h" />
     <ClInclude Include="..\include\layer003\rt_library.h" />
     <ClInclude Include="..\include\layer003\rt_pipe.h" />
