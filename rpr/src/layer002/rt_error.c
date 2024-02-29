@@ -66,3 +66,36 @@ rt_b rt_error_would_block(void)
 #endif
 	return ret;
 }
+
+void rt_error_set_last_from_errno(rt_n32 errno_value)
+{
+	switch (errno_value) {
+	case 0:
+		rt_error_set_last(RT_ERROR_SUCCESS);
+		break;
+	case ERANGE:
+		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
+		break;
+	case EINVAL:
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		break;
+	case ENOMEM:
+		rt_error_set_last(RT_ERROR_NOT_ENOUGH_MEMORY);
+		break;
+	case EEXIST:
+		rt_error_set_last(RT_ERROR_ALREADY_EXISTS);
+		break;
+	case EOVERFLOW:
+		rt_error_set_last(RT_ERROR_ARITHMETIC_OVERFLOW);
+		break;
+	case EWOULDBLOCK:
+		rt_error_set_last(RT_ERROR_WOULD_BLOCK);
+		break;
+	case ENOENT:
+		rt_error_set_last(RT_ERROR_FILE_NOT_FOUND);
+		break;
+	default:
+		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
+		break;
+	}
+}

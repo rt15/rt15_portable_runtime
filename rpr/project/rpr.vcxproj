@@ -62,6 +62,7 @@
     <ClCompile Include="..\src\layer004\rt_readers_writer_mutex.c" />
     <ClCompile Include="..\src\layer004\rt_small_file.c" />
     <ClCompile Include="..\src\layer004\rt_static_heap.c" />
+    <ClCompile Include="..\src\layer004\rt_time.c" />
     <ClCompile Include="..\src\layer004\rt_url.c" />
     <ClCompile Include="..\src\layer004\rt_uuid.c" />
     <ClCompile Include="..\src\layer005\rt_check_rpr.c" />
@@ -140,6 +141,7 @@
     <ClInclude Include="..\include\layer004\rt_readers_writer_mutex.h" />
     <ClInclude Include="..\include\layer004\rt_small_file.h" />
     <ClInclude Include="..\include\layer004\rt_static_heap.h" />
+    <ClInclude Include="..\include\layer004\rt_time.h" />
     <ClInclude Include="..\include\layer004\rt_url.h" />
     <ClInclude Include="..\include\layer004\rt_uuid.h" />
     <ClInclude Include="..\include\layer005\rt_check_rpr.h" />

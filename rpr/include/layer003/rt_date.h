@@ -29,5 +29,18 @@ RT_API rt_s rt_date_add_days(struct rt_date *date, rt_n days);
  */
 RT_API rt_s rt_date_get_days_in_month(rt_un16 year, rt_uchar8 month, rt_un *days);
 
+/**
+ * <p>
+ * 1 is January, 12 is December.
+ * </p> 
+ */
+RT_API rt_s rt_date_get_month_name(rt_un month, const rt_char **name);
+
+/**
+ * <p>
+ * 1 is Sunday, 7 is Saturday.
+ * </p> 
+ */
+RT_API rt_s rt_date_get_day_of_week_name(rt_un day_of_week, const rt_char **name);
 
 #endif /* RT_DATE_H */

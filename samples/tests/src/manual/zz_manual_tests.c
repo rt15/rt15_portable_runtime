@@ -13,6 +13,7 @@ rt_s zz_manual_test_env_var(void);
 rt_s zz_manual_test_encoding(void);
 rt_s zz_manual_test_file_path(void);
 rt_s zz_manual_test_os_version(void);
+rt_s zz_manual_test_time(void);
 rt_s zz_manual_test_url(void);
 
 /* Layer 005. */
@@ -43,6 +44,7 @@ rt_s zz_manual_tests(void)
 	if (RT_UNLIKELY(!zz_manual_test_encoding())) goto error;
 	if (RT_UNLIKELY(!zz_manual_test_file_path())) goto error;
 	if (RT_UNLIKELY(!zz_manual_test_os_version())) goto error;
+	if (RT_UNLIKELY(!zz_manual_test_time())) goto error;
 	if (RT_UNLIKELY(!zz_manual_test_url())) goto error;
 
 	/* Layer 005. */

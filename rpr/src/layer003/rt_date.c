@@ -2,6 +2,31 @@
 
 #include "layer002/rt_error.h"
 
+static const rt_char *const rt_date_month_names[12] = {
+	_R("January"),
+	_R("February"),
+	_R("March"),
+	_R("April"),
+	_R("May"),
+	_R("June"),
+	_R("July"),
+	_R("August"),
+	_R("September"),
+	_R("October"),
+	_R("November"),
+	_R("December")
+};
+
+static const rt_char *const rt_date_day_of_week_names[7] = {
+	_R("Sunday"),
+	_R("Monday"),
+	_R("Tuesday"),
+	_R("Wednesday"),
+	_R("Thursday"),
+	_R("Friday"),
+	_R("Saturday")
+};
+
 rt_s rt_date_add_years(struct rt_date *date, rt_n years)
 {
 	rt_n year = date->year;
@@ -167,6 +192,46 @@ rt_s rt_date_get_days_in_month(rt_un16 year, rt_uchar8 month, rt_un *days)
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto error;
 	}
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_date_get_month_name(rt_un month, const rt_char **name)
+{
+	rt_s ret;
+
+	if (month > 12) {
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
+	}
+
+	*name = rt_date_month_names[month - 1];
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_date_get_day_of_week_name(rt_un day_of_week, const rt_char **name)
+{
+	rt_s ret;
+
+	if (day_of_week > 7) {
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
+	}
+
+	*name = rt_date_day_of_week_names[day_of_week - 1];
 
 	ret = RT_OK;
 free:

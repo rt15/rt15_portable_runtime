@@ -235,6 +235,12 @@
     <ClCompile Include="..\src\auto\zz_test_file_mapping.c">
       <Filter>src\auto</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_time.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\manual\zz_manual_test_time.c">
+      <Filter>src\manual</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

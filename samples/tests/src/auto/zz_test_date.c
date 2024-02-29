@@ -157,6 +157,76 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_date_get_month_name_do(rt_un month, const rt_char *expected)
+{
+	const rt_char *month_name;
+	rt_s ret;
+
+	if (RT_UNLIKELY(!rt_date_get_month_name(month, &month_name))) goto error;
+	if (RT_UNLIKELY(!rt_char_equals(month_name, rt_char_get_size(month_name), expected, rt_char_get_size(expected)))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_date_get_month_name(void)
+{
+	const rt_char *month_name;
+	rt_s ret;
+
+	if (RT_UNLIKELY(!zz_test_date_get_month_name_do(1, _R("January")))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_get_month_name_do(12, _R("December")))) goto error;
+	if (RT_UNLIKELY(rt_date_get_month_name(13, &month_name))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_date_get_day_of_week_name_do(rt_un day_of_week, const rt_char *expected)
+{
+	const rt_char *day_of_week_name;
+	rt_s ret;
+
+	if (RT_UNLIKELY(!rt_date_get_day_of_week_name(day_of_week, &day_of_week_name))) goto error;
+	if (RT_UNLIKELY(!rt_char_equals(day_of_week_name, rt_char_get_size(day_of_week_name), expected, rt_char_get_size(expected)))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_date_get_day_of_week_name(void)
+{
+	const rt_char *day_of_week_name;
+	rt_s ret;
+
+	if (RT_UNLIKELY(!zz_test_date_get_day_of_week_name_do(1, _R("Sunday")))) goto error;
+	if (RT_UNLIKELY(!zz_test_date_get_day_of_week_name_do(7, _R("Saturday")))) goto error;
+	if (RT_UNLIKELY(rt_date_get_day_of_week_name(8, &day_of_week_name))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 rt_s zz_test_date(void)
 {
 	rt_s ret;
@@ -164,6 +234,8 @@ rt_s zz_test_date(void)
 	if (RT_UNLIKELY(!zz_test_date_add_years())) goto error;
 	if (RT_UNLIKELY(!zz_test_date_add_months())) goto error;
 	if (RT_UNLIKELY(!zz_test_date_add_days())) goto error;
+	if (RT_UNLIKELY(!zz_test_date_get_month_name())) goto error;
+	if (RT_UNLIKELY(!zz_test_date_get_day_of_week_name())) goto error;
 
 	ret = RT_OK;
 free:

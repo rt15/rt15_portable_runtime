@@ -46,6 +46,7 @@ rt_s zz_test_random(void);
 rt_s zz_test_readers_writer_mutex(void);
 rt_s zz_test_small_file(void);
 rt_s zz_test_static_heap(void);
+rt_s zz_test_time(void);
 rt_s zz_test_url(void);
 rt_s zz_test_uuid(void);
 
@@ -188,6 +189,8 @@ rt_s zz_auto_tests(void)
 	if (RT_UNLIKELY(!zz_test_small_file())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_static_heap", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_static_heap())) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_time", output_stream))) goto error;
+	if (RT_UNLIKELY(!zz_test_time())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_url", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_url())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_uuid", output_stream))) goto error;

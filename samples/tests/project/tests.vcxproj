@@ -70,6 +70,7 @@
     <ClCompile Include="..\src\auto\zz_test_spinlock.c" />
     <ClCompile Include="..\src\auto\zz_test_static_heap.c" />
     <ClCompile Include="..\src\auto\zz_test_thread.c" />
+    <ClCompile Include="..\src\auto\zz_test_time.c" />
     <ClCompile Include="..\src\auto\zz_test_unicode_code_point.c" />
     <ClCompile Include="..\src\auto\zz_test_url.c" />
     <ClCompile Include="..\src\auto\zz_test_uuid.c" />
@@ -85,6 +86,7 @@
     <ClCompile Include="..\src\manual\zz_manual_test_os_version.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_process.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_temp_file.c" />
+    <ClCompile Include="..\src\manual\zz_manual_test_time.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_types.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_url.c" />
     <ClCompile Include="..\src\utils\zz_utils.c" />

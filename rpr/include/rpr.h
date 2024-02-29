@@ -56,6 +56,7 @@
 #include "layer004/rt_readers_writer_mutex.h"
 #include "layer004/rt_small_file.h"
 #include "layer004/rt_static_heap.h"
+#include "layer004/rt_time.h"
 #include "layer004/rt_url.h"
 #include "layer004/rt_uuid.h"
 

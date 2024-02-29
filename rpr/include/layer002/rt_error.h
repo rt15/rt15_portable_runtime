@@ -86,4 +86,9 @@ RT_API void rt_error_set_last(enum rt_error error);
  */
 RT_API rt_b rt_error_would_block(void);
 
+/**
+ * Can be used under Windows to set the last error from the given errno value. 
+ */
+RT_API void rt_error_set_last_from_errno(rt_n32 errno_value);
+
 #endif /* RT_ERROR_H */

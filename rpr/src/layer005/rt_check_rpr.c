@@ -4,6 +4,7 @@
 #include "layer002/rt_chrono.h"
 #include "layer002/rt_critical_section.h"
 #include "layer003/rt_thread.h"
+#include "layer004/rt_time.h"
 #include "layer004/rt_uuid.h"
 
 static rt_s rt_check_flags(void)
@@ -131,6 +132,8 @@ static rt_s rt_check_types(void)
 
 	/* Used in rt_get_process_id. */
 	if (RT_UNLIKELY(sizeof(rt_un) < sizeof(pid_t))) goto error;
+
+	if (RT_UNLIKELY(sizeof(struct tm) != sizeof(struct rt_time_info))) goto error;
 #endif
 
 	/* Socket address structures. */
@@ -143,6 +146,8 @@ static rt_s rt_check_types(void)
 	if (RT_UNLIKELY(sizeof(rt_un) != sizeof(size_t))) goto error;
 	/* socklen_t is signed under Windows and unsigned under Linux. */
 	if (RT_UNLIKELY(sizeof(rt_n32) != sizeof(socklen_t))) goto error;
+
+	if (RT_UNLIKELY(sizeof(time_t) != sizeof(rt_n))) goto error;
 
 	ret = RT_OK;
 free:
@@ -165,12 +170,14 @@ static rt_s rt_check_signedness(void)
 	rt_un64 rt_un64_variable = -1;
 	rt_n rt_n_variable = -1;
 	rt_un rt_un_variable = -1;
+	time_t time_t_variable = -1;
 	rt_s ret;
 
 	if (RT_UNLIKELY(rt_n16_variable > 0)) goto error;
 	if (RT_UNLIKELY(rt_n32_variable > 0)) goto error;
 	if (RT_UNLIKELY(rt_n64_variable > 0)) goto error;
 	if (RT_UNLIKELY(rt_n_variable > 0)) goto error;
+	if (RT_UNLIKELY(time_t_variable > 0)) goto error;
 
 #ifdef RT_DEFINE_GCC
 #pragma GCC diagnostic ignored "-Wtype-limits"
