@@ -9,7 +9,7 @@ rt_s rt_thread_local_storage_create(struct rt_thread_local_storage *thread_local
 	DWORD index;
 	rt_s ret;
 
-	/* TlsAlloc returns TLS_OUT_OF_INDEXES and set last error in case of issues. */
+	/* TlsAlloc returns TLS_OUT_OF_INDEXES and sets last error in case of issues. */
 	index = TlsAlloc();
 	if (RT_UNLIKELY(index == TLS_OUT_OF_INDEXES))
 		goto error;
@@ -29,7 +29,7 @@ rt_s rt_thread_local_storage_set(struct rt_thread_local_storage *thread_local_st
 {
 	rt_s ret;
 
-	/* TlsSetValue returns zero and set last error in case of issue. */
+	/* TlsSetValue returns zero and sets last error in case of issue. */
 	if (RT_UNLIKELY(!TlsSetValue(thread_local_storage->index, data)))
 		goto error;
 
@@ -73,7 +73,7 @@ rt_s rt_thread_local_storage_free(struct rt_thread_local_storage *thread_local_s
 {
 	rt_s ret;
 
-	/* TlsSetValue returns zero and set last error in case of issue. */
+	/* TlsSetValue returns zero and sets last error in case of issue. */
 	if (RT_UNLIKELY(!TlsFree(thread_local_storage->index)))
 		goto error;
 

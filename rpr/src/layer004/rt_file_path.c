@@ -171,7 +171,7 @@ rt_s rt_file_path_get_current_dir(rt_char *buffer, rt_un buffer_capacity, rt_un 
 
 #else
 
-	/* Returns NULL in case of error and set errno. Returns buffer in case of success. */
+	/* Returns NULL in case of error and sets errno. Returns buffer in case of success. */
 	if (RT_UNLIKELY(!getcwd(buffer, buffer_capacity)))
 		goto error;
 	written = strlen(buffer);
@@ -191,12 +191,12 @@ rt_s rt_file_path_set_current_dir(const rt_char *dir_path)
 	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
-	/* Returns zero if failed, set last error. */
+	/* Returns zero if failed, sets last error. */
 	/* Setting a namespaced path as current directory is kinda buggy. */
 	if (RT_UNLIKELY(!SetCurrentDirectory(dir_path)))
 		goto error;
 #else
-	/* Returns zero in case of success, set errno. */
+	/* Returns zero in case of success, sets errno. */
 	if (RT_UNLIKELY(chdir(dir_path)))
 		goto error;
 #endif
@@ -421,7 +421,7 @@ rt_s rt_file_path_full(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size)
 	if (input_path_size) {
 #ifdef RT_DEFINE_WINDOWS
 		result = GetFullPathName(path, RT_FILE_PATH_SIZE, local_buffer, &file_part);
-		/* In case of error, GetFullPathName returns zero and set last error. */
+		/* In case of error, GetFullPathName returns zero and sets last error. */
 		if (RT_UNLIKELY(result == 0))
 			goto error;
 
@@ -736,7 +736,7 @@ rt_s rt_file_path_get_executable_path(rt_char *buffer, rt_un buffer_capacity, rt
 	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
-	/* Returns zero and set last error in case of issue (except if the buffer is too small). */
+	/* Returns zero and sets last error in case of issue (except if the buffer is too small). */
 	written = GetModuleFileName(NULL, buffer, (DWORD)buffer_capacity);
 	if (RT_UNLIKELY(!written)) goto error;
 	/* GetModuleFileName does not fail if the buffer is too small. */
@@ -834,7 +834,7 @@ rt_s rt_file_path_get_temp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *bu
 
 	/* Returns the characters copied to buffer, not including the zero terminating character. */
 	returned_value = GetTempPath((DWORD)buffer_capacity, buffer);
-	/* GetTempPath returns zero and set last error in case of error. */
+	/* GetTempPath returns zero and sets last error in case of error. */
 	if (RT_UNLIKELY(!returned_value))
 		goto error;
 

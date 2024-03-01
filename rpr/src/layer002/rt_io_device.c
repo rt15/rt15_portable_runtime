@@ -349,7 +349,7 @@ rt_s rt_io_device_is_console(struct rt_io_device *io_device, rt_b *is_console)
 	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
-	/* Returns FILE_TYPE_UNKNOWN and set last error different from NO_ERROR in case of error. */
+	/* Returns FILE_TYPE_UNKNOWN and sets last error different from NO_ERROR in case of error. */
 	file_type = GetFileType(handle);
 	if (RT_UNLIKELY(file_type == FILE_TYPE_UNKNOWN && GetLastError() != NO_ERROR))
 		goto error;
@@ -391,11 +391,11 @@ rt_s rt_io_device_kernel_flush(struct rt_io_device *io_device)
 		goto error;
 	if (!is_console) {
 #ifdef RT_DEFINE_WINDOWS
-		/* Returns zero and set last error in case of issue. */
+		/* Returns zero and sets last error in case of issue. */
 		if (RT_UNLIKELY(!FlushFileBuffers(handle)))
 			goto error;
 #else
-		/* Returns zero on success. Set errno in case of error. */
+		/* Returns zero on success. Sets errno in case of error. */
 		if (RT_UNLIKELY(fsync(file_descriptor)))
 			goto error;
 #endif

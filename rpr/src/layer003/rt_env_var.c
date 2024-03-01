@@ -69,7 +69,7 @@ rt_s rt_env_var_set(const rt_char *name, const rt_char *value)
 
 #ifdef RT_DEFINE_WINDOWS
 
-	/* Returns FALSE and set last error in case of failure. */
+	/* Returns FALSE and sets last error in case of failure. */
 	if (RT_UNLIKELY(!SetEnvironmentVariable(name, value)))
 		goto error;
 
@@ -77,7 +77,7 @@ rt_s rt_env_var_set(const rt_char *name, const rt_char *value)
 
 	/* setenv make a copy of the name and the value while putenv make the process environment point to its argument. */
 	/* Third parameter is named overwrite, set to nonzero to overwrite possible existing value. */
-	/* Returns -1 and set errno in case of error. */
+	/* Returns -1 and sets errno in case of error. */
 	if (RT_UNLIKELY(setenv(name, value, 1) == -1))
 		goto error;
 
@@ -99,13 +99,13 @@ rt_s rt_env_var_delete(const rt_char *name)
 #ifdef RT_DEFINE_WINDOWS
 
 	/* Passing RT_NULL as value remove the variable from the process environment. */
-	/* Returns FALSE and set last error in case of failure. */
+	/* Returns FALSE and sets last error in case of failure. */
 	if (RT_UNLIKELY(!SetEnvironmentVariable(name, RT_NULL)))
 		goto error;
 
 #else
 
-	/* Returns -1 and set errno in case of error. */
+	/* Returns -1 and sets errno in case of error. */
 	if (RT_UNLIKELY(unsetenv(name) == -1))
 		goto error;
 

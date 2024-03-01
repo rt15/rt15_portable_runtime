@@ -42,13 +42,13 @@ rt_s rt_shared_memory_create(struct rt_shared_memory *shared_memory, const rt_ch
 		goto error;
 	}
 
-	/* CreateFileMapping returns null and set last error in case issue. */
+	/* CreateFileMapping returns null and sets last error in case issue. */
 	file_mapping_handle = CreateFileMapping(INVALID_HANDLE_VALUE, RT_NULL, flProtect, 0, (DWORD)size, name);
 	if (RT_UNLIKELY(!file_mapping_handle))
 		goto error;
 	file_mapping_created = RT_TRUE;
 
-	/* MapViewOfFile returns null and set last error in case issue. */
+	/* MapViewOfFile returns null and sets last error in case issue. */
 	area = MapViewOfFile(file_mapping_handle, dwDesiredAccess, 0, 0, size);
 	if (RT_UNLIKELY(!area))
 		goto error;
@@ -74,7 +74,7 @@ rt_s rt_shared_memory_create(struct rt_shared_memory *shared_memory, const rt_ch
 	}
 
 	/* FD_CLOEXEC is set on the file descriptor. */
-	/* shm_open returns -1 and set errno in case of error. */
+	/* shm_open returns -1 and sets errno in case of error. */
 	/* We need O_RDWR for ftruncate. */
 	/* With O_CREAT but without O_EXCL, we either create a new shared memory or reuse the existing one. */
 	shared_memory_file_descriptor = shm_open(name, O_CREAT | O_RDWR, 0666);
@@ -84,11 +84,11 @@ rt_s rt_shared_memory_create(struct rt_shared_memory *shared_memory, const rt_ch
 	shared_memory_file_descriptor_created = RT_TRUE;
 
 	/* Set the size of the shared memory. */
-	/* ftruncate returns -1 and set errno in case of error. */
+	/* ftruncate returns -1 and sets errno in case of error. */
 	if (RT_UNLIKELY(ftruncate(shared_memory_file_descriptor, size) == -1))
 		goto error;
 
-	/* On error, mmap returns MAP_FAILED and set errno. */
+	/* On error, mmap returns MAP_FAILED and sets errno. */
 	area = mmap(RT_NULL, size, prot, MAP_SHARED, shared_memory_file_descriptor, 0);
 	if (RT_UNLIKELY(area == MAP_FAILED))
 		goto error;
@@ -101,7 +101,7 @@ free:
 #ifdef RT_DEFINE_LINUX
 	if (shared_memory_file_descriptor_created) {
 		shared_memory_file_descriptor_created = RT_FALSE;
-		/* close returns -1 and set errno in case of error. */
+		/* close returns -1 and sets errno in case of error. */
 		if (RT_UNLIKELY(close(shared_memory_file_descriptor) && ret))
 			goto error;
 	}
@@ -133,13 +133,13 @@ rt_s rt_shared_memory_free(struct rt_shared_memory *shared_memory)
 	rt_s ret = RT_OK;
 
 #ifdef RT_DEFINE_WINDOWS
-	/* UnmapViewOfFile returns 0 and set last error in case of issue. */
+	/* UnmapViewOfFile returns 0 and sets last error in case of issue. */
 	if (RT_UNLIKELY(!UnmapViewOfFile(shared_memory->area)))
 		ret = RT_FAILED;
 	if (RT_UNLIKELY(!CloseHandle(shared_memory->file_mapping_handle)))
 		ret = RT_FAILED;
 #else
-	/* munmap returns -1 and set errno in case of error. */
+	/* munmap returns -1 and sets errno in case of error. */
 	if (RT_UNLIKELY(munmap(shared_memory->area, shared_memory->size) == -1))
 		ret = RT_FAILED;
 #endif
@@ -151,7 +151,7 @@ rt_s rt_shared_memory_destroy(RT_WINDOWS_UNUSED const rt_char *name)
 	rt_s ret = RT_OK;
 
 #ifdef RT_DEFINE_LINUX
-	/* shm_unlink returns -1 and set errno in case of error. */
+	/* shm_unlink returns -1 and sets errno in case of error. */
 	if (RT_UNLIKELY(shm_unlink(name) == -1))
 		ret = RT_FAILED;
 #endif

@@ -562,7 +562,7 @@ rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *en
 			goto error;
 		break;
 	default:
-		/* Returns 0 and set last error in case of issue. */
+		/* Returns 0 and sets last error in case of issue. */
 		if (RT_UNLIKELY(!GetCPInfoEx(encoding_info->code_page, 0, &cp_info_ex)))
 			goto error;
 
@@ -717,7 +717,7 @@ static rt_s rt_encoding_encode_using_windows(const rt_char *input, rt_un input_s
 		actual_buffer_capacity = (int)buffer_capacity - 1;
 
 		length = WideCharToMultiByte(code_page, 0, input, (int)input_size, buffer, actual_buffer_capacity, RT_NULL, RT_NULL);
-		/* In case of issue, WideCharToMultiByte returns zero and set last error. */
+		/* In case of issue, WideCharToMultiByte returns zero and sets last error. */
 		if (length) {
 			*output_size = length;
 			/* WideCharToMultiByte does not write a zero terminating character. */
@@ -803,7 +803,7 @@ static rt_s rt_encoding_decode_using_windows(const rt_char8 *input, rt_un input_
 		actual_buffer_capacity = (int)buffer_capacity - 1;
 
 		length = MultiByteToWideChar(code_page, 0, input, (int)input_size, buffer, actual_buffer_capacity);
-		/* In case of issue, MultiByteToWideChar returns zero and set last error. */
+		/* In case of issue, MultiByteToWideChar returns zero and sets last error. */
 		if (length) {
 
 			*output_size = length;

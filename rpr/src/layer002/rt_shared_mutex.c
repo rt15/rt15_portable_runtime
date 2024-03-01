@@ -19,20 +19,20 @@ rt_s rt_shared_mutex_create(struct rt_shared_mutex *shared_mutex, const rt_char 
 
 #ifdef RT_DEFINE_WINDOWS
 	/* The handle cannot be inherited to child processes. */
-	/* In case of error, the function returns null and set last error. */
+	/* In case of error, the function returns null and sets last error. */
 	shared_mutex->handle = (rt_h)CreateMutex(RT_NULL, RT_FALSE, name);
 	if (RT_UNLIKELY(!shared_mutex->handle))
 		goto error;
 #else
 	/* We try to create a new file descriptor first, but use an existing one if it already exists. */
 	/* FD_CLOEXEC is set on the file descriptor. */
-	/* shm_open returns -1 and set errno in case of error. */
+	/* shm_open returns -1 and sets errno in case of error. */
 	shared_memory_file_descriptor = shm_open(name, O_CREAT | O_RDWR | O_EXCL, 0666);
 	if (shared_memory_file_descriptor == -1) {
 		if (errno == EEXIST) {
 			create = RT_FALSE;
 			/* FD_CLOEXEC is set on the file descriptor. */
-			/* shm_open returns -1 and set errno in case of error. */
+			/* shm_open returns -1 and sets errno in case of error. */
 			shared_memory_file_descriptor = shm_open(name, O_RDWR, 0666);
 			if (RT_UNLIKELY(shared_memory_file_descriptor == -1))
 				goto error;
@@ -43,11 +43,11 @@ rt_s rt_shared_mutex_create(struct rt_shared_mutex *shared_mutex, const rt_char 
 	shared_memory_file_descriptor_created = RT_TRUE;
 
 	/* Set the size of the shared memory. */
-	/* ftruncate returns -1 and set errno in case of error. */
+	/* ftruncate returns -1 and sets errno in case of error. */
 	if (RT_UNLIKELY(ftruncate(shared_memory_file_descriptor, sizeof(pthread_mutex_t)) == -1))
 		goto error;
 
-	/* On error, mmap returns MAP_FAILED and set errno. */
+	/* On error, mmap returns MAP_FAILED and sets errno. */
 	mutex = mmap(RT_NULL, sizeof(pthread_mutex_t), PROT_READ | PROT_WRITE, MAP_SHARED, shared_memory_file_descriptor, 0);
 	if (RT_UNLIKELY(mutex == MAP_FAILED))
 		goto error;
@@ -101,7 +101,7 @@ free:
 	}
 	if (shared_memory_file_descriptor_created) {
 		shared_memory_file_descriptor_created = RT_FALSE;
-		/* close returns -1 and set errno in case of error. */
+		/* close returns -1 and sets errno in case of error. */
 		if (RT_UNLIKELY(close(shared_memory_file_descriptor) && ret))
 			goto error;
 	}
@@ -200,7 +200,7 @@ rt_s rt_shared_mutex_free(struct rt_shared_mutex *shared_mutex)
 	if (RT_UNLIKELY(!CloseHandle((HANDLE)shared_mutex->handle)))
 		ret = RT_FAILED;
 #else
-	/* munmap returns -1 and set errno in case of error. */
+	/* munmap returns -1 and sets errno in case of error. */
 	if (RT_UNLIKELY(munmap(shared_mutex->mutex, sizeof(pthread_mutex_t)) == -1))
 		ret = RT_FAILED;
 #endif
@@ -213,7 +213,7 @@ rt_s rt_shared_mutex_destroy(RT_WINDOWS_UNUSED const rt_char *name)
 	rt_s ret = RT_OK;
 
 #ifdef RT_DEFINE_LINUX
-	/* shm_unlink returns -1 and set errno in case of error. */
+	/* shm_unlink returns -1 and sets errno in case of error. */
 	if (RT_UNLIKELY(shm_unlink(name) == -1))
 		ret = RT_FAILED;
 #endif

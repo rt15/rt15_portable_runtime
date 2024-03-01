@@ -148,7 +148,7 @@ rt_s rt_file_set_pointer(struct rt_file *file, rt_n64 offset, enum rt_file_posit
 		flag = SEEK_SET;
 		break;
 	}
-	/* In case of error, lseek returns -1 and set errno. */
+	/* In case of error, lseek returns -1 and sets errno. */
 	if (lseek(file->io_device.file_descriptor, offset, flag) != -1)
 		ret = RT_OK;
 #endif

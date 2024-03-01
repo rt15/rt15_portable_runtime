@@ -13,7 +13,7 @@ rt_s rt_error_message_append(rt_un32 error_number, rt_char *buffer, rt_un buffer
 	rt_s ret;
 
 	/* FormatMessage returns the number of characters written into the buffer, not counting the terminating zero. */
-	/* FormatMessage returns zero and and set last error in case of error. */
+	/* FormatMessage returns zero and sets last error in case of error. */
 	message_size = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 				     NULL, error_number,
 				     MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),

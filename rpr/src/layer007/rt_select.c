@@ -111,7 +111,7 @@ rt_s rt_select(struct rt_select_item *read_items,  rt_un read_items_size,
 		nfds++;
 
 	/* Returns the number of file descriptors in the sets. Can be zero in case of timeout. */
-	/* Returns -1 and set errno in case of error. */
+	/* Returns -1 and sets errno in case of error. */
 	select_result = select(nfds, actual_readfds, actual_writefds, actual_exceptfds, actual_timeout);
 	if (RT_UNLIKELY(select_result < 1))
 		goto error;

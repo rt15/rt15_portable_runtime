@@ -13,13 +13,13 @@ rt_s rt_pipe_create(struct rt_pipe *pipe)
 	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
-	/* In case of failure, returns zero and set last error. */
+	/* In case of failure, returns zero and sets last error. */
 	if (RT_UNLIKELY(!CreatePipe(&input_handle, &output_handle, RT_NULL, 0)))
 		goto error;
 	rt_io_device_create_from_handle(&pipe->input_io_device, input_handle);
 	rt_io_device_create_from_handle(&pipe->output_io_device, output_handle);
 #else
-	/* In case of failure, returns -1 and set errno. */
+	/* In case of failure, returns -1 and sets errno. */
 	if (RT_UNLIKELY(pipe2(pipes, O_CLOEXEC) == -1))
 		goto error;
 	rt_io_device_create_from_file_descriptor(&pipe->input_io_device, pipes[0]);

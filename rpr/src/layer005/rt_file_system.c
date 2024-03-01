@@ -348,7 +348,7 @@ rt_s rt_file_system_get_file_size(const rt_char *file_path, rt_un64 *file_size)
 
 #else /* RT_DEFINE_WINDOWS */
 
-	/* stat returns zero in case of success, -1 in case of failure and set errno. */
+	/* stat returns zero in case of success, -1 in case of failure and sets errno. */
 	if (RT_UNLIKELY(stat(file_path, &file_info)))
 		goto error;
 	*file_size = file_info.st_size;
@@ -404,7 +404,7 @@ rt_s rt_file_system_copy_file(const rt_char *source_file_path, const rt_char *de
 		destination_actual_path = destination_namespaced_path;
 	}
 
-	/* Returns 0 in case of error and set last error. */
+	/* Returns 0 in case of error and sets last error. */
 	ret = CopyFile(source_actual_path, destination_actual_path, !overwrite);
 
 free:
@@ -572,7 +572,7 @@ static rt_s rt_file_system_move_or_rename_dir_or_file(const rt_char *source_file
 		destination_actual_path = destination_namespaced_path;
 	}
 
-	/* Returns 0 and set last error in case of error. */
+	/* Returns 0 and sets last error in case of error. */
 	if (RT_UNLIKELY(!MoveFileEx(source_actual_path, destination_actual_path, MOVEFILE_COPY_ALLOWED | MOVEFILE_WRITE_THROUGH))) goto error;
 #else
 

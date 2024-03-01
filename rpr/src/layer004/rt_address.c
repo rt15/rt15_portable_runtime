@@ -191,7 +191,7 @@ rt_s rt_address_create_from_host_name(const rt_char *host_name, struct rt_addres
 	}
 	address_info_created = RT_TRUE;
 #else
-	/* getaddrinfo returns 0 if it is successful. It returns an error code in case of error and set errno only if the error code is EAI_SYSTEM. */
+	/* getaddrinfo returns 0 if it is successful. It returns an error code in case of error and sets errno only if the error code is EAI_SYSTEM. */
 	returned_value = getaddrinfo(host_name, RT_NULL, actual_hints, &address_info);
 	if (RT_UNLIKELY(returned_value)) {
 		if (RT_LIKELY(returned_value == EAI_SYSTEM)) {

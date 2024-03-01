@@ -44,7 +44,7 @@ rt_s rt_file_mapping_create(struct rt_file_mapping *file_mapping, const rt_char 
 		goto error;
 	}
 
-	/* Returns INVALID_HANDLE_VALUE and set last error in case of issue. */
+	/* Returns INVALID_HANDLE_VALUE and sets last error in case of issue. */
 	file_handle = CreateFile(file_path, dwDesiredAccess, FILE_SHARE_READ | FILE_SHARE_WRITE, RT_NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, RT_NULL);
 	if (RT_UNLIKELY(file_handle == INVALID_HANDLE_VALUE))
 		goto error;
@@ -55,7 +55,7 @@ rt_s rt_file_mapping_create(struct rt_file_mapping *file_mapping, const rt_char 
 		goto error;
 	file_mapping->file_size = file_size;
 
-	/* Returns null and set last error in case of issue. */
+	/* Returns null and sets last error in case of issue. */
 	file_mapping_handle = CreateFileMapping(file_handle, RT_NULL, flProtect, 0, (DWORD)max_size, RT_NULL);
 	if (RT_UNLIKELY(!file_mapping_handle))
 		goto error;
@@ -81,13 +81,13 @@ rt_s rt_file_mapping_create(struct rt_file_mapping *file_mapping, const rt_char 
 		goto error;
 	}
 
-	/* open returns -1 and set errno in case of issue. */
+	/* open returns -1 and sets errno in case of issue. */
 	file_descriptor = open(file_path, open_flags);
 	if (file_descriptor == -1)
 		goto error;
 	file_descriptor_created = RT_TRUE;
 
-	/* fstat returns -1 and set errno in case of issue. */
+	/* fstat returns -1 and sets errno in case of issue. */
 	if (RT_UNLIKELY(fstat(file_descriptor, &file_stat)))
 		goto error;
 	file_mapping->file_size = file_stat.st_size;
@@ -129,7 +129,7 @@ rt_s rt_file_mapping_set_file_size(struct rt_file_mapping *file_mapping, rt_un s
 		goto error;
 	}
 #else
-	/* ftruncate returns -1 and set errno in case of issue. */
+	/* ftruncate returns -1 and sets errno in case of issue. */
 	if (RT_UNLIKELY(ftruncate(file_mapping->file_descriptor, size) == -1))
 		goto error;
 #endif
@@ -149,18 +149,18 @@ rt_s rt_file_mapping_free(struct rt_file_mapping *file_mapping)
 	rt_s ret = RT_OK;
 
 #ifdef RT_DEFINE_WINDOWS
-	/* UnmapViewOfFile returns 0 and set last error in case of issue. */
+	/* UnmapViewOfFile returns 0 and sets last error in case of issue. */
 	if (RT_UNLIKELY(!CloseHandle(file_mapping->file_mapping_handle)))
 		ret = RT_FAILED;
 
 	if (file_mapping->file_size != file_mapping->initial_file_size) {
 
-		/* SetFilePointer returns INVALID_SET_FILE_POINTER and set last error in case of issue. */
+		/* SetFilePointer returns INVALID_SET_FILE_POINTER and sets last error in case of issue. */
 		if (RT_UNLIKELY(SetFilePointer(file_mapping->file_handle, (LONG)file_mapping->file_size, RT_NULL, FILE_BEGIN) == INVALID_SET_FILE_POINTER))
 			ret = RT_FAILED;
 
 		if (ret) {
-			/* SetEndOfFile returns -1 and set last error in case of issue. */
+			/* SetEndOfFile returns -1 and sets last error in case of issue. */
 			if (RT_UNLIKELY(!SetEndOfFile(file_mapping->file_handle)))
 				ret = RT_FAILED;
 		}
@@ -169,7 +169,7 @@ rt_s rt_file_mapping_free(struct rt_file_mapping *file_mapping)
 	if (RT_UNLIKELY(!CloseHandle(file_mapping->file_handle)))
 		ret = RT_FAILED;
 #else
-	/* close returns -1 and set errno in case of error. */
+	/* close returns -1 and sets errno in case of error. */
 	if (RT_UNLIKELY(close(file_mapping->file_descriptor) == -1))
 		ret = RT_FAILED;
 #endif
@@ -213,7 +213,7 @@ rt_s rt_file_mapping_view_create(struct rt_file_mapping_view *file_mapping_view,
 		goto error;
 	}
 
-	/* Returns null and set last error in case of issue. */
+	/* Returns null and sets last error in case of issue. */
 	area = MapViewOfFile(file_mapping->file_mapping_handle, dwDesiredAccess, 0, (DWORD)offset, view_size);
 	if (RT_UNLIKELY(!area))
 		goto error;
@@ -237,7 +237,7 @@ rt_s rt_file_mapping_view_create(struct rt_file_mapping_view *file_mapping_view,
 		goto error;
 	}
 
-	/* mmap returns MAP_FAILED and set errno in case of issue. */
+	/* mmap returns MAP_FAILED and sets errno in case of issue. */
 	area = mmap(RT_NULL, view_size, prot, MAP_SHARED, file_mapping->file_descriptor, offset);
 	if (RT_UNLIKELY(area == MAP_FAILED))
 		goto error;
@@ -261,11 +261,11 @@ rt_s rt_file_mapping_view_flush(RT_UNUSED struct rt_file_mapping_view *file_mapp
 	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
-	/* FlushViewOfFile returns 0 and set last error in case of issue. */
+	/* FlushViewOfFile returns 0 and sets last error in case of issue. */
 	if (RT_UNLIKELY(!FlushViewOfFile(area, size)))
 		goto error;
 #else
-	/* msync returns -1 and set errno in case of issue. */
+	/* msync returns -1 and sets errno in case of issue. */
 	if (RT_UNLIKELY(msync(area, size, MS_SYNC) == -1))
 		goto error;
 #endif
@@ -284,11 +284,11 @@ rt_s rt_file_mapping_view_free(struct rt_file_mapping_view *file_mapping_view)
 	rt_s ret = RT_OK;
 
 #ifdef RT_DEFINE_WINDOWS
-	/* UnmapViewOfFile returns 0 and set last error in case of issue. */
+	/* UnmapViewOfFile returns 0 and sets last error in case of issue. */
 	if (RT_UNLIKELY(!UnmapViewOfFile(file_mapping_view->area)))
 		ret = RT_FAILED;
 #else
-	/* munmap returns -1 and set errno in case of issue. */
+	/* munmap returns -1 and sets errno in case of issue. */
 	if (RT_UNLIKELY(munmap(file_mapping_view->area, file_mapping_view->view_size) == -1))
 		ret = RT_FAILED;
 #endif

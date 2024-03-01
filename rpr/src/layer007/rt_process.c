@@ -350,7 +350,7 @@ static rt_s rt_process_create_actual_linux(struct rt_process *process, const rt_
 		/* Attempt to perform redirections. */
 		/* Make files descriptors 0/1/2 point on given file descriptions. */
 		/* The copy of the file descriptor does not clone O_CLOEXEC. O_CLOEXEC is false in the copy. */
-		/* dup2 returns -1 in case of error and set errno. */
+		/* dup2 returns -1 in case of error and sets errno. */
 		if (std_input) {
 			if (dup2(std_input->file_descriptor, 0) == -1) {
 				rt_error_message_write_last(_R("Failed to duplicate stdin for redirection: "));
@@ -372,7 +372,7 @@ static rt_s rt_process_create_actual_linux(struct rt_process *process, const rt_
 
 		/* Change current dir if provided. */
 		if (current_dir) {
-			/* chdir Returns zero in case of success, set errno. */
+			/* chdir Returns zero in case of success, sets errno. */
 			if (chdir(current_dir)) {
 				rt_console_write_error(_R("Failed to change current directory to \""));
 				rt_console_write_error(current_dir);
@@ -433,7 +433,7 @@ handle_child_error:
 			goto error;
 		}
 	} else {
-		/* On failure, fork returns -1 and set errno. */
+		/* On failure, fork returns -1 and sets errno. */
 		goto error;
 	}
 
@@ -583,7 +583,7 @@ handle_child_error:
 			}
 		}
 	} else {
-		/* On failure, fork returns -1 and set errno. */
+		/* On failure, fork returns -1 and sets errno. */
 		goto error;
 	}
 
@@ -789,7 +789,7 @@ rt_s rt_process_join(struct rt_process *process)
 
 #else
 
-	/* Returns -1 and set errno in case of error. */
+	/* Returns -1 and sets errno in case of error. */
 	if (RT_UNLIKELY(waitpid((pid_t)process->pid, &status, 0) == -1))
 		goto error;
 

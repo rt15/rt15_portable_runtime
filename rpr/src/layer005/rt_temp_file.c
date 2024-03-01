@@ -31,7 +31,7 @@ rt_s rt_temp_file_create_with_parent_path(struct rt_file *file, const rt_char *p
 
 #ifdef RT_DEFINE_WINDOWS
 	/* GetTempFileName create an empty file. */
-	/* Returns zero and set last error in case of issue. */
+	/* Returns zero and sets last error in case of issue. */
 	/* Size of buffer must be at least MAX_PATH . */
 	if (RT_UNLIKELY(!GetTempFileName(parent_path, prefix, 0, buffer)))
 		goto error;
@@ -47,7 +47,7 @@ rt_s rt_temp_file_create_with_parent_path(struct rt_file *file, const rt_char *p
 	if (RT_UNLIKELY(!rt_char_append(prefix, rt_char_get_size(prefix), buffer, buffer_capacity, buffer_size))) goto error;
 	if (RT_UNLIKELY(!rt_char_append(_R("XXXXXX"), 6, buffer, buffer_capacity, buffer_size))) goto error;
 
-	/* Returns -1 and set errno in case of error. */
+	/* Returns -1 and sets errno in case of error. */
 	file->io_device.file_descriptor = mkostemp(buffer, O_CLOEXEC);
 	if (RT_UNLIKELY(file->io_device.file_descriptor == -1))
 		goto error;

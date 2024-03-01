@@ -45,7 +45,7 @@ rt_s rt_console_write_with_size(const rt_char *message, rt_un size, rt_b error)
 	rt_s ret;
 
 	if (size) {
-		/* GetConsoleOutputCP returns zero and set last error in case of issue. */
+		/* GetConsoleOutputCP returns zero and sets last error in case of issue. */
 		console_code_page = GetConsoleOutputCP();
 		if (RT_UNLIKELY(!console_code_page))
 			goto error;
@@ -55,13 +55,13 @@ rt_s rt_console_write_with_size(const rt_char *message, rt_un size, rt_b error)
 		} else {
 			stream_handle = GetStdHandle(STD_OUTPUT_HANDLE);
 		}
-		/* GetStdHandle returns INVALID_HANDLE_VALUE and set last error in case of issue. */
+		/* GetStdHandle returns INVALID_HANDLE_VALUE and sets last error in case of issue. */
 		if (RT_UNLIKELY(stream_handle == INVALID_HANDLE_VALUE))
 			goto error;
 
 		/* Trying with the buffer from the stack. */
 		/* WideCharToMultiByte does not write a terminating zero if an input size is provided. */
-		/* Returns zero and set last error in case of issue. */
+		/* Returns zero and sets last error in case of issue. */
 		oem_text_size = WideCharToMultiByte(console_code_page, 0, message, (int)size, stack_buffer, RT_CHAR8_BIG_STRING_SIZE, RT_NULL, RT_NULL);
 		if (!oem_text_size) {
 			if (RT_UNLIKELY(GetLastError() != ERROR_INSUFFICIENT_BUFFER)) {
@@ -69,7 +69,7 @@ rt_s rt_console_write_with_size(const rt_char *message, rt_un size, rt_b error)
 			} else {
 				/* Stack buffer is too small. Asking for the required size. */
 				/* WideCharToMultiByte does not write a terminating zero if an input size is provided. */
-				/* Returns zero and set last error in case of issue. */
+				/* Returns zero and sets last error in case of issue. */
 				oem_text_size = WideCharToMultiByte(console_code_page, 0, message, (int)size, RT_NULL, 0, RT_NULL, RT_NULL);
 				if (RT_UNLIKELY(!oem_text_size))
 					goto error;
@@ -88,7 +88,7 @@ rt_s rt_console_write_with_size(const rt_char *message, rt_un size, rt_b error)
 		}
 
 		/* WriteConsoleA must not be used as it does not manage redirection to a file. */
-		/* WriteFile returns zero and set last error in case of failure. */
+		/* WriteFile returns zero and sets last error in case of failure. */
 		if (RT_UNLIKELY(!WriteFile(stream_handle, oem_text, (DWORD)oem_text_size, &written, NULL)))
 			goto error;
 	}
@@ -147,7 +147,7 @@ static rt_s rt_console_read_line_from_file(rt_h std_input_handle, rt_char *buffe
 
 	read_buffer_size = 0;
 	while (read_buffer_size < buffer_capacity - 1) {
-		/* ReadFile returns zero and set last error in case of issue. */
+		/* ReadFile returns zero and sets last error in case of issue. */
 		if (RT_UNLIKELY(!ReadFile(std_input_handle, &read_character, 1, &number_of_chars_read, RT_NULL)))
 			goto error;
 
@@ -166,7 +166,7 @@ static rt_s rt_console_read_line_from_file(rt_h std_input_handle, rt_char *buffe
 		goto error;
 	}
 
-	/* OemToCharBuff returns zero and set last error in case of issue. */
+	/* OemToCharBuff returns zero and sets last error in case of issue. */
 	if (RT_UNLIKELY(!OemToCharBuff(read_buffer, buffer, (DWORD)buffer_capacity)))
 		goto error;
 
@@ -200,19 +200,19 @@ rt_s rt_console_read_line(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_
 
 	std_input_handle = GetStdHandle(STD_INPUT_HANDLE);
 
-	/* GetStdHandle returns INVALID_HANDLE_VALUE and set last error in case of issue. */
+	/* GetStdHandle returns INVALID_HANDLE_VALUE and sets last error in case of issue. */
 	if (RT_UNLIKELY(std_input_handle == INVALID_HANDLE_VALUE))
 		goto error;
 
 	/* GetConsoleMode returns zero in case of issue. It fails if the input handle is not a console. */
 	if (GetConsoleMode(std_input_handle, &old_mode)) {
 
-		/* SetConsoleMode returns zero and set last error in case of issue. */
+		/* SetConsoleMode returns zero and sets last error in case of issue. */
 		if (RT_UNLIKELY(!SetConsoleMode(std_input_handle, ENABLE_PROCESSED_INPUT | ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT)))
 			goto error;
 		restore_old_mode = RT_TRUE;
 
-		/* ReadConsole returns zero and set last error in case of issue. */
+		/* ReadConsole returns zero and sets last error in case of issue. */
 		if (RT_UNLIKELY(!ReadConsole(std_input_handle, buffer, (DWORD)buffer_capacity, &number_of_chars_read, RT_NULL)))
 			goto error;
 
@@ -245,7 +245,7 @@ rt_s rt_console_read_line(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_
 free:
 	if (restore_old_mode) {
 		restore_old_mode = RT_FALSE;
-		/* SetConsoleMode returns zero and set last error in case of issue. */
+		/* SetConsoleMode returns zero and sets last error in case of issue. */
 		if (RT_UNLIKELY(!SetConsoleMode(std_input_handle, old_mode) && ret))
 			goto error;
 	}
@@ -305,17 +305,17 @@ rt_s rt_console_read_char(rt_char *character)
 
 	std_input_handle = GetStdHandle(STD_INPUT_HANDLE);
 
-	/* GetStdHandle returns INVALID_HANDLE_VALUE and set last error in case of issue. */
+	/* GetStdHandle returns INVALID_HANDLE_VALUE and sets last error in case of issue. */
 	if (RT_UNLIKELY(std_input_handle == INVALID_HANDLE_VALUE)) goto error;
 
 	/* GetConsoleMode returns zero in case of issue. */
 	if (RT_UNLIKELY(!GetConsoleMode(std_input_handle, &old_mode))) goto error;
 
-	/* SetConsoleMode returns zero and set last error in case of issue. */
+	/* SetConsoleMode returns zero and sets last error in case of issue. */
 	if (RT_UNLIKELY(!SetConsoleMode(std_input_handle, 0))) goto error;
 	restore_old_mode = RT_TRUE;
 
-	/* ReadConsole returns zero and set last error in case of issue. */
+	/* ReadConsole returns zero and sets last error in case of issue. */
 	if (RT_UNLIKELY(!ReadConsole(std_input_handle, character, 1, &number_of_chars_read, RT_NULL))) goto error;
 
 	if (RT_UNLIKELY(!number_of_chars_read)) {
@@ -327,7 +327,7 @@ rt_s rt_console_read_char(rt_char *character)
 free:
 	if (restore_old_mode) {
 		restore_old_mode = RT_FALSE;
-		/* SetConsoleMode returns zero and set last error in case of issue. */
+		/* SetConsoleMode returns zero and sets last error in case of issue. */
 		if (RT_UNLIKELY(!SetConsoleMode(std_input_handle, old_mode) && ret))
 			goto error;
 	}
@@ -353,7 +353,7 @@ rt_s rt_console_read_char(rt_char *character)
 
 	/* Retrieve the terminal attributes. */
 	/* Zero is the standard input. */
-	/* The tcgetattr returns non-zero and set errno in case of error. */
+	/* The tcgetattr returns non-zero and sets errno in case of error. */
 	if (RT_UNLIKELY(tcgetattr(0, &terminal_attributes)))
 		goto error;
 
@@ -366,7 +366,7 @@ rt_s rt_console_read_char(rt_char *character)
 	terminal_attributes.c_cc[VMIN] = 1;
 
 	/* Configure the terminal with the new attributes. */
-	/* The tcsetattr returns non-zero and set errno in case of error. */
+	/* The tcsetattr returns non-zero and sets errno in case of error. */
 	if (RT_UNLIKELY(tcsetattr(0, TCSANOW, &terminal_attributes)))
 		goto error;
 	restore_old_terminal_attributes = RT_TRUE;
@@ -434,7 +434,7 @@ rt_s rt_console_clear(void)
 	rt_s ret;
 
 	std_output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	/* GetStdHandle returns INVALID_HANDLE_VALUE and set last error in case of issue. */
+	/* GetStdHandle returns INVALID_HANDLE_VALUE and sets last error in case of issue. */
 	if (RT_UNLIKELY(std_output_handle == INVALID_HANDLE_VALUE))
 		goto error;
 
@@ -442,17 +442,17 @@ rt_s rt_console_clear(void)
 	cursor_position.Y = 0;
 
 	/* Get the current console screen buffer information. */
-	/* Returns zero and set last error in case of issue. */
+	/* Returns zero and sets last error in case of issue. */
 	if (RT_UNLIKELY(!GetConsoleScreenBufferInfo(std_output_handle, &screen_buffer_info)))
 		goto error;
 
 	/* Fill the entire console screen with blank spaces. */
-	/* Returns zero and set last error in case of issue. */
+	/* Returns zero and sets last error in case of issue. */
 	if (RT_UNLIKELY(!FillConsoleOutputCharacter(std_output_handle, ' ', screen_buffer_info.dwSize.X * screen_buffer_info.dwSize.Y, cursor_position, &written)))
 		goto error;
 
 	/* Set the cursor position to the top left corner. */
-	/* Returns zero and set last error in case of issue. */
+	/* Returns zero and sets last error in case of issue. */
 	if (RT_UNLIKELY(!SetConsoleCursorPosition(std_output_handle, cursor_position)))
 		goto error;
 
@@ -471,11 +471,11 @@ static rt_s rt_console_set_windows_color(rt_un windows_color)
 	rt_s ret;
 
 	std_output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	/* GetStdHandle returns INVALID_HANDLE_VALUE and set last error in case of issue. */
+	/* GetStdHandle returns INVALID_HANDLE_VALUE and sets last error in case of issue. */
 	if (RT_UNLIKELY(std_output_handle == INVALID_HANDLE_VALUE))
 		goto error;
 
-	/* Returns zero and set last error in case of issue. */
+	/* Returns zero and sets last error in case of issue. */
 	if (RT_UNLIKELY(!SetConsoleTextAttribute(std_output_handle, (WORD)windows_color)))
 		goto error;
 

@@ -126,7 +126,7 @@ rt_s rt_socket_create(struct rt_socket *socket_, enum rt_address_family address_
 	}
 
 	/* WSA_FLAG_NO_HANDLE_INHERIT flag is in early versions of Windows only. */
-	/* WSASocket returns INVALID_SOCKET and set last error in case of issue. */
+	/* WSASocket returns INVALID_SOCKET and sets last error in case of issue. */
 	socket_handle = (rt_h)WSASocket((int)address_family, (int)type, (int)protocol, RT_NULL, 0, flags);
 	if (RT_UNLIKELY((rt_un)socket_handle == INVALID_SOCKET))
 		goto error;
@@ -148,7 +148,7 @@ rt_s rt_socket_create(struct rt_socket *socket_, enum rt_address_family address_
 		/* argp must be true to enable non-blocking mode with FIONBIO command. */
 		argp = RT_TRUE;
 
-		/* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
+		/* Returns SOCKET_ERROR (-1) and sets WSAGetLastError in case of issue. */
 		if (RT_UNLIKELY(ioctlsocket((rt_un)socket_->io_device.handle, FIONBIO, &argp))) {
 			rt_socket_free(socket_);
 			goto error;
@@ -350,7 +350,7 @@ static rt_s rt_socket_set_option_do(struct rt_socket *socket, enum rt_socket_pro
 	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
-	/* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
+	/* Returns SOCKET_ERROR (-1) and sets WSAGetLastError in case of issue. */
 	if (RT_UNLIKELY(setsockopt((rt_un)socket->io_device.handle, (int)protocol_level, (int)option, value, (int)value_size)))
 		goto error;
 #else
@@ -445,7 +445,7 @@ static rt_s rt_socket_get_option_do(struct rt_socket *socket, enum rt_socket_pro
 	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
-	/* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
+	/* Returns SOCKET_ERROR (-1) and sets WSAGetLastError in case of issue. */
 	if (RT_UNLIKELY(getsockopt((rt_un)socket->io_device.handle, (int)protocol_level, (int)option, value, &local_value_size)))
 		goto error;
 	*value_size = local_value_size;
@@ -654,11 +654,11 @@ rt_s rt_socket_bind_with_socket_address(struct rt_socket *socket, struct rt_sock
 		goto error;
 
 #ifdef RT_DEFINE_WINDOWS
-	/* On success bind returns zero, -1 and set last error otherwise. */
+	/* On success bind returns zero, -1 and sets last error otherwise. */
 	if (RT_UNLIKELY(bind((rt_un)socket->io_device.handle, (struct sockaddr*)socket_address, (int)socket_address_size)))
 		goto error;
 #else
-	/* On success bind returns zero, -1 and set last error otherwise. */
+	/* On success bind returns zero, -1 and sets last error otherwise. */
 	if (RT_UNLIKELY(bind(socket->io_device.file_descriptor, (struct sockaddr*)socket_address, socket_address_size)))
 		goto error;
 #endif
@@ -682,10 +682,10 @@ rt_s rt_socket_listen_with_backlog(struct rt_socket *socket, rt_un backlog)
 	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
-	/* On success listen returns zero, -1 and set last error otherwise. */
+	/* On success listen returns zero, -1 and sets last error otherwise. */
 	ret = !listen((rt_un)socket->io_device.handle, (int)backlog);
 #else
-	/* On success listen returns zero, -1 and set last error otherwise. */
+	/* On success listen returns zero, -1 and sets last error otherwise. */
 	ret = !listen(socket->io_device.file_descriptor, (int)backlog);
 #endif
 
@@ -729,7 +729,7 @@ rt_s rt_socket_accept_connection(struct rt_socket *socket, rt_b blocking, struct
 		/* argp must be true to enable non-blocking mode with FIONBIO command. */
 		argp = RT_TRUE;
 
-		/* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
+		/* Returns SOCKET_ERROR (-1) and sets WSAGetLastError in case of issue. */
 		if (RT_UNLIKELY(ioctlsocket((rt_un)accepted_socket_handle, FIONBIO, &argp))) {
 			rt_socket_free(accepted_socket);
 			goto error;
@@ -791,12 +791,12 @@ rt_s rt_socket_send(struct rt_socket *socket, void *data, rt_un data_size, enum 
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
-	/* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
+	/* Returns SOCKET_ERROR (-1) and sets WSAGetLastError in case of issue. */
 	send_result = send((rt_un)socket->io_device.handle, data, (int)data_size, (int)flags);
 	if (RT_UNLIKELY(send_result < 0))
 		goto error;
 #else
-	/* Returns -1 in case of issue and set errno. */
+	/* Returns -1 in case of issue and sets errno. */
 	send_result = send(socket->io_device.file_descriptor, data, data_size, actual_flags);
 	if (send_result < 0) {
 		if (RT_LIKELY(errno == EAGAIN))
@@ -829,12 +829,12 @@ rt_s rt_socket_receive(struct rt_socket *socket, void *buffer, rt_un buffer_capa
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
-	/* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
+	/* Returns SOCKET_ERROR (-1) and sets WSAGetLastError in case of issue. */
 	recv_result = recv((rt_un)socket->io_device.handle, buffer, (int)buffer_capacity, (int)flags);
 	if (RT_UNLIKELY(recv_result < 0))
 		goto error;
 #else
-	/* Returns -1 in case of issue and set errno. */
+	/* Returns -1 in case of issue and sets errno. */
 	recv_result = recv(socket->io_device.file_descriptor, buffer, buffer_capacity, actual_flags);
 	if (recv_result < 0) {
 		if (RT_UNLIKELY(errno == EAGAIN))
@@ -891,7 +891,7 @@ rt_s rt_socket_shutdown(struct rt_socket *socket, enum rt_socket_shutdown_flag f
 {
 	rt_s ret;
 
-	/* On success shutdown returns zero, -1 and set last error otherwise. */
+	/* On success shutdown returns zero, -1 and sets last error otherwise. */
 #ifdef RT_DEFINE_WINDOWS
 	ret = !shutdown((rt_un)socket->io_device.handle, (int)flag);
 #else
@@ -909,7 +909,7 @@ rt_s rt_socket_free(struct rt_socket *socket)
 	/* closesocket returns zero if the operation was successful, call WSASetLastError and returns SOCKET_ERROR otherwise. */
 	ret = !closesocket((rt_un)socket->io_device.handle);
 #else
-	/* close() returns zero on success, and set errno in case of issue. */
+	/* close() returns zero on success, and sets errno in case of issue. */
 	ret = !close(socket->io_device.file_descriptor);
 #endif
 	return ret;

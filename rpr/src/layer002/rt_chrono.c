@@ -48,7 +48,7 @@ rt_s rt_chrono_create(struct rt_chrono *chrono)
 	if (RT_UNLIKELY(!QueryPerformanceCounter((LARGE_INTEGER*)chrono)))
 		goto error;
 #else
-	/* clock_gettime returns -1 and set errno in case of failure. */
+	/* clock_gettime returns -1 and sets errno in case of failure. */
 	if (RT_UNLIKELY(clock_gettime(CLOCK_MONOTONIC_RAW, (struct timespec*)chrono) == -1))
 		goto error;
 #endif
@@ -89,7 +89,7 @@ rt_s rt_chrono_get_duration(struct rt_chrono *chrono, rt_un *micro_seconds)
 #else
 	start_counter = (struct timespec*)chrono;
 
-	/* clock_gettime returns -1 and set errno in case of failure. */
+	/* clock_gettime returns -1 and sets errno in case of failure. */
 	if (RT_UNLIKELY(clock_gettime(CLOCK_MONOTONIC_RAW, &counter_value) == -1))
 		goto error;
 

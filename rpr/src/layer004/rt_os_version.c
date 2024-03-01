@@ -105,7 +105,7 @@ rt_s rt_os_version_get(rt_un *major, rt_un *minor, rt_un *patch)
 #ifdef RT_DEFINE_WINDOWS
 
 		os_version_info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-		/* Returns zero and set last error in case of failure. */
+		/* Returns zero and sets last error in case of failure. */
 #ifdef RT_DEFINE_VC
 #pragma warning(disable:4996)
 #endif

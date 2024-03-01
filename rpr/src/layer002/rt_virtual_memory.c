@@ -26,7 +26,7 @@ rt_un rt_virtual_memory_get_page_size(void)
 void *rt_virtual_memory_alloc(void **area, rt_un size)
 {
 #ifdef RT_DEFINE_WINDOWS
-	/* Returns NULL and set last error in case of issue. */
+	/* Returns NULL and sets last error in case of issue. */
 	*area = VirtualAlloc(NULL, size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 #else
 	*area = (rt_un*)mmap(0, size, PROT_EXEC | PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
