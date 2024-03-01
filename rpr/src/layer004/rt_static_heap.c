@@ -53,7 +53,7 @@ void *rt_static_heap_realloc(void **area, rt_un size)
 	/* HeapReAlloc return NULL and call SetLastError in case of failure. Current area is left unchanged. */
 	result = HeapReAlloc(rt_static_heap_process_heap_handle, 0, *area, size);
 #else
-	/* realloc set errno. Current area is left unchanged. */
+	/* realloc sets errno. Current area is left unchanged. */
 	result = realloc(*area, size);
 #endif
 	/* If re-alloc has been successful, *area is no more allocated. */

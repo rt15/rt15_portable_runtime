@@ -203,7 +203,7 @@ rt_s rt_io_device_read(struct rt_input_stream *input_stream, rt_char8 *buffer, r
 		goto error;
 	*bytes_read = local_bytes_read;
 #else
-	/* read returns -1 and set errno in case of issue. */
+	/* read returns -1 and sets errno in case of issue. */
 	local_bytes_read = read(io_device->file_descriptor, buffer, bytes_to_read);
 	if (RT_UNLIKELY(local_bytes_read == -1))
 		goto error;

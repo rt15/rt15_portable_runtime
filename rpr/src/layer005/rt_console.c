@@ -115,7 +115,7 @@ error:
 		else
 			file_descriptor = 1;
 
-		/* write return -1 and set errno in case of failure. */
+		/* write returns -1 and sets errno in case of failure. */
 		ret = (write(file_descriptor, message, (size_t)size) != -1);
 	} else {
 		ret = RT_OK;
