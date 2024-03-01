@@ -119,6 +119,50 @@ error:
 	goto free;
 }
 
+rt_s rt_time_info_create_accurate(struct rt_time_info *time_info, rt_un *milliseconds)
+{
+#ifdef RT_DEFINE_WINDOWS
+	SYSTEMTIME system_time;
+#else
+	struct timespec time_spec;
+	rt_s ret;
+#endif
+
+#ifdef RT_DEFINE_WINDOWS
+	/* This function cannot fail. */
+	GetLocalTime(&system_time);
+
+	RT_MEMORY_ZERO(time_info, sizeof(struct rt_time_info));
+
+	time_info->seconds = system_time.wSecond;
+	time_info->minutes = system_time.wMinute;
+	time_info->hours = system_time.wHour;
+	time_info->day = system_time.wDay;
+	time_info->month = system_time.wMonth;
+	time_info->year = system_time.wYear;
+	*milliseconds = system_time.wMilliseconds;
+	
+	return RT_OK;
+#else
+	/* Returns -1 and sets errno in case of issue. */
+	if (RT_UNLIKELY(clock_gettime(CLOCK_REALTIME, &time_spec) == -1))
+		goto error;
+
+	if (RT_UNLIKELY(!rt_time_info_create_local(time_info, time_spec.tv_sec)))
+		goto error;
+
+	*milliseconds = time_spec.tv_nsec / 1000000;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+#endif
+}
+
 rt_s rt_time_info_create_local(struct rt_time_info *time_info, rt_n unix_time)
 {
 #ifdef RT_DEFINE_WINDOWS
@@ -140,7 +184,7 @@ rt_s rt_time_info_create_local(struct rt_time_info *time_info, rt_n unix_time)
 
 #else
 
-	/* Returns null and set errno in case of error. */
+	/* Returns null and sets errno in case of error. */
 	if (RT_UNLIKELY(!localtime_r(&unix_time, (struct tm*)time_info)))
 		goto error;
 
@@ -160,17 +204,15 @@ error:
 	goto free;
 }
 
-rt_s rt_time_get_unix_time_from_time_info(const struct rt_time_info *time_info, rt_n *unix_time)
+rt_s rt_time_get_unix_time_from_time_info(struct rt_time_info *time_info, rt_n *unix_time)
 {
-	struct rt_time_info local_time_info;
 	rt_n result;
 	rt_s ret;
 
-	RT_MEMORY_COPY(time_info, &local_time_info, sizeof(struct rt_time_info));
-	local_time_info.month -= 1;
-	local_time_info.year -= 1900;
-	local_time_info.day_of_week -= 1;
-	local_time_info.day_of_year -= 1;
+	time_info->month -= 1;
+	time_info->year -= 1900;
+	time_info->day_of_week -= 1;
+	time_info->day_of_year -= 1;
 
 #ifdef RT_DEFINE_WINDOWS
 
@@ -178,20 +220,26 @@ rt_s rt_time_get_unix_time_from_time_info(const struct rt_time_info *time_info, 
 		goto error;
 
 	/* Returns -1 in case of error. */
-	result = rt_time_mktime(&local_time_info);
+	result = rt_time_mktime(time_info);
 	if (RT_UNLIKELY(result == -1))
 		goto error;
 
 #else
 
 	/* Returns -1 in case of error. */
-	result = mktime((struct tm*)&local_time_info);
+	result = mktime((struct tm*)time_info);
 	if (RT_UNLIKELY(result == -1))
 		goto error;
 
 #endif
 
-	*unix_time = result;
+	time_info->month += 1;
+	time_info->year += 1900;
+	time_info->day_of_week += 1;
+	time_info->day_of_year += 1;
+
+	if (unix_time)
+		*unix_time = result;
 
 	ret = RT_OK;
 free:

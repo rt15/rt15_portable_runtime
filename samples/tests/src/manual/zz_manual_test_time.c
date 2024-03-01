@@ -21,10 +21,34 @@ error:
 	goto free;
 }
 
+static rt_s zz_manual_test_time_append_three_digits(rt_un value, rt_un base, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	rt_s ret;
+
+	if (value < 10) {
+		if (RT_UNLIKELY(!rt_char_append(_R("00"), 2, buffer, buffer_capacity, buffer_size)))
+			goto error;
+	} else if (value < 100) {
+		if (RT_UNLIKELY(!rt_char_append_char(_R('0'), buffer, buffer_capacity, buffer_size)))
+			goto error;
+	}
+
+	if (RT_UNLIKELY(!rt_char_append_un(value, base, buffer, buffer_capacity, buffer_size)))
+		goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 /**
  * yyyy-MM-dd HH:mm:ss
  */
-static rt_s zz_manual_test_time_display_time_info(struct rt_time_info *time_info)
+static rt_s zz_manual_test_time_display_time_info(struct rt_time_info *time_info, rt_un *milliseconds)
 {
 	rt_char buffer[RT_CHAR_HALF_BIG_STRING_SIZE];
 	rt_un buffer_size;
@@ -66,6 +90,14 @@ static rt_s zz_manual_test_time_display_time_info(struct rt_time_info *time_info
 
 	if (RT_UNLIKELY(!zz_manual_test_time_append_two_digits(time_info->seconds, 10, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
 		goto error;
+
+	if (milliseconds) {
+		if (RT_UNLIKELY(!rt_char_append_char(_R('.'), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
+			goto error;
+
+		if (RT_UNLIKELY(!zz_manual_test_time_append_three_digits(*milliseconds, 10, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
+			goto error;
+	}
 
 	if (RT_UNLIKELY(!rt_char_append_char(_R('\n'), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
 		goto error;
@@ -169,6 +201,7 @@ rt_s zz_manual_test_time(void)
 {
 	rt_n unix_time;
 	struct rt_time_info time_info;
+	rt_un milliseconds;
 	rt_s ret;
 
 	if (RT_UNLIKELY(!rt_time_get_unix_time(&unix_time)))
@@ -177,10 +210,16 @@ rt_s zz_manual_test_time(void)
 	if (RT_UNLIKELY(!rt_time_info_create_local(&time_info, unix_time)))
 		goto error;
 
-	if (RT_UNLIKELY(!zz_manual_test_time_display_time_info(&time_info)))
+	if (RT_UNLIKELY(!zz_manual_test_time_display_time_info(&time_info, RT_NULL)))
 		goto error;
 
 	if (RT_UNLIKELY(!zz_manual_test_time_display_more_time_info(&time_info)))
+		goto error;
+
+	if (RT_UNLIKELY(!rt_time_info_create_accurate(&time_info, &milliseconds)))
+		goto error;
+
+	if (RT_UNLIKELY(!zz_manual_test_time_display_time_info(&time_info, &milliseconds)))
 		goto error;
 
 	ret = RT_OK;
