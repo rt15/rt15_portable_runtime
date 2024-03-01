@@ -241,6 +241,12 @@
     <ClCompile Include="..\src\manual\zz_manual_test_time.c">
       <Filter>src\manual</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_semaphore.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\zz_acquire_shared_semaphore.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

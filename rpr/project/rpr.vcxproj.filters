@@ -205,6 +205,9 @@
     <ClCompile Include="..\src\layer004\rt_time.c">
       <Filter>src\layer004</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer003\rt_semaphore.c">
+      <Filter>src\layer003</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -440,6 +443,9 @@
     </ClInclude>
     <ClInclude Include="..\include\layer004\rt_time.h">
       <Filter>include\layer004</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer003\rt_semaphore.h">
+      <Filter>include\layer003</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
