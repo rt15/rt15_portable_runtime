@@ -134,6 +134,9 @@ static rt_s rt_check_types(void)
 	if (RT_UNLIKELY(sizeof(rt_un) < sizeof(pid_t))) goto error;
 
 	if (RT_UNLIKELY(sizeof(struct tm) != sizeof(struct rt_time_info))) goto error;
+
+	/* An array of characters is used to store sem_t in rt_semaphore structure. */
+	if (RT_UNLIKELY(sizeof(sem_t) > 32)) goto error;
 #endif
 
 	/* Socket address structures. */

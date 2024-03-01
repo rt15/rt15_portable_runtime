@@ -59,6 +59,7 @@
     <ClCompile Include="..\src\auto\zz_test_readers_writer_mutex.c" />
     <ClCompile Include="..\src\auto\zz_test_read_lines.c" />
     <ClCompile Include="..\src\auto\zz_test_select.c" />
+    <ClCompile Include="..\src\auto\zz_test_semaphore.c" />
     <ClCompile Include="..\src\auto\zz_test_shared_memory.c" />
     <ClCompile Include="..\src\auto\zz_test_shared_mutex.c" />
     <ClCompile Include="..\src\auto\zz_test_sleep.c" />
@@ -90,6 +91,7 @@
     <ClCompile Include="..\src\manual\zz_manual_test_types.c" />
     <ClCompile Include="..\src\manual\zz_manual_test_url.c" />
     <ClCompile Include="..\src\utils\zz_utils.c" />
+    <ClCompile Include="..\src\zz_acquire_shared_semaphore.c" />
     <ClCompile Include="..\src\zz_display_args.c" />
     <ClCompile Include="..\src\zz_display_env_var.c" />
     <ClCompile Include="..\src\zz_generate_char8.c" />

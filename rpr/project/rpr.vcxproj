@@ -47,6 +47,7 @@
     <ClCompile Include="..\src\layer003\rt_library.c" />
     <ClCompile Include="..\src\layer003\rt_pipe.c" />
     <ClCompile Include="..\src\layer003\rt_read_lines.c" />
+    <ClCompile Include="..\src\layer003\rt_semaphore.c" />
     <ClCompile Include="..\src\layer003\rt_shared_memory.c" />
     <ClCompile Include="..\src\layer003\rt_thread.c" />
     <ClCompile Include="..\src\layer004\rt_address.c" />
@@ -125,6 +126,7 @@
     <ClInclude Include="..\include\layer003\rt_library.h" />
     <ClInclude Include="..\include\layer003\rt_pipe.h" />
     <ClInclude Include="..\include\layer003\rt_read_lines.h" />
+    <ClInclude Include="..\include\layer003\rt_semaphore.h" />
     <ClInclude Include="..\include\layer003\rt_shared_memory.h" />
     <ClInclude Include="..\include\layer003\rt_spinlock.h" />
     <ClInclude Include="..\include\layer003\rt_thread.h" />

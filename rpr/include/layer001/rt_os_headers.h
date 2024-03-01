@@ -130,6 +130,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <dlfcn.h>
+#include <semaphore.h>
 
 /* yum install libuuid libuuid-devel */
 #include <uuid/uuid.h>
