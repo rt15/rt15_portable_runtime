@@ -68,9 +68,11 @@ static rt_s rt_check_types(void)
 
 	if (RT_UNLIKELY(sizeof(rt_n32) != 4)) goto error;
 	if (RT_UNLIKELY(sizeof(rt_un32) != 4)) goto error;
+	if (RT_UNLIKELY(sizeof(rt_f32) != 4)) goto error;
 
 	if (RT_UNLIKELY(sizeof(rt_n64) != 8)) goto error;
 	if (RT_UNLIKELY(sizeof(rt_un64) != 8)) goto error;
+	if (RT_UNLIKELY(sizeof(rt_f64) != 8)) goto error;
 
 	if (RT_UNLIKELY(sizeof(rt_n) != pointer_size)) goto error;
 	if (RT_UNLIKELY(sizeof(rt_un) != pointer_size)) goto error;

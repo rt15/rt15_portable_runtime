@@ -111,6 +111,10 @@ RT_API rt_s rt_char_append_un(rt_un value, rt_un base, rt_char *buffer, rt_un bu
  */
 RT_API rt_s rt_char_append_n(rt_n value, rt_un base, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
+RT_API rt_s rt_char_append_f32(rt_f32 value, rt_un decimal_count, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+
+RT_API rt_s rt_char_append_f64(rt_f64 value, rt_un decimal_count, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+
 /**
  * Manage only characters from 'A' to 'Z'.<br>
  * Leave other characters unchanged.
