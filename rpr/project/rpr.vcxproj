@@ -104,8 +104,10 @@
     <ClInclude Include="..\include\layer002\rt_buffered_output_stream.h" />
     <ClInclude Include="..\include\layer002\rt_chrono.h" />
     <ClInclude Include="..\include\layer002\rt_critical_section.h" />
+    <ClInclude Include="..\include\layer002\rt_double.h" />
     <ClInclude Include="..\include\layer002\rt_error.h" />
     <ClInclude Include="..\include\layer002\rt_event.h" />
+    <ClInclude Include="..\include\layer002\rt_float.h" />
     <ClInclude Include="..\include\layer002\rt_get_process_id.h" />
     <ClInclude Include="..\include\layer002\rt_io_device.h" />
     <ClInclude Include="..\include\layer002\rt_memory_input_stream.h" />

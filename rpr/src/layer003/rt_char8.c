@@ -1,7 +1,9 @@
 #include "layer003/rt_char8.h"
 
 #include "layer001/rt_memory.h"
+#include "layer002/rt_double.h"
 #include "layer002/rt_error.h"
+#include "layer002/rt_float.h"
 
 #ifdef RT_DEFINE_32
 #define RT_CHAR8_FNV_OFFSET_BASIS 2166136261u
@@ -10,8 +12,6 @@
 #define RT_CHAR8_FNV_OFFSET_BASIS 14695981039346656037ull
 #define RT_CHAR8_FNV_PRIME 1099511628211ull
 #endif
-
-#define RT_CHAR8_FLOAT_TO_INT(value) ((value) >= 0 ? (rt_n)((value) + 0.5) : (rt_n)((value) - 0.5))
 
 rt_b rt_char8_equals(const rt_char8 *str1, rt_un str1_size, const rt_char8 *str2, rt_un str2_size)
 {
@@ -340,57 +340,62 @@ rt_s rt_char8_append_f32(rt_f32 value, rt_un decimal_count, rt_char8 *buffer, rt
 	rt_un i;
 	rt_s ret;
 
-	if (value < 0) {
-		if (RT_UNLIKELY(!rt_char8_append_char('-', buffer, buffer_capacity, buffer_size)))
+	if (RT_FLOAT_EQUALS(value, 0.0f)) {
+		if (RT_UNLIKELY(!rt_char8_append_char('0', buffer, buffer_capacity, buffer_size)))
 			goto error;
-		local_value = -value;
 	} else {
-		local_value = value;
-	}
+		if (value < 0) {
+			if (RT_UNLIKELY(!rt_char8_append_char('-', buffer, buffer_capacity, buffer_size)))
+				goto error;
+			local_value = -value;
+		} else {
+			local_value = value;
+		}
 
-	if (!decimal_count) {
+		if (!decimal_count) {
 
-		integer_part = RT_CHAR8_FLOAT_TO_INT(local_value);
-		if (RT_UNLIKELY(!rt_char8_append_n(integer_part, 10, buffer, buffer_capacity, buffer_size)))
-			goto error;
-
-	} else {
-
-		integer_part = (rt_n32)local_value;
-		if (RT_UNLIKELY(!rt_char8_append_n(integer_part, 10, buffer, buffer_capacity, buffer_size)))
-			goto error;
-
-		decimal_part = local_value - (rt_f32)integer_part;
-
-		decimal_part = decimal_part * rt_char8_base_get_power_of_ten32(decimal_count);
-
-		if (decimal_part > 1e-5f) {
-
-			/* Avoid 0.499999 stuff. */
-			decimal_part += 1e-5f;
-
-			if (RT_UNLIKELY(!rt_char8_append_char('.', buffer, buffer_capacity, buffer_size)))
+			integer_part = RT_FLOAT_ROUND(local_value);
+			if (RT_UNLIKELY(!rt_char8_append_n(integer_part, 10, buffer, buffer_capacity, buffer_size)))
 				goto error;
 
-			local_buffer_size = 0;
-			if (RT_UNLIKELY(!rt_char8_append_un(RT_CHAR8_FLOAT_TO_INT(decimal_part), 10, local_buffer, 64, &local_buffer_size)))
+		} else {
+
+			integer_part = (rt_n32)local_value;
+			if (RT_UNLIKELY(!rt_char8_append_n(integer_part, 10, buffer, buffer_capacity, buffer_size)))
 				goto error;
 
-			for (i = local_buffer_size; i < decimal_count; i++) {
-				if (RT_UNLIKELY(!rt_char8_append_char('0', buffer, buffer_capacity, buffer_size)))
+			decimal_part = local_value - (rt_f32)integer_part;
+
+			decimal_part = decimal_part * rt_char8_base_get_power_of_ten32(decimal_count);
+
+			if (decimal_part > RT_FLOAT_EPSILON) {
+
+				/* Avoid 0.499999 stuff. */
+				decimal_part += RT_FLOAT_EPSILON;
+
+				if (RT_UNLIKELY(!rt_char8_append_char('.', buffer, buffer_capacity, buffer_size)))
 					goto error;
+
+				local_buffer_size = 0;
+				if (RT_UNLIKELY(!rt_char8_append_un(RT_FLOAT_ROUND(decimal_part), 10, local_buffer, 64, &local_buffer_size)))
+					goto error;
+
+				for (i = local_buffer_size; i < decimal_count; i++) {
+					if (RT_UNLIKELY(!rt_char8_append_char('0', buffer, buffer_capacity, buffer_size)))
+						goto error;
+				}
+
+				if (RT_UNLIKELY(!rt_char8_append(local_buffer, local_buffer_size, buffer, buffer_capacity, buffer_size)))
+					goto error;
+
+				while (buffer[*buffer_size - 1] == '0') {
+					(*buffer_size)--;
+				}
+				if (buffer[*buffer_size - 1] == '.')
+					(*buffer_size)--;
+
+				buffer[*buffer_size] = 0;
 			}
-
-			if (RT_UNLIKELY(!rt_char8_append(local_buffer, local_buffer_size, buffer, buffer_capacity, buffer_size)))
-				goto error;
-
-			while (buffer[*buffer_size - 1] == '0') {
-				(*buffer_size)--;
-			}
-			if (buffer[*buffer_size - 1] == '.')
-				(*buffer_size)--;
-
-			buffer[*buffer_size] = 0;
 		}
 	}
 
@@ -413,57 +418,62 @@ rt_s rt_char8_append_f64(rt_f64 value, rt_un decimal_count, rt_char8 *buffer, rt
 	rt_un i;
 	rt_s ret;
 
-	if (value < 0) {
-		if (RT_UNLIKELY(!rt_char8_append_char('-', buffer, buffer_capacity, buffer_size)))
+	if (RT_DOUBLE_EQUALS(value, 0.0)) {
+		if (RT_UNLIKELY(!rt_char8_append_char('0', buffer, buffer_capacity, buffer_size)))
 			goto error;
-		local_value = -value;
 	} else {
-		local_value = value;
-	}
+		if (value < 0) {
+			if (RT_UNLIKELY(!rt_char8_append_char('-', buffer, buffer_capacity, buffer_size)))
+				goto error;
+			local_value = -value;
+		} else {
+			local_value = value;
+		}
 
-	if (!decimal_count) {
+		if (!decimal_count) {
 
-		integer_part = RT_CHAR8_FLOAT_TO_INT(local_value);
-		if (RT_UNLIKELY(!rt_char8_append_n(integer_part, 10, buffer, buffer_capacity, buffer_size)))
-			goto error;
-
-	} else {
-
-		integer_part = (rt_n)local_value;
-		if (RT_UNLIKELY(!rt_char8_append_n(integer_part, 10, buffer, buffer_capacity, buffer_size)))
-			goto error;
-
-		decimal_part = local_value - (rt_f64)integer_part;
-
-		decimal_part = decimal_part * rt_char8_base_get_power_of_ten64(decimal_count);
-
-		if (decimal_part > 1e-10) {
-
-			/* Avoid 0.499999 stuff. */
-			decimal_part += 1e-10;
-
-			if (RT_UNLIKELY(!rt_char8_append_char('.', buffer, buffer_capacity, buffer_size)))
+			integer_part = RT_DOUBLE_ROUND(local_value);
+			if (RT_UNLIKELY(!rt_char8_append_n(integer_part, 10, buffer, buffer_capacity, buffer_size)))
 				goto error;
 
-			local_buffer_size = 0;
-			if (RT_UNLIKELY(!rt_char8_append_un(RT_CHAR8_FLOAT_TO_INT(decimal_part), 10, local_buffer, 64, &local_buffer_size)))
+		} else {
+
+			integer_part = (rt_n)local_value;
+			if (RT_UNLIKELY(!rt_char8_append_n(integer_part, 10, buffer, buffer_capacity, buffer_size)))
 				goto error;
 
-			for (i = local_buffer_size; i < decimal_count; i++) {
-				if (RT_UNLIKELY(!rt_char8_append_char('0', buffer, buffer_capacity, buffer_size)))
+			decimal_part = local_value - (rt_f64)integer_part;
+
+			decimal_part = decimal_part * rt_char8_base_get_power_of_ten64(decimal_count);
+
+			if (decimal_part > RT_DOUBLE_EPSILON) {
+
+				/* Avoid 0.499999 stuff. */
+				decimal_part += RT_DOUBLE_EPSILON;
+
+				if (RT_UNLIKELY(!rt_char8_append_char('.', buffer, buffer_capacity, buffer_size)))
 					goto error;
+
+				local_buffer_size = 0;
+				if (RT_UNLIKELY(!rt_char8_append_un(RT_DOUBLE_ROUND(decimal_part), 10, local_buffer, 64, &local_buffer_size)))
+					goto error;
+
+				for (i = local_buffer_size; i < decimal_count; i++) {
+					if (RT_UNLIKELY(!rt_char8_append_char('0', buffer, buffer_capacity, buffer_size)))
+						goto error;
+				}
+
+				if (RT_UNLIKELY(!rt_char8_append(local_buffer, local_buffer_size, buffer, buffer_capacity, buffer_size)))
+					goto error;
+
+				while (buffer[*buffer_size - 1] == '0') {
+					(*buffer_size)--;
+				}
+				if (buffer[*buffer_size - 1] == '.')
+					(*buffer_size)--;
+
+				buffer[*buffer_size] = 0;
 			}
-
-			if (RT_UNLIKELY(!rt_char8_append(local_buffer, local_buffer_size, buffer, buffer_capacity, buffer_size)))
-				goto error;
-
-			while (buffer[*buffer_size - 1] == '0') {
-				(*buffer_size)--;
-			}
-			if (buffer[*buffer_size - 1] == '.')
-				(*buffer_size)--;
-
-			buffer[*buffer_size] = 0;
 		}
 	}
 

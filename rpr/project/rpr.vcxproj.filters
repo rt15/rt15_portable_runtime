@@ -447,6 +447,12 @@
     <ClInclude Include="..\include\layer003\rt_semaphore.h">
       <Filter>include\layer003</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\layer002\rt_double.h">
+      <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer002\rt_float.h">
+      <Filter>include\layer002</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

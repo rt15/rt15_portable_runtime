@@ -32,6 +32,7 @@
     <ClCompile Include="..\src\auto\zz_test_critical_section.c" />
     <ClCompile Include="..\src\auto\zz_test_date.c" />
     <ClCompile Include="..\src\auto\zz_test_deduce_encoding.c" />
+    <ClCompile Include="..\src\auto\zz_test_double.c" />
     <ClCompile Include="..\src\auto\zz_test_encoding.c" />
     <ClCompile Include="..\src\auto\zz_test_env_var.c" />
     <ClCompile Include="..\src\auto\zz_test_env_vars.c" />
@@ -42,6 +43,7 @@
     <ClCompile Include="..\src\auto\zz_test_file_mapping.c" />
     <ClCompile Include="..\src\auto\zz_test_file_path.c" />
     <ClCompile Include="..\src\auto\zz_test_file_system.c" />
+    <ClCompile Include="..\src\auto\zz_test_float.c" />
     <ClCompile Include="..\src\auto\zz_test_hash_table.c" />
     <ClCompile Include="..\src\auto\zz_test_heap.c" />
     <ClCompile Include="..\src\auto\zz_test_io_device.c" />
