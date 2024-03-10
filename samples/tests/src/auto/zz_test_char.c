@@ -484,12 +484,49 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_char_convert_to_f_do(const rt_char *str, rt_f64 expected)
+{
+	rt_f32 result32;
+	rt_f64 result64;
+	rt_un str_size = rt_char_get_size(str);
+	rt_s ret;
+
+	if (RT_UNLIKELY(!rt_char_convert_to_f32(str, &result32))) goto error;
+	if (RT_UNLIKELY(!RT_FLOAT_EQUALS(result32, (rt_f32)expected))) goto error;
+
+	result32 = 99.9f;
+	if (RT_UNLIKELY(!rt_char_convert_to_f32_with_size(str, str_size, &result32))) goto error;
+	if (RT_UNLIKELY(!RT_FLOAT_EQUALS(result32, (rt_f32)expected))) goto error;
+
+	if (RT_UNLIKELY(!rt_char_convert_to_f64(str, &result64))) goto error;
+	if (RT_UNLIKELY(!RT_DOUBLE_EQUALS(result64, expected))) goto error;
+
+	result64 = 99.9f;
+	if (RT_UNLIKELY(!rt_char_convert_to_f64_with_size(str, str_size, &result64))) goto error;
+	if (RT_UNLIKELY(!RT_DOUBLE_EQUALS(result64, expected))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 static rt_s zz_test_char_append_f_do(rt_f64 value, rt_un decimal_count, const rt_char *expected)
 {
+	rt_char buffer[200];
+	rt_un buffer_size;
 	rt_s ret;
 
 	if (RT_UNLIKELY(!zz_test_char_append_f32((rt_f32)value, decimal_count, expected))) goto error;
 	if (RT_UNLIKELY(!zz_test_char_append_f64(value, decimal_count, expected))) goto error;
+
+	buffer_size = 0;
+	if (RT_UNLIKELY(!rt_char_append_f64(value, 4, buffer, 200, &buffer_size))) goto error;
+
+	if (RT_UNLIKELY(!zz_test_char_convert_to_f_do(buffer, value))) goto error;
 
 	ret = RT_OK;
 free:
@@ -1257,6 +1294,23 @@ error:
 	goto free;
 }
 
+static rt_s zz_test_char_convert_to_f(void)
+{
+	rt_s ret;
+
+	if (RT_UNLIKELY(!zz_test_char_convert_to_f_do(_R("0"), 0.0))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_convert_to_f_do(_R("123.456"), 123.456))) goto error;
+	if (RT_UNLIKELY(!zz_test_char_convert_to_f_do(_R("-23.7"), -23.7))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 static rt_s zz_test_char_trim_do(rt_b left, rt_b right, const rt_char *str, const rt_char *expected)
 {
 	rt_char buffer[200];
@@ -1872,6 +1926,7 @@ rt_s zz_test_char(void)
 	if (RT_UNLIKELY(!zz_test_char_convert_to_un())) goto error;
 	if (RT_UNLIKELY(!zz_test_char_convert_to_n())) goto error;
 	if (RT_UNLIKELY(!zz_test_char_convert_hex_to_un())) goto error;
+	if (RT_UNLIKELY(!zz_test_char_convert_to_f())) goto error;
 	if (RT_UNLIKELY(!zz_test_char_trim())) goto error;
 	if (RT_UNLIKELY(!zz_test_char_left_pad())) goto error;
 	if (RT_UNLIKELY(!zz_test_char_right_pad())) goto error;

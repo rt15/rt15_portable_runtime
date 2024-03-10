@@ -180,6 +180,38 @@ RT_API rt_s rt_char8_convert_hex_to_un(const rt_char8 *str, rt_un *result);
 RT_API rt_s rt_char8_convert_hex_to_un_with_size(const rt_char8 *str, rt_un str_size, rt_un *result);
 
 /**
+ *
+ * <p>
+ * Beware that this function does not check for overflows.
+ * </p>
+ */
+RT_API rt_s rt_char8_convert_to_f32(const rt_char8 *str, rt_f32 *result);
+
+/**
+ *
+ * <p>
+ * Beware that this function does not check for overflows.
+ * </p>
+ */
+RT_API rt_s rt_char8_convert_to_f32_with_size(const rt_char8 *str, rt_un str_size, rt_f32 *result);
+
+/**
+ *
+ * <p>
+ * Beware that this function does not check for overflows.
+ * </p>
+ */
+RT_API rt_s rt_char8_convert_to_f64(const rt_char8 *str, rt_f64 *result);
+
+/**
+ *
+ * <p>
+ * Beware that this function does not check for overflows.
+ * </p>
+ */
+RT_API rt_s rt_char8_convert_to_f64_with_size(const rt_char8 *str, rt_un str_size, rt_f64 *result);
+
+/**
  * Remove characters <= ' ' at the left and/or at the right of the string.
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).

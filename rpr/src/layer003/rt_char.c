@@ -785,6 +785,256 @@ error:
 	goto free;
 }
 
+rt_s rt_char_convert_to_f32(const rt_char *str, rt_f32 *result)
+{
+	rt_b negative;
+	const rt_char *local_str;
+	rt_un dot_index;
+	rt_n integer_part;
+	rt_n decimal_part;
+	rt_s ret;
+
+	if (str[0] == _R('-')) {
+		negative = RT_TRUE;
+		local_str = &str[1];
+	} else {
+		negative = RT_FALSE;
+		local_str = str;
+	}
+
+	dot_index = 0;
+	while (RT_TRUE) {
+		if (local_str[dot_index] == _R('.'))
+			break;
+		if (!local_str[dot_index])
+			break;
+		dot_index++;
+	}
+	if (local_str[dot_index]) {
+		/* We found a dot. */
+
+		if (RT_UNLIKELY(!rt_char_convert_to_n_with_size(local_str, dot_index, &integer_part)))
+			goto error;
+		if (RT_UNLIKELY(!rt_char_convert_to_n(&local_str[dot_index + 1], &decimal_part)))
+			goto error;
+
+		/* Possible loss of data here. */
+		*result = (rt_f32)integer_part;
+		*result += decimal_part / rt_char_base_get_power_of_ten32(rt_char_get_size(&local_str[dot_index + 1]));
+	} else {
+		/* No dot, we convert the whole string as integer. */
+
+		if (RT_UNLIKELY(!rt_char_convert_to_n(local_str, &integer_part)))
+			goto error;
+		/* Possible loss of data here. */
+		*result = (rt_f32)integer_part;
+	}
+
+	if (negative)
+		*result = -*result;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_char_convert_to_f32_with_size(const rt_char *str, rt_un str_size, rt_f32 *result)
+{
+	rt_b negative;
+	const rt_char *local_str;
+	rt_un local_str_size;
+	rt_un dot_index;
+	rt_n integer_part;
+	rt_n decimal_part;
+	rt_un i;
+	rt_s ret;
+
+	if (!str_size) {
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
+	}
+
+	if (str[0] == _R('-')) {
+		negative = RT_TRUE;
+		local_str = &str[1];
+		local_str_size = str_size - 1;
+	} else {
+		negative = RT_FALSE;
+		local_str = str;
+		local_str_size = str_size;
+	}
+
+	dot_index = RT_TYPE_MAX_UN;
+	for (i = 0; i < local_str_size; i++) {
+		if (local_str[i] == _R('.')) {
+			dot_index = i;
+			break;
+		}
+	}
+
+	if (dot_index != RT_TYPE_MAX_UN) {
+		/* We found a dot. */
+
+		if (RT_UNLIKELY(!rt_char_convert_to_n_with_size(local_str, dot_index, &integer_part)))
+			goto error;
+
+		if (RT_UNLIKELY(!rt_char_convert_to_n_with_size(&local_str[dot_index + 1], local_str_size - dot_index - 1, &decimal_part)))
+			goto error;
+
+		/* Possible loss of data here. */
+		*result = (rt_f32)integer_part;
+		*result += decimal_part / rt_char_base_get_power_of_ten32(local_str_size - dot_index - 1);
+	
+	} else {
+		/* No dot, we convert the whole string as integer. */
+
+		if (RT_UNLIKELY(!rt_char_convert_to_n_with_size(local_str, local_str_size, &integer_part)))
+			goto error;
+		/* Possible loss of data here. */
+		*result = (rt_f32)integer_part;
+	}
+
+	if (negative)
+		*result = -*result;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_char_convert_to_f64(const rt_char *str, rt_f64 *result)
+{
+	rt_b negative;
+	const rt_char *local_str;
+	rt_un dot_index;
+	rt_n integer_part;
+	rt_n decimal_part;
+	rt_s ret;
+
+	if (str[0] == _R('-')) {
+		negative = RT_TRUE;
+		local_str = &str[1];
+	} else {
+		negative = RT_FALSE;
+		local_str = str;
+	}
+
+	dot_index = 0;
+	while (RT_TRUE) {
+		if (local_str[dot_index] == _R('.'))
+			break;
+		if (!local_str[dot_index])
+			break;
+		dot_index++;
+	}
+	if (local_str[dot_index]) {
+		/* We found a dot. */
+
+		if (RT_UNLIKELY(!rt_char_convert_to_n_with_size(local_str, dot_index, &integer_part)))
+			goto error;
+		if (RT_UNLIKELY(!rt_char_convert_to_n(&local_str[dot_index + 1], &decimal_part)))
+			goto error;
+
+		/* Possible loss of data here. */
+		*result = (rt_f64)integer_part;
+		*result += decimal_part / rt_char_base_get_power_of_ten64(rt_char_get_size(&local_str[dot_index + 1]));
+	} else {
+		/* No dot, we convert the whole string as integer. */
+
+		if (RT_UNLIKELY(!rt_char_convert_to_n(local_str, &integer_part)))
+			goto error;
+		/* Possible loss of data here. */
+		*result = (rt_f64)integer_part;
+	}
+
+	if (negative)
+		*result = -*result;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+rt_s rt_char_convert_to_f64_with_size(const rt_char *str, rt_un str_size, rt_f64 *result)
+{
+	rt_b negative;
+	const rt_char *local_str;
+	rt_un local_str_size;
+	rt_un dot_index;
+	rt_n integer_part;
+	rt_n decimal_part;
+	rt_un i;
+	rt_s ret;
+
+	if (!str_size) {
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
+	}
+
+	if (str[0] == _R('-')) {
+		negative = RT_TRUE;
+		local_str = &str[1];
+		local_str_size = str_size - 1;
+	} else {
+		negative = RT_FALSE;
+		local_str = str;
+		local_str_size = str_size;
+	}
+
+	dot_index = RT_TYPE_MAX_UN;
+	for (i = 0; i < local_str_size; i++) {
+		if (local_str[i] == _R('.')) {
+			dot_index = i;
+			break;
+		}
+	}
+
+	if (dot_index != RT_TYPE_MAX_UN) {
+		/* We found a dot. */
+
+		if (RT_UNLIKELY(!rt_char_convert_to_n_with_size(local_str, dot_index, &integer_part)))
+			goto error;
+
+		if (RT_UNLIKELY(!rt_char_convert_to_n_with_size(&local_str[dot_index + 1], local_str_size - dot_index - 1, &decimal_part)))
+			goto error;
+
+		/* Possible loss of data here. */
+		*result = (rt_f64)integer_part;
+		*result += decimal_part / rt_char_base_get_power_of_ten64(local_str_size - dot_index - 1);
+	
+	} else {
+		/* No dot, we convert the whole string as integer. */
+
+		if (RT_UNLIKELY(!rt_char_convert_to_n_with_size(local_str, local_str_size, &integer_part)))
+			goto error;
+		/* Possible loss of data here. */
+		*result = (rt_f64)integer_part;
+	}
+
+	if (negative)
+		*result = -*result;
+
+	ret = RT_OK;
+free:
+	return ret;
+
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 void rt_char_trim(rt_b left, rt_b right, rt_char *buffer, rt_un *buffer_size)
 {
 	rt_un local_buffer_size = *buffer_size;
