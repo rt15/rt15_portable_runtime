@@ -146,7 +146,7 @@ rt_s zz_auto_tests(void)
 	if (RT_UNLIKELY(!zz_test_char())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_char8", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_char8())) goto error;
-	if (RT_UNLIKELY(!zz_auto_tests_log("zz_date", output_stream))) goto error;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_date", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_date())) goto error;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_env_var", output_stream))) goto error;
 	if (RT_UNLIKELY(!zz_test_env_var())) goto error;
