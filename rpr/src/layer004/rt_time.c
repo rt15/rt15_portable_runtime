@@ -123,10 +123,12 @@ rt_s rt_time_info_create_accurate(struct rt_time_info *time_info, rt_un *millise
 {
 #ifdef RT_DEFINE_WINDOWS
 	SYSTEMTIME system_time;
+	TIME_ZONE_INFORMATION time_zone_information;
+	DWORD time_zone_id;
 #else
 	struct timespec time_spec;
-	rt_s ret;
 #endif
+	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
 	/* This function cannot fail. */
@@ -141,8 +143,26 @@ rt_s rt_time_info_create_accurate(struct rt_time_info *time_info, rt_un *millise
 	time_info->month = system_time.wMonth;
 	time_info->year = system_time.wYear;
 	*milliseconds = system_time.wMilliseconds;
-	
-	return RT_OK;
+
+	time_zone_id = GetTimeZoneInformation(&time_zone_information);
+	switch (time_zone_id) {
+	case TIME_ZONE_ID_STANDARD:
+		time_info->daylight_saving_time = 0;
+		break;
+	case TIME_ZONE_ID_DAYLIGHT:
+		time_info->daylight_saving_time = 1;
+		break;
+	case TIME_ZONE_ID_UNKNOWN:
+		time_info->daylight_saving_time = -1;
+		break;
+	case TIME_ZONE_ID_INVALID:
+		/* GetTimeZoneInformation sets last error and returns TIME_ZONE_ID_INVALID in case of error. */
+		goto error;
+	default:
+		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
+		goto error;
+	}
+
 #else
 	/* Returns -1 and sets errno in case of issue. */
 	if (RT_UNLIKELY(clock_gettime(CLOCK_REALTIME, &time_spec) == -1))
@@ -153,6 +173,8 @@ rt_s rt_time_info_create_accurate(struct rt_time_info *time_info, rt_un *millise
 
 	*milliseconds = time_spec.tv_nsec / 1000000;
 
+#endif
+
 	ret = RT_OK;
 free:
 	return ret;
@@ -160,7 +182,6 @@ free:
 error:
 	ret = RT_FAILED;
 	goto free;
-#endif
 }
 
 rt_s rt_time_info_create_local(struct rt_time_info *time_info, rt_n unix_time)

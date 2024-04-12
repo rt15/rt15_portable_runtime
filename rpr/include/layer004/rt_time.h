@@ -47,6 +47,10 @@ RT_API rt_s rt_time_info_create_local(struct rt_time_info *time_info, rt_n unix_
  * <tt>day_of_week</tt> and <tt>day_of_year</tt> are initialized/fixed by this function.
  * </p>
  * 
+ * <p>
+ * Beware that this function may also adjust <tt>hours</tt> and <tt>daylight_saving_time</tt> if <tt>daylight_saving_time</tt> is not correct.
+ * </p>
+ *
  * @param unix_time If not RT_NULL, it will be filled with the number of seconds since 1970-01-01 00:00:00 UTC.
  */
 RT_API rt_s rt_time_get_unix_time_from_time_info(struct rt_time_info *time_info, rt_n *unix_time);

@@ -20,6 +20,7 @@ rt_s zz_test_time(void)
 	if (RT_UNLIKELY(accurate_time_info.day != time_info.day)) goto error;
 	if (RT_UNLIKELY(accurate_time_info.month != time_info.month)) goto error;
 	if (RT_UNLIKELY(accurate_time_info.year != time_info.year)) goto error;
+	if (RT_UNLIKELY(accurate_time_info.daylight_saving_time != time_info.daylight_saving_time)) goto error;
 
 	if (RT_UNLIKELY(!rt_time_get_unix_time_from_time_info(&accurate_time_info, RT_NULL))) goto error;
 	if (RT_UNLIKELY(accurate_time_info.minutes != time_info.minutes)) goto error;
@@ -27,6 +28,7 @@ rt_s zz_test_time(void)
 	if (RT_UNLIKELY(accurate_time_info.day != time_info.day)) goto error;
 	if (RT_UNLIKELY(accurate_time_info.month != time_info.month)) goto error;
 	if (RT_UNLIKELY(accurate_time_info.year != time_info.year)) goto error;
+	if (RT_UNLIKELY(accurate_time_info.daylight_saving_time != time_info.daylight_saving_time)) goto error;
 	if (RT_UNLIKELY(accurate_time_info.day_of_week != time_info.day_of_week)) goto error;
 	if (RT_UNLIKELY(accurate_time_info.day_of_year != time_info.day_of_year)) goto error;
 
