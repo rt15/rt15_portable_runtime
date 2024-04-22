@@ -208,6 +208,9 @@
     <ClCompile Include="..\src\layer003\rt_semaphore.c">
       <Filter>src\layer003</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer002\rt_system_info.c">
+      <Filter>src\layer002</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -451,6 +454,9 @@
       <Filter>include\layer002</Filter>
     </ClInclude>
     <ClInclude Include="..\include\layer002\rt_float.h">
+      <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer002\rt_system_info.h">
       <Filter>include\layer002</Filter>
     </ClInclude>
   </ItemGroup>

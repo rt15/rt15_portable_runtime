@@ -27,6 +27,7 @@
 #include "layer002/rt_shared_mutex.h"
 #include "layer002/rt_sleep.h"
 #include "layer002/rt_slurp.h"
+#include "layer002/rt_system_info.h"
 #include "layer002/rt_thread_local_storage.h"
 #include "layer002/rt_virtual_memory.h"
 
