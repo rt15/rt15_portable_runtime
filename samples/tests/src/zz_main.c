@@ -12,6 +12,7 @@ rt_s zz_generate_char8(void);
 rt_s zz_lock_shared_mutex(void);
 rt_s zz_acquire_shared_semaphore(void);
 rt_s zz_shared_memory_chat(void);
+rt_s zz_test_perf(void);
 
 static rt_s zz_display_help(rt_s ret)
 {
@@ -38,6 +39,8 @@ static rt_s zz_display_help(rt_s ret)
 	if (!rt_console_write(_R("tests <--acquire-semaphore|-a>\n"), error))
 		ret = RT_FAILED;
 	if (!rt_console_write(_R("tests <--shared-memory-chat|-s>\n"), error))
+		ret = RT_FAILED;
+	if (!rt_console_write(_R("tests <--test-perf|-t>\n"), error))
 		ret = RT_FAILED;
 
 	return ret;
@@ -127,6 +130,12 @@ static rt_s zz_main(rt_un argc, const rt_char *argv[])
 				   rt_char_equals(argv[1], arg_size, _R("-s"), 2)) {
 
 				if (RT_UNLIKELY(!zz_shared_memory_chat()))
+					goto error;
+
+			} else if (rt_char_equals(argv[1], arg_size, _R("--test-perf"), 11) ||
+				   rt_char_equals(argv[1], arg_size, _R("-t"), 2)) {
+
+				if (RT_UNLIKELY(!zz_test_perf()))
 					goto error;
 
 			} else {
