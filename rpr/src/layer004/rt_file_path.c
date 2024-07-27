@@ -10,6 +10,7 @@ rt_s rt_file_path_browse(const rt_char *dir_path, rt_file_path_browse_callback_t
 #ifdef RT_DEFINE_WINDOWS
 	WIN32_FIND_DATA find_file_data;
 	HANDLE find_handle = INVALID_HANDLE_VALUE;
+	rt_un file_name_size;
 #else
 	DIR *dir;
 	struct dirent *dir_entry;
@@ -37,8 +38,9 @@ rt_s rt_file_path_browse(const rt_char *dir_path, rt_file_path_browse_callback_t
 	}
 
 	do {
-		if (lstrcmp(_R("."),  find_file_data.cFileName) &&
-		    lstrcmp(_R(".."), find_file_data.cFileName)) {
+		file_name_size = rt_char_get_size(find_file_data.cFileName);
+		if (!rt_char_equals(find_file_data.cFileName, file_name_size, _R("."), 1) &&
+		    !rt_char_equals(find_file_data.cFileName, file_name_size, _R(".."), 2)) {
 
 			buffer_size = rt_char_get_size(dir_path);
 			if (RT_UNLIKELY(!rt_char_copy(dir_path, buffer_size, child, RT_FILE_PATH_SIZE))) goto error;
