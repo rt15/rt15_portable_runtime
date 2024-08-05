@@ -12,12 +12,10 @@ rt_s rt_url_parse(const rt_char *url, struct rt_url_info *url_info)
 
 	i = 0;
 	while (url[i] != _R(':')) {
-		if (RT_LIKELY(((url[i] >= _R('a')) && (url[i] <= _R('z'))) ||
-			      ((url[i] >= _R('A')) && (url[i] <= _R('Z'))) ||
-			      ((url[i] >= _R('0')) && (url[i] <= _R('9'))) ||
-			       (url[i] == _R('+')) ||
-			       (url[i] == _R('-')) ||
-			       (url[i] == _R('.'))))
+		if (RT_LIKELY(RT_CHAR_IS_ALPHANUM(url[i]) ||
+			      (url[i] == _R('+')) ||
+			      (url[i] == _R('-')) ||
+			      (url[i] == _R('.'))))
 		{
 			i++;
 		} else {

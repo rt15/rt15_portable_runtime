@@ -2,6 +2,58 @@
 
 #define ZZ_TEST_CHAR8_ACCENTED_CHARACTERS_CASE 0
 
+static rt_s zz_test_char8_is_do(rt_char8 character, rt_b blank, rt_b lower_alpha, rt_b upper_alpha, rt_b alpha, rt_b num, rt_b alphanum)
+{
+	rt_s ret;
+
+	if (RT_UNLIKELY(!RT_MEMORY_XNOR(RT_CHAR8_IS_BLANK(character), blank))) goto error;
+	if (RT_UNLIKELY(!RT_MEMORY_XNOR(RT_CHAR8_IS_LOWER_ALPHA(character), lower_alpha))) goto error;
+	if (RT_UNLIKELY(!RT_MEMORY_XNOR(RT_CHAR8_IS_UPPER_ALPHA(character), upper_alpha))) goto error;
+	if (RT_UNLIKELY(!RT_MEMORY_XNOR(RT_CHAR8_IS_ALPHA(character), alpha))) goto error;
+	if (RT_UNLIKELY(!RT_MEMORY_XNOR(RT_CHAR8_IS_NUM(character), num))) goto error;
+	if (RT_UNLIKELY(!RT_MEMORY_XNOR(RT_CHAR8_IS_ALPHANUM(character), alphanum))) goto error;
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
+static rt_s zz_test_char8_is()
+{
+	rt_s ret;
+
+	if (RT_UNLIKELY(!zz_test_char8_is_do(0, RT_TRUE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_is_do('\t', RT_TRUE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_is_do('\n', RT_TRUE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_is_do(' ', RT_TRUE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_is_do('!', RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_is_do('/', RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_is_do('0', RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_TRUE, RT_TRUE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_is_do('9', RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_TRUE, RT_TRUE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_is_do(':', RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_is_do('@', RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_is_do('A', RT_FALSE, RT_FALSE, RT_TRUE, RT_TRUE, RT_FALSE, RT_TRUE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_is_do('Z', RT_FALSE, RT_FALSE, RT_TRUE, RT_TRUE, RT_FALSE, RT_TRUE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_is_do('[', RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_is_do('`', RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_is_do('a', RT_FALSE, RT_TRUE, RT_FALSE, RT_TRUE, RT_FALSE, RT_TRUE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_is_do('z', RT_FALSE, RT_TRUE, RT_FALSE, RT_TRUE, RT_FALSE, RT_TRUE))) goto error;
+	if (RT_UNLIKELY(!zz_test_char8_is_do('{', RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE))) goto error;
+#if ZZ_TEST_CHAR8_ACCENTED_CHARACTERS_CASE
+	if (RT_UNLIKELY(!zz_test_char8_is_do('é', RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE, RT_FALSE))) goto error;
+#endif
+
+	ret = RT_OK;
+free:
+	return ret;
+error:
+	ret = RT_FAILED;
+	goto free;
+}
+
 static rt_s zz_test_char8_equals_single(rt_char8 *str1, rt_char8 *str2, rt_b expected)
 {
 	rt_s ret;
@@ -1911,6 +1963,7 @@ rt_s zz_test_char8(void)
 {
 	rt_s ret;
 
+	if (RT_UNLIKELY(!zz_test_char8_is())) goto error;
 	if (RT_UNLIKELY(!zz_test_char8_get_size())) goto error;
 	if (RT_UNLIKELY(!zz_test_char8_equals())) goto error;
 	if (RT_UNLIKELY(!zz_test_char8_compare())) goto error;
