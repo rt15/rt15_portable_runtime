@@ -1,6 +1,10 @@
 #ifndef RPR_H
 #define RPR_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "layer000/rt_types.h"
 
 #include "layer001/rt_atomic.h"
@@ -86,5 +90,9 @@
 #include "layer007/rt_last_error_message.h"
 #include "layer007/rt_process.h"
 #include "layer007/rt_select.h"
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* RPR_H */
