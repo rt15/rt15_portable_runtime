@@ -242,7 +242,7 @@ RT_API rt_s rt_char8_left_pad(const rt_char8 *input, rt_un input_size, rt_char8 
  */
 RT_API rt_s rt_char8_right_pad(rt_char8 character, rt_un size, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
-RT_API rt_s rt_char8_ends_with(const rt_char8 *str, rt_un str_size, const rt_char8 *searched, rt_un searched_size);
+RT_API rt_b rt_char8_ends_with(const rt_char8 *str, rt_un str_size, const rt_char8 *searched, rt_un searched_size);
 
 /**
  * Search <tt>searched</tt> in <tt>str</tt>.

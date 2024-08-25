@@ -1144,7 +1144,7 @@ error:
 	goto free;
 }
 
-rt_s rt_char8_ends_with(const rt_char8 *str, rt_un str_size, const rt_char8 *searched, rt_un searched_size)
+rt_b rt_char8_ends_with(const rt_char8 *str, rt_un str_size, const rt_char8 *searched, rt_un searched_size)
 {
 	const rt_char8 *str_end;
 	rt_b ret;
