@@ -16,8 +16,16 @@ struct rt_process_file_context {
 	void *context;
 };
 
+/**
+ * <p>
+ * Beware that <tt>line</tt> is not zero terminated.
+ * </p>
+ */
 typedef rt_s (*rt_process_file_callback_t)(const rt_char8 *line, rt_un line_size, enum rt_eol eol, struct rt_process_file_context *process_file_context);
 
+/**
+ * Call <tt>rt_process_file_with_output_file</tt> with a .tmp file in the same folder, then delete the input file and replace it with the .tmp file.
+ */
 RT_API rt_s rt_process_file(const rt_char *file_path, rt_process_file_callback_t callback, void *context);
 
 RT_API rt_s rt_process_file_with_output_file(const rt_char *input_file_path, const rt_char *output_file_path, rt_process_file_callback_t callback, void *context);
