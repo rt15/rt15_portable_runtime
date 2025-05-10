@@ -19,7 +19,7 @@ rt_s rt_env_vars_create(struct rt_env_vars *env_vars)
 	rt_un buffer_size;
 	rt_char *env_vars_block;
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* Makes sure that we can call rt_env_vars_free in the error handler without issue. */
 	env_vars->env_vars_array = RT_NULL;
@@ -34,12 +34,12 @@ rt_s rt_env_vars_create(struct rt_env_vars *env_vars)
 	if (RT_UNLIKELY(!env_vars->env_vars_block)) {
 		/* GetEnvironmentStrings is not supposed to set last error. */
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-		goto error;
+		goto end;
 	}
 
 	/* In Vista 6.0.6001.18631 kernel32.dll disassembly, GetEnvironmentStrings returns a copy of the environment variables block. */
 	if (RT_UNLIKELY(!rt_os_version_is_greater_or_equal_to(6, 0, 0, &vista_or_earlier)))
-		goto error;
+		goto end;
 	if (!vista_or_earlier) {
 		/* GetEnvironmentStrings return direct pointer on the environment on old (At least XP) Windows versions. */
 		/* As a result the block is updated when a variable is added to the environment. */
@@ -67,7 +67,7 @@ rt_s rt_env_vars_create(struct rt_env_vars *env_vars)
 
 		if (RT_UNLIKELY(!rt_static_heap_alloc((void**)&library_env_vars_block, block_size * sizeof(rt_char)))) {
 			/* The Windows environment block will be free by rt_env_vars_free in the error handler. */
-			goto error;
+			goto end;
 		}
 
 		env_vars->windows_block = RT_FALSE;
@@ -78,7 +78,7 @@ rt_s rt_env_vars_create(struct rt_env_vars *env_vars)
 		/* Returns zero and sets last error in case of issue. */
 		if (RT_UNLIKELY(!FreeEnvironmentStrings(windows_env_vars_block))) {
 			/* The library environment block will be free by rt_env_vars_free in the error handler. */
-			goto error;
+			goto end;
 		}
 	}
 
@@ -92,7 +92,7 @@ rt_s rt_env_vars_create(struct rt_env_vars *env_vars)
 	if (!env_vars_array || !*env_vars_array) {
 		/* No variables, just put 2 zeros. */
 		if (RT_UNLIKELY(!rt_static_heap_alloc((void**)&env_vars->env_vars_block, 2 * sizeof(rt_char))))
-			goto error;
+			goto end;
 		env_vars->env_vars_block[0] = 0;
 		env_vars->env_vars_block[1] = 0;
 	} else {
@@ -107,7 +107,7 @@ rt_s rt_env_vars_create(struct rt_env_vars *env_vars)
 		block_size++;
 
 		if (RT_UNLIKELY(!rt_static_heap_alloc((void**)&env_vars->env_vars_block, block_size * sizeof(rt_char))))
-			goto error;
+			goto end;
 
 		/* Notice that __environ might have been modified by another thread. Environment is not thread safe under Linux. */
 		/* If the environment is now bigger, their will be an error copying the strings. */
@@ -123,7 +123,7 @@ rt_s rt_env_vars_create(struct rt_env_vars *env_vars)
 			buffer_size = 0;
 			while (*env_vars_array) {
 				if (RT_UNLIKELY(!rt_char_append(*env_vars_array, rt_char_get_size(*env_vars_array), env_vars_block, block_size, &buffer_size)))
-					goto error;
+					goto end;
 
 				/* We need to keep the terminating zero. */
 				buffer_size++;
@@ -133,19 +133,17 @@ rt_s rt_env_vars_create(struct rt_env_vars *env_vars)
 			}
 			buffer_size--; /* We will overwrite last zero and rt_char_append_char will add one, checking the buffer capacity. */
 			if (RT_UNLIKELY(!rt_char_append_char(_R('\0'), env_vars_block, block_size, &buffer_size)))
-				goto error;
+				goto end;
 		}
 	}
 #endif
 
 	ret = RT_OK;
-free:
-	return ret;
+end:
+	if (RT_UNLIKELY(!ret))
+		rt_env_vars_free(env_vars);
 
-error:
-	rt_env_vars_free(env_vars);
-	ret = RT_FAILED;
-	goto free;
+	return ret;
 }
 
 rt_s rt_env_vars_get_block(struct rt_env_vars *env_vars, rt_char **env_vars_block)
@@ -159,7 +157,7 @@ rt_s rt_env_vars_get_array(struct rt_env_vars *env_vars, rt_char ***env_vars_arr
 	rt_char *env_vars_block;
 	rt_un vars_count;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* We only build the array if it not already there. */
 	if (!env_vars->env_vars_array) {
@@ -185,7 +183,7 @@ rt_s rt_env_vars_get_array(struct rt_env_vars *env_vars, rt_char ***env_vars_arr
 
 		/* Alloc variables count plus one for the terminating null. */
 		if (RT_UNLIKELY(!rt_static_heap_alloc((void**)&env_vars->env_vars_array, (vars_count + 1) * sizeof(rt_char*))))
-			goto error;
+			goto end;
 
 		if (vars_count) {
 			/* Build the array of pointer by pointing into the block. */
@@ -216,12 +214,8 @@ rt_s rt_env_vars_get_array(struct rt_env_vars *env_vars, rt_char ***env_vars_arr
 
 	*env_vars_array = env_vars->env_vars_array;
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 /**
@@ -239,12 +233,12 @@ static rt_s rt_env_vars_get_pointer(struct rt_env_vars *env_vars, const rt_char 
 	rt_char *env_vars_block;
 	rt_char current_env_var_name[RT_CHAR_HALF_BIG_STRING_SIZE];
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 	/* Build upper case variable name under Windows. */
 	if (RT_UNLIKELY(!rt_char_copy(env_var_name, local_env_var_name_size, local_env_var_name, RT_CHAR_HALF_BIG_STRING_SIZE)))
-		goto error;
+		goto end;
 	rt_char_fast_upper(local_env_var_name);
 #else
 	local_env_var_name = env_var_name;
@@ -277,12 +271,12 @@ static rt_s rt_env_vars_get_pointer(struct rt_env_vars *env_vars, const rt_char 
 			/* Zero before equals. Something went wrong. */
 			if (RT_UNLIKELY(!env_vars_block[i])) {
 				rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-				goto error;
+				goto end;
 			}
 
 			/* Copy the variable name for later comparison. */
 			if (RT_UNLIKELY(!rt_char_copy(env_vars_block, i, current_env_var_name, RT_CHAR_HALF_BIG_STRING_SIZE)))
-				goto error;
+				goto end;
 
 #ifdef RT_DEFINE_WINDOWS
 			/* Build upper case variable name under Windows. */
@@ -311,21 +305,17 @@ static rt_s rt_env_vars_get_pointer(struct rt_env_vars *env_vars, const rt_char 
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_env_vars_contains_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name, rt_b *contains)
 {
 	rt_char *env_var;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_env_vars_get_pointer(env_vars, env_var_name, &env_var)))
-		goto error;
+		goto end;
 	if (env_var) {
 		*contains = RT_TRUE;
 	} else {
@@ -333,26 +323,22 @@ rt_s rt_env_vars_contains_env_var(struct rt_env_vars *env_vars, const rt_char *e
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_env_vars_get_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
 	rt_char *env_var;
 	rt_char *env_var_value;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_env_vars_get_pointer(env_vars, env_var_name, &env_var)))
-		goto error;
+		goto end;
 	if (RT_UNLIKELY(!env_var)) {
 		/* Variable not found. */
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	/* Point after the name and '='. */
@@ -361,18 +347,17 @@ rt_s rt_env_vars_get_env_var(struct rt_env_vars *env_vars, const rt_char *env_va
 	/* Copy the value. */
 	*buffer_size = rt_char_get_size(env_var_value);
 	if (RT_UNLIKELY(!rt_char_copy(env_var_value, *buffer_size, buffer, buffer_capacity)))
-		goto error;
+		goto end;
 
 	ret = RT_OK;
-free:
-	return ret;
+end:
+	if (RT_UNLIKELY(!ret)) {
+		if (buffer_capacity)
+			buffer[0] = 0;
+		*buffer_size = 0;
+	}
 
-error:
-	if (buffer_capacity)
-		buffer[0] = 0;
-	*buffer_size = 0;
-	ret = RT_FAILED;
-	goto free;
+	return ret;
 }
 
 rt_s rt_env_vars_remove_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name)
@@ -380,21 +365,21 @@ rt_s rt_env_vars_remove_env_var(struct rt_env_vars *env_vars, const rt_char *env
 	rt_char *env_var;
 	rt_char *destination;
 	rt_b was_null;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* The variable might be present multiple times with different cases. */
 	while (RT_TRUE) {
 
 		/* Search the variable to delete. */
 		if (RT_UNLIKELY(!rt_env_vars_get_pointer(env_vars, env_var_name, &env_var)))
-			goto error;
+			goto end;
 
 		/* Remove only if it exists. */
 		if (env_var) {
 
 			/* The array will be built back if and when needed. */
 			if (RT_UNLIKELY(!rt_static_heap_free((void**)&env_vars->env_vars_array)))
-				goto error;
+				goto end;
 
 			/* We will copy the remaining of the block in place of the variable to remove. */
 			destination = env_var;
@@ -428,12 +413,8 @@ rt_s rt_env_vars_remove_env_var(struct rt_env_vars *env_vars, const rt_char *env
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_env_vars_add_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name, const rt_char *value)
@@ -445,7 +426,7 @@ rt_s rt_env_vars_add_env_var(struct rt_env_vars *env_vars, const rt_char *env_va
 	rt_un output_size;
 	rt_un env_var_name_size = rt_char_get_size(env_var_name);
 	rt_un value_size = rt_char_get_size(value);
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* Will be free in case of error, if different from old_env_vars_block. */
 	new_env_vars_block = RT_NULL;
@@ -455,7 +436,7 @@ rt_s rt_env_vars_add_env_var(struct rt_env_vars *env_vars, const rt_char *env_va
 
 	/* The array will be built back if and when needed. */
 	if (RT_UNLIKELY(!rt_static_heap_free((void**)&env_vars->env_vars_array)))
-		goto error;
+		goto end;
 
 	/* Compute the size of the existing block. */
 	old_env_vars_block_size = 0;
@@ -484,17 +465,17 @@ rt_s rt_env_vars_add_env_var(struct rt_env_vars *env_vars, const rt_char *env_va
 #ifdef RT_DEFINE_WINDOWS
 	if (env_vars->windows_block) {
 		if (RT_UNLIKELY(!rt_static_heap_alloc((void**)&new_env_vars_block, new_env_vars_block_size * sizeof(rt_char))))
-			goto error;
+			goto end;
 		RT_MEMORY_COPY(old_env_vars_block, new_env_vars_block, old_env_vars_block_size * sizeof(rt_char));
 	} else {
 		new_env_vars_block = old_env_vars_block;
 		if (RT_UNLIKELY(!rt_static_heap_realloc((void**)&new_env_vars_block, new_env_vars_block_size * sizeof(rt_char))))
-			goto error;
+			goto end;
 	}
 #else
 	new_env_vars_block = old_env_vars_block;
 	if (RT_UNLIKELY(!rt_static_heap_realloc((void**)&new_env_vars_block, new_env_vars_block_size * sizeof(rt_char))))
-		goto error;
+		goto end;
 #endif
 
 	if (old_env_vars_block_size == 2) {
@@ -504,13 +485,13 @@ rt_s rt_env_vars_add_env_var(struct rt_env_vars *env_vars, const rt_char *env_va
 		/* Append the new variable at the end of the block, overwriting the second terminating zero. */
 		output_size = old_env_vars_block_size - 1;
 	}
-	if (RT_UNLIKELY(!rt_char_append(env_var_name, env_var_name_size, new_env_vars_block, new_env_vars_block_size, &output_size))) goto error;
-	if (RT_UNLIKELY(!rt_char_append_char(_R('='), new_env_vars_block, new_env_vars_block_size, &output_size))) goto error;
-	if (RT_UNLIKELY(!rt_char_append(value, value_size, new_env_vars_block, new_env_vars_block_size, &output_size))) goto error;
+	if (RT_UNLIKELY(!rt_char_append(env_var_name, env_var_name_size, new_env_vars_block, new_env_vars_block_size, &output_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append_char(_R('='), new_env_vars_block, new_env_vars_block_size, &output_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append(value, value_size, new_env_vars_block, new_env_vars_block_size, &output_size))) goto end;
 
 	/* Append the second terminating zero. */
 	if (RT_UNLIKELY(!rt_char_append_char(_R('\0'), new_env_vars_block, new_env_vars_block_size, &output_size)))
-		goto error;
+		goto end;
 
 #ifdef RT_DEFINE_WINDOWS
 	if (env_vars->windows_block) {
@@ -521,7 +502,7 @@ rt_s rt_env_vars_add_env_var(struct rt_env_vars *env_vars, const rt_char *env_va
 		/* Returns zero and sets last error in case of issue. */
 		if (RT_UNLIKELY(!FreeEnvironmentStrings(env_vars->env_vars_block))) {
 			env_vars->env_vars_block = RT_NULL;
-			goto error;
+			goto end;
 		}
 	}
 #endif
@@ -529,39 +510,33 @@ rt_s rt_env_vars_add_env_var(struct rt_env_vars *env_vars, const rt_char *env_va
 	env_vars->env_vars_block = new_env_vars_block;
 
 	ret = RT_OK;
-free:
-	return ret;
-
-error:
-	/* If it is not a realloc. */
-	if (new_env_vars_block != old_env_vars_block) {
-		rt_static_heap_free((void**)&new_env_vars_block);
+end:
+	if (RT_UNLIKELY(!ret)) {
+		if (new_env_vars_block != old_env_vars_block) {
+			rt_static_heap_free((void**)&new_env_vars_block);
+		}
 	}
-	ret = RT_FAILED;
-	goto free;
+
+	return ret;
 }
 
 rt_s rt_env_vars_merge_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name, const rt_char *value)
 {
 	rt_b contains;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_env_vars_contains_env_var(env_vars, env_var_name, &contains)))
-		goto error;
+		goto end;
 	if (contains) {
 		if (RT_UNLIKELY(!rt_env_vars_remove_env_var(env_vars, env_var_name)))
-			goto error;
+			goto end;
 	}
 	if (RT_UNLIKELY(!rt_env_vars_add_env_var(env_vars, env_var_name, value)))
-		goto error;
+		goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_env_vars_free(struct rt_env_vars *env_vars)

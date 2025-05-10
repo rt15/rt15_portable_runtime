@@ -22,7 +22,8 @@ void *rt_static_heap_alloc(void **area, rt_un size)
 		rt_static_heap_process_heap_handle = GetProcessHeap();
 		if (RT_UNLIKELY(!rt_static_heap_process_heap_handle)) {
 			/* GetProcessHeap returns null and calls SetLastError in case of failure. */
-			goto error;
+			*area = RT_NULL;
+			goto end;
 		}
 		rt_fast_initialization_notify_done(&rt_static_heap_initialization);
 	}
@@ -32,10 +33,7 @@ void *rt_static_heap_alloc(void **area, rt_un size)
 		/* HeapAlloc does not call SetLastError. */
 		rt_error_set_last(RT_ERROR_NOT_ENOUGH_MEMORY);
 	}
-	goto free;
-error:
-	*area = RT_NULL;
-free:
+end:
 
 #else
 	/* Malloc sets errno. */

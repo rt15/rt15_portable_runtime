@@ -43,13 +43,13 @@ rt_s rt_select(struct rt_select_item *read_items,  rt_un read_items_size,
 	struct timeval *actual_timeout;
 	rt_n32 select_result;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(read_items_size  > RT_SELECT_MAX_ITEMS ||
 			write_items_size > RT_SELECT_MAX_ITEMS ||
 			except_items_size > RT_SELECT_MAX_ITEMS)) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	if (read_items) {
@@ -114,7 +114,7 @@ rt_s rt_select(struct rt_select_item *read_items,  rt_un read_items_size,
 	/* Returns -1 and sets errno in case of error. */
 	select_result = select(nfds, actual_readfds, actual_writefds, actual_exceptfds, actual_timeout);
 	if (RT_UNLIKELY(select_result < 1))
-		goto error;
+		goto end;
 
 	if (ready_items_count)
 		*ready_items_count = select_result;
@@ -126,12 +126,8 @@ rt_s rt_select(struct rt_select_item *read_items,  rt_un read_items_size,
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_select_wait_for_ready_to_read(struct rt_socket *socket, rt_un timeout_milliseconds)
@@ -145,21 +141,21 @@ rt_s rt_select_wait_for_ready_to_read(struct rt_socket *socket, rt_un timeout_mi
 	struct rt_select_item except_item;
 	rt_n32 error;
 	rt_un error_size = sizeof(rt_n32);
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	read_item.file_descriptor = file_descriptor;
 	except_item.file_descriptor = file_descriptor;
 
 	if (RT_UNLIKELY(!rt_select(&read_item, 1, RT_NULL, 0, &except_item, 1, timeout_milliseconds, RT_NULL)))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(except_item.ready)) {
 		if (RT_UNLIKELY(!rt_socket_get_option(socket, RT_SOCKET_PROTOCOL_LEVEL_SOCKET, RT_SOCKET_OPTION_ERROR, &error, &error_size)))
-			goto error;
+			goto end;
 
 		if (RT_UNLIKELY(error_size != sizeof(rt_n32))) {
 			rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-			goto error;
+			goto end;
 		}
 
 #ifdef RT_DEFINE_WINDOWS
@@ -167,21 +163,17 @@ rt_s rt_select_wait_for_ready_to_read(struct rt_socket *socket, rt_un timeout_mi
 #else
 		errno = error;
 #endif
-		goto error;
+		goto end;
 	}
 
 	if (RT_UNLIKELY(RT_UNLIKELY(!read_item.ready))) {
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-		goto error;
+		goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_select_wait_for_ready_to_write(struct rt_socket *socket, rt_un timeout_milliseconds)
@@ -195,21 +187,21 @@ rt_s rt_select_wait_for_ready_to_write(struct rt_socket *socket, rt_un timeout_m
 	struct rt_select_item except_item;
 	rt_n32 error;
 	rt_un error_size = sizeof(rt_n32);
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	write_item.file_descriptor = file_descriptor;
 	except_item.file_descriptor = file_descriptor;
 
 	if (RT_UNLIKELY(!rt_select(RT_NULL, 0, &write_item, 1, &except_item, 1, timeout_milliseconds, RT_NULL)))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(except_item.ready)) {
 		if (RT_UNLIKELY(!rt_socket_get_option(socket, RT_SOCKET_PROTOCOL_LEVEL_SOCKET, RT_SOCKET_OPTION_ERROR, &error, &error_size)))
-			goto error;
+			goto end;
 
 		if (RT_UNLIKELY(error_size != sizeof(rt_n32))) {
 			rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-			goto error;
+			goto end;
 		}
 
 #ifdef RT_DEFINE_WINDOWS
@@ -217,19 +209,15 @@ rt_s rt_select_wait_for_ready_to_write(struct rt_socket *socket, rt_un timeout_m
 #else
 		errno = error;
 #endif
-		goto error;
+		goto end;
 	}
 
 	if (RT_UNLIKELY(RT_UNLIKELY(!write_item.ready))) {
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-		goto error;
+		goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

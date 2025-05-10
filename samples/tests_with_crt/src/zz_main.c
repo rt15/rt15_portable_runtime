@@ -15,34 +15,31 @@ rt_s zz_test(void)
 {
 	struct rt_io_device io_device;
 	struct rt_output_stream *output_stream;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_io_device_create_from_std_output(&io_device)))
-		goto error;
+		goto end;
 
 	output_stream = &io_device.output_stream;
 
-	if (RT_UNLIKELY(!zz_test_memory_compare(output_stream))) goto error;
-	if (RT_UNLIKELY(!output_stream->write(output_stream, "\n", 1))) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_compare(output_stream))) goto end;
+	if (RT_UNLIKELY(!output_stream->write(output_stream, "\n", 1))) goto end;
 
-	if (RT_UNLIKELY(!zz_test_memory_copy(output_stream))) goto error;
-	if (RT_UNLIKELY(!output_stream->write(output_stream, "\n", 1))) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_copy(output_stream))) goto end;
+	if (RT_UNLIKELY(!output_stream->write(output_stream, "\n", 1))) goto end;
 
-	if (RT_UNLIKELY(!zz_test_memory_move(output_stream))) goto error;
-	if (RT_UNLIKELY(!output_stream->write(output_stream, "\n", 1))) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_move(output_stream))) goto end;
+	if (RT_UNLIKELY(!output_stream->write(output_stream, "\n", 1))) goto end;
 
-	if (RT_UNLIKELY(!zz_test_memory_set(output_stream))) goto error;
-	if (RT_UNLIKELY(!output_stream->write(output_stream, "\n", 1))) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_set(output_stream))) goto end;
+	if (RT_UNLIKELY(!output_stream->write(output_stream, "\n", 1))) goto end;
 
-	if (RT_UNLIKELY(!zz_test_memory_zero(output_stream))) goto error;
-	if (RT_UNLIKELY(!output_stream->write(output_stream, "\n", 1))) goto error;
+	if (RT_UNLIKELY(!zz_test_memory_zero(output_stream))) goto end;
+	if (RT_UNLIKELY(!output_stream->write(output_stream, "\n", 1))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 int main()

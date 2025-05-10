@@ -28,7 +28,7 @@ rt_s rt_critical_section_create(struct rt_critical_section *critical_section, RT
 	pthread_mutexattr_t mutex_attributes;
 	pthread_mutexattr_t *mutex_attributes_pointer;
 	int error;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
@@ -39,11 +39,11 @@ rt_s rt_critical_section_create(struct rt_critical_section *critical_section, RT
 	if (recursive) {
 		/* pthread_mutexattr_init returns an errno. */
 		error = pthread_mutexattr_init(&mutex_attributes);
-		if (RT_UNLIKELY(error)) goto error;
+		if (RT_UNLIKELY(error)) goto end;
 
 		/* pthread_mutexattr_settype returns an errno. */
 		error = pthread_mutexattr_settype(&mutex_attributes, PTHREAD_MUTEX_RECURSIVE);
-		if (RT_UNLIKELY(error)) goto error;
+		if (RT_UNLIKELY(error)) goto end;
 
 		mutex_attributes_pointer = &mutex_attributes;
 	} else {
@@ -52,15 +52,14 @@ rt_s rt_critical_section_create(struct rt_critical_section *critical_section, RT
 
 	/* pthread_mutex_init returns an errno. */
 	error = pthread_mutex_init((pthread_mutex_t*)critical_section, mutex_attributes_pointer);
-	if (RT_UNLIKELY(error)) goto error;
+	if (RT_UNLIKELY(error)) goto end;
 
 	ret = RT_OK;
-free:
+end:
+	if (RT_UNLIKELY(!ret))
+		errno = error;
+
 	return ret;
-error:
-	errno = error;
-	ret = RT_FAILED;
-	goto free;
 #endif
 }
 

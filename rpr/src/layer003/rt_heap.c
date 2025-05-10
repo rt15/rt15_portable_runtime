@@ -8,14 +8,14 @@ void *rt_heap_alloc_if_needed(void *buffer, rt_un buffer_capacity, void **heap_b
 	if (size <= buffer_capacity) {
 		/* The buffer is enough, don't go any further. */
 		*area = buffer;
-		goto free;
+		goto end;
 	}
 
 	/* buffer_capacity is not enough. Try to use heap buffer. */
 	if (heap_buffer_capacity && (size <= *heap_buffer_capacity)) {
 		/* Given heap buffer is enough. */
 		*area = *heap_buffer;
-		goto free;
+		goto end;
 	}
 
 	/* Both buffer and heap_buffer are not enough, use heap if available. */
@@ -35,6 +35,6 @@ void *rt_heap_alloc_if_needed(void *buffer, rt_un buffer_capacity, void **heap_b
 		*area = RT_NULL;
 	}
 
-free:
+end:
 	return *area;
 }

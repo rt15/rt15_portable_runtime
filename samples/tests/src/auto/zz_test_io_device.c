@@ -3,63 +3,54 @@
 static rt_s zz_test_io_device_inheritance(struct rt_io_device *io_device)
 {
 	rt_b inheritable;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* All files must not be inheritable by default. */
-	if (RT_UNLIKELY(!rt_io_device_is_inheritable(io_device, &inheritable))) goto error;
-	if (RT_UNLIKELY(inheritable)) goto error;
+	if (RT_UNLIKELY(!rt_io_device_is_inheritable(io_device, &inheritable))) goto end;
+	if (RT_UNLIKELY(inheritable)) goto end;
 
 	/* Switch to inheritable. */
-	if (RT_UNLIKELY(!rt_io_device_set_inheritable(io_device, RT_TRUE))) goto error;
-	if (RT_UNLIKELY(!rt_io_device_is_inheritable(io_device, &inheritable))) goto error;
-	if (RT_UNLIKELY(!inheritable)) goto error;
+	if (RT_UNLIKELY(!rt_io_device_set_inheritable(io_device, RT_TRUE))) goto end;
+	if (RT_UNLIKELY(!rt_io_device_is_inheritable(io_device, &inheritable))) goto end;
+	if (RT_UNLIKELY(!inheritable)) goto end;
 
 	/* Try again. */
-	if (RT_UNLIKELY(!rt_io_device_set_inheritable(io_device, RT_TRUE))) goto error;
-	if (RT_UNLIKELY(!rt_io_device_is_inheritable(io_device, &inheritable))) goto error;
-	if (RT_UNLIKELY(!inheritable)) goto error;
+	if (RT_UNLIKELY(!rt_io_device_set_inheritable(io_device, RT_TRUE))) goto end;
+	if (RT_UNLIKELY(!rt_io_device_is_inheritable(io_device, &inheritable))) goto end;
+	if (RT_UNLIKELY(!inheritable)) goto end;
 
 	/* Switch back to non-inheritable. */
-	if (RT_UNLIKELY(!rt_io_device_set_inheritable(io_device, RT_FALSE))) goto error;
-	if (RT_UNLIKELY(!rt_io_device_is_inheritable(io_device, &inheritable))) goto error;
-	if (RT_UNLIKELY(inheritable)) goto error;
+	if (RT_UNLIKELY(!rt_io_device_set_inheritable(io_device, RT_FALSE))) goto end;
+	if (RT_UNLIKELY(!rt_io_device_is_inheritable(io_device, &inheritable))) goto end;
+	if (RT_UNLIKELY(inheritable)) goto end;
 
 	/* Try again. */
-	if (RT_UNLIKELY(!rt_io_device_set_inheritable(io_device, RT_FALSE))) goto error;
-	if (RT_UNLIKELY(!rt_io_device_is_inheritable(io_device, &inheritable))) goto error;
-	if (RT_UNLIKELY(inheritable)) goto error;
+	if (RT_UNLIKELY(!rt_io_device_set_inheritable(io_device, RT_FALSE))) goto end;
+	if (RT_UNLIKELY(!rt_io_device_is_inheritable(io_device, &inheritable))) goto end;
+	if (RT_UNLIKELY(inheritable)) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s zz_test_io_device(void)
 {
 	struct rt_pipe pipe;
 	rt_b pipe_created = RT_FALSE;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_pipe_create(&pipe)))
-		goto error;
+		goto end;
 	pipe_created = RT_TRUE;
 
-	if (RT_UNLIKELY(!zz_test_io_device_inheritance(&pipe.input_io_device))) goto error;
+	if (RT_UNLIKELY(!zz_test_io_device_inheritance(&pipe.input_io_device))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	if (pipe_created) {
-		pipe_created = RT_FALSE;
-		if (RT_UNLIKELY(!rt_pipe_free(&pipe) && ret))
-			goto error;
+		if (RT_UNLIKELY(!rt_pipe_free(&pipe)))
+			ret = RT_FAILED;
 	}
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

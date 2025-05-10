@@ -139,10 +139,10 @@ rt_s rt_char8_append_un(rt_un value, rt_un base, rt_char8 *buffer, rt_un buffer_
 	rt_un previous_value;
 	rt_char8 tmp_char;
 	rt_un i, j;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(base < 2 || base > 36))
-		goto error;
+		goto end;
 
 	i = *buffer_size;
 	j = *buffer_size;
@@ -155,7 +155,7 @@ rt_s rt_char8_append_un(rt_un value, rt_un base, rt_char8 *buffer, rt_un buffer_
 			break;
 	}
 	if (RT_UNLIKELY(value))
-		goto error;
+		goto end;
 
 	buffer[i] = 0;
 	*buffer_size = i;
@@ -168,17 +168,16 @@ rt_s rt_char8_append_un(rt_un value, rt_un base, rt_char8 *buffer, rt_un buffer_
 	}
 
 	ret = RT_OK;
-free:
-	return ret;
-error:
-	/* Add a zero terminating character if possible. */
-	if (buffer_capacity) {
-		if (*buffer_size >= buffer_capacity)
-			*buffer_size = buffer_capacity - 1;
-		buffer[*buffer_size] = 0;
+end:
+	if (RT_UNLIKELY(!ret)) {
+		if (buffer_capacity) {
+			if (*buffer_size >= buffer_capacity)
+				*buffer_size = buffer_capacity - 1;
+			buffer[*buffer_size] = 0;
+		}
 	}
-	ret = RT_FAILED;
-	goto free;
+
+	return ret;
 }
 
 rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size)
@@ -187,10 +186,10 @@ rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_ca
 	rt_n previous_value;
 	rt_char8 tmp_char;
 	rt_un i, j;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(base < 2 || base > 36))
-		goto error;
+		goto end;
 
 	local_value = value;
 	i = *buffer_size;
@@ -204,11 +203,11 @@ rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_ca
 			break;
 	}
 	if (RT_UNLIKELY(local_value))
-		goto error;
+		goto end;
 
 	if (value < 0) {
 		if (RT_UNLIKELY(i >= buffer_capacity - 1))
-			goto error;
+			goto end;
 		buffer[i] = '-';
 		i++;
 	}
@@ -223,17 +222,17 @@ rt_s rt_char8_append_n(rt_n value, rt_un base, rt_char8 *buffer, rt_un buffer_ca
 	}
 
 	ret = RT_OK;
-free:
-	return ret;
-error:
-	/* Add a zero terminating character if possible. */
-	if (buffer_capacity) {
-		if (*buffer_size >= buffer_capacity)
-			*buffer_size = buffer_capacity - 1;
-		buffer[*buffer_size] = 0;
+end:
+	if (RT_UNLIKELY(!ret)) {
+		/* Add a zero terminating character if possible. */
+		if (buffer_capacity) {
+			if (*buffer_size >= buffer_capacity)
+				*buffer_size = buffer_capacity - 1;
+			buffer[*buffer_size] = 0;
+		}
 	}
-	ret = RT_FAILED;
-	goto free;
+
+	return ret;
 }
 
 static rt_f32 rt_char8_base_get_power_of_ten32(rt_n exponent)
@@ -338,15 +337,15 @@ rt_s rt_char8_append_f32(rt_f32 value, rt_un decimal_count, rt_char8 *buffer, rt
 	rt_n integer_part;
 	rt_f32 decimal_part;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_FLOAT_EQUALS(value, 0.0f)) {
 		if (RT_UNLIKELY(!rt_char8_append_char('0', buffer, buffer_capacity, buffer_size)))
-			goto error;
+			goto end;
 	} else {
 		if (value < 0) {
 			if (RT_UNLIKELY(!rt_char8_append_char('-', buffer, buffer_capacity, buffer_size)))
-				goto error;
+				goto end;
 			local_value = -value;
 		} else {
 			local_value = value;
@@ -356,13 +355,13 @@ rt_s rt_char8_append_f32(rt_f32 value, rt_un decimal_count, rt_char8 *buffer, rt
 
 			integer_part = RT_FLOAT_ROUND(local_value);
 			if (RT_UNLIKELY(!rt_char8_append_n(integer_part, 10, buffer, buffer_capacity, buffer_size)))
-				goto error;
+				goto end;
 
 		} else {
 
 			integer_part = (rt_n32)local_value;
 			if (RT_UNLIKELY(!rt_char8_append_n(integer_part, 10, buffer, buffer_capacity, buffer_size)))
-				goto error;
+				goto end;
 
 			decimal_part = local_value - (rt_f32)integer_part;
 
@@ -374,19 +373,19 @@ rt_s rt_char8_append_f32(rt_f32 value, rt_un decimal_count, rt_char8 *buffer, rt
 				decimal_part += RT_FLOAT_EPSILON;
 
 				if (RT_UNLIKELY(!rt_char8_append_char('.', buffer, buffer_capacity, buffer_size)))
-					goto error;
+					goto end;
 
 				local_buffer_size = 0;
 				if (RT_UNLIKELY(!rt_char8_append_un(RT_FLOAT_ROUND(decimal_part), 10, local_buffer, 64, &local_buffer_size)))
-					goto error;
+					goto end;
 
 				for (i = local_buffer_size; i < decimal_count; i++) {
 					if (RT_UNLIKELY(!rt_char8_append_char('0', buffer, buffer_capacity, buffer_size)))
-						goto error;
+						goto end;
 				}
 
 				if (RT_UNLIKELY(!rt_char8_append(local_buffer, local_buffer_size, buffer, buffer_capacity, buffer_size)))
-					goto error;
+					goto end;
 
 				while (buffer[*buffer_size - 1] == '0') {
 					(*buffer_size)--;
@@ -400,12 +399,8 @@ rt_s rt_char8_append_f32(rt_f32 value, rt_un decimal_count, rt_char8 *buffer, rt
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_char8_append_f64(rt_f64 value, rt_un decimal_count, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size)
@@ -416,15 +411,15 @@ rt_s rt_char8_append_f64(rt_f64 value, rt_un decimal_count, rt_char8 *buffer, rt
 	rt_n integer_part;
 	rt_f64 decimal_part;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_DOUBLE_EQUALS(value, 0.0)) {
 		if (RT_UNLIKELY(!rt_char8_append_char('0', buffer, buffer_capacity, buffer_size)))
-			goto error;
+			goto end;
 	} else {
 		if (value < 0) {
 			if (RT_UNLIKELY(!rt_char8_append_char('-', buffer, buffer_capacity, buffer_size)))
-				goto error;
+				goto end;
 			local_value = -value;
 		} else {
 			local_value = value;
@@ -434,13 +429,13 @@ rt_s rt_char8_append_f64(rt_f64 value, rt_un decimal_count, rt_char8 *buffer, rt
 
 			integer_part = RT_DOUBLE_ROUND(local_value);
 			if (RT_UNLIKELY(!rt_char8_append_n(integer_part, 10, buffer, buffer_capacity, buffer_size)))
-				goto error;
+				goto end;
 
 		} else {
 
 			integer_part = (rt_n)local_value;
 			if (RT_UNLIKELY(!rt_char8_append_n(integer_part, 10, buffer, buffer_capacity, buffer_size)))
-				goto error;
+				goto end;
 
 			decimal_part = local_value - (rt_f64)integer_part;
 
@@ -452,19 +447,19 @@ rt_s rt_char8_append_f64(rt_f64 value, rt_un decimal_count, rt_char8 *buffer, rt
 				decimal_part += RT_DOUBLE_EPSILON;
 
 				if (RT_UNLIKELY(!rt_char8_append_char('.', buffer, buffer_capacity, buffer_size)))
-					goto error;
+					goto end;
 
 				local_buffer_size = 0;
 				if (RT_UNLIKELY(!rt_char8_append_un(RT_DOUBLE_ROUND(decimal_part), 10, local_buffer, 64, &local_buffer_size)))
-					goto error;
+					goto end;
 
 				for (i = local_buffer_size; i < decimal_count; i++) {
 					if (RT_UNLIKELY(!rt_char8_append_char('0', buffer, buffer_capacity, buffer_size)))
-						goto error;
+						goto end;
 				}
 
 				if (RT_UNLIKELY(!rt_char8_append(local_buffer, local_buffer_size, buffer, buffer_capacity, buffer_size)))
-					goto error;
+					goto end;
 
 				while (buffer[*buffer_size - 1] == '0') {
 					(*buffer_size)--;
@@ -478,12 +473,8 @@ rt_s rt_char8_append_f64(rt_f64 value, rt_un decimal_count, rt_char8 *buffer, rt
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_un rt_char8_fast_lower(rt_char8 *str)
@@ -523,7 +514,7 @@ rt_s rt_char8_convert_to_un(const rt_char8 *str, rt_un *result)
 	rt_char8 character;
 	rt_un local_result = 0;
 	rt_un i = 0;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	while (RT_TRUE) {
 		character = str[i];
@@ -532,7 +523,7 @@ rt_s rt_char8_convert_to_un(const rt_char8 *str, rt_un *result)
 
 		if (RT_UNLIKELY((character < '0') || (character > '9'))) {
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		} else {
 			local_result = local_result * 10 + character - '0';
 		}
@@ -543,17 +534,13 @@ rt_s rt_char8_convert_to_un(const rt_char8 *str, rt_un *result)
 		/* The string was empty. */
 		*result = 0;
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 	*result = local_result;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_char8_convert_to_un_with_size(const rt_char8 *str, rt_un str_size, rt_un *result)
@@ -561,13 +548,13 @@ rt_s rt_char8_convert_to_un_with_size(const rt_char8 *str, rt_un str_size, rt_un
 	rt_char8 character;
 	rt_un local_result = 0;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!str_size)) {
 		/* The string is empty. */
 		*result = 0;
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	for (i = 0; i < str_size; i++) {
@@ -575,7 +562,7 @@ rt_s rt_char8_convert_to_un_with_size(const rt_char8 *str, rt_un str_size, rt_un
 
 		if (RT_UNLIKELY((character < '0') || (character > '9'))) {
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		} else {
 			local_result = local_result * 10 + character - '0';
 		}
@@ -584,12 +571,8 @@ rt_s rt_char8_convert_to_un_with_size(const rt_char8 *str, rt_un str_size, rt_un
 	*result = local_result;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_char8_convert_to_n(const rt_char8 *str, rt_n *result)
@@ -598,7 +581,7 @@ rt_s rt_char8_convert_to_n(const rt_char8 *str, rt_n *result)
 	rt_char8 character;
 	rt_n local_result = 0;
 	rt_un i = 0;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (str[0] == '-') {
 		negative = RT_TRUE;
@@ -611,7 +594,7 @@ rt_s rt_char8_convert_to_n(const rt_char8 *str, rt_n *result)
 		/* The string is empty or just a minus sign. */
 		*result = 0;
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	while (RT_TRUE) {
@@ -621,7 +604,7 @@ rt_s rt_char8_convert_to_n(const rt_char8 *str, rt_n *result)
 
 		if (RT_UNLIKELY((character < '0') || (character > '9'))) {
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		} else {
 			local_result = local_result * 10 + character - '0';
 		}
@@ -634,12 +617,8 @@ rt_s rt_char8_convert_to_n(const rt_char8 *str, rt_n *result)
 	*result = local_result;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_char8_convert_to_n_with_size(const rt_char8 *str, rt_un str_size, rt_n *result)
@@ -648,13 +627,13 @@ rt_s rt_char8_convert_to_n_with_size(const rt_char8 *str, rt_un str_size, rt_n *
 	rt_char8 character;
 	rt_n local_result = 0;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!str_size)) {
 		/* The string is empty. */
 		*result = 0;
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	if (str[0] == '-') {
@@ -663,7 +642,7 @@ rt_s rt_char8_convert_to_n_with_size(const rt_char8 *str, rt_un str_size, rt_n *
 			/* The string is only a minus sign. */
 			*result = 0;
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		}
 	} else {
 		negative = RT_FALSE;
@@ -674,7 +653,7 @@ rt_s rt_char8_convert_to_n_with_size(const rt_char8 *str, rt_un str_size, rt_n *
 
 		if (RT_UNLIKELY((character < '0') || (character > '9'))) {
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		} else {
 			local_result = local_result * 10 + character - '0';
 		}
@@ -686,12 +665,8 @@ rt_s rt_char8_convert_to_n_with_size(const rt_char8 *str, rt_un str_size, rt_n *
 	*result = local_result;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_char8_convert_hex_to_un(const rt_char8 *str, rt_un *result)
@@ -700,7 +675,7 @@ rt_s rt_char8_convert_hex_to_un(const rt_char8 *str, rt_un *result)
 	rt_un local_result = 0;
 	rt_uchar8 byte;
 	rt_un i = 0;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	while (RT_TRUE) {
 		character = str[i];
@@ -715,7 +690,7 @@ rt_s rt_char8_convert_hex_to_un(const rt_char8 *str, rt_un *result)
 			byte = character - 'A' + 10;
 		} else {
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		}
 
 		local_result = (local_result << 4);
@@ -728,17 +703,13 @@ rt_s rt_char8_convert_hex_to_un(const rt_char8 *str, rt_un *result)
 		/* The string was empty. */
 		*result = 0;
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 	*result = local_result;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_char8_convert_hex_to_un_with_size(const rt_char8 *str, rt_un str_size, rt_un *result)
@@ -747,13 +718,13 @@ rt_s rt_char8_convert_hex_to_un_with_size(const rt_char8 *str, rt_un str_size, r
 	rt_un local_result = 0;
 	rt_uchar8 byte;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!str_size)) {
 		/* The string is empty. */
 		*result = 0;
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	for (i = 0; i < str_size; i++) {
@@ -767,7 +738,7 @@ rt_s rt_char8_convert_hex_to_un_with_size(const rt_char8 *str, rt_un str_size, r
 			byte = character - 'A' + 10;
 		} else {
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		}
 
 		local_result = (local_result << 4);
@@ -777,12 +748,8 @@ rt_s rt_char8_convert_hex_to_un_with_size(const rt_char8 *str, rt_un str_size, r
 	*result = local_result;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_char8_convert_to_f32(const rt_char8 *str, rt_f32 *result)
@@ -792,7 +759,7 @@ rt_s rt_char8_convert_to_f32(const rt_char8 *str, rt_f32 *result)
 	rt_un dot_index;
 	rt_n integer_part;
 	rt_n decimal_part;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (str[0] == '-') {
 		negative = RT_TRUE;
@@ -814,9 +781,9 @@ rt_s rt_char8_convert_to_f32(const rt_char8 *str, rt_f32 *result)
 		/* We found a dot. */
 
 		if (RT_UNLIKELY(!rt_char8_convert_to_n_with_size(local_str, dot_index, &integer_part)))
-			goto error;
+			goto end;
 		if (RT_UNLIKELY(!rt_char8_convert_to_n(&local_str[dot_index + 1], &decimal_part)))
-			goto error;
+			goto end;
 
 		/* Possible loss of data here. */
 		*result = (rt_f32)integer_part;
@@ -825,7 +792,7 @@ rt_s rt_char8_convert_to_f32(const rt_char8 *str, rt_f32 *result)
 		/* No dot, we convert the whole string as integer. */
 
 		if (RT_UNLIKELY(!rt_char8_convert_to_n(local_str, &integer_part)))
-			goto error;
+			goto end;
 		/* Possible loss of data here. */
 		*result = (rt_f32)integer_part;
 	}
@@ -834,12 +801,8 @@ rt_s rt_char8_convert_to_f32(const rt_char8 *str, rt_f32 *result)
 		*result = -*result;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_char8_convert_to_f32_with_size(const rt_char8 *str, rt_un str_size, rt_f32 *result)
@@ -851,11 +814,11 @@ rt_s rt_char8_convert_to_f32_with_size(const rt_char8 *str, rt_un str_size, rt_f
 	rt_n integer_part;
 	rt_n decimal_part;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (!str_size) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	if (str[0] == '-') {
@@ -880,10 +843,10 @@ rt_s rt_char8_convert_to_f32_with_size(const rt_char8 *str, rt_un str_size, rt_f
 		/* We found a dot. */
 
 		if (RT_UNLIKELY(!rt_char8_convert_to_n_with_size(local_str, dot_index, &integer_part)))
-			goto error;
+			goto end;
 
 		if (RT_UNLIKELY(!rt_char8_convert_to_n_with_size(&local_str[dot_index + 1], local_str_size - dot_index - 1, &decimal_part)))
-			goto error;
+			goto end;
 
 		/* Possible loss of data here. */
 		*result = (rt_f32)integer_part;
@@ -893,7 +856,7 @@ rt_s rt_char8_convert_to_f32_with_size(const rt_char8 *str, rt_un str_size, rt_f
 		/* No dot, we convert the whole string as integer. */
 
 		if (RT_UNLIKELY(!rt_char8_convert_to_n_with_size(local_str, local_str_size, &integer_part)))
-			goto error;
+			goto end;
 		/* Possible loss of data here. */
 		*result = (rt_f32)integer_part;
 	}
@@ -902,12 +865,8 @@ rt_s rt_char8_convert_to_f32_with_size(const rt_char8 *str, rt_un str_size, rt_f
 		*result = -*result;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_char8_convert_to_f64(const rt_char8 *str, rt_f64 *result)
@@ -917,7 +876,7 @@ rt_s rt_char8_convert_to_f64(const rt_char8 *str, rt_f64 *result)
 	rt_un dot_index;
 	rt_n integer_part;
 	rt_n decimal_part;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (str[0] == '-') {
 		negative = RT_TRUE;
@@ -939,9 +898,9 @@ rt_s rt_char8_convert_to_f64(const rt_char8 *str, rt_f64 *result)
 		/* We found a dot. */
 
 		if (RT_UNLIKELY(!rt_char8_convert_to_n_with_size(local_str, dot_index, &integer_part)))
-			goto error;
+			goto end;
 		if (RT_UNLIKELY(!rt_char8_convert_to_n(&local_str[dot_index + 1], &decimal_part)))
-			goto error;
+			goto end;
 
 		/* Possible loss of data here. */
 		*result = (rt_f64)integer_part;
@@ -950,7 +909,7 @@ rt_s rt_char8_convert_to_f64(const rt_char8 *str, rt_f64 *result)
 		/* No dot, we convert the whole string as integer. */
 
 		if (RT_UNLIKELY(!rt_char8_convert_to_n(local_str, &integer_part)))
-			goto error;
+			goto end;
 		/* Possible loss of data here. */
 		*result = (rt_f64)integer_part;
 	}
@@ -959,12 +918,8 @@ rt_s rt_char8_convert_to_f64(const rt_char8 *str, rt_f64 *result)
 		*result = -*result;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_char8_convert_to_f64_with_size(const rt_char8 *str, rt_un str_size, rt_f64 *result)
@@ -976,11 +931,11 @@ rt_s rt_char8_convert_to_f64_with_size(const rt_char8 *str, rt_un str_size, rt_f
 	rt_n integer_part;
 	rt_n decimal_part;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (!str_size) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	if (str[0] == '-') {
@@ -1005,10 +960,10 @@ rt_s rt_char8_convert_to_f64_with_size(const rt_char8 *str, rt_un str_size, rt_f
 		/* We found a dot. */
 
 		if (RT_UNLIKELY(!rt_char8_convert_to_n_with_size(local_str, dot_index, &integer_part)))
-			goto error;
+			goto end;
 
 		if (RT_UNLIKELY(!rt_char8_convert_to_n_with_size(&local_str[dot_index + 1], local_str_size - dot_index - 1, &decimal_part)))
-			goto error;
+			goto end;
 
 		/* Possible loss of data here. */
 		*result = (rt_f64)integer_part;
@@ -1018,7 +973,7 @@ rt_s rt_char8_convert_to_f64_with_size(const rt_char8 *str, rt_un str_size, rt_f
 		/* No dot, we convert the whole string as integer. */
 
 		if (RT_UNLIKELY(!rt_char8_convert_to_n_with_size(local_str, local_str_size, &integer_part)))
-			goto error;
+			goto end;
 		/* Possible loss of data here. */
 		*result = (rt_f64)integer_part;
 	}
@@ -1027,12 +982,8 @@ rt_s rt_char8_convert_to_f64_with_size(const rt_char8 *str, rt_un str_size, rt_f
 		*result = -*result;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 void rt_char8_trim(rt_b left, rt_b right, rt_char8 *buffer, rt_un *buffer_size)
@@ -1067,14 +1018,14 @@ void rt_char8_trim(rt_b left, rt_b right, rt_char8 *buffer, rt_un *buffer_size)
 rt_s rt_char8_left_pad(const rt_char8 *input, rt_un input_size, rt_char8 character, rt_un size, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
 	rt_un padding_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (input_size < size) {
 
 		/* Makes sure the buffer capacity is enough for the padding + input_size + zero terminating character. */
 		if (RT_UNLIKELY(buffer_capacity < size + 1)) {
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-			goto error;
+			goto end;
 		}
 
 		padding_size = size - input_size;
@@ -1099,24 +1050,20 @@ rt_s rt_char8_left_pad(const rt_char8 *input, rt_un input_size, rt_char8 charact
 		if (input != buffer) {
 			/* The input is already long enough. We copy it to the result. */
 			if (RT_UNLIKELY(!rt_char8_copy(input, input_size, buffer, buffer_capacity)))
-				goto error;
+				goto end;
 		}
 		*buffer_size = input_size;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_char8_right_pad(rt_char8 character, rt_un size, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
 	rt_un local_buffer_size = *buffer_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* If padding is required. */
 	if (local_buffer_size < size) {
@@ -1124,7 +1071,7 @@ rt_s rt_char8_right_pad(rt_char8 character, rt_un size, rt_char8 *buffer, rt_un 
 		/* Makes sure the buffer is enough for its current content + padding + zero terminating character. */
 		if (RT_UNLIKELY(buffer_capacity < size + 1)) {
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-			goto error;
+			goto end;
 		}
 
 		RT_MEMORY_SET(&buffer[local_buffer_size], character, size - local_buffer_size);
@@ -1136,12 +1083,8 @@ rt_s rt_char8_right_pad(rt_char8 character, rt_un size, rt_char8 *buffer, rt_un 
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_b rt_char8_ends_with(const rt_char8 *str, rt_un str_size, const rt_char8 *searched, rt_un searched_size)
@@ -1309,7 +1252,7 @@ rt_un rt_char8_count_occurrences_with_size(const rt_char8 *str, rt_un str_size, 
 rt_s RT_CDECL rt_char8_concat(rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size, ...)
 {
 	va_list args_list;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	va_start(args_list, buffer_size);
 	ret = rt_char8_vconcat(buffer, buffer_capacity, buffer_size, args_list);
@@ -1321,25 +1264,21 @@ rt_s RT_CDECL rt_char8_concat(rt_char8 *buffer, rt_un buffer_capacity, rt_un *bu
 rt_s rt_char8_vconcat(rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size, va_list args_list)
 {
 	rt_char8 *str;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	while (RT_TRUE) {
 		str = va_arg(args_list, rt_char8*);
 		if (str) {
 			if (RT_UNLIKELY(!rt_char8_append(str, rt_char8_get_size(str), buffer, buffer_capacity, buffer_size)))
-				goto error;
+				goto end;
 		} else {
 			break;
 		}
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_char8_replace(const rt_char8 *str, rt_un str_size,
@@ -1350,7 +1289,7 @@ rt_s rt_char8_replace(const rt_char8 *str, rt_un str_size,
 	rt_un in_str = 0;
 	rt_un index;
 	rt_un remaining_characters;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	while (RT_TRUE) {
 		remaining_characters = str_size - in_str;
@@ -1360,7 +1299,7 @@ rt_s rt_char8_replace(const rt_char8 *str, rt_un str_size,
 			/* No more occurrences of the searched string, copy remaining characters. */
 			if (remaining_characters) {
 				if (RT_UNLIKELY(!rt_char8_append(&str[in_str], remaining_characters, buffer, buffer_capacity, buffer_size)))
-					goto error;
+					goto end;
 			}
 
 			/* Job done. */
@@ -1370,13 +1309,13 @@ rt_s rt_char8_replace(const rt_char8 *str, rt_un str_size,
 		/* Copy from the current position in str to the found index. */
 		if (index) {
 			if (RT_UNLIKELY(!rt_char8_append(&str[in_str], index, buffer, buffer_capacity, buffer_size)))
-				goto error;
+				goto end;
 		}
 
 		/* Copy the replacement. */
 		if (replacement_size) {
 			if (RT_UNLIKELY(!rt_char8_append(replacement, replacement_size, buffer, buffer_capacity, buffer_size)))
-				goto error;
+				goto end;
 		}
 
 		/* Continue reading str. */
@@ -1384,12 +1323,8 @@ rt_s rt_char8_replace(const rt_char8 *str, rt_un str_size,
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_char8_comparison_callback(const void *item1, const void *item2, RT_UNUSED void *context, rt_n *comparison_result)
@@ -1467,7 +1402,7 @@ rt_s rt_char8_split(rt_char8 *str, const rt_char8 *delimiters, rt_char8 **parts,
 	rt_char8 delimiter;
 	rt_b in_delimiters = RT_TRUE;
 	rt_b is_delimiter;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	*parts_size = 0;
 
@@ -1501,7 +1436,7 @@ rt_s rt_char8_split(rt_char8 *str, const rt_char8 *delimiters, rt_char8 **parts,
 			if (in_delimiters) {
 				if (*parts_size == parts_capacity) {
 					rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-					goto error;
+					goto end;
 				}
 				parts[*parts_size] = &str[in_str_index];
 				(*parts_size)++;
@@ -1512,12 +1447,8 @@ rt_s rt_char8_split(rt_char8 *str, const rt_char8 *delimiters, rt_char8 **parts,
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_b rt_char8_is_empty_or_blank(const rt_char8 *str)

@@ -10,36 +10,32 @@ rt_s rt_unicode_code_point_encode(rt_un32 code_point, rt_char *buffer, rt_un buf
 #else
 	enum rt_encoding system_encoding;
 	rt_char *output;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* rt_encoding_get_system returns RT_ENCODING_SYSTEM_DEFAULT in case of error. */
 	rt_encoding_get_system(&system_encoding);
 	if (system_encoding == RT_ENCODING_UTF_8) {
 		if (RT_UNLIKELY(!rt_unicode_code_point_encode_to_utf8(code_point, buffer, buffer_capacity, buffer_size)))
-			goto error;
+			goto end;
 	} else {
 		if (RT_UNLIKELY(!rt_encoding_decode((rt_char8*)&code_point, 4, RT_ENCODING_UTF_32LE, buffer, buffer_capacity, RT_NULL, RT_NULL, &output, buffer_size, RT_NULL)))
-			goto error;
+			goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 #endif
 }
 
 rt_s rt_unicode_code_point_encode_to_utf8(rt_un32 code_point, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (code_point <= 0x7F) {
 		if (RT_UNLIKELY(buffer_capacity < 2)) {
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-			goto error;
+			goto end;
 		}
 
 		buffer[0] = (rt_uchar8)code_point;
@@ -50,7 +46,7 @@ rt_s rt_unicode_code_point_encode_to_utf8(rt_un32 code_point, rt_char8 *buffer, 
 	} else if (code_point <= 0x7FF) {
 		if (RT_UNLIKELY(buffer_capacity < 3)) {
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-			goto error;
+			goto end;
 		}
 
 		buffer[0] = (rt_uchar8)((code_point >> 6) | 0xC0);
@@ -62,7 +58,7 @@ rt_s rt_unicode_code_point_encode_to_utf8(rt_un32 code_point, rt_char8 *buffer, 
 	} else if (code_point <= 0xFFFF) {
 		if (RT_UNLIKELY(buffer_capacity < 4)) {
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-			goto error;
+			goto end;
 		}
 
 		buffer[0] = (rt_uchar8)((code_point >> 12) | 0xE0);
@@ -75,7 +71,7 @@ rt_s rt_unicode_code_point_encode_to_utf8(rt_un32 code_point, rt_char8 *buffer, 
 	} else if (code_point <= 0x10FFFF) {
 		if (RT_UNLIKELY(buffer_capacity < 5)) {
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-			goto error;
+			goto end;
 		}
 
 		buffer[0] = (rt_uchar8)((code_point >> 18) | 0xF0);
@@ -88,26 +84,22 @@ rt_s rt_unicode_code_point_encode_to_utf8(rt_un32 code_point, rt_char8 *buffer, 
 
 	} else {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_unicode_code_point_encode_to_utf16(rt_un32 code_point, rt_un16 *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (code_point <= 0xFFFF) {
 		if (RT_UNLIKELY(buffer_capacity < 2)) {
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-			goto error;
+			goto end;
 		}
 		buffer[0] = (rt_un16)code_point;
 		buffer[1] = 0;
@@ -116,7 +108,7 @@ rt_s rt_unicode_code_point_encode_to_utf16(rt_un32 code_point, rt_un16 *buffer, 
 	} else {
 		if (RT_UNLIKELY(buffer_capacity < 3)) {
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-			goto error;
+			goto end;
 		}
 		code_point -= 0x10000;
 		/* First 10 bits in the lead surrogate. */
@@ -129,10 +121,6 @@ rt_s rt_unicode_code_point_encode_to_utf16(rt_un32 code_point, rt_un16 *buffer, 
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

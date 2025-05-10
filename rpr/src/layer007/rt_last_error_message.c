@@ -21,14 +21,14 @@ static struct rt_thread_local_storage rt_last_error_message_storage;
  */
 static rt_s rt_last_error_message_init(void)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (rt_fast_initialization_is_required(&rt_last_error_message_fast_initialization)) {
 
 		/* No thread has created the thread local storage yet. */
 		if (RT_UNLIKELY(!rt_thread_local_storage_create(&rt_last_error_message_storage))) {
 			rt_fast_initialization_notify_done(&rt_last_error_message_fast_initialization);
-			goto error;
+			goto end;
 		}
 
 		rt_last_error_message_fast_initialization_successful = RT_TRUE;
@@ -38,16 +38,12 @@ static rt_s rt_last_error_message_init(void)
 
 	if (RT_UNLIKELY(!rt_last_error_message_fast_initialization_successful)) {
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-		goto error;
+		goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 /**
@@ -56,143 +52,123 @@ error:
 static rt_s rt_last_error_message_get_buffer(rt_char **buffer)
 {
 	rt_char *local_storage;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_last_error_message_init()))
-		goto error;
+		goto end;
 
 	/* Retrieve a pointer to this thread local storage. */
 	if (RT_UNLIKELY(!rt_thread_local_storage_get(&rt_last_error_message_storage, (void**)&local_storage)))
-		goto error;
+		goto end;
 
 	/* Maybe the buffer has not be allocated yet for this thread. */
 	if (!local_storage) {
 		/* This memory will be freed when the process is terminated. */
 		if (RT_UNLIKELY(!rt_page_heap_alloc((void**)&local_storage, RT_LAST_ERROR_MESSAGE_SIZE)))
-			goto error;
+			goto end;
 		
 		/* Add a terminating zero in case the message is retrieve before it is set. */
 		local_storage[0] = 0;
 
 		if (RT_UNLIKELY(!rt_thread_local_storage_set(&rt_last_error_message_storage, local_storage)))
-			goto error;
+			goto end;
 	}
 
 	*buffer = local_storage;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_last_error_message_set(const rt_char *message)
 {
 	rt_char *local_storage;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_last_error_message_get_buffer(&local_storage)))
-		goto error;
+		goto end;
 
 	/* If the message is too long, it is truncated. */
 	rt_char_copy(message, rt_char_get_size(message), local_storage, RT_LAST_ERROR_MESSAGE_SIZE);
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_last_error_message_set_with_last_error(void)
 {
 	rt_char *local_storage;
 	rt_un local_storage_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_last_error_message_get_buffer(&local_storage)))
-		goto error;
+		goto end;
 
 	/* Operating system error message are pretty small and should fit in the buffer. */
 	local_storage_size = 0;
 	if (RT_UNLIKELY(!rt_error_message_append_last(local_storage, RT_LAST_ERROR_MESSAGE_SIZE, &local_storage_size)))
-		goto error;
+		goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_last_error_message_append(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
 	rt_char *local_storage;
 	rt_un local_storage_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_last_error_message_get_buffer(&local_storage)))
-		goto error;
+		goto end;
 
 	local_storage_size = rt_char_get_size(local_storage);
 	if (RT_UNLIKELY(!rt_char_append(local_storage, local_storage_size, buffer, buffer_capacity, buffer_size)))
-		goto error;
+		goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_last_error_message_write(const rt_char *prefix)
 {
 	rt_char buffer[RT_CHAR_BIG_STRING_SIZE];
 	rt_un buffer_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (prefix) {
 		buffer_size = rt_char_get_size(prefix);
 		if (RT_UNLIKELY(!rt_char_copy(prefix, buffer_size, buffer, RT_CHAR_BIG_STRING_SIZE)))
-			goto error;
+			goto end;
 	} else {
 		buffer_size = 0;
 	}
-	if (RT_UNLIKELY(!rt_last_error_message_append(buffer, RT_CHAR_BIG_STRING_SIZE , &buffer_size))) goto error;
-	if (RT_UNLIKELY(!rt_char_append_char(_R('\n'), buffer, RT_CHAR_BIG_STRING_SIZE, &buffer_size))) goto error;
-	if (RT_UNLIKELY(!rt_console_write_error_with_size(buffer, buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_last_error_message_append(buffer, RT_CHAR_BIG_STRING_SIZE , &buffer_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append_char(_R('\n'), buffer, RT_CHAR_BIG_STRING_SIZE, &buffer_size))) goto end;
+	if (RT_UNLIKELY(!rt_console_write_error_with_size(buffer, buffer_size))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_last_error_message_cleanup_thread_buffer(void)
 {
 	void *local_storage;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (rt_fast_initialization_is_done(&rt_last_error_message_fast_initialization)) {
 
 		if (RT_UNLIKELY(!rt_last_error_message_init()))
-			goto error;
+			goto end;
 
 		/* Retrieve a pointer to this thread local storage. */
 		if (RT_UNLIKELY(!rt_thread_local_storage_get(&rt_last_error_message_storage, &local_storage)))
-			goto error;
+			goto end;
 
 		ret = RT_OK;
 
@@ -208,32 +184,24 @@ rt_s rt_last_error_message_cleanup_thread_buffer(void)
 		ret = RT_OK;
 	}
 
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_last_error_message_cleanup(void)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (rt_fast_initialization_is_done(&rt_last_error_message_fast_initialization)) {
 
 		if (RT_UNLIKELY(!rt_last_error_message_init()))
-			goto error;
+			goto end;
 
 		if (RT_UNLIKELY(!rt_thread_local_storage_free(&rt_last_error_message_storage)))
-			goto error;
+			goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

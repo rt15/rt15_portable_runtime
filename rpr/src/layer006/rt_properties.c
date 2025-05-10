@@ -28,33 +28,33 @@ rt_s rt_properties_create(struct rt_hash_table_entry **properties, const rt_char
 
 	struct rt_properties_header *header;
 
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_small_file_read(file_path, RT_NULL, 0, &file_heap_buffer, &file_heap_buffer_capacity, &file_buffer, &file_buffer_size, heap)))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!rt_encoding_decode(file_buffer, file_buffer_size, encoding, RT_NULL, 0, &heap_buffer, &heap_buffer_capacity, &buffer, &buffer_size, heap)))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!rt_properties_create_from_str(properties, buffer, initial_capacity, heap)))
-		goto error;
+		goto end;
 
 	header = RT_PROPERTIES_GET_HEADER(*properties);
 	header->file_path = file_path;
 	header->buffer = buffer;
 
 	ret = RT_OK;
-free:
+end:
 	/* Free the file heap buffer, but notify error in case of failure. */
-	if (RT_UNLIKELY(!heap->free(heap, &file_heap_buffer) && ret))
-		goto error;
-	return ret;
+	if (RT_UNLIKELY(!heap->free(heap, &file_heap_buffer)))
+		ret = RT_FAILED;
 
-error:
-	/* In case of error, free the heap buffer ignoring errors. */
-	heap->free(heap, &heap_buffer);
-	ret = RT_FAILED;
-	goto free;
+	if (RT_UNLIKELY(!ret)) {
+		/* In case of error, free the heap buffer ignoring errors. */
+		heap->free(heap, &heap_buffer);
+	}
+
+	return ret;
 }
 
 /**
@@ -150,7 +150,7 @@ static rt_s rt_properties_unicode(rt_char *str, rt_un current_index)
 	rt_un code_point;
 	rt_un written_characters;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* Check that the next 4 characters look like hexa. */
 	for (i = current_index + 2; i < current_index + 6; i++) {
@@ -160,27 +160,23 @@ static rt_s rt_properties_unicode(rt_char *str, rt_un current_index)
 			       (current_char > _R('F') && current_char < _R('a')) ||
 			        current_char > _R('f'))) {
 			rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-			goto error;
+			goto end;
 		}
 	}
 
 	/* Deduce the code point. */
 	if (RT_UNLIKELY(!rt_char_convert_hex_to_un_with_size(&str[current_index + 2], 4, &code_point)))
-		goto error;
+		goto end;
 
 	/* Overwrite "\uXXXX" with the correct character. */
 	if (RT_UNLIKELY(!rt_unicode_code_point_encode((rt_un32)code_point, &str[current_index], 6, &written_characters)))
-		goto error;
+		goto end;
 
 	rt_properties_remove_characters(str, current_index + written_characters, 6 - written_characters);
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 /**
@@ -196,7 +192,7 @@ static rt_s rt_properties_create_from_str_do(struct rt_hash_table_entry **proper
 	rt_char next_char;
 	rt_char *key = RT_NULL;
 	rt_char *value;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	while (RT_TRUE) {
 		current_char = str[current_index];
@@ -227,7 +223,7 @@ static rt_s rt_properties_create_from_str_do(struct rt_hash_table_entry **proper
 				break;
 			case _R('u'):
 				if (RT_UNLIKELY(!rt_properties_unicode(str, current_index)))
-					goto error;
+					goto end;
 				break;
 			default:
 				/* Remove the backslash. */
@@ -322,7 +318,7 @@ static rt_s rt_properties_create_from_str_do(struct rt_hash_table_entry **proper
 					str[current_index] = 0;
 					value = &str[current_index];
 					if (RT_UNLIKELY(!rt_hash_table_set(properties, key, rt_char_get_size(key), value, RT_NULL)))
-						goto error;
+						goto end;
 					parsing_state = RT_PROPERTIES_PARSING_STATE_EOL;
 					break;
 				}
@@ -347,7 +343,7 @@ static rt_s rt_properties_create_from_str_do(struct rt_hash_table_entry **proper
 					str[current_index] = 0;
 					value = &str[current_index];
 					if (RT_UNLIKELY(!rt_hash_table_set(properties, key, rt_char_get_size(key), value, RT_NULL)))
-						goto error;
+						goto end;
 					parsing_state = RT_PROPERTIES_PARSING_STATE_EOL;
 					break;
 				default:
@@ -371,7 +367,7 @@ static rt_s rt_properties_create_from_str_do(struct rt_hash_table_entry **proper
 					str[current_index] = 0;
 					value = &str[current_index];
 					if (RT_UNLIKELY(!rt_hash_table_set(properties, key, rt_char_get_size(key), value, RT_NULL)))
-						goto error;
+						goto end;
 					parsing_state = RT_PROPERTIES_PARSING_STATE_EOL;
 					break;
 				default:
@@ -388,59 +384,53 @@ static rt_s rt_properties_create_from_str_do(struct rt_hash_table_entry **proper
 					/* End of value. */
 					str[current_index] = 0;
 					if (RT_UNLIKELY(!rt_hash_table_set(properties, key, rt_char_get_size(key), value, RT_NULL)))
-						goto error;
+						goto end;
 					parsing_state = RT_PROPERTIES_PARSING_STATE_EOL;
 					break;
 				}
 				break;
 			default:
 				rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-				goto error;
+				goto end;
 			}
 			current_index++;
 		}
 	}
 	if (parsing_state == RT_PROPERTIES_PARSING_STATE_VALUE) {
 		if (RT_UNLIKELY(!rt_hash_table_set(properties, key, rt_char_get_size(key), value, RT_NULL)))
-			goto error;
+			goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_properties_create_from_str(struct rt_hash_table_entry **properties, rt_char *str, rt_un initial_capacity, struct rt_heap *heap)
 {
 	struct rt_properties_header *header;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	*properties = RT_NULL;
 
 	if (RT_UNLIKELY(!rt_hash_table_create(properties, &rt_char_hash_callback, &rt_char_comparison_with_size_callback, RT_NULL, initial_capacity, sizeof(struct rt_properties_header), heap)))
-		goto error;
+		goto end;
 
 	header = RT_PROPERTIES_GET_HEADER(*properties);
 	header->file_path = RT_NULL;
 	header->buffer = RT_NULL;
 
 	if (RT_UNLIKELY(!rt_properties_create_from_str_do(properties, str)))
-		goto error;
+		goto end;
 
 	ret = RT_OK;
-free:
+end:
+	if (RT_UNLIKELY(!ret)) {
+		/* In case of error, free the hash table ignoring errors. */
+		rt_hash_table_free(properties);
+	}
+
 	return ret;
-
-error:
-	/* In case of error, free the hash table ignoring errors. */
-	rt_hash_table_free(properties);
-
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_properties_free(struct rt_hash_table_entry **properties)

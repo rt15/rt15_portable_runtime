@@ -403,7 +403,7 @@ static rt_s rt_encoding_get_linux_system(rt_char *buffer, rt_un buffer_capacity,
 {
 	rt_char *encoding_name;
 	rt_un encoding_name_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	encoding_name = nl_langinfo(CODESET);
 	/* There are very few chances that nl_langinfo failed. */
@@ -414,23 +414,20 @@ static rt_s rt_encoding_get_linux_system(rt_char *buffer, rt_un buffer_capacity,
 		if (RT_LIKELY(encoding_name_size)) {
 			/* The pointer nl_langinfo is not thread safe so we make a copy really quick. */
 			if (RT_UNLIKELY(!rt_char_copy(encoding_name, encoding_name_size, buffer, buffer_capacity)))
-				goto error;
+				goto end;
 			*buffer_size = encoding_name_size;
 		} else {
 			rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-			goto error;
+			goto end;
 		}
 	} else {
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-		goto error;
+		goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 #endif
@@ -445,7 +442,7 @@ rt_s rt_encoding_get_system(enum rt_encoding *encoding)
 	const rt_char* current_encoding;
 #endif
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (rt_fast_initialization_is_required(&rt_encoding_system_initialization)) {
 
@@ -461,7 +458,7 @@ rt_s rt_encoding_get_system(enum rt_encoding *encoding)
 		/* Retrieve the encoding name as a string. */
 		if (RT_UNLIKELY(!rt_encoding_get_linux_system(system_encoding_name, 64, &system_encoding_name_size))) {
 			rt_fast_initialization_notify_done(&rt_encoding_system_initialization);
-			goto error;
+			goto end;
 		}
 
 		for (i = 1; i < RT_ENCODING_ENCODINGS_COUNT; i++) {
@@ -481,16 +478,12 @@ rt_s rt_encoding_get_system(enum rt_encoding *encoding)
 	/* At this point rt_encoding_system is either zero (its initial value) or the correct encoding. */
 	if (RT_UNLIKELY(!rt_encoding_system)) {
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-		goto error;
+		goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 /**
@@ -498,25 +491,21 @@ error:
  */
 static rt_s rt_encoding_get_actual(enum rt_encoding encoding, enum rt_encoding *actual_encoding)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (encoding == RT_ENCODING_SYSTEM_DEFAULT) {
 		if (RT_UNLIKELY(!rt_encoding_get_system(actual_encoding)))
-			goto error;
+			goto end;
 	} else if (encoding < RT_ENCODING_ENCODINGS_COUNT) {
 		*actual_encoding = encoding;
 	} else {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *encoding_info)
@@ -525,10 +514,10 @@ rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *en
 	CPINFOEX cp_info_ex;
 #endif
 	enum rt_encoding actual_encoding;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_encoding_get_actual(encoding, &actual_encoding)))
-		goto error;
+		goto end;
 
 	encoding_info->code_page = rt_encoding_code_pages[actual_encoding];
 	encoding_info->name = rt_encoding_code_names[actual_encoding];
@@ -539,51 +528,47 @@ rt_s rt_encoding_get_info(enum rt_encoding encoding, struct rt_encoding_info *en
 	switch (actual_encoding) {
 	case RT_ENCODING_UTF_16:
 		if (RT_UNLIKELY(!rt_char_copy(_R("1200 (UTF-16)"), 13, encoding_info->label, RT_ENCODING_LABEL_SIZE)))
-			goto error;
+			goto end;
 		break;
 	case RT_ENCODING_UTF_16LE:
 		if (RT_UNLIKELY(!rt_char_copy(_R("1200 (UTF-16 little-endian)"), 27, encoding_info->label, RT_ENCODING_LABEL_SIZE)))
-			goto error;
+			goto end;
 		break;
 	case RT_ENCODING_UTF_16BE:
 		if (RT_UNLIKELY(!rt_char_copy(_R("1201 (UTF-16 big-endian)"), 24, encoding_info->label, RT_ENCODING_LABEL_SIZE)))
-			goto error;
+			goto end;
 		break;
 	case RT_ENCODING_UTF_32:
 		if (RT_UNLIKELY(!rt_char_copy(_R("12000 (UTF-32)"), 14, encoding_info->label, RT_ENCODING_LABEL_SIZE)))
-			goto error;
+			goto end;
 		break;
 	case RT_ENCODING_UTF_32LE:
 		if (RT_UNLIKELY(!rt_char_copy(_R("12000 (UTF-32 little-endian)"), 28, encoding_info->label, RT_ENCODING_LABEL_SIZE)))
-			goto error;
+			goto end;
 		break;
 	case RT_ENCODING_UTF_32BE:
 		if (RT_UNLIKELY(!rt_char_copy(_R("12001 (UTF-32 big-endian)"), 25, encoding_info->label, RT_ENCODING_LABEL_SIZE)))
-			goto error;
+			goto end;
 		break;
 	default:
 		/* Returns 0 and sets last error in case of issue. */
 		if (RT_UNLIKELY(!GetCPInfoEx(encoding_info->code_page, 0, &cp_info_ex)))
-			goto error;
+			goto end;
 
 		/* Copy the label. */
 		if (RT_UNLIKELY(!rt_char_copy(cp_info_ex.CodePageName, rt_char_get_size(cp_info_ex.CodePageName), encoding_info->label, RT_ENCODING_LABEL_SIZE)))
-			goto error;
+			goto end;
 	}
 
 #else
 	/* Use the name as label. */
 	if (RT_UNLIKELY(!rt_char_copy(encoding_info->name, rt_char_get_size(encoding_info->name), encoding_info->label, RT_ENCODING_LABEL_SIZE)))
-		goto error;
+		goto end;
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_un rt_encoding_get_size(const rt_char8 *data, rt_un code_unit_size)
@@ -706,7 +691,7 @@ static rt_s rt_encoding_encode_using_windows(const rt_char *input, rt_un input_s
 	int actual_buffer_capacity;
 	rt_un heap_buffer_size;
 	int length;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* If the default encoding is used, then the code page is CP_ACP (0) which is supported by WideCharToMultiByte. */
 	code_page = rt_encoding_code_pages[output_encoding];
@@ -731,7 +716,7 @@ static rt_s rt_encoding_encode_using_windows(const rt_char *input, rt_un input_s
 				/* The provided buffer was not enough, use the heap. */
 				use_heap = RT_TRUE;
 			} else {
-				goto error;
+				goto end;
 			}
 		}
 	} else {
@@ -746,7 +731,7 @@ static rt_s rt_encoding_encode_using_windows(const rt_char *input, rt_un input_s
 			/* Compute the required buffer size. */
 			length = WideCharToMultiByte(code_page, 0, input, (int)input_size, RT_NULL, 0, RT_NULL, RT_NULL);
 			if (RT_UNLIKELY(!length)) {
-				goto error;
+				goto end;
 			} else {
 
 				/* We need space for the terminating zero. */
@@ -756,7 +741,7 @@ static rt_s rt_encoding_encode_using_windows(const rt_char *input, rt_un input_s
 
 					length = WideCharToMultiByte(code_page, 0, input, (int)input_size, *output, length, RT_NULL, RT_NULL);
 					if (RT_UNLIKELY(!length))
-						goto error;
+						goto end;
 					/* Output size is the size of the buffer minus the terminating zero. */
 					*output_size = heap_buffer_size - 1;
 
@@ -766,23 +751,19 @@ static rt_s rt_encoding_encode_using_windows(const rt_char *input, rt_un input_s
 
 				} else {
 					/* Allocation failed. */
-					goto error;
+					goto end;
 				}
 			}
 		} else {
 			/* Buffer was too small and no heap has been provided. */
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-			goto error;
+			goto end;
 		}
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 static rt_s rt_encoding_decode_using_windows(const rt_char8 *input, rt_un input_size, enum rt_encoding input_encoding, rt_char *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char **output, rt_un *output_size, struct rt_heap *heap)
@@ -792,7 +773,7 @@ static rt_s rt_encoding_decode_using_windows(const rt_char8 *input, rt_un input_
 	int actual_buffer_capacity;
 	rt_un heap_buffer_size;
 	int length;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* If the default encoding is used, then the code page is CP_ACP (0) which is supported by MultiByteToWideChar. */
 	code_page = rt_encoding_code_pages[input_encoding];
@@ -817,7 +798,7 @@ static rt_s rt_encoding_decode_using_windows(const rt_char8 *input, rt_un input_
 				/* The provided buffer was not enough, use the heap. */
 				use_heap = RT_TRUE;
 			} else {
-				goto error;
+				goto end;
 			}
 		}
 	} else {
@@ -832,7 +813,7 @@ static rt_s rt_encoding_decode_using_windows(const rt_char8 *input, rt_un input_
 			/* Compute the required buffer size. */
 			length = MultiByteToWideChar(code_page, 0, input, (int)input_size, RT_NULL, 0);
 			if (RT_UNLIKELY(!length)) {
-				goto error;
+				goto end;
 			} else {
 
 				/* We need space for the terminating zero. */
@@ -842,7 +823,7 @@ static rt_s rt_encoding_decode_using_windows(const rt_char8 *input, rt_un input_
 
 					length = MultiByteToWideChar(code_page, 0, input, (int)input_size, *output, length);
 					if (RT_UNLIKELY(!length))
-						goto error;
+						goto end;
 					/* Output size is the size of the buffer minus the terminating zero. */
 					*output_size = heap_buffer_size - 1;
 
@@ -851,23 +832,19 @@ static rt_s rt_encoding_decode_using_windows(const rt_char8 *input, rt_un input_
 
 				} else {
 					/* Allocation failed. */
-					goto error;
+					goto end;
 				}
 			}
 		} else {
 			/* Buffer was too small and no heap has been provided. */
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-			goto error;
+			goto end;
 		}
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 /**
@@ -888,7 +865,7 @@ static rt_un rt_encoding_encode_or_decode_unicode_without_bom(const rt_char8 *in
 	rt_un local_output_size;
 	rt_char8 *output_payload; /* Pointer on output after optional BOM. */
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if ((output_encoding == RT_ENCODING_UTF_16) ||
 	    (output_encoding == RT_ENCODING_UTF_32)) {
@@ -900,7 +877,7 @@ static rt_un rt_encoding_encode_or_decode_unicode_without_bom(const rt_char8 *in
 
 	/* Allocate resulting buffer, adding one for zero terminating character. */
 	if (RT_UNLIKELY(!rt_heap_alloc_if_needed(buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, (void**)output, (local_output_size + 1) * output_code_unit_size, heap)))
-		goto error;
+		goto end;
 
 	/* Add little endian BOM if needed and set output payload pointer. */
 	if (output_encoding == RT_ENCODING_UTF_16) {
@@ -940,7 +917,7 @@ static rt_un rt_encoding_encode_or_decode_unicode_without_bom(const rt_char8 *in
 			break;
 		default:
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		}
 		break;
 	case RT_ENCODING_UTF_16BE:
@@ -963,7 +940,7 @@ static rt_un rt_encoding_encode_or_decode_unicode_without_bom(const rt_char8 *in
 			break;
 		default:
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		}
 		break;
 	case RT_ENCODING_UTF_32LE:
@@ -986,7 +963,7 @@ static rt_un rt_encoding_encode_or_decode_unicode_without_bom(const rt_char8 *in
 			break;
 		default:
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		}
 		break;
 	case RT_ENCODING_UTF_32BE:
@@ -1009,12 +986,12 @@ static rt_un rt_encoding_encode_or_decode_unicode_without_bom(const rt_char8 *in
 			break;
 		default:
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		}
 		break;
 	default:
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	/* Returned output size is the size in bytes without counting the zero terminating bytes. */
@@ -1026,12 +1003,8 @@ static rt_un rt_encoding_encode_or_decode_unicode_without_bom(const rt_char8 *in
 		(*output)[local_output_size + i] = 0;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 /**
@@ -1052,7 +1025,7 @@ static rt_un rt_encoding_encode_or_decode_unicode(const rt_char8 *input, rt_un i
 	const rt_char8 *input_payload; /* Pointer on input after optional BOM. */
 	rt_un input_payload_size;
 	rt_un input_payload_encoding; /* Input encoding with endianness. */
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (input_encoding == RT_ENCODING_UTF_16) {
 		/* We already checked that size is > 0. */
@@ -1063,7 +1036,7 @@ static rt_un rt_encoding_encode_or_decode_unicode(const rt_char8 *input, rt_un i
 		} else {
 			/* Invalid BOM. */
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		}
 
 		/* Skip BOM. */
@@ -1080,7 +1053,7 @@ static rt_un rt_encoding_encode_or_decode_unicode(const rt_char8 *input, rt_un i
 		} else {
 			/* Invalid BOM. */
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		}
 
 		/* Skip BOM. */
@@ -1096,15 +1069,11 @@ static rt_un rt_encoding_encode_or_decode_unicode(const rt_char8 *input, rt_un i
 	}
 
 	if (RT_UNLIKELY(!rt_encoding_encode_or_decode_unicode_without_bom(input_payload, input_payload_size, input_payload_encoding, input_code_unit_size, output_encoding, output_code_unit_size, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap)))
-		goto error;
+		goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 #else
@@ -1129,7 +1098,7 @@ static rt_s rt_encoding_iconv_with_descriptor(const rt_char8 *input, rt_un input
 	size_t result;
 	rt_b use_heap;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	output_code_unit_size = rt_encoding_code_unit_sizes[output_encoding];
 
@@ -1156,7 +1125,7 @@ buffer_flush:
 
 				/* Make sure a first heap buffer is ready. */
 				if (RT_UNLIKELY(!rt_heap_alloc_if_needed(RT_NULL, 0, heap_buffer, heap_buffer_capacity, (void**)output, buffer_capacity * 2, heap)))
-					goto error;
+					goto end;
 
 				/* Copy from the stack buffer to the heap buffer as we will resume the encoding in there. */
 				RT_MEMORY_COPY(buffer, *heap_buffer, buffer_capacity);
@@ -1168,7 +1137,7 @@ buffer_flush:
 
 			} else {
 				/* Invalid/incomplete character sequence. */
-				goto error;
+				goto end;
 			}
 		} else {
 			if (flush) {
@@ -1188,7 +1157,7 @@ buffer_flush:
 
 		/* Allocate an heap buffer twice as big as the input. */
 		if (RT_UNLIKELY(!rt_heap_alloc_if_needed(RT_NULL, 0, heap_buffer, heap_buffer_capacity, (void**)output, input_size * 2, heap)))
-			goto error;
+			goto end;
 
 		/* Adjust iconv_buffer and iconv_buffer_capacity for next iconv call. */
 		iconv_buffer = *heap_buffer;
@@ -1215,7 +1184,7 @@ heap_buffer_flush:
 					/* Incomplete character sequence. errno == EINVAL. */
 					if (RT_UNLIKELY(errno != E2BIG)) {
 						/* Invalid/incomplete character sequence. */
-						goto error;
+						goto end;
 					}
 				} else {
 					*output_size += iconv_buffer - previous_iconv_buffer;
@@ -1235,7 +1204,7 @@ heap_buffer_flush:
 
 				/* Allocate a bigger heap buffer then the loop will try again. */
 				if (RT_UNLIKELY(!heap->realloc(heap, heap_buffer, *heap_buffer_capacity * 2)))
-					goto error;
+					goto end;
 
 				/* Adjust iconv_buffer and iconv_buffer_capacity for next iconv call. */
 				iconv_buffer = &((rt_char8*)*heap_buffer)[*output_size];
@@ -1247,7 +1216,7 @@ heap_buffer_flush:
 		} else {
 			/* Buffer was too small and no heap has been provided. */
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-			goto error;
+			goto end;
 		}
 	}
 
@@ -1256,12 +1225,8 @@ heap_buffer_flush:
 		(*output)[*output_size + i] = 0;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 /**
@@ -1275,12 +1240,12 @@ static rt_s rt_encoding_iconv_with_encoding(const rt_char8 *input, rt_un input_s
 	const rt_char8 *output_encoding_name;
 	rt_b conversion_descriptor_open = RT_FALSE;
 	iconv_t conversion_descriptor;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* Retrieve the encoding name as a string. */
 	/* Either input_encoding or output_encoding is RT_ENCODING_SYSTEM_DEFAULT so we will use the result of this function call. */
 	if (RT_UNLIKELY(!rt_encoding_get_linux_system(system_encoding_name, 64, &system_encoding_name_size)))
-		goto error;
+		goto end;
 
 	if (input_encoding == RT_ENCODING_SYSTEM_DEFAULT) {
 		input_encoding_name = system_encoding_name;
@@ -1296,28 +1261,22 @@ static rt_s rt_encoding_iconv_with_encoding(const rt_char8 *input, rt_un input_s
 	/* In case of error, iconv_open sets errno and returns (iconv_t)-1. */
 	conversion_descriptor = iconv_open(output_encoding_name, input_encoding_name);
 	if (RT_UNLIKELY(conversion_descriptor == (iconv_t)-1)) {
-		goto error;
+		goto end;
 	}
 	conversion_descriptor_open = RT_TRUE;
 
 	if (RT_UNLIKELY(!rt_encoding_iconv_with_descriptor(input, input_size, conversion_descriptor, output_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap)))
-		goto error;
+		goto end;
 
 	ret = RT_OK;
-free:
+end:
 	if (conversion_descriptor_open) {
 		 /* In case of error, iconv_close sets errno and returns -1. */
-		if (RT_UNLIKELY((iconv_close(conversion_descriptor) == -1) && ret)) {
-			conversion_descriptor_open = RT_FALSE;
-			goto error;
-		}
-		conversion_descriptor_open = RT_FALSE;
+		if (RT_UNLIKELY((iconv_close(conversion_descriptor) == -1)))
+			ret = RT_FAILED;
 	}
-	return ret;
 
-error:
-	ret = RT_FAILED;
-	goto free;
+	return ret;
 }
 #endif
 
@@ -1327,7 +1286,7 @@ rt_s rt_encoding_encode(const rt_char *input, rt_un input_size, enum rt_encoding
 	rt_un output_code_unit_size;
 #endif
 	rt_un empty_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (input_size) {
 
@@ -1342,16 +1301,16 @@ rt_s rt_encoding_encode(const rt_char *input, rt_un input_size, enum rt_encoding
 				output_code_unit_size = rt_encoding_code_unit_sizes[output_encoding];
 
 				if (RT_UNLIKELY(!rt_encoding_encode_or_decode_unicode((rt_char8*)input, input_size, RT_ENCODING_UTF_16LE, sizeof(rt_char), output_encoding, output_code_unit_size, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap)))
-					goto error;
+					goto end;
 		} else {
 			if (RT_UNLIKELY(!rt_encoding_encode_using_windows(input, input_size, output_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap)))
-				goto error;
+				goto end;
 		}
 
 #else
 
 		if (RT_UNLIKELY(!rt_encoding_iconv_with_encoding(input, input_size, RT_ENCODING_SYSTEM_DEFAULT, output_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap)))
-			goto error;
+			goto end;
 
 #endif
 
@@ -1371,7 +1330,7 @@ rt_s rt_encoding_encode(const rt_char *input, rt_un input_size, enum rt_encoding
 
 		/* Empty input, just write the terminating zero. */
 		if (RT_UNLIKELY(!rt_heap_alloc_if_needed(buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, (void**)output, empty_size, heap)))
-			goto error;
+			goto end;
 
 		if (output_encoding == RT_ENCODING_UTF_16) {
 			(*output)[0] = (rt_char8)0xFF;
@@ -1408,12 +1367,8 @@ rt_s rt_encoding_encode(const rt_char *input, rt_un input_size, enum rt_encoding
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_encoding_decode(const rt_char8 *input, rt_un input_size, enum rt_encoding input_encoding, rt_char *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char **output, rt_un *output_size, struct rt_heap *heap)
@@ -1422,7 +1377,7 @@ rt_s rt_encoding_decode(const rt_char8 *input, rt_un input_size, enum rt_encodin
 	rt_un input_code_unit_size;
 	rt_un actual_input_size;
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (input_size) {
 
@@ -1439,35 +1394,31 @@ rt_s rt_encoding_decode(const rt_char8 *input, rt_un input_size, enum rt_encodin
 			actual_input_size = input_size / input_code_unit_size;
 
 			if (RT_UNLIKELY(!rt_encoding_encode_or_decode_unicode(input, actual_input_size, input_encoding, input_code_unit_size, RT_ENCODING_UTF_16LE, sizeof(rt_char), (rt_char8*)buffer, buffer_capacity * sizeof(rt_char), heap_buffer, heap_buffer_capacity, (rt_char8**)output, output_size, heap)))
-				goto error;
+				goto end;
 
 			(*output_size) /= sizeof(rt_char);
 
 		} else {
 			if (RT_UNLIKELY(!rt_encoding_decode_using_windows(input, input_size, input_encoding, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap)))
-				goto error;
+				goto end;
 		}
 
 #else
 
 		if (RT_UNLIKELY(!rt_encoding_iconv_with_encoding(input, input_size, input_encoding, RT_ENCODING_SYSTEM_DEFAULT, buffer, buffer_capacity, heap_buffer, heap_buffer_capacity, output, output_size, heap)))
-			goto error;
+			goto end;
 
 #endif
 	} else {
 		/* Empty input, just write the terminating zero. */
 		if (RT_UNLIKELY(!rt_heap_alloc_if_needed(buffer, buffer_capacity * sizeof(rt_char), heap_buffer, heap_buffer_capacity, (void**)output, sizeof(rt_char), heap)))
-			goto error;
+			goto end;
 
 		(*output)[0] = 0;
 		*output_size = 0;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

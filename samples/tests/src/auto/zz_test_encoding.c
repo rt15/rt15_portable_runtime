@@ -54,36 +54,30 @@ static rt_uchar8 zz_utf8_3[5] = { 0xC3, 0xA9, 0xC5, 0xA3, 0x00 };
 static rt_s zz_test_encoding_get_system(void)
 {
 	enum rt_encoding encoding;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_encoding_get_system(&encoding))) goto error;
-	if (RT_UNLIKELY(encoding >= RT_ENCODING_ENCODINGS_COUNT)) goto error;
+	if (RT_UNLIKELY(!rt_encoding_get_system(&encoding))) goto end;
+	if (RT_UNLIKELY(encoding >= RT_ENCODING_ENCODINGS_COUNT)) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 static rt_s zz_test_encoding_get_info(void)
 {
 	struct rt_encoding_info encoding_info;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	for (i = 0; i < RT_ENCODING_ENCODINGS_COUNT; i++) {
 		if (RT_UNLIKELY(!rt_encoding_get_info(i, &encoding_info)))
-			goto error;
+			goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 static rt_s zz_test_encoding_get_size(void)
@@ -91,18 +85,15 @@ static rt_s zz_test_encoding_get_size(void)
 	rt_char8 chars[4] = { 1, 1, 1, 0 };
 	rt_un16 wide_chars[4] = { 1, 1, 1, 0 };
 	rt_un32 very_wide_chars[4] = { 1, 1, 1, 0 };
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(rt_encoding_get_size(chars, 1) != 3)) goto error;
-	if (RT_UNLIKELY(rt_encoding_get_size((rt_char8*)wide_chars, 2) != 3)) goto error;
-	if (RT_UNLIKELY(rt_encoding_get_size((rt_char8*)very_wide_chars, 4) != 3)) goto error;
+	if (RT_UNLIKELY(rt_encoding_get_size(chars, 1) != 3)) goto end;
+	if (RT_UNLIKELY(rt_encoding_get_size((rt_char8*)wide_chars, 2) != 3)) goto end;
+	if (RT_UNLIKELY(rt_encoding_get_size((rt_char8*)very_wide_chars, 4) != 3)) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 static rt_s zz_test_encoding_encode(const rt_char *input, rt_un input_size, const rt_char8 *encoded, enum rt_encoding encoding, rt_un code_unit_size, struct rt_heap *heap)
@@ -115,27 +106,27 @@ static rt_s zz_test_encoding_encode(const rt_char *input, rt_un input_size, cons
 	void *heap_buffer = RT_NULL;
 	rt_un heap_buffer_capacity = 0;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* Makes sure the output buffer is clean. */
 	for (i = 0; i < 200; i++)
 		encoded_buffer[i] = 'z';
 
-	if (RT_UNLIKELY(!rt_encoding_encode(input, input_size, encoding, encoded_buffer, encoded_buffer_size, RT_NULL, RT_NULL, &output, &output_size, RT_NULL))) goto error;
-	if (RT_UNLIKELY(output != encoded_buffer)) goto error;
-	if (RT_UNLIKELY(rt_encoding_get_size(output, code_unit_size) * code_unit_size != output_size)) goto error;
-	if (RT_UNLIKELY(!rt_char8_equals(output, output_size, encoded, encoded_size))) goto error;
+	if (RT_UNLIKELY(!rt_encoding_encode(input, input_size, encoding, encoded_buffer, encoded_buffer_size, RT_NULL, RT_NULL, &output, &output_size, RT_NULL))) goto end;
+	if (RT_UNLIKELY(output != encoded_buffer)) goto end;
+	if (RT_UNLIKELY(rt_encoding_get_size(output, code_unit_size) * code_unit_size != output_size)) goto end;
+	if (RT_UNLIKELY(!rt_char8_equals(output, output_size, encoded, encoded_size))) goto end;
 
 	/* Make the buffer too small. */
 	encoded_buffer_size--;
 
-	if (RT_UNLIKELY(!rt_encoding_encode(input, input_size, encoding, encoded_buffer, encoded_buffer_size, &heap_buffer, &heap_buffer_capacity, &output, &output_size, heap))) goto error;
-	if (RT_UNLIKELY(!heap_buffer)) goto error;
-	if (RT_UNLIKELY(output != heap_buffer)) goto error;
-	if (RT_UNLIKELY(rt_encoding_get_size(output, code_unit_size) * code_unit_size != output_size)) goto error;
-	if (RT_UNLIKELY(!rt_char8_equals(output, output_size, encoded, encoded_size))) goto error;
+	if (RT_UNLIKELY(!rt_encoding_encode(input, input_size, encoding, encoded_buffer, encoded_buffer_size, &heap_buffer, &heap_buffer_capacity, &output, &output_size, heap))) goto end;
+	if (RT_UNLIKELY(!heap_buffer)) goto end;
+	if (RT_UNLIKELY(output != heap_buffer)) goto end;
+	if (RT_UNLIKELY(rt_encoding_get_size(output, code_unit_size) * code_unit_size != output_size)) goto end;
+	if (RT_UNLIKELY(!rt_char8_equals(output, output_size, encoded, encoded_size))) goto end;
 #ifdef RT_DEFINE_WINDOWS
-	if (RT_UNLIKELY(heap_buffer_capacity != output_size + code_unit_size)) goto error;
+	if (RT_UNLIKELY(heap_buffer_capacity != output_size + code_unit_size)) goto end;
 #endif
 
 	/* Makes sure the heap buffer is clean. */
@@ -144,26 +135,23 @@ static rt_s zz_test_encoding_encode(const rt_char *input, rt_un input_size, cons
 
 	/* Try again, without buffer. */
 	heap_buffer_capacity = 1;
-	if (RT_UNLIKELY(!rt_encoding_encode(input, input_size, encoding, RT_NULL, 0, &heap_buffer, &heap_buffer_capacity, &output, &output_size, heap))) goto error;
-	if (RT_UNLIKELY(!heap_buffer)) goto error;
-	if (RT_UNLIKELY(output != heap_buffer)) goto error;
-	if (RT_UNLIKELY(rt_encoding_get_size(output, code_unit_size) * code_unit_size != output_size)) goto error;
-	if (RT_UNLIKELY(!rt_char8_equals(output, output_size, encoded, encoded_size))) goto error;
+	if (RT_UNLIKELY(!rt_encoding_encode(input, input_size, encoding, RT_NULL, 0, &heap_buffer, &heap_buffer_capacity, &output, &output_size, heap))) goto end;
+	if (RT_UNLIKELY(!heap_buffer)) goto end;
+	if (RT_UNLIKELY(output != heap_buffer)) goto end;
+	if (RT_UNLIKELY(rt_encoding_get_size(output, code_unit_size) * code_unit_size != output_size)) goto end;
+	if (RT_UNLIKELY(!rt_char8_equals(output, output_size, encoded, encoded_size))) goto end;
 #ifdef RT_DEFINE_WINDOWS
-	if (RT_UNLIKELY(heap_buffer_capacity != output_size + code_unit_size)) goto error;
+	if (RT_UNLIKELY(heap_buffer_capacity != output_size + code_unit_size)) goto end;
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	if (heap_buffer) {
-		if (RT_UNLIKELY(!heap->free(heap, &heap_buffer) && ret))
-			goto error;
+		if (RT_UNLIKELY(!heap->free(heap, &heap_buffer)))
+			ret = RT_FAILED;
 	}
 
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 static rt_s zz_test_encoding_decode(const rt_char8 *input, rt_un input_size, const rt_char *decoded, enum rt_encoding encoding, struct rt_heap *heap)
@@ -176,27 +164,27 @@ static rt_s zz_test_encoding_decode(const rt_char8 *input, rt_un input_size, con
 	void *heap_buffer = RT_NULL;
 	rt_un heap_buffer_capacity = 0;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* Makes sure the output buffer is clean. */
 	for (i = 0; i < 200; i++)
 		decoded_buffer[i] = _R('z');
 
-	if (RT_UNLIKELY(!rt_encoding_decode(input, input_size, encoding, decoded_buffer, decoded_buffer_size, RT_NULL, RT_NULL, &output, &output_size, RT_NULL))) goto error;
-	if (RT_UNLIKELY(output != decoded_buffer)) goto error;
-	if (RT_UNLIKELY(rt_char_get_size(output) != output_size)) goto error;
-	if (RT_UNLIKELY(!rt_char_equals(output, output_size, decoded, decoded_size))) goto error;
+	if (RT_UNLIKELY(!rt_encoding_decode(input, input_size, encoding, decoded_buffer, decoded_buffer_size, RT_NULL, RT_NULL, &output, &output_size, RT_NULL))) goto end;
+	if (RT_UNLIKELY(output != decoded_buffer)) goto end;
+	if (RT_UNLIKELY(rt_char_get_size(output) != output_size)) goto end;
+	if (RT_UNLIKELY(!rt_char_equals(output, output_size, decoded, decoded_size))) goto end;
 
 	/* Make the buffer too small. */
 	decoded_buffer_size--;
 
-	if (RT_UNLIKELY(!rt_encoding_decode(input, input_size, encoding, decoded_buffer, decoded_buffer_size, &heap_buffer, &heap_buffer_capacity, &output, &output_size, heap))) goto error;
-	if (RT_UNLIKELY(!heap_buffer)) goto error;
-	if (RT_UNLIKELY(output != heap_buffer)) goto error;
-	if (RT_UNLIKELY(rt_char_get_size(output) != output_size)) goto error;
-	if (RT_UNLIKELY(!rt_char_equals(output, output_size, decoded, decoded_size))) goto error;
+	if (RT_UNLIKELY(!rt_encoding_decode(input, input_size, encoding, decoded_buffer, decoded_buffer_size, &heap_buffer, &heap_buffer_capacity, &output, &output_size, heap))) goto end;
+	if (RT_UNLIKELY(!heap_buffer)) goto end;
+	if (RT_UNLIKELY(output != heap_buffer)) goto end;
+	if (RT_UNLIKELY(rt_char_get_size(output) != output_size)) goto end;
+	if (RT_UNLIKELY(!rt_char_equals(output, output_size, decoded, decoded_size))) goto end;
 #ifdef RT_DEFINE_WINDOWS
-	if (RT_UNLIKELY(heap_buffer_capacity != (output_size + 1) * sizeof(rt_char))) goto error;
+	if (RT_UNLIKELY(heap_buffer_capacity != (output_size + 1) * sizeof(rt_char))) goto end;
 #endif
 
 	/* Makes sure the heap buffer is clean. */
@@ -205,48 +193,42 @@ static rt_s zz_test_encoding_decode(const rt_char8 *input, rt_un input_size, con
 
 	/* Try again, without buffer. */
 	heap_buffer_capacity = 1;
-	if (RT_UNLIKELY(!rt_encoding_decode(input, input_size, encoding, RT_NULL, 0, &heap_buffer, &heap_buffer_capacity, &output, &output_size, heap))) goto error;
-	if (RT_UNLIKELY(!heap_buffer)) goto error;
-	if (RT_UNLIKELY(output != heap_buffer)) goto error;
-	if (RT_UNLIKELY(rt_char_get_size(output) != output_size)) goto error;
-	if (RT_UNLIKELY(!rt_char_equals(output, output_size, decoded, decoded_size))) goto error;
+	if (RT_UNLIKELY(!rt_encoding_decode(input, input_size, encoding, RT_NULL, 0, &heap_buffer, &heap_buffer_capacity, &output, &output_size, heap))) goto end;
+	if (RT_UNLIKELY(!heap_buffer)) goto end;
+	if (RT_UNLIKELY(output != heap_buffer)) goto end;
+	if (RT_UNLIKELY(rt_char_get_size(output) != output_size)) goto end;
+	if (RT_UNLIKELY(!rt_char_equals(output, output_size, decoded, decoded_size))) goto end;
 #ifdef RT_DEFINE_WINDOWS
-	if (RT_UNLIKELY(heap_buffer_capacity != (output_size + 1) * sizeof(rt_char))) goto error;
+	if (RT_UNLIKELY(heap_buffer_capacity != (output_size + 1) * sizeof(rt_char))) goto end;
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	if (heap_buffer) {
-		if (RT_UNLIKELY(!heap->free(heap, &heap_buffer) && ret))
-			goto error;
+		if (RT_UNLIKELY(!heap->free(heap, &heap_buffer)))
+			ret = RT_FAILED;
 	}
 
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 static rt_s zz_test_encoding_encode_decode_do(const rt_char *str, const rt_char8 *encoded, enum rt_encoding encoding, rt_un code_unit_size, rt_b encode, rt_b decode, struct rt_heap *heap)
 {
 	rt_un encoded_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (encode) {
-		if (RT_UNLIKELY(!zz_test_encoding_encode(str, rt_char_get_size(str), encoded, encoding, code_unit_size, heap))) goto error;
+		if (RT_UNLIKELY(!zz_test_encoding_encode(str, rt_char_get_size(str), encoded, encoding, code_unit_size, heap))) goto end;
 	}
 
 	if (decode) {
 		encoded_size = rt_encoding_get_size(encoded, code_unit_size) * code_unit_size;
-		if (RT_UNLIKELY(!zz_test_encoding_decode(encoded, encoded_size, str, encoding, heap))) goto error;
+		if (RT_UNLIKELY(!zz_test_encoding_decode(encoded, encoded_size, str, encoding, heap))) goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 static rt_s zz_test_encoding_encode_decode(void)
@@ -257,35 +239,35 @@ static rt_s zz_test_encoding_encode_decode(void)
 	rt_b skip;
 	rt_uchar8 *encoded;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_runtime_heap_create(&runtime_heap)))
-		goto error;
+		goto end;
 	runtime_heap_created = RT_TRUE;
 
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(_R(""),      "",                              RT_ENCODING_US_ASCII,   1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(_R(""),      "",                              RT_ENCODING_ISO_8859_1, 1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(_R(""),      "",                              RT_ENCODING_UTF_8,      1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(_R(""),      "\0",                            RT_ENCODING_UTF_16LE,   2, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(_R(""),      (rt_char8*)zz_utf16_bom_only,    RT_ENCODING_UTF_16,     2, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(_R(""),      (rt_char8*)zz_utf32_bom_only,    RT_ENCODING_UTF_32,     4, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(_R(""),      "",                              RT_ENCODING_US_ASCII,   1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(_R(""),      "",                              RT_ENCODING_ISO_8859_1, 1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(_R(""),      "",                              RT_ENCODING_UTF_8,      1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(_R(""),      "\0",                            RT_ENCODING_UTF_16LE,   2, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(_R(""),      (rt_char8*)zz_utf16_bom_only,    RT_ENCODING_UTF_16,     2, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(_R(""),      (rt_char8*)zz_utf32_bom_only,    RT_ENCODING_UTF_32,     4, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
 
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_iso_88591_1,       RT_ENCODING_ISO_8859_1, 1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf8_1,            RT_ENCODING_UTF_8,      1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf16_le_with_bom, RT_ENCODING_UTF_16,     2, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf16_be_with_bom, RT_ENCODING_UTF_16,     2, RT_FALSE, RT_TRUE,  &runtime_heap.heap))) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf16_le,          RT_ENCODING_UTF_16LE,   2, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf16_be,          RT_ENCODING_UTF_16BE,   2, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf32_le_with_bom, RT_ENCODING_UTF_32,     4, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf32_be_with_bom, RT_ENCODING_UTF_32,     4, RT_FALSE, RT_TRUE,  &runtime_heap.heap))) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf32_le,          RT_ENCODING_UTF_32LE,   4, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf32_be,          RT_ENCODING_UTF_32BE,   4, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_iso_88591_1,       RT_ENCODING_ISO_8859_1, 1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf8_1,            RT_ENCODING_UTF_8,      1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf16_le_with_bom, RT_ENCODING_UTF_16,     2, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf16_be_with_bom, RT_ENCODING_UTF_16,     2, RT_FALSE, RT_TRUE,  &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf16_le,          RT_ENCODING_UTF_16LE,   2, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf16_be,          RT_ENCODING_UTF_16BE,   2, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf32_le_with_bom, RT_ENCODING_UTF_32,     4, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf32_be_with_bom, RT_ENCODING_UTF_32,     4, RT_FALSE, RT_TRUE,  &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf32_le,          RT_ENCODING_UTF_32LE,   4, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_1, (rt_char8*)zz_utf32_be,          RT_ENCODING_UTF_32BE,   4, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
 #ifdef RT_DEFINE_WINDOWS
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_2, (rt_char8*)zz_iso_88591_2,       RT_ENCODING_ISO_8859_1, 1, RT_TRUE,  RT_FALSE, &runtime_heap.heap))) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_2, (rt_char8*)zz_utf8_2,            RT_ENCODING_UTF_8,      1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_2, (rt_char8*)zz_iso_88591_2,       RT_ENCODING_ISO_8859_1, 1, RT_TRUE,  RT_FALSE, &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_2, (rt_char8*)zz_utf8_2,            RT_ENCODING_UTF_8,      1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
 #endif
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_3, (rt_char8*)zz_iso_88592,         RT_ENCODING_ISO_8859_2, 1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_3, (rt_char8*)zz_utf8_3,            RT_ENCODING_UTF_8,      1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto error;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_3, (rt_char8*)zz_iso_88592,         RT_ENCODING_ISO_8859_2, 1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_3, (rt_char8*)zz_utf8_3,            RT_ENCODING_UTF_8,      1, RT_TRUE,  RT_TRUE,  &runtime_heap.heap))) goto end;
 
 	for (i = 1; i < RT_ENCODING_ENCODINGS_COUNT; i++) {
 
@@ -332,36 +314,30 @@ static rt_s zz_test_encoding_encode_decode(void)
 		}
 		if (!skip) {
 			if (RT_UNLIKELY(!zz_test_encoding_encode_decode_do(zz_string_0, (rt_char8*)encoded, encoding, 1, RT_TRUE, RT_TRUE, &runtime_heap.heap)))
-				goto error;
+				goto end;
 		}
 	}
 
 	ret = RT_OK;
-free:
+end:
 	if (runtime_heap_created) {
-		runtime_heap_created = RT_FALSE;
-		if (RT_UNLIKELY(!runtime_heap.heap.close(&runtime_heap.heap) && ret))
-			goto error;
+		if (RT_UNLIKELY(!runtime_heap.heap.close(&runtime_heap.heap)))
+			ret = RT_FAILED;
 	}
+
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s zz_test_encoding(void)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!zz_test_encoding_get_system())) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_get_info())) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_get_size())) goto error;
-	if (RT_UNLIKELY(!zz_test_encoding_encode_decode())) goto error;
+	if (RT_UNLIKELY(!zz_test_encoding_get_system())) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_get_info())) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_get_size())) goto end;
+	if (RT_UNLIKELY(!zz_test_encoding_encode_decode())) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }

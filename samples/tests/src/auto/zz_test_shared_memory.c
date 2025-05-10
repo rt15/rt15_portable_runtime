@@ -13,10 +13,10 @@ static rt_s zz_test_shared_memory_do(enum rt_shared_memory_right shared_memory_r
 	rt_uchar8 *area;
 	rt_un32 sum;
 	rt_un32 i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_shared_memory_create(&shared_memory, ZZ_TEST_SHARED_MEMORY_NAME, ZZ_TEST_SHARED_MEMORY_SIZE, shared_memory_right)))
-		goto error;
+		goto end;
 	shared_memory_created = RT_TRUE;
 	shared_memory_initialized = RT_TRUE;
 
@@ -25,7 +25,7 @@ static rt_s zz_test_shared_memory_do(enum rt_shared_memory_right shared_memory_r
 	/* Check that the memory has been initialized to zero. */
 	for (i = 0; i < ZZ_TEST_SHARED_MEMORY_SIZE; i++)
 		if (area[i])
-			goto error;
+			goto end;
 
 	/* Write in the memory, if possible. */
 	if (shared_memory_right == RT_SHARED_MEMORY_RIGHT_READ_WRITE || shared_memory_right == RT_SHARED_MEMORY_RIGHT_EXECUTE_READ_WRITE) {
@@ -41,42 +41,32 @@ static rt_s zz_test_shared_memory_do(enum rt_shared_memory_right shared_memory_r
 	/* Check the checksum. */
 	if (shared_memory_right == RT_SHARED_MEMORY_RIGHT_READ_WRITE || shared_memory_right == RT_SHARED_MEMORY_RIGHT_EXECUTE_READ_WRITE) {
 		if (sum != ZZ_TEST_SHARED_MEMORY_EXPECTED_SUM)
-			goto error;
+			goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	if (shared_memory_created) {
-		shared_memory_created = RT_FALSE;
-		if (RT_UNLIKELY(!rt_shared_memory_free(&shared_memory) && ret))
-			goto error;
+		if (RT_UNLIKELY(!rt_shared_memory_free(&shared_memory)))
+			ret = RT_FAILED;
 	}
 	if (shared_memory_initialized) {
-		shared_memory_initialized = RT_FALSE;
-		if (RT_UNLIKELY(!rt_shared_memory_destroy(ZZ_TEST_SHARED_MEMORY_NAME) && ret))
-			goto error;
+		if (RT_UNLIKELY(!rt_shared_memory_destroy(ZZ_TEST_SHARED_MEMORY_NAME)))
+			ret = RT_FAILED;
 	}
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s zz_test_shared_memory(void)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!zz_test_shared_memory_do(RT_SHARED_MEMORY_RIGHT_READ))) goto error;
-	if (RT_UNLIKELY(!zz_test_shared_memory_do(RT_SHARED_MEMORY_RIGHT_READ_WRITE))) goto error;
-	if (RT_UNLIKELY(!zz_test_shared_memory_do(RT_SHARED_MEMORY_RIGHT_EXECUTE_READ))) goto error;
-	if (RT_UNLIKELY(!zz_test_shared_memory_do(RT_SHARED_MEMORY_RIGHT_EXECUTE_READ_WRITE))) goto error;
+	if (RT_UNLIKELY(!zz_test_shared_memory_do(RT_SHARED_MEMORY_RIGHT_READ))) goto end;
+	if (RT_UNLIKELY(!zz_test_shared_memory_do(RT_SHARED_MEMORY_RIGHT_READ_WRITE))) goto end;
+	if (RT_UNLIKELY(!zz_test_shared_memory_do(RT_SHARED_MEMORY_RIGHT_EXECUTE_READ))) goto end;
+	if (RT_UNLIKELY(!zz_test_shared_memory_do(RT_SHARED_MEMORY_RIGHT_EXECUTE_READ_WRITE))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

@@ -22,7 +22,7 @@ void rt_socket_address_create_ipv6(struct rt_socket_address_ipv6 *socket_address
 
 rt_s rt_socket_address_get_size(struct rt_socket_address *socket_address, rt_un *socket_address_size)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	switch (socket_address->address_family) {
 	case RT_ADDRESS_FAMILY_IPV4:
@@ -33,14 +33,10 @@ rt_s rt_socket_address_get_size(struct rt_socket_address *socket_address, rt_un 
 		break;
 	default:
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

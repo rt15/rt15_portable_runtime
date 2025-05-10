@@ -16,7 +16,7 @@ static rt_s zz_test_quick_sort_simple()
 {
 	rt_char8 data[20];
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	data[0] = 15;
 	data[1] = 11;
@@ -40,20 +40,16 @@ static rt_s zz_test_quick_sort_simple()
 	data[19] = 16;
 
 	if (RT_UNLIKELY(!rt_quick_sort(data, 20, 1, &zz_test_quick_sort_simple_callback, RT_NULL)))
-		goto error;
+		goto end;
 	
 	for (i = 0; i < 20; i++) {
 		if (data[i] != (rt_char8)i + 1)
-			goto error;
+			goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 static rt_s zz_test_quick_sort_random(struct rt_heap *heap)
@@ -66,67 +62,60 @@ static rt_s zz_test_quick_sort_random(struct rt_heap *heap)
 	rt_un previous_item = 0;
 	rt_un new_sum = 0;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* Create an array of a random size. */
-	if (RT_UNLIKELY(!rt_random_get_unsigned_integer_with_boundaries(2, 1000, &size))) goto error;
-	if (RT_UNLIKELY(!rt_array_create((void**)&array, size, sizeof(rt_un), 0, heap))) goto error;
+	if (RT_UNLIKELY(!rt_random_get_unsigned_integer_with_boundaries(2, 1000, &size))) goto end;
+	if (RT_UNLIKELY(!rt_array_create((void**)&array, size, sizeof(rt_un), 0, heap))) goto end;
 
 	/* Fill the array with some random values. */
 	for (i = 0; i < size; i++) {
 		if (RT_UNLIKELY(!rt_random_get_unsigned_integer_with_boundaries(0, 1000, &item)))
-			goto error;
+			goto end;
 		array[i] = item;
 		check_sum += item;
 	}
 
 	if (RT_UNLIKELY(!rt_quick_sort(array, size, sizeof(rt_un), &zz_comparison_callback, &context_value)))
-		goto error;
+		goto end;
 
 	for (i = 0; i < size; i++) {
 		item = array[i];
 		if (RT_UNLIKELY(item < previous_item))
-			goto error;
+			goto end;
 		new_sum += item;
 		previous_item = item;
 	}
 	if (RT_UNLIKELY(new_sum != check_sum))
-		goto error;
+		goto end;
 
 	ret = RT_OK;
-free:
-	if (RT_UNLIKELY(!rt_array_free((void**)&array) && ret))
-		goto error;
-	return ret;
+end:
+	if (RT_UNLIKELY(!rt_array_free((void**)&array)))
+		ret = RT_FAILED;
 
-error:
-	ret = RT_FAILED;
-	goto free;
+	return ret;
 }
 
 rt_s zz_test_quick_sort(void)
 {
 	struct rt_runtime_heap runtime_heap;
 	rt_b runtime_heap_created = RT_FALSE;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_runtime_heap_create(&runtime_heap)))
-		goto error;
+		goto end;
 	runtime_heap_created = RT_TRUE;
 
-	if (RT_UNLIKELY(!zz_test_quick_sort_simple())) goto error;
-	if (RT_UNLIKELY(!zz_test_quick_sort_random(&runtime_heap.heap))) goto error;
+	if (RT_UNLIKELY(!zz_test_quick_sort_simple())) goto end;
+	if (RT_UNLIKELY(!zz_test_quick_sort_random(&runtime_heap.heap))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	if (runtime_heap_created) {
-		runtime_heap_created = RT_FALSE;
-		if (RT_UNLIKELY(!runtime_heap.heap.close(&runtime_heap.heap) && ret))
-			goto error;
+		if (RT_UNLIKELY(!runtime_heap.heap.close(&runtime_heap.heap)))
+			ret = RT_FAILED;
 	}
-	return ret;
 
-error:
-	ret = RT_FAILED;
-	goto free;
+	return ret;
 }

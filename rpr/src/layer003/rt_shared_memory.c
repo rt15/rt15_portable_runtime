@@ -17,7 +17,7 @@ rt_s rt_shared_memory_create(struct rt_shared_memory *shared_memory, const rt_ch
 	int prot;
 #endif
 	void *area;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 	switch (shared_memory_right) {
@@ -39,19 +39,19 @@ rt_s rt_shared_memory_create(struct rt_shared_memory *shared_memory, const rt_ch
 		break;
 	default:
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	/* CreateFileMapping returns null and sets last error in case issue. */
 	file_mapping_handle = CreateFileMapping(INVALID_HANDLE_VALUE, RT_NULL, flProtect, 0, (DWORD)size, name);
 	if (RT_UNLIKELY(!file_mapping_handle))
-		goto error;
+		goto end;
 	file_mapping_created = RT_TRUE;
 
 	/* MapViewOfFile returns null and sets last error in case issue. */
 	area = MapViewOfFile(file_mapping_handle, dwDesiredAccess, 0, 0, size);
 	if (RT_UNLIKELY(!area))
-		goto error;
+		goto end;
 
 	shared_memory->file_mapping_handle = file_mapping_handle;
 #else
@@ -70,7 +70,7 @@ rt_s rt_shared_memory_create(struct rt_shared_memory *shared_memory, const rt_ch
 		break;
 	default:
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	/* FD_CLOEXEC is set on the file descriptor. */
@@ -79,53 +79,45 @@ rt_s rt_shared_memory_create(struct rt_shared_memory *shared_memory, const rt_ch
 	/* With O_CREAT but without O_EXCL, we either create a new shared memory or reuse the existing one. */
 	shared_memory_file_descriptor = shm_open(name, O_CREAT | O_RDWR, 0666);
 	if (RT_UNLIKELY(shared_memory_file_descriptor == -1))
-		goto error;
+		goto end;
 	shared_memory_created = RT_TRUE;
 	shared_memory_file_descriptor_created = RT_TRUE;
 
 	/* Set the size of the shared memory. */
 	/* ftruncate returns -1 and sets errno in case of error. */
 	if (RT_UNLIKELY(ftruncate(shared_memory_file_descriptor, size) == -1))
-		goto error;
+		goto end;
 
 	/* On error, mmap returns MAP_FAILED and sets errno. */
 	area = mmap(RT_NULL, size, prot, MAP_SHARED, shared_memory_file_descriptor, 0);
 	if (RT_UNLIKELY(area == MAP_FAILED))
-		goto error;
+		goto end;
 #endif
 	shared_memory->area = area;
 	shared_memory->size = size;
 
 	ret = RT_OK;
-free:
+end:
 #ifdef RT_DEFINE_LINUX
 	if (shared_memory_file_descriptor_created) {
-		shared_memory_file_descriptor_created = RT_FALSE;
 		/* close returns -1 and sets errno in case of error. */
-		if (RT_UNLIKELY(close(shared_memory_file_descriptor) && ret))
-			goto error;
+		if (RT_UNLIKELY(close(shared_memory_file_descriptor)))
+			ret = RT_FAILED;
 	}
 #endif
-	return ret;
-
-error:
+	if (RT_UNLIKELY(!ret)) {
 #ifdef RT_DEFINE_WINDOWS
-	if (file_mapping_created) {
-		file_mapping_created = RT_FALSE;
-		CloseHandle(file_mapping_handle);
-	}
+		if (file_mapping_created) {
+			CloseHandle(file_mapping_handle);
+		}
 #else
-	if (shared_memory_file_descriptor_created) {
-		shared_memory_file_descriptor_created = RT_FALSE;
-		close(shared_memory_file_descriptor);
-	}
-	if (shared_memory_created) {
-		shared_memory_created = RT_FALSE;
-		shm_unlink(name);
-	}
+		if (shared_memory_created) {
+			shm_unlink(name);
+		}
 #endif
-	ret = RT_FAILED;
-	goto free;
+	}
+
+	return ret;
 }
 
 rt_s rt_shared_memory_free(struct rt_shared_memory *shared_memory)

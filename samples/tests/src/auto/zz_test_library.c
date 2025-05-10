@@ -14,27 +14,23 @@ rt_s zz_test_library(void)
 	rt_b library_created = RT_FALSE;
 	zz_test_library_strcpy_t function;
 	rt_char8 buffer[64];
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_library_create(&library, LIBRARY_NAME))) goto error;
+	if (RT_UNLIKELY(!rt_library_create(&library, LIBRARY_NAME))) goto end;
 	library_created = RT_TRUE;
 
-	if (RT_UNLIKELY(!rt_library_get_function(&library, _R("strcpy"), (rt_library_function_t*)&function))) goto error;
+	if (RT_UNLIKELY(!rt_library_get_function(&library, _R("strcpy"), (rt_library_function_t*)&function))) goto end;
 
 	function(buffer, "Hello, World!");
 
-	if (RT_UNLIKELY(!rt_char8_equals(buffer, rt_char8_get_size(buffer), "Hello, World!", 13))) goto error;
+	if (RT_UNLIKELY(!rt_char8_equals(buffer, rt_char8_get_size(buffer), "Hello, World!", 13))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	if (library_created) {
-		library_created = RT_FALSE;
-		if (RT_UNLIKELY(!rt_library_free(&library) && ret))
-			goto error;
+		if (RT_UNLIKELY(!rt_library_free(&library)))
+			ret = RT_FAILED;
 	}
-	return ret;
 
-error:
-	ret = RT_FAILED;
-	goto free;
+	return ret;
 }

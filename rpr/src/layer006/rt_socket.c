@@ -48,7 +48,7 @@ rt_s rt_socket_initialize(void)
 	int returned_value;
 	WSADATA wsa_data;
 	rt_b wsa_startup_called = RT_FALSE;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* Version 2.2 is supported by even Windows NT 4.0 and Windows 95 with the Windows Socket 2 update. */
 	version_requested = MAKEWORD(2, 2);
@@ -56,7 +56,7 @@ rt_s rt_socket_initialize(void)
 	if (RT_UNLIKELY(returned_value)) {
 		/* WSAStartup returns error code and does not call WSASetLastError. */
 		SetLastError(returned_value);
-		goto error;
+		goto end;
 	}
 	wsa_startup_called = RT_TRUE;
 
@@ -64,20 +64,18 @@ rt_s rt_socket_initialize(void)
 	if (RT_UNLIKELY(LOBYTE(wsa_data.wVersion) != 2 || HIBYTE(wsa_data.wVersion) != 2)) {
 		/* There has been a successful call to WSAStartup but no way to use 2.2 sockets. */
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-		goto error;
+		goto end;
 	}
 
 	ret = RT_OK;
-free:
-	return ret;
-
-error:
-	if (wsa_startup_called) {
-		wsa_startup_called = RT_FALSE;
-		WSACleanup();
+end:
+	if (RT_UNLIKELY(!ret)) {
+		if (wsa_startup_called) {
+			WSACleanup();
+		}
 	}
-	ret = RT_FAILED;
-	goto free;
+
+	return ret;
 }
 
 #else
@@ -101,7 +99,7 @@ rt_s rt_socket_create(struct rt_socket *socket_, enum rt_address_family address_
 	int actual_protocol;
 	rt_n32 socket_file_descriptor;
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	socket_->address_family = address_family;
 	socket_->blocking = blocking;
@@ -119,7 +117,7 @@ rt_s rt_socket_create(struct rt_socket *socket_, enum rt_address_family address_
 
 		/* WSA_FLAG_NO_HANDLE_INHERIT is supported on Windows 7 with SP1, Windows Server 2008 R2 with SP1, and later. */
 		if (RT_UNLIKELY(!rt_os_version_is_greater_or_equal_to(6, 1, 1, &flag_no_handle_inherit_supported)))
-			goto error;
+			goto end;
 		if (flag_no_handle_inherit_supported) {
 			flags |= 0x80; /* WSA_FLAG_NO_HANDLE_INHERIT */
 		}
@@ -129,7 +127,7 @@ rt_s rt_socket_create(struct rt_socket *socket_, enum rt_address_family address_
 	/* WSASocket returns INVALID_SOCKET and sets last error in case of issue. */
 	socket_handle = (rt_h)WSASocket((int)address_family, (int)type, (int)protocol, RT_NULL, 0, flags);
 	if (RT_UNLIKELY((rt_un)socket_handle == INVALID_SOCKET))
-		goto error;
+		goto end;
 
 	rt_io_device_create_from_handle(&socket_->io_device, socket_handle);
 
@@ -139,7 +137,7 @@ rt_s rt_socket_create(struct rt_socket *socket_, enum rt_address_family address_
 		/* There is a race condition here: the handle could leak if CreateProcess is called in parallel. */
 		if (RT_UNLIKELY(!rt_io_device_set_inheritable(&socket_->io_device, RT_FALSE))) {
 			rt_socket_free(socket_);
-			goto error;
+			goto end;
 		}
 	}
 
@@ -151,7 +149,7 @@ rt_s rt_socket_create(struct rt_socket *socket_, enum rt_address_family address_
 		/* Returns SOCKET_ERROR (-1) and sets WSAGetLastError in case of issue. */
 		if (RT_UNLIKELY(ioctlsocket((rt_un)socket_->io_device.handle, FIONBIO, &argp))) {
 			rt_socket_free(socket_);
-			goto error;
+			goto end;
 		}
 	}
 
@@ -174,17 +172,13 @@ rt_s rt_socket_create(struct rt_socket *socket_, enum rt_address_family address_
 	/*  On error, socket function returns -1 and errno is set appropriately. */
 	socket_file_descriptor = socket(address_family, actual_type, actual_protocol);
 	if (RT_UNLIKELY(socket_file_descriptor == -1))
-		goto error;
+		goto end;
 	rt_io_device_create_from_file_descriptor(&socket_->io_device, socket_file_descriptor);
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_socket_set_boolean_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_option option, rt_b value)
@@ -204,7 +198,7 @@ rt_s rt_socket_set_ipv6_boolean_option(struct rt_socket *socket, enum rt_socket_
  */
 static rt_s rt_socket_get_linux_option(enum rt_socket_option option, int *linux_option)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	switch (option) {
 	case RT_SOCKET_OPTION_DEBUG:
@@ -257,16 +251,12 @@ static rt_s rt_socket_get_linux_option(enum rt_socket_option option, int *linux_
 		break;
 	default:
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 /**
@@ -274,7 +264,7 @@ error:
  */
 static rt_s rt_socket_get_linux_ipv6_option(enum rt_socket_ipv6_option ipv6_option, int *linux_option)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	switch (ipv6_option) {
 	case RT_SOCKET_IPV6_OPTION_HOPOPTS:
@@ -324,16 +314,12 @@ static rt_s rt_socket_get_linux_ipv6_option(enum rt_socket_ipv6_option ipv6_opti
 		break;
 	default:
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 #endif
@@ -347,12 +333,12 @@ static rt_s rt_socket_set_option_do(struct rt_socket *socket, enum rt_socket_pro
 #ifdef RT_DEFINE_LINUX
 	int actual_protocol_level;
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 	/* Returns SOCKET_ERROR (-1) and sets WSAGetLastError in case of issue. */
 	if (RT_UNLIKELY(setsockopt((rt_un)socket->io_device.handle, (int)protocol_level, (int)option, value, (int)value_size)))
-		goto error;
+		goto end;
 #else
 	if (protocol_level == RT_SOCKET_PROTOCOL_LEVEL_SOCKET) {
 		/* SOL_SOCKET is 1 under Linux. */
@@ -364,16 +350,12 @@ static rt_s rt_socket_set_option_do(struct rt_socket *socket, enum rt_socket_pro
 
 	/* On success, zero is returned. On error, -1 is returned, and errno is set appropriately. */
 	if (RT_UNLIKELY(setsockopt(socket->io_device.file_descriptor, actual_protocol_level, option, value, (socklen_t)value_size)))
-		goto error;
+		goto end;
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_socket_set_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_option option, void *value, rt_un value_size)
@@ -381,26 +363,22 @@ rt_s rt_socket_set_option(struct rt_socket *socket, enum rt_socket_protocol_leve
 #ifdef RT_DEFINE_LINUX
 	int actual_option;
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 	if (RT_UNLIKELY(!rt_socket_set_option_do(socket, protocol_level, option, value, value_size)))
-		goto error;
+		goto end;
 #else
 	if (RT_UNLIKELY(!rt_socket_get_linux_option(option, &actual_option)))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!rt_socket_set_option_do(socket, protocol_level, actual_option, value, value_size)))
-		goto error;
+		goto end;
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_socket_set_ipv6_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_ipv6_option ipv6_option, void *value, rt_un value_size)
@@ -408,26 +386,22 @@ rt_s rt_socket_set_ipv6_option(struct rt_socket *socket, enum rt_socket_protocol
 #ifdef RT_DEFINE_LINUX
 	int actual_ipv6_option;
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 	if (RT_UNLIKELY(!rt_socket_set_option_do(socket, protocol_level, ipv6_option, value, value_size)))
-		goto error;
+		goto end;
 #else
 	if (RT_UNLIKELY(!rt_socket_get_linux_ipv6_option(ipv6_option, &actual_ipv6_option)))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!rt_socket_set_option_do(socket, protocol_level, actual_ipv6_option, value, value_size)))
-		goto error;
+		goto end;
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 /**
@@ -442,12 +416,12 @@ static rt_s rt_socket_get_option_do(struct rt_socket *socket, enum rt_socket_pro
 	socklen_t local_value_size = *value_size;
 	int actual_protocol_level;
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 	/* Returns SOCKET_ERROR (-1) and sets WSAGetLastError in case of issue. */
 	if (RT_UNLIKELY(getsockopt((rt_un)socket->io_device.handle, (int)protocol_level, (int)option, value, &local_value_size)))
-		goto error;
+		goto end;
 	*value_size = local_value_size;
 #else
 	if (protocol_level == RT_SOCKET_PROTOCOL_LEVEL_SOCKET) {
@@ -460,17 +434,13 @@ static rt_s rt_socket_get_option_do(struct rt_socket *socket, enum rt_socket_pro
 
 	/* On success, zero is returned. On error, -1 is returned, and errno is set appropriately. */
 	if (RT_UNLIKELY(getsockopt(socket->io_device.file_descriptor, actual_protocol_level, option, value, &local_value_size)))
-		goto error;
+		goto end;
 	*value_size = local_value_size;
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_socket_get_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_option option, void *value, rt_un *value_size)
@@ -478,26 +448,22 @@ rt_s rt_socket_get_option(struct rt_socket *socket, enum rt_socket_protocol_leve
 #ifdef RT_DEFINE_LINUX
 	int actual_option;
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 	if (RT_UNLIKELY(!rt_socket_get_option_do(socket, protocol_level, option, value, value_size)))
-		goto error;
+		goto end;
 #else
 	if (RT_UNLIKELY(!rt_socket_get_linux_option(option, &actual_option)))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!rt_socket_get_option_do(socket, protocol_level, actual_option, value, value_size)))
-		goto error;
+		goto end;
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_socket_get_ipv6_option(struct rt_socket *socket, enum rt_socket_protocol_level protocol_level, enum rt_socket_ipv6_option ipv6_option, void *value, rt_un *value_size)
@@ -505,26 +471,22 @@ rt_s rt_socket_get_ipv6_option(struct rt_socket *socket, enum rt_socket_protocol
 #ifdef RT_DEFINE_LINUX
 	int actual_ipv6_option;
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 	if (RT_UNLIKELY(!rt_socket_get_option_do(socket, protocol_level, ipv6_option, value, value_size)))
-		goto error;
+		goto end;
 #else
 	if (RT_UNLIKELY(!rt_socket_get_linux_ipv6_option(ipv6_option, &actual_ipv6_option)))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!rt_socket_get_option_do(socket, protocol_level, actual_ipv6_option, value, value_size)))
-		goto error;
+		goto end;
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_socket_connect(struct rt_socket *socket, const rt_char *host_name, rt_un port)
@@ -535,10 +497,10 @@ rt_s rt_socket_connect(struct rt_socket *socket, const rt_char *host_name, rt_un
 	struct rt_socket_address_ipv4 ipv4_socket_address;
 	struct rt_socket_address_ipv6 ipv6_socket_address;
 	struct rt_socket_address *socket_address;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_address_create_from_host_name(host_name, &ipv4_address, &ipv6_address, &address_family)))
-		goto error;
+		goto end;
 
 	switch (address_family) {
 	case RT_ADDRESS_FAMILY_IPV4:
@@ -551,28 +513,24 @@ rt_s rt_socket_connect(struct rt_socket *socket, const rt_char *host_name, rt_un
 		break;
 	default:
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-		goto error;
+		goto end;
 	}
 
 	if (RT_UNLIKELY(!rt_socket_connect_with_socket_address(socket, socket_address)))
-		goto error;
+		goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_socket_connect_with_socket_address(struct rt_socket *socket, struct rt_socket_address *socket_address)
 {
 	rt_un socket_address_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_socket_address_get_size(socket_address, &socket_address_size)))
-		goto error;
+		goto end;
 
 #ifdef RT_DEFINE_WINDOWS
 
@@ -580,12 +538,12 @@ rt_s rt_socket_connect_with_socket_address(struct rt_socket *socket, struct rt_s
 	if (RT_UNLIKELY(connect((rt_un)socket->io_device.handle, (struct sockaddr*)socket_address, (int)socket_address_size))) {
 		/* Notice that result is always non zero with non-blocking sockets under Windows. */
 		/* The normal error should be WSAEWOULDBLOCK. */
-		goto error;
+		goto end;
 	}
 #else
 	if (connect(socket->io_device.file_descriptor, (struct sockaddr*)socket_address, socket_address_size)) {
 		if (RT_UNLIKELY(socket->blocking)) {
-			goto error;
+			goto end;
 		} else {
 			/* If the socket is nonblocking and the connection cannot be completed immediately, then there is a normal error EINPROGRESS. */
 			if (RT_LIKELY(errno == EINPROGRESS)) {
@@ -593,19 +551,15 @@ rt_s rt_socket_connect_with_socket_address(struct rt_socket *socket, struct rt_s
 				rt_error_set_last(RT_ERROR_SOCKET_WOULD_BLOCK);
 			} else {
 				/* Real issue. */
-				goto error;
+				goto end;
 			}
 		}
 	}
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_socket_bind(struct rt_socket *socket, rt_un port)
@@ -615,7 +569,7 @@ rt_s rt_socket_bind(struct rt_socket *socket, rt_un port)
 	struct rt_address_ipv6 ipv6_address;
 	struct rt_socket_address_ipv6 ipv6_socket_address;
 	struct rt_socket_address *socket_address;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	switch (socket->address_family)	{
 	case RT_ADDRESS_FAMILY_IPV4:
@@ -630,46 +584,38 @@ rt_s rt_socket_bind(struct rt_socket *socket, rt_un port)
 		break;
 	default:
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	if (RT_UNLIKELY(!rt_socket_bind_with_socket_address(socket, socket_address)))
-		goto error;
+		goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_socket_bind_with_socket_address(struct rt_socket *socket, struct rt_socket_address *socket_address)
 {
 	rt_un socket_address_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_socket_address_get_size(socket_address, &socket_address_size)))
-		goto error;
+		goto end;
 
 #ifdef RT_DEFINE_WINDOWS
 	/* On success bind returns zero, -1 and sets last error otherwise. */
 	if (RT_UNLIKELY(bind((rt_un)socket->io_device.handle, (struct sockaddr*)socket_address, (int)socket_address_size)))
-		goto error;
+		goto end;
 #else
 	/* On success bind returns zero, -1 and sets last error otherwise. */
 	if (RT_UNLIKELY(bind(socket->io_device.file_descriptor, (struct sockaddr*)socket_address, socket_address_size)))
-		goto error;
+		goto end;
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_socket_listen(struct rt_socket *socket)
@@ -701,17 +647,17 @@ rt_s rt_socket_accept_connection(struct rt_socket *socket, rt_b blocking, struct
 	rt_n32 accepted_socket_file_descriptor;
 	int flags;
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 	accepted_socket_handle = (rt_h)accept((rt_un)socket->io_device.handle, (struct sockaddr*)socket_address, socket_address_size);
 	if (RT_UNLIKELY((rt_un)accepted_socket_handle == INVALID_SOCKET))
-		goto error;
+		goto end;
 	rt_io_device_create_from_handle(&accepted_socket->io_device, accepted_socket_handle);
 #else
 	accepted_socket_file_descriptor = accept(socket->io_device.file_descriptor, (struct sockaddr*)socket_address, (socklen_t*)socket_address_size);
 	if (RT_UNLIKELY(accepted_socket_file_descriptor == -1))
-		goto error;
+		goto end;
 	rt_io_device_create_from_file_descriptor(&accepted_socket->io_device, accepted_socket_file_descriptor);
 #endif
 
@@ -732,30 +678,26 @@ rt_s rt_socket_accept_connection(struct rt_socket *socket, rt_b blocking, struct
 		/* Returns SOCKET_ERROR (-1) and sets WSAGetLastError in case of issue. */
 		if (RT_UNLIKELY(ioctlsocket((rt_un)accepted_socket_handle, FIONBIO, &argp))) {
 			rt_socket_free(accepted_socket);
-			goto error;
+			goto end;
 		}
 #else
 		flags = fcntl(accepted_socket_file_descriptor, F_GETFL, 0);
 		if (RT_UNLIKELY(flags == -1)) {
 			rt_socket_free(accepted_socket);
-			goto error;
+			goto end;
 		}
 
 		/* Add O_NONBLOCK flag. */
 		if (RT_UNLIKELY(fcntl(accepted_socket_file_descriptor, F_SETFL, flags | O_NONBLOCK) == -1)) {
 			rt_socket_free(accepted_socket);
-			goto error;
+			goto end;
 		}
 #endif
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 #ifdef RT_DEFINE_LINUX
@@ -784,7 +726,7 @@ rt_s rt_socket_send(struct rt_socket *socket, void *data, rt_un data_size, enum 
 	rt_un actual_flags;
 #endif
 	int send_result;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_LINUX
 	actual_flags = rt_socket_get_message_flags(flags);
@@ -794,26 +736,22 @@ rt_s rt_socket_send(struct rt_socket *socket, void *data, rt_un data_size, enum 
 	/* Returns SOCKET_ERROR (-1) and sets WSAGetLastError in case of issue. */
 	send_result = send((rt_un)socket->io_device.handle, data, (int)data_size, (int)flags);
 	if (RT_UNLIKELY(send_result < 0))
-		goto error;
+		goto end;
 #else
 	/* Returns -1 in case of issue and sets errno. */
 	send_result = send(socket->io_device.file_descriptor, data, data_size, actual_flags);
 	if (send_result < 0) {
 		if (RT_LIKELY(errno == EAGAIN))
 			errno = EWOULDBLOCK;
-		goto error;
+		goto end;
 	}
 #endif
 
 	*bytes_sent = send_result;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_socket_receive(struct rt_socket *socket, void *buffer, rt_un buffer_capacity, enum rt_socket_message_flag flags, rt_un *bytes_received)
@@ -822,7 +760,7 @@ rt_s rt_socket_receive(struct rt_socket *socket, void *buffer, rt_un buffer_capa
 	rt_un actual_flags;
 #endif
 	int recv_result;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_LINUX
 	actual_flags = rt_socket_get_message_flags(flags);
@@ -832,37 +770,33 @@ rt_s rt_socket_receive(struct rt_socket *socket, void *buffer, rt_un buffer_capa
 	/* Returns SOCKET_ERROR (-1) and sets WSAGetLastError in case of issue. */
 	recv_result = recv((rt_un)socket->io_device.handle, buffer, (int)buffer_capacity, (int)flags);
 	if (RT_UNLIKELY(recv_result < 0))
-		goto error;
+		goto end;
 #else
 	/* Returns -1 in case of issue and sets errno. */
 	recv_result = recv(socket->io_device.file_descriptor, buffer, buffer_capacity, actual_flags);
 	if (recv_result < 0) {
 		if (RT_UNLIKELY(errno == EAGAIN))
 			errno = EWOULDBLOCK;
-		goto error;
+		goto end;
 	}
 #endif
 
 	*bytes_received = recv_result;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_socket_receive_all(struct rt_socket *socket, void *buffer, rt_un buffer_capacity, rt_un *bytes_received)
 {
 	rt_un received;
 	rt_un total_bytes_received = 0;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	while (RT_TRUE) {
 		if (RT_UNLIKELY(!rt_socket_receive(socket, &((rt_char8*)buffer)[total_bytes_received], buffer_capacity - total_bytes_received, 0, &received)))
-			goto error;
+			goto end;
 
 		if (!received) {
 			/* Nothing more to read, return. */
@@ -879,12 +813,8 @@ rt_s rt_socket_receive_all(struct rt_socket *socket, void *buffer, rt_un buffer_
 	*bytes_received = total_bytes_received;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_socket_shutdown(struct rt_socket *socket, enum rt_socket_shutdown_flag flag)
@@ -919,19 +849,15 @@ rt_s rt_socket_free(struct rt_socket *socket)
 
 rt_s rt_socket_cleanup(void)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* WSACleanup returns zero if the operation was successful, calls WSASetLastError and returns SOCKET_ERROR otherwise. */
 	if (RT_UNLIKELY(WSACleanup()))
-		goto error;
+		goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 #else

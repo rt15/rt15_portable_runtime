@@ -6,7 +6,7 @@
 static rt_s rt_memory_output_stream_set_capacity(struct rt_memory_output_stream *memory_output_stream, rt_un capacity)
 {
 	struct rt_heap *heap;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (memory_output_stream->buffer_capacity < capacity && memory_output_stream->heap_buffer_capacity < capacity) {
 		heap = memory_output_stream->heap;
@@ -14,11 +14,11 @@ static rt_s rt_memory_output_stream_set_capacity(struct rt_memory_output_stream 
 			if (memory_output_stream->heap_buffer) {
 				/* There was already a heap buffer, but not big enough. */
 				if (RT_UNLIKELY(!heap->realloc(heap, &memory_output_stream->heap_buffer, capacity)))
-					goto error;
+					goto end;
 			} else {
 				/* No heap buffer yet. */
 				if (RT_UNLIKELY(!heap->alloc(heap, &memory_output_stream->heap_buffer, capacity)))
-					goto error;
+					goto end;
 
 				/* Copy existing data from buffer to heap buffer. */
 				if (memory_output_stream->size) {
@@ -29,18 +29,16 @@ static rt_s rt_memory_output_stream_set_capacity(struct rt_memory_output_stream 
 		} else {
 			/* Buffer is not enough and no heap has been provided. Notify error. */
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-			goto error;
+			goto end;
 		}
 	}
 
 	ret = RT_OK;
-free:
+end:
+	if (RT_UNLIKELY(!ret))
+		rt_memory_output_stream_free(memory_output_stream);
+		
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	rt_memory_output_stream_free(memory_output_stream);
-	goto free;
 }
 
 rt_s rt_memory_output_stream_write(struct rt_output_stream *output_stream, const rt_char8 *data, rt_un bytes_to_write)
@@ -49,7 +47,7 @@ rt_s rt_memory_output_stream_write(struct rt_output_stream *output_stream, const
 	rt_un capacity;
 	rt_un required_size = memory_output_stream->size + bytes_to_write;
 	rt_char8* rt_memory_output_stream_data;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (memory_output_stream->heap_buffer)
 		capacity = memory_output_stream->heap_buffer_capacity;
@@ -59,7 +57,7 @@ rt_s rt_memory_output_stream_write(struct rt_output_stream *output_stream, const
 
 	if (required_size > capacity) {
 		if (RT_UNLIKELY(!rt_memory_output_stream_set_capacity(memory_output_stream, required_size * 2)))
-			goto error;
+			goto end;
 	}
 
 	if (memory_output_stream->heap_buffer) {
@@ -71,12 +69,8 @@ rt_s rt_memory_output_stream_write(struct rt_output_stream *output_stream, const
 	memory_output_stream->size += bytes_to_write;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_memory_output_stream_flush(RT_UNUSED struct rt_output_stream *output_stream)

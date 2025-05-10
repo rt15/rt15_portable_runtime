@@ -8,7 +8,7 @@ rt_s rt_url_parse(const rt_char *url, struct rt_url_info *url_info)
 	rt_b authentication;
 	rt_un i;
 	rt_un j;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	i = 0;
 	while (url[i] != _R(':')) {
@@ -20,7 +20,7 @@ rt_s rt_url_parse(const rt_char *url, struct rt_url_info *url_info)
 			i++;
 		} else {
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		}
 	}
 
@@ -34,7 +34,7 @@ rt_s rt_url_parse(const rt_char *url, struct rt_url_info *url_info)
 	for (j = 0; j < 2; j++) {
 		if (RT_UNLIKELY(url[i] != _R('/'))) {
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		}
 		i++;
 	}
@@ -97,7 +97,7 @@ rt_s rt_url_parse(const rt_char *url, struct rt_url_info *url_info)
 		/* No closing bracket. */
 		if (RT_UNLIKELY(!url[j])) {
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		}
 		/* Skip closing bracket. */
 		j++;
@@ -121,7 +121,7 @@ rt_s rt_url_parse(const rt_char *url, struct rt_url_info *url_info)
 		}
 
 		if (RT_UNLIKELY(!rt_char_convert_to_un_with_size(&url[i], j - i, &url_info->port)))
-			goto error;
+			goto end;
 		i = j;
 	} else {
 		url_info->port = RT_TYPE_MAX_UN;
@@ -139,7 +139,7 @@ rt_s rt_url_parse(const rt_char *url, struct rt_url_info *url_info)
 		/* Path is "optional" but if there is a path, there must be a slash. */
 		if (RT_UNLIKELY(url[i] != _R('/'))) {
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		}
 
 		/* Skip '/'. */
@@ -184,10 +184,6 @@ rt_s rt_url_parse(const rt_char *url, struct rt_url_info *url_info)
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

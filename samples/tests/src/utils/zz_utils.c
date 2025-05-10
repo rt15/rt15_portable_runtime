@@ -3,39 +3,35 @@
 static rt_s zz_get_dir(const rt_char *dir_name, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
 	enum rt_file_path_type type;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_file_path_get_executable_path(buffer, buffer_capacity, buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_file_path_get_executable_path(buffer, buffer_capacity, buffer_size))) goto end;
 
 	/* Get bin directory. */
-	if (RT_UNLIKELY(!rt_file_path_get_parent(buffer, buffer_capacity, buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_file_path_get_parent(buffer, buffer_capacity, buffer_size))) goto end;
 
 	/* Get tests directory. */
-	if (RT_UNLIKELY(!rt_file_path_get_parent(buffer, buffer_capacity, buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_file_path_get_parent(buffer, buffer_capacity, buffer_size))) goto end;
 
 	/* Get requested directory. */
-	if (RT_UNLIKELY(!rt_file_path_append_separator(buffer, buffer_capacity, buffer_size))) goto error;
-	if (RT_UNLIKELY(!rt_char_append(dir_name, rt_char_get_size(dir_name), buffer, buffer_capacity, buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_file_path_append_separator(buffer, buffer_capacity, buffer_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append(dir_name, rt_char_get_size(dir_name), buffer, buffer_capacity, buffer_size))) goto end;
 
 	/* Checking the directory. */
-	if (RT_UNLIKELY(!rt_file_path_get_type(buffer, &type))) goto error;
+	if (RT_UNLIKELY(!rt_file_path_get_type(buffer, &type))) goto end;
 	if (type != RT_FILE_PATH_TYPE_DIR) {
 		if (RT_LIKELY(type == RT_FILE_PATH_TYPE_NONE && rt_char_equals(dir_name, rt_char_get_size(dir_name), _R("tmp"), 3))) {
 			/* Create the tmp directory if it does not exist yet. */
 			if (RT_UNLIKELY(!rt_file_system_create_dir(buffer)))
-				goto error;
+				goto end;
 		} else {
-			goto error;
+			goto end;
 		}
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s zz_get_tmp_dir(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
@@ -52,23 +48,20 @@ rt_s zz_create_file(const rt_char *file_path, const rt_char8 *str)
 {
 	struct rt_file file;
 	rt_b file_created = RT_FALSE;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_file_create(&file, file_path, RT_FILE_MODE_TRUNCATE))) goto error;
+	if (RT_UNLIKELY(!rt_file_create(&file, file_path, RT_FILE_MODE_TRUNCATE))) goto end;
 	file_created = RT_TRUE;
-	if (RT_UNLIKELY(!rt_io_device_write(&file.io_device.output_stream, str, rt_char8_get_size(str)))) goto error;
+	if (RT_UNLIKELY(!rt_io_device_write(&file.io_device.output_stream, str, rt_char8_get_size(str)))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	if (file_created) {
-		file_created = RT_FALSE;
-		if (RT_UNLIKELY(!rt_io_device_free(&file.io_device) && ret))
-			goto error;
+		if (RT_UNLIKELY(!rt_io_device_free(&file.io_device)))
+			ret = RT_FAILED;
 	}
+
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s zz_check_file_content(const rt_char *file_path, const rt_char8 *expected)
@@ -77,22 +70,18 @@ rt_s zz_check_file_content(const rt_char *file_path, const rt_char8 *expected)
 	rt_char8 buffer[RT_CHAR8_BIG_STRING_SIZE];
 	rt_char8 *output;
 	rt_un output_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_file_path_get_type(file_path, &type))) goto error;
-	if (RT_UNLIKELY(type != RT_FILE_PATH_TYPE_FILE)) goto error;
+	if (RT_UNLIKELY(!rt_file_path_get_type(file_path, &type))) goto end;
+	if (RT_UNLIKELY(type != RT_FILE_PATH_TYPE_FILE)) goto end;
 
-	if (RT_UNLIKELY(!rt_small_file_read(file_path, buffer, RT_CHAR8_BIG_STRING_SIZE, RT_NULL, RT_NULL, &output, &output_size, RT_NULL))) goto error;
+	if (RT_UNLIKELY(!rt_small_file_read(file_path, buffer, RT_CHAR8_BIG_STRING_SIZE, RT_NULL, RT_NULL, &output, &output_size, RT_NULL))) goto end;
 
-	if (RT_UNLIKELY(!rt_char8_equals(output, output_size, expected, rt_char8_get_size(expected)))) goto error;
+	if (RT_UNLIKELY(!rt_char8_equals(output, output_size, expected, rt_char8_get_size(expected)))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 static rt_s zz_check_same_files_content_do(struct rt_input_stream *input_stream1, struct rt_input_stream *input_stream2)
@@ -101,26 +90,22 @@ static rt_s zz_check_same_files_content_do(struct rt_input_stream *input_stream1
 	rt_un bytes_read1;
 	rt_char8 buffer2[RT_CHAR8_HALF_BIG_STRING_SIZE];
 	rt_un bytes_read2;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	while (RT_TRUE) {
 
-		if (RT_UNLIKELY(!input_stream1->read(input_stream1, buffer1, RT_CHAR8_HALF_BIG_STRING_SIZE, &bytes_read1))) goto error;
-		if (RT_UNLIKELY(!input_stream2->read(input_stream2, buffer2, RT_CHAR8_HALF_BIG_STRING_SIZE, &bytes_read2))) goto error;
+		if (RT_UNLIKELY(!input_stream1->read(input_stream1, buffer1, RT_CHAR8_HALF_BIG_STRING_SIZE, &bytes_read1))) goto end;
+		if (RT_UNLIKELY(!input_stream2->read(input_stream2, buffer2, RT_CHAR8_HALF_BIG_STRING_SIZE, &bytes_read2))) goto end;
 
-		if (RT_UNLIKELY(!rt_char8_equals(buffer1, bytes_read1, buffer2, bytes_read2))) goto error;
+		if (RT_UNLIKELY(!rt_char8_equals(buffer1, bytes_read1, buffer2, bytes_read2))) goto end;
 
 		if (!bytes_read1)
 			break;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s zz_check_same_files_content(const rt_char *file1_path, const rt_char *file2_path)
@@ -131,36 +116,32 @@ rt_s zz_check_same_files_content(const rt_char *file1_path, const rt_char *file2
 	struct rt_file file2;
 	rt_b file2_created = RT_FALSE;
 	struct rt_input_stream *input_stream2;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_file_create(&file1, file1_path, RT_FILE_MODE_READ))) goto error;
+	if (RT_UNLIKELY(!rt_file_create(&file1, file1_path, RT_FILE_MODE_READ))) goto end;
 	file1_created = RT_TRUE;
 
 	input_stream1 = &file1.io_device.input_stream;
 
-	if (RT_UNLIKELY(!rt_file_create(&file2, file2_path, RT_FILE_MODE_READ))) goto error;
+	if (RT_UNLIKELY(!rt_file_create(&file2, file2_path, RT_FILE_MODE_READ))) goto end;
 	file2_created = RT_TRUE;
 
 	input_stream2 = &file2.io_device.input_stream;
 
-	if (RT_UNLIKELY(!zz_check_same_files_content_do(input_stream1, input_stream2))) goto error;
+	if (RT_UNLIKELY(!zz_check_same_files_content_do(input_stream1, input_stream2))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	if (file2_created) {
-		file2_created = RT_FALSE;
-		if (RT_UNLIKELY(!rt_io_device_free(&file2.io_device) && ret))
-			goto error;
+		if (RT_UNLIKELY(!rt_io_device_free(&file2.io_device)))
+			ret = RT_FAILED;
 	}
 	if (file1_created) {
-		file1_created = RT_FALSE;
-		if (RT_UNLIKELY(!rt_io_device_free(&file1.io_device) && ret))
-			goto error;
+		if (RT_UNLIKELY(!rt_io_device_free(&file1.io_device)))
+			ret = RT_FAILED;
 	}
+
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_b zz_char_equals_with_nulls(const rt_char *str1, const rt_char *str2)
@@ -213,18 +194,14 @@ rt_s zz_read_text_file(const rt_char *file_path, enum rt_encoding encoding, rt_c
 	rt_char8 *encoded_output;
 	rt_un encoded_output_size;
 	rt_char *output;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_small_file_read(file_path, encoded_buffer, RT_CHAR8_BIG_STRING_SIZE, RT_NULL, RT_NULL, &encoded_output, &encoded_output_size, RT_NULL))) goto error;
-	if (RT_UNLIKELY(!rt_encoding_decode(encoded_buffer, encoded_output_size, encoding, buffer, buffer_capacity, RT_NULL, RT_NULL, &output, buffer_size, RT_NULL))) goto error;
+	if (RT_UNLIKELY(!rt_small_file_read(file_path, encoded_buffer, RT_CHAR8_BIG_STRING_SIZE, RT_NULL, RT_NULL, &encoded_output, &encoded_output_size, RT_NULL))) goto end;
+	if (RT_UNLIKELY(!rt_encoding_decode(encoded_buffer, encoded_output_size, encoding, buffer, buffer_capacity, RT_NULL, RT_NULL, &output, buffer_size, RT_NULL))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s zz_comparison_callback(const void *item1, const void *item2, void *context, rt_n *comparison_result)
@@ -232,17 +209,14 @@ rt_s zz_comparison_callback(const void *item1, const void *item2, void *context,
 	rt_un item1_value = *(rt_un*)item1;
 	rt_un item2_value = *(rt_un*)item2;
 	rt_un context_value = *(rt_un*)context;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(context_value != 42))
-		goto error;
+		goto end;
 
 	*comparison_result = item1_value - item2_value;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }

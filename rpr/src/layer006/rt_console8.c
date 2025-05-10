@@ -40,32 +40,28 @@ rt_s rt_console8_write_with_size(const rt_char8 *message, enum rt_encoding encod
 	rt_un output_size;
 	struct rt_runtime_heap runtime_heap;
 	rt_b runtime_heap_created = RT_FALSE;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_runtime_heap_create(&runtime_heap))) goto error;
+	if (RT_UNLIKELY(!rt_runtime_heap_create(&runtime_heap))) goto end;
 	runtime_heap_created = RT_TRUE;
 
-	if (RT_UNLIKELY(!rt_encoding_decode(message, size, encoding, buffer, RT_CHAR_BIG_STRING_SIZE, &heap_buffer, &heap_buffer_capacity, &output, &output_size, &runtime_heap.heap))) goto error;
+	if (RT_UNLIKELY(!rt_encoding_decode(message, size, encoding, buffer, RT_CHAR_BIG_STRING_SIZE, &heap_buffer, &heap_buffer_capacity, &output, &output_size, &runtime_heap.heap))) goto end;
 
-	if (RT_UNLIKELY(!rt_console_write_with_size(output, output_size, error))) goto error;
+	if (RT_UNLIKELY(!rt_console_write_with_size(output, output_size, error))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	if (heap_buffer) {
-		if (RT_UNLIKELY(!runtime_heap.heap.free(&runtime_heap.heap, &heap_buffer) && ret))
-			goto error;
+		if (RT_UNLIKELY(!runtime_heap.heap.free(&runtime_heap.heap, &heap_buffer)))
+			ret = RT_FAILED;	
 	}
 
 	if (runtime_heap_created) {
-		runtime_heap_created = RT_FALSE;
-		if (RT_UNLIKELY(!runtime_heap.heap.close(&runtime_heap.heap) && ret))
-			goto error;
+		if (RT_UNLIKELY(!runtime_heap.heap.close(&runtime_heap.heap)))
+			ret = RT_FAILED;
 	}
-	return ret;
 
-error:
-	ret = RT_FAILED;
-	goto free;
+	return ret;
 }
 
 rt_s rt_console8_read_line(enum rt_encoding encoding, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size)
@@ -77,26 +73,23 @@ rt_s rt_console8_read_line(enum rt_encoding encoding, rt_char8 *buffer, rt_un bu
 	rt_un area_capacity;
 	rt_un area_size;
 	rt_char8 *output;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* Makes sure the rt_char buffer is big enough. */
 	area_capacity = buffer_capacity * 2;
 
-	if (RT_UNLIKELY(!rt_static_heap_alloc_if_needed(local_buffer, RT_CHAR_BIG_STRING_SIZE, &heap_buffer, &heap_buffer_capacity, (void**)&area, area_capacity * sizeof(rt_char)))) goto error; 
+	if (RT_UNLIKELY(!rt_static_heap_alloc_if_needed(local_buffer, RT_CHAR_BIG_STRING_SIZE, &heap_buffer, &heap_buffer_capacity, (void**)&area, area_capacity * sizeof(rt_char)))) goto end; 
 
-	if (RT_UNLIKELY(!rt_console_read_line(area, area_capacity, &area_size))) goto error;
+	if (RT_UNLIKELY(!rt_console_read_line(area, area_capacity, &area_size))) goto end;
 
-	if (RT_UNLIKELY(!rt_encoding_encode(area, area_size, encoding, buffer, buffer_capacity, RT_NULL, RT_NULL, &output, buffer_size, RT_NULL))) goto error;
+	if (RT_UNLIKELY(!rt_encoding_encode(area, area_size, encoding, buffer, buffer_capacity, RT_NULL, RT_NULL, &output, buffer_size, RT_NULL))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	if (heap_buffer) {
-		if (RT_UNLIKELY(!rt_static_heap_free(&heap_buffer) && ret))
-			goto error;
+		if (RT_UNLIKELY(!rt_static_heap_free(&heap_buffer)))
+			ret = RT_FAILED;
 	}
-	return ret;
 
-error:
-	ret = RT_FAILED;
-	goto free;
+	return ret;
 }

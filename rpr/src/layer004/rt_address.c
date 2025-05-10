@@ -22,17 +22,17 @@ rt_s rt_address_create_ipv4(struct rt_address_ipv4 *address, const rt_char *str)
 	rt_un separator_index;
 	rt_un value;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* Parse the first three numbers, all ending with a dot. */
 	for (i = 0; i < 3; i++) {
 		separator_index =  rt_char_search_char(in_str, _R('.'));
 		if (RT_UNLIKELY(separator_index == RT_TYPE_MAX_UN))
-			goto error;
+			goto end;
 		if (RT_UNLIKELY(!rt_char_convert_to_un_with_size(in_str, separator_index, &value)))
-			goto error;
+			goto end;
 		if (RT_UNLIKELY(value > RT_TYPE_MAX_UCHAR8))
-			goto error;
+			goto end;
 		bytes[i] = (rt_uchar8)value;
 
 		in_str = &in_str[separator_index + 1];
@@ -40,18 +40,14 @@ rt_s rt_address_create_ipv4(struct rt_address_ipv4 *address, const rt_char *str)
 
 	/* Parse the last number, ending with terminating zero. */
 	if (RT_UNLIKELY(!rt_char_convert_to_un(in_str, &value)))
-		goto error;
+		goto end;
 	if (RT_UNLIKELY(value > RT_TYPE_MAX_UCHAR8))
-		goto error;
+		goto end;
 	bytes[3] = (rt_uchar8)value;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_address_create_ipv6(struct rt_address_ipv6 *address, const rt_char *str)
@@ -63,7 +59,7 @@ rt_s rt_address_create_ipv6(struct rt_address_ipv6 *address, const rt_char *str)
 	rt_un zero_sequence_index = RT_TYPE_MAX_UN;
 	rt_un i = 0;
 	rt_un j;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	while (RT_TRUE) {
 		j = i;
@@ -80,7 +76,7 @@ rt_s rt_address_create_ipv6(struct rt_address_ipv6 *address, const rt_char *str)
 				if (RT_UNLIKELY(zero_sequence_index != RT_TYPE_MAX_UN)) {
 					/* There should be one zeros sequence per address. */
 					rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-					goto error;
+					goto end;
 				}
 				zero_sequence_index = in_words;
 				if (!j) {
@@ -88,17 +84,17 @@ rt_s rt_address_create_ipv6(struct rt_address_ipv6 *address, const rt_char *str)
 					if (RT_UNLIKELY(str[j] != _R(':'))) {
 						/* If the first character is a colon, then the second character should be a colon too. */
 						rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-						goto error;
+						goto end;
 					}
 				}
 				if ((character == ':') && (!str[j + 1]))
 					break;
 			} else {
 				if (RT_UNLIKELY(!rt_char_convert_hex_to_un_with_size(&str[i], j - i, &value)))
-					goto error;
+					goto end;
 				if (RT_UNLIKELY(value > 0xFFFF)) {
 					rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-					goto error;
+					goto end;
 				}
 				words[in_words] = RT_MEMORY_SWAP_BYTES16((rt_un16)value);
 				in_words++;
@@ -112,17 +108,17 @@ rt_s rt_address_create_ipv6(struct rt_address_ipv6 *address, const rt_char *str)
 			/* We need at least the words at indexes 6 and 7. */
 			if (RT_UNLIKELY(in_words > 6)) {
 				rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-				goto error;
+				goto end;
 			}
 
 			if (RT_UNLIKELY(!rt_address_create_ipv4((struct rt_address_ipv4*)&words[in_words], &str[i])))
-				goto error;
+				goto end;
 
 			in_words += 2;
 			break;
 		} else {
 			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-			goto error;
+			goto end;
 		}
 		i = j;
 		i++;
@@ -135,12 +131,8 @@ rt_s rt_address_create_ipv6(struct rt_address_ipv6 *address, const rt_char *str)
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 void rt_address_create_ipv6_loopback(struct rt_address_ipv6 *address)
@@ -166,7 +158,7 @@ rt_s rt_address_create_from_host_name(const rt_char *host_name, struct rt_addres
 	struct addrinfo *actual_hints;
 #endif
 	rt_b address_info_created = RT_FALSE;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (*address_family) {
 		RT_MEMORY_ZERO(&hints, sizeof(hints));
@@ -187,7 +179,7 @@ rt_s rt_address_create_from_host_name(const rt_char *host_name, struct rt_addres
 	if (RT_UNLIKELY(returned_value)) {
 		/* GetAddrInfoW returns an error code in case of error, zero otherwise. */
 		SetLastError(returned_value);
-		goto error;
+		goto end;
 	}
 	address_info_created = RT_TRUE;
 #else
@@ -195,10 +187,10 @@ rt_s rt_address_create_from_host_name(const rt_char *host_name, struct rt_addres
 	returned_value = getaddrinfo(host_name, RT_NULL, actual_hints, &address_info);
 	if (RT_UNLIKELY(returned_value)) {
 		if (RT_LIKELY(returned_value == EAI_SYSTEM)) {
-			goto error;
+			goto end;
 		} else {
 			rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-			goto error;
+			goto end;
 		}
 	}
 	address_info_created = RT_TRUE;
@@ -213,14 +205,13 @@ rt_s rt_address_create_from_host_name(const rt_char *host_name, struct rt_addres
 		break;
 	default:
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
-		goto error;
+		goto end;
 	}
 	*address_family = address_info->ai_family;
 
 	ret = RT_OK;
-free:
+end:
 	if (address_info_created) {
-		address_info_created = RT_FALSE;
 #ifdef RT_DEFINE_WINDOWS
 		/* FreeAddrInfo cannot fails. */
 		FreeAddrInfo(address_info);
@@ -229,11 +220,8 @@ free:
 		freeaddrinfo(address_info);
 #endif
 	}
-	return ret;
 
-error:
-	ret = RT_FAILED;
-	goto free;
+	return ret;
 }
 
 rt_s rt_address_append_ipv4(struct rt_address_ipv4 *address, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
@@ -241,26 +229,22 @@ rt_s rt_address_append_ipv4(struct rt_address_ipv4 *address, rt_char *buffer, rt
 	rt_uchar8 *bytes = (rt_uchar8*)address;
 	rt_b first = RT_TRUE;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	for (i = 0; i < 4; i ++) {
 		if (first) {
 			first = RT_FALSE;
 		} else {
 			if (RT_UNLIKELY(!rt_char_append_char(_R('.'), buffer, buffer_capacity, buffer_size)))
-				goto error;
+				goto end;
 		}
 		if (RT_UNLIKELY(!rt_char_append_un(bytes[i], 10, buffer, buffer_capacity, buffer_size)))
-			goto error;
+			goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_address_append_ipv6(struct rt_address_ipv6 *address, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
@@ -275,23 +259,23 @@ rt_s rt_address_append_ipv6(struct rt_address_ipv6 *address, rt_char *buffer, rt
 	rt_un max_sequence_size;
 	rt_un i;
 	rt_un j;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (!RT_MEMORY_COMPARE(address, "\0\0\0\0\0\0\0\0\0\0\377\377", 12)) {
 		/* IPv4-mapped address. */
 
 		if (RT_UNLIKELY(!rt_char_append(_R("::ffff:"), 7, buffer, buffer_capacity, buffer_size)))
-			goto error;
+			goto end;
 		if (RT_UNLIKELY(!rt_address_append_ipv4((struct rt_address_ipv4*)&((rt_char8*)address)[12], buffer, buffer_capacity, buffer_size)))
-			goto error;
+			goto end;
 
 	} else if (!RT_MEMORY_COMPARE(address, "\0\0\0\0\0\0\0\0\377\377\0\0", 12)) {
 		/* IPv4-translated address. */
 
 		if (RT_UNLIKELY(!rt_char_append(_R("::ffff:0:"), 9, buffer, buffer_capacity, buffer_size)))
-			goto error;
+			goto end;
 		if (RT_UNLIKELY(!rt_address_append_ipv4((struct rt_address_ipv4*)&((rt_char8*)address)[12], buffer, buffer_capacity, buffer_size)))
-			goto error;
+			goto end;
 	} else {
 		/* Regular IPv6 address. */
 
@@ -301,10 +285,10 @@ rt_s rt_address_append_ipv6(struct rt_address_ipv6 *address, rt_char *buffer, rt
 				first = RT_FALSE;
 			} else {
 				if (RT_UNLIKELY(!rt_char_append_char(_R(':'), buffer, buffer_capacity, buffer_size)))
-					goto error;
+					goto end;
 			}
 			if (RT_UNLIKELY(!rt_char_append_un(RT_MEMORY_SWAP_BYTES16(words[i]), 16, buffer, buffer_capacity, buffer_size)))
-				goto error;
+				goto end;
 		}
 
 		/* Find the longest zeros sequence to replace it with two colons. */
@@ -361,10 +345,6 @@ rt_s rt_address_append_ipv6(struct rt_address_ipv6 *address, rt_char *buffer, rt
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

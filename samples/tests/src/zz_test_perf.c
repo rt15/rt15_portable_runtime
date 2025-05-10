@@ -18,7 +18,7 @@ static rt_un32 RT_STDCALL zz_test_perf_callback(RT_UNUSED void *parameter)
 	rt_char buffer[RT_CHAR_HALF_BIG_STRING_SIZE];
 	rt_un buffer_size;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	while (zz_continue) {
 		for (i = 0; i < ZZ_DATA_SIZE; i++) {
@@ -30,19 +30,15 @@ static rt_un32 RT_STDCALL zz_test_perf_callback(RT_UNUSED void *parameter)
 	}
 
 	buffer_size = 0;
-	if (RT_UNLIKELY(!rt_char_append_un(loop_count, 10, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto error;
-	if (RT_UNLIKELY(!rt_char_append(_R(" (sum = "), 8, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto error;
-	if (RT_UNLIKELY(!rt_char_append_un(sum, 10, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto error;
-	if (RT_UNLIKELY(!rt_char_append(_R(")\n"), 2, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto error;
-	if (RT_UNLIKELY(!rt_console_write_str_with_size(buffer, buffer_size))) goto error;
+	if (RT_UNLIKELY(!rt_char_append_un(loop_count, 10, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append(_R(" (sum = "), 8, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append_un(sum, 10, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append(_R(")\n"), 2, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto end;
+	if (RT_UNLIKELY(!rt_console_write_str_with_size(buffer, buffer_size))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s zz_test_perf(void)
@@ -54,46 +50,46 @@ rt_s zz_test_perf(void)
 	struct rt_chrono chrono;
 	rt_un micro_seconds;
 	rt_un i, j;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_system_info_get_logical_cpu_count(&logical_cpu_count))) goto error;
+	if (RT_UNLIKELY(!rt_system_info_get_logical_cpu_count(&logical_cpu_count))) goto end;
 
-	if (RT_UNLIKELY(!rt_static_heap_alloc((void**)&zz_data, logical_cpu_count * sizeof(rt_un*)))) goto error;
+	if (RT_UNLIKELY(!rt_static_heap_alloc((void**)&zz_data, logical_cpu_count * sizeof(rt_un*)))) goto end;
 	for (i = 0; i < logical_cpu_count; i++)
 		zz_data[i] = RT_NULL;
 
 	for (i = 0; i < logical_cpu_count; i++) {
 		if (RT_UNLIKELY(!rt_static_heap_alloc((void**)&zz_data[i], ZZ_DATA_SIZE * sizeof(rt_un))))
-			goto error;
+			goto end;
 		for (j = 0; j < ZZ_DATA_SIZE; j++) {
 			if (RT_UNLIKELY(!rt_random_get_unsigned_integer(&zz_data[i][j])))
-				goto error;
+				goto end;
 		}
 	}
 
-	if (RT_UNLIKELY(!rt_static_heap_alloc((void**)&thread_created, logical_cpu_count * sizeof(rt_b)))) goto error;
+	if (RT_UNLIKELY(!rt_static_heap_alloc((void**)&thread_created, logical_cpu_count * sizeof(rt_b)))) goto end;
 	for (i = 0; i < logical_cpu_count; i++)
 		thread_created[i] = RT_FALSE;
 
-	if (RT_UNLIKELY(!rt_static_heap_alloc((void**)&threads, logical_cpu_count * sizeof(struct rt_thread)))) goto error;
+	if (RT_UNLIKELY(!rt_static_heap_alloc((void**)&threads, logical_cpu_count * sizeof(struct rt_thread)))) goto end;
 
 	for (i = 0; i < logical_cpu_count; i++) {
 		if (RT_UNLIKELY(!rt_thread_create(&threads[i], &zz_test_perf_callback, zz_data[i])))
-			goto error;
+			goto end;
 		thread_created[i] = RT_TRUE;
 	}
 
-	if (RT_UNLIKELY(!rt_chrono_create(&chrono))) goto error;
+	if (RT_UNLIKELY(!rt_chrono_create(&chrono))) goto end;
 
 	while (RT_TRUE) {
 		rt_sleep_sleep(1);
 
-		if (RT_UNLIKELY(!rt_chrono_get_duration(&chrono, &micro_seconds))) goto error;
+		if (RT_UNLIKELY(!rt_chrono_get_duration(&chrono, &micro_seconds))) goto end;
 		if (RT_UNLIKELY(micro_seconds >= ZZ_TEST_DURATION * 1000000)) break;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	zz_continue = RT_FALSE;
 
 	if (thread_created) {
@@ -101,7 +97,6 @@ free:
 			if (thread_created[i]) {
 				if (RT_UNLIKELY(!rt_thread_join_and_check(&threads[i])))
 					ret = RT_FAILED;
-				thread_created[i] = RT_FALSE;
 				if (RT_UNLIKELY(!rt_thread_free(&threads[i])))
 					ret = RT_FAILED;
 			}
@@ -127,7 +122,4 @@ free:
 		ret = RT_FAILED;
 
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }

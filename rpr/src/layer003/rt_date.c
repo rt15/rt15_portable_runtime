@@ -36,7 +36,7 @@ rt_s rt_date_add_years(struct rt_date *date, rt_n years)
 	year += years;
 
 	if (RT_UNLIKELY(!rt_date_get_days_in_month((rt_un16)year, date->month, &days_in_month)))
-		goto error;
+		goto end;
 
 	if (date->day > (rt_n)days_in_month) {
 		date->day = (rt_uchar8)days_in_month;
@@ -75,7 +75,7 @@ rt_s rt_date_add_months(struct rt_date *date, rt_n months)
 	}
 
 	if (RT_UNLIKELY(!rt_date_get_days_in_month((rt_un16)year, (rt_uchar8)month, &days_in_month)))
-		goto error;
+		goto end;
 	
 	if (date->day > (rt_n)days_in_month) {
 		date->day = (rt_uchar8)days_in_month;
@@ -105,7 +105,7 @@ rt_s rt_date_add_days(struct rt_date *date, rt_n days)
 	if (local_days > 0) {
 		while (local_days > 0) {
 			if (RT_UNLIKELY(!rt_date_get_days_in_month((rt_un16)year, (rt_uchar8)month, &days_in_month)))
-				goto error;
+				goto end;
 			if (day + local_days > (rt_n)days_in_month) {
 				/* Substract the days of the month minus the initial number of days. */
 				local_days -= days_in_month - day + 1;
@@ -129,7 +129,7 @@ rt_s rt_date_add_days(struct rt_date *date, rt_n days)
 					year--;
 				}
 				if (RT_UNLIKELY(!rt_date_get_days_in_month((rt_un16)year, (rt_uchar8)month, &days_in_month)))
-					goto error;
+					goto end;
 				local_days = local_days + day;
 				day = days_in_month;
 				while (local_days < -(rt_n)days_in_month) {
@@ -140,7 +140,7 @@ rt_s rt_date_add_days(struct rt_date *date, rt_n days)
 						year--;
 					}
 					if (RT_UNLIKELY(!rt_date_get_days_in_month((rt_un16)year, (rt_uchar8)month, &days_in_month)))
-						goto error;
+						goto end;
 					day = days_in_month;
 				}
 			} else {
@@ -190,7 +190,7 @@ rt_s rt_date_get_days_in_month(rt_un16 year, rt_uchar8 month, rt_un *days)
 		break;
 	default:
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	ret = RT_OK;
@@ -208,7 +208,7 @@ rt_s rt_date_get_month_name(rt_un month, const rt_char **name)
 
 	if (month > 12) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	*name = rt_date_month_names[month - 1];
@@ -228,7 +228,7 @@ rt_s rt_date_get_day_of_week_name(rt_un day_of_week, const rt_char **name)
 
 	if (day_of_week > 7) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	*name = rt_date_day_of_week_names[day_of_week - 1];

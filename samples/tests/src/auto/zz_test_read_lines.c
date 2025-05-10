@@ -51,10 +51,10 @@ static rt_s zz_test_read_lines_callback(const rt_char8 *line, rt_un line_size, e
 	rt_un lines_count = test_read_lines_context->lines_count;
 	rt_char8 *expected_line;
 	enum rt_eol expected_eol;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(lines_count >= test_read_lines_context->expected_lines_count))
-		goto error;
+		goto end;
 
 	switch (test_read_lines_context->test) {
 	case ZZ_TEST_READ_LINES_TEST_SIMPLE:
@@ -89,24 +89,20 @@ static rt_s zz_test_read_lines_callback(const rt_char8 *line, rt_un line_size, e
 		break;
 	default:
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	if (RT_UNLIKELY(!rt_char8_equals(line, line_size, expected_line, rt_char8_get_size(expected_line))))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(eol != expected_eol))
-		goto error;
+		goto end;
 
 	test_read_lines_context->lines_count++;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 static rt_s zz_test_read_lines_do(const rt_char *test_resources_dir, const rt_char *file_name, enum zz_test_read_lines_test test, rt_un expected_lines_count)
@@ -117,36 +113,33 @@ static rt_s zz_test_read_lines_do(const rt_char *test_resources_dir, const rt_ch
 	rt_b file_created = RT_FALSE;
 	rt_char8 buffer[16];
 	struct zz_test_read_lines_context context;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	file_path_size = rt_char_get_size(test_resources_dir);
-	if (RT_UNLIKELY(!rt_char_copy(test_resources_dir, file_path_size, file_path, RT_FILE_PATH_SIZE))) goto error;
-	if (RT_UNLIKELY(!rt_file_path_append_separator(file_path, RT_FILE_PATH_SIZE, &file_path_size))) goto error;
-	if (RT_UNLIKELY(!rt_char_append(file_name, rt_char_get_size(file_name), file_path, RT_FILE_PATH_SIZE, &file_path_size))) goto error;
+	if (RT_UNLIKELY(!rt_char_copy(test_resources_dir, file_path_size, file_path, RT_FILE_PATH_SIZE))) goto end;
+	if (RT_UNLIKELY(!rt_file_path_append_separator(file_path, RT_FILE_PATH_SIZE, &file_path_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append(file_name, rt_char_get_size(file_name), file_path, RT_FILE_PATH_SIZE, &file_path_size))) goto end;
 
-	if (RT_UNLIKELY(!rt_file_create(&file, file_path, RT_FILE_MODE_READ))) goto error;
+	if (RT_UNLIKELY(!rt_file_create(&file, file_path, RT_FILE_MODE_READ))) goto end;
 	file_created = RT_TRUE;
 
 	context.test = test;
 	context.lines_count = 0;
 	context.expected_lines_count = expected_lines_count;
 	if (RT_UNLIKELY(!rt_read_lines(&file.io_device.input_stream, buffer, 16, &zz_test_read_lines_callback, &context)))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(context.lines_count != expected_lines_count))
-		goto error;
+		goto end;
 
 	ret = RT_OK;
-free:
+end:
 	if (file_created) {
-		file_created = RT_FALSE;
-		if (RT_UNLIKELY(!rt_io_device_free(&file.io_device) && ret))
-			goto error;
+		if (RT_UNLIKELY(!rt_io_device_free(&file.io_device)))
+			ret = RT_FAILED;
 	}
+
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 static rt_s zz_test_read_lines_create_source_file(const rt_char *source_file_path)
@@ -156,16 +149,16 @@ static rt_s zz_test_read_lines_create_source_file(const rt_char *source_file_pat
 	struct rt_output_stream *output_stream;
 	rt_char8 buffer[RT_CHAR8_BIG_STRING_SIZE];
 	rt_un i, j;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_file_create(&file, source_file_path, RT_FILE_MODE_TRUNCATE))) goto error;
+	if (RT_UNLIKELY(!rt_file_create(&file, source_file_path, RT_FILE_MODE_TRUNCATE))) goto end;
 	file_created = RT_TRUE;
 
 	output_stream = &file.io_device.output_stream;
 
 	for (j = 0; j < 24; j++) {
 		if (RT_UNLIKELY(!rt_random_get_bytes(buffer, RT_CHAR8_BIG_STRING_SIZE)))
-			goto error;
+			goto end;
 		for (i = 0; i < RT_CHAR8_BIG_STRING_SIZE; i++) {
 			if ((rt_uchar8)buffer[i] < 127) {
 				buffer[i] = 'a';
@@ -176,30 +169,27 @@ static rt_s zz_test_read_lines_create_source_file(const rt_char *source_file_pat
 			}
 		}
 		if (RT_UNLIKELY(!output_stream->write(output_stream, buffer, RT_CHAR8_BIG_STRING_SIZE)))
-			goto error;
+			goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	if (file_created) {
-		file_created = RT_FALSE;
-		if (RT_UNLIKELY(!rt_io_device_free(&file.io_device) && ret))
-			goto error;
+		if (RT_UNLIKELY(!rt_io_device_free(&file.io_device)))
+			ret = RT_FAILED;
 	}
+
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 static rt_s zz_test_read_lines_copy_file_callback(const rt_char8 *line, rt_un line_size, enum rt_eol eol, void *context)
 {
 	struct rt_output_stream *output_stream = (struct rt_output_stream*)context;
 	rt_char8 *end_of_line;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!output_stream->write(output_stream, line, line_size)))
-		goto error;
+		goto end;
 
 	switch (eol) {
 	case RT_EOL_NONE:
@@ -216,21 +206,17 @@ static rt_s zz_test_read_lines_copy_file_callback(const rt_char8 *line, rt_un li
 		break;
 	default:
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	if (end_of_line) {
 		if (RT_UNLIKELY(!output_stream->write(output_stream, end_of_line, rt_char8_get_size(end_of_line))))
-			goto error;
+			goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 static rt_s zz_test_read_lines_create_destination_file(const rt_char *source_file_path, const rt_char *destination_file_path)
@@ -243,55 +229,47 @@ static rt_s zz_test_read_lines_create_destination_file(const rt_char *source_fil
 	struct rt_buffered_output_stream buffered_output_stream;
 	rt_char8 read_buffer[24];
 	rt_char8 write_buffer[4];
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_file_create(&source_file, source_file_path, RT_FILE_MODE_READ))) goto error;
+	if (RT_UNLIKELY(!rt_file_create(&source_file, source_file_path, RT_FILE_MODE_READ))) goto end;
 	source_file_created = RT_TRUE;
 
 	input_stream = &source_file.io_device.input_stream;
 
-	if (RT_UNLIKELY(!rt_file_create(&destination_file, destination_file_path, RT_FILE_MODE_TRUNCATE))) goto error;
+	if (RT_UNLIKELY(!rt_file_create(&destination_file, destination_file_path, RT_FILE_MODE_TRUNCATE))) goto end;
 	destination_file_created = RT_TRUE;
 
-	if (RT_UNLIKELY(!rt_buffered_output_stream_create(&buffered_output_stream, &destination_file.io_device.output_stream, write_buffer, 4))) goto error;
+	if (RT_UNLIKELY(!rt_buffered_output_stream_create(&buffered_output_stream, &destination_file.io_device.output_stream, write_buffer, 4))) goto end;
 
-	if (RT_UNLIKELY(!rt_read_lines(input_stream, read_buffer, 24, &zz_test_read_lines_copy_file_callback, &buffered_output_stream))) goto error;
+	if (RT_UNLIKELY(!rt_read_lines(input_stream, read_buffer, 24, &zz_test_read_lines_copy_file_callback, &buffered_output_stream))) goto end;
 
-	if (RT_UNLIKELY(!buffered_output_stream.output_stream.flush(&buffered_output_stream.output_stream))) goto error;
+	if (RT_UNLIKELY(!buffered_output_stream.output_stream.flush(&buffered_output_stream.output_stream))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	if (destination_file_created) {
-		destination_file_created = RT_FALSE;
-		if (RT_UNLIKELY(!rt_io_device_free(&destination_file.io_device) && ret))
-			goto error;
+		if (RT_UNLIKELY(!rt_io_device_free(&destination_file.io_device)))
+			ret = RT_FAILED;
 	}
 	if (source_file_created) {
-		source_file_created = RT_FALSE;
-		if (RT_UNLIKELY(!rt_io_device_free(&source_file.io_device) && ret))
-			goto error;
+		if (RT_UNLIKELY(!rt_io_device_free(&source_file.io_device)))
+			ret = RT_FAILED;
 	}
+
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 static rt_s zz_test_read_lines_copy_file_do(const rt_char *source_file_path, const rt_char *destination_file_path)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!zz_test_read_lines_create_source_file(source_file_path))) goto error;
-	if (RT_UNLIKELY(!zz_test_read_lines_create_destination_file(source_file_path, destination_file_path))) goto error;
-	if (RT_UNLIKELY(!zz_check_same_files_content(source_file_path, destination_file_path))) goto error;
+	if (RT_UNLIKELY(!zz_test_read_lines_create_source_file(source_file_path))) goto end;
+	if (RT_UNLIKELY(!zz_test_read_lines_create_destination_file(source_file_path, destination_file_path))) goto end;
+	if (RT_UNLIKELY(!zz_check_same_files_content(source_file_path, destination_file_path))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 static rt_s zz_test_read_lines_copy_file(const rt_char* tmp_dir, rt_un tmp_dir_size)
@@ -300,49 +278,41 @@ static rt_s zz_test_read_lines_copy_file(const rt_char* tmp_dir, rt_un tmp_dir_s
 	rt_un source_file_path_size = tmp_dir_size;
 	rt_char destination_file_path[RT_FILE_PATH_SIZE];
 	rt_un destination_file_path_size = tmp_dir_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_char_copy(tmp_dir, source_file_path_size, source_file_path, RT_FILE_PATH_SIZE))) goto error;
-	if (RT_UNLIKELY(!rt_file_path_append_separator(source_file_path, RT_FILE_PATH_SIZE, &source_file_path_size))) goto error;
-	if (RT_UNLIKELY(!rt_char_append(_R("source.dat"), 10, source_file_path, RT_FILE_PATH_SIZE, &source_file_path_size))) goto error;
+	if (RT_UNLIKELY(!rt_char_copy(tmp_dir, source_file_path_size, source_file_path, RT_FILE_PATH_SIZE))) goto end;
+	if (RT_UNLIKELY(!rt_file_path_append_separator(source_file_path, RT_FILE_PATH_SIZE, &source_file_path_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append(_R("source.dat"), 10, source_file_path, RT_FILE_PATH_SIZE, &source_file_path_size))) goto end;
 
-	if (RT_UNLIKELY(!rt_char_copy(tmp_dir, destination_file_path_size, destination_file_path, RT_FILE_PATH_SIZE))) goto error;
-	if (RT_UNLIKELY(!rt_file_path_append_separator(destination_file_path, RT_FILE_PATH_SIZE, &destination_file_path_size))) goto error;
-	if (RT_UNLIKELY(!rt_char_append(_R("destination.dat"), 15, destination_file_path, RT_FILE_PATH_SIZE, &destination_file_path_size))) goto error;
+	if (RT_UNLIKELY(!rt_char_copy(tmp_dir, destination_file_path_size, destination_file_path, RT_FILE_PATH_SIZE))) goto end;
+	if (RT_UNLIKELY(!rt_file_path_append_separator(destination_file_path, RT_FILE_PATH_SIZE, &destination_file_path_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append(_R("destination.dat"), 15, destination_file_path, RT_FILE_PATH_SIZE, &destination_file_path_size))) goto end;
 
-	if (RT_UNLIKELY(!zz_test_read_lines_copy_file_do(source_file_path, destination_file_path))) goto error;
+	if (RT_UNLIKELY(!zz_test_read_lines_copy_file_do(source_file_path, destination_file_path))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s zz_test_read_lines(void)
 {
 	rt_char dir[RT_FILE_PATH_SIZE];
 	rt_un dir_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!zz_get_test_resources_dir(dir, RT_FILE_PATH_SIZE, &dir_size))) goto error;
+	if (RT_UNLIKELY(!zz_get_test_resources_dir(dir, RT_FILE_PATH_SIZE, &dir_size))) goto end;
 
-	if (RT_UNLIKELY(!zz_test_read_lines_do(dir, _R("lines.dat"), ZZ_TEST_READ_LINES_TEST_SIMPLE, ZZ_EXPECTED_LINES_COUNT))) goto error;
-	if (RT_UNLIKELY(!zz_test_read_lines_do(dir, _R("lines_cr.dat"), ZZ_TEST_READ_LINES_TEST_CR, 1))) goto error;
-	if (RT_UNLIKELY(!zz_test_read_lines_do(dir, _R("lines_crlf.dat"), ZZ_TEST_READ_LINES_TEST_CRLF, 2))) goto error;
-	if (RT_UNLIKELY(!zz_test_read_lines_do(dir, _R("lines_cr_char.dat"), ZZ_TEST_READ_LINES_TEST_CR_CHAR, 3))) goto error;
+	if (RT_UNLIKELY(!zz_test_read_lines_do(dir, _R("lines.dat"), ZZ_TEST_READ_LINES_TEST_SIMPLE, ZZ_EXPECTED_LINES_COUNT))) goto end;
+	if (RT_UNLIKELY(!zz_test_read_lines_do(dir, _R("lines_cr.dat"), ZZ_TEST_READ_LINES_TEST_CR, 1))) goto end;
+	if (RT_UNLIKELY(!zz_test_read_lines_do(dir, _R("lines_crlf.dat"), ZZ_TEST_READ_LINES_TEST_CRLF, 2))) goto end;
+	if (RT_UNLIKELY(!zz_test_read_lines_do(dir, _R("lines_cr_char.dat"), ZZ_TEST_READ_LINES_TEST_CR_CHAR, 3))) goto end;
 
-	if (RT_UNLIKELY(!zz_get_tmp_dir(dir, RT_FILE_PATH_SIZE, &dir_size))) goto error;
+	if (RT_UNLIKELY(!zz_get_tmp_dir(dir, RT_FILE_PATH_SIZE, &dir_size))) goto end;
 
-	if (RT_UNLIKELY(!zz_test_read_lines_copy_file(dir, dir_size))) goto error;
+	if (RT_UNLIKELY(!zz_test_read_lines_copy_file(dir, dir_size))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

@@ -15,14 +15,14 @@ rt_s rt_shared_mutex_create(struct rt_shared_mutex *shared_mutex, const rt_char 
 	rt_b mutex_attributes_created = RT_FALSE;
 	int error;
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 	/* The handle cannot be inherited to child processes. */
 	/* In case of error, the function returns null and sets last error. */
 	shared_mutex->handle = (rt_h)CreateMutex(RT_NULL, RT_FALSE, name);
 	if (RT_UNLIKELY(!shared_mutex->handle))
-		goto error;
+		goto end;
 #else
 	/* We try to create a new file descriptor first, but use an existing one if it already exists. */
 	/* FD_CLOEXEC is set on the file descriptor. */
@@ -35,9 +35,9 @@ rt_s rt_shared_mutex_create(struct rt_shared_mutex *shared_mutex, const rt_char 
 			/* shm_open returns -1 and sets errno in case of error. */
 			shared_memory_file_descriptor = shm_open(name, O_RDWR, 0666);
 			if (RT_UNLIKELY(shared_memory_file_descriptor == -1))
-				goto error;
+				goto end;
 		} else
-			goto error;
+			goto end;
 	}
 	shared_memory_created = RT_TRUE;
 	shared_memory_file_descriptor_created = RT_TRUE;
@@ -45,12 +45,12 @@ rt_s rt_shared_mutex_create(struct rt_shared_mutex *shared_mutex, const rt_char 
 	/* Set the size of the shared memory. */
 	/* ftruncate returns -1 and sets errno in case of error. */
 	if (RT_UNLIKELY(ftruncate(shared_memory_file_descriptor, sizeof(pthread_mutex_t)) == -1))
-		goto error;
+		goto end;
 
 	/* On error, mmap returns MAP_FAILED and sets errno. */
 	mutex = mmap(RT_NULL, sizeof(pthread_mutex_t), PROT_READ | PROT_WRITE, MAP_SHARED, shared_memory_file_descriptor, 0);
 	if (RT_UNLIKELY(mutex == MAP_FAILED))
-		goto error;
+		goto end;
 	memory_mapped = RT_TRUE;
 
 	if (create) {
@@ -58,7 +58,7 @@ rt_s rt_shared_mutex_create(struct rt_shared_mutex *shared_mutex, const rt_char 
 		error = pthread_mutexattr_init(&mutex_attributes);
 		if (RT_UNLIKELY(error)) {
 			errno = error;
-			goto error;
+			goto end;
 		}
 		mutex_attributes_created = RT_TRUE;
 
@@ -66,21 +66,21 @@ rt_s rt_shared_mutex_create(struct rt_shared_mutex *shared_mutex, const rt_char 
 		error = pthread_mutexattr_setpshared(&mutex_attributes, PTHREAD_PROCESS_SHARED);
 		if (RT_UNLIKELY(error)) {
 			errno = error;
-			goto error;
+			goto end;
 		}
 
 		/* pthread_mutexattr_setrobust returns an errno in case of error. */
 		error = pthread_mutexattr_setrobust(&mutex_attributes, PTHREAD_MUTEX_ROBUST);
 		if (RT_UNLIKELY(error)) {
 			errno = error;
-			goto error;
+			goto end;
 		}
 
 		/* pthread_mutex_init returns an errno in case of error. */
 		error = pthread_mutex_init(mutex, &mutex_attributes);
 		if (RT_UNLIKELY(error)) {
 			errno = error;
-			goto error;
+			goto end;
 		}
 
 	}
@@ -88,43 +88,35 @@ rt_s rt_shared_mutex_create(struct rt_shared_mutex *shared_mutex, const rt_char 
 
 #endif
 	ret = RT_OK;
-free:
+end:
 #ifdef RT_DEFINE_LINUX
 	if (mutex_attributes_created) {
-		mutex_attributes_created = RT_FALSE;
 		/* pthread_mutexattr_destroy returns an errno in case of error. */
 		error = pthread_mutexattr_destroy(&mutex_attributes);
-		if (RT_UNLIKELY(error && ret)) {
+		if (RT_UNLIKELY(error)) {
 			errno = error;
-			goto error;
+			ret = RT_FAILED;
 		}
 	}
 	if (shared_memory_file_descriptor_created) {
-		shared_memory_file_descriptor_created = RT_FALSE;
 		/* close returns -1 and sets errno in case of error. */
-		if (RT_UNLIKELY(close(shared_memory_file_descriptor) && ret))
-			goto error;
+		if (RT_UNLIKELY(close(shared_memory_file_descriptor)))
+			ret = RT_FAILED;
+	}
+
+	if (RT_UNLIKELY(!ret)) {
+		if (memory_mapped) {
+			munmap(mutex, sizeof(pthread_mutex_t));
+		}
+		if (shared_memory_file_descriptor_created) {
+			close(shared_memory_file_descriptor);
+		}
+		if (shared_memory_created) {
+			shm_unlink(name);
+		}
 	}
 #endif
 	return ret;
-
-error:
-#ifdef RT_DEFINE_LINUX
-	if (memory_mapped) {
-		memory_mapped = RT_FALSE;
-		munmap(mutex, sizeof(pthread_mutex_t));
-	}
-	if (shared_memory_file_descriptor_created) {
-		shared_memory_file_descriptor_created = RT_FALSE;
-		close(shared_memory_file_descriptor);
-	}
-	if (shared_memory_created) {
-		shared_memory_created = RT_FALSE;
-		shm_unlink(name);
-	}
-#endif
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_shared_mutex_acquire(struct rt_shared_mutex *shared_mutex)
@@ -132,11 +124,11 @@ rt_s rt_shared_mutex_acquire(struct rt_shared_mutex *shared_mutex)
 #ifdef RT_DEFINE_LINUX
 	int error;
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 	if (RT_UNLIKELY(WaitForSingleObject(shared_mutex->handle, INFINITE) == WAIT_FAILED))
-		goto error;
+		goto end;
 #else
 	/* pthread_mutex_lock returns an errno in case of error. */
 	error = pthread_mutex_lock(shared_mutex->mutex);
@@ -146,22 +138,18 @@ rt_s rt_shared_mutex_acquire(struct rt_shared_mutex *shared_mutex)
 			error = pthread_mutex_consistent(shared_mutex->mutex);
 			if (RT_UNLIKELY(error)) {
 				errno = error;
-				goto error;
+				goto end;
 			}
 		} else {
 			errno = error;
-			goto error;
+			goto end;
 		}
 	}
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_shared_mutex_release(struct rt_shared_mutex *shared_mutex)
@@ -169,27 +157,23 @@ rt_s rt_shared_mutex_release(struct rt_shared_mutex *shared_mutex)
 #ifdef RT_DEFINE_LINUX
 	int error;
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 	if (RT_UNLIKELY(!ReleaseMutex(shared_mutex->handle)))
-		goto error;
+		goto end;
 #else
 	/* pthread_mutex_unlock returns an errno in case of error. */
 	error = pthread_mutex_unlock(shared_mutex->mutex);
 	if (RT_UNLIKELY(error)) {
 		errno = error;
-		goto error;
+		goto end;
 	}
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_shared_mutex_free(struct rt_shared_mutex *shared_mutex)

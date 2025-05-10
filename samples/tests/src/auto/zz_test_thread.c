@@ -9,63 +9,55 @@ static rt_s zz_test_thread_check_last_error_message(const rt_char *expected)
 {
 	rt_char buffer[200];
 	rt_un buffer_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	buffer_size = 0;
-	if (RT_UNLIKELY(!rt_last_error_message_append(buffer, 200, &buffer_size))) goto error;
-	if (RT_UNLIKELY(rt_char_get_size(buffer) != buffer_size)) goto error;
-	if (RT_UNLIKELY(!rt_char_equals(buffer, buffer_size, expected, rt_char_get_size(expected)))) goto error;
+	if (RT_UNLIKELY(!rt_last_error_message_append(buffer, 200, &buffer_size))) goto end;
+	if (RT_UNLIKELY(rt_char_get_size(buffer) != buffer_size)) goto end;
+	if (RT_UNLIKELY(!rt_char_equals(buffer, buffer_size, expected, rt_char_get_size(expected)))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 static rt_un32 RT_STDCALL zz_test_thread_callback(void *parameter)
 {
 	struct zz_test_thread_parameter *local_parameter = (struct zz_test_thread_parameter*)parameter;
 	void* data;
-	rt_un32 exit_code;
+	rt_un32 exit_code = 1;
 
 	if (RT_UNLIKELY(!rt_last_error_message_set(_R("Second last error message."))))
-		goto error;
+		goto end;
 
 	rt_sleep_sleep(500);
 	if (local_parameter->value != 12)
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!rt_thread_local_storage_get(local_parameter->thread_local_storage, &data)))
-		goto error;
+		goto end;
 
 	if (data)
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!rt_thread_local_storage_set(local_parameter->thread_local_storage, (void*)2)))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!rt_thread_local_storage_get(local_parameter->thread_local_storage, &data)))
-		goto error;
+		goto end;
 
 	if ((rt_un)data != 2)
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!zz_test_thread_check_last_error_message(_R("Second last error message."))))
-		goto error;
+		goto end;
 
 	exit_code = 42;
-free:
+end:
 	if (RT_UNLIKELY(!rt_last_error_message_cleanup_thread_buffer()))
 		exit_code = 1;
 
 	return exit_code;
-
-error:
-	exit_code = 1;
-	goto free;
 }
 
 rt_s zz_test_thread(void)
@@ -79,72 +71,68 @@ rt_s zz_test_thread(void)
 	rt_b thread_created = RT_FALSE;
 	struct rt_thread thread;
 	rt_un32 exit_code;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_last_error_message_set(_R("Last error message."))))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!rt_chrono_create(&chrono)))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!rt_thread_local_storage_create(&thread_local_storage)))
-		goto error;
+		goto end;
 	thread_local_storage_created = RT_TRUE;
 
 	if (RT_UNLIKELY(!rt_thread_local_storage_get(&thread_local_storage, &data)))
-		goto error;
+		goto end;
 
 	if (data)
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!rt_thread_local_storage_set(&thread_local_storage, (void*)1)))
-		goto error;
+		goto end;
 
 	parameter.value = 12;
 	parameter.thread_local_storage = &thread_local_storage;
 
 	if (RT_UNLIKELY(!rt_thread_create(&thread, &zz_test_thread_callback, &parameter)))
-		goto error;
+		goto end;
 	thread_created = RT_TRUE;
 
 	if (RT_UNLIKELY(!rt_thread_join(&thread)))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!rt_chrono_get_duration(&chrono, &duration)))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(duration < 250000 || duration > 1000000))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!rt_thread_get_exit_code(&thread, &exit_code)))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(exit_code != 42))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!rt_thread_local_storage_get(&thread_local_storage, &data)))
-		goto error;
+		goto end;
 
 	if ((rt_un)data != 1)
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(!zz_test_thread_check_last_error_message(_R("Last error message."))))
-		goto error;
+		goto end;
 
 	ret = RT_OK;
-free:
+end:
 	if (thread_created) {
-		thread_created = RT_FALSE;
-		if (RT_UNLIKELY(!rt_thread_free(&thread) && ret))
-			goto error;
+		if (RT_UNLIKELY(!rt_thread_free(&thread)))
+			ret = RT_FAILED;
 	}
 	if (thread_local_storage_created) {
-		thread_local_storage_created = RT_FALSE;
-		if (RT_UNLIKELY(!rt_thread_local_storage_free(&thread_local_storage) && ret))
-			goto error;
+		if (RT_UNLIKELY(!rt_thread_local_storage_free(&thread_local_storage)))
+			ret = RT_FAILED;
 	}
+
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }

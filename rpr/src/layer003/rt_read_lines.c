@@ -11,18 +11,18 @@ rt_s rt_read_lines(struct rt_input_stream *input_stream, rt_char8 *buffer, rt_un
 	rt_un line_beginning;
 	enum rt_eol eol;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	while (RT_TRUE) {
 		if (RT_UNLIKELY(!input_stream->read(input_stream, &buffer[bytes_parsed], buffer_capacity - bytes_parsed, &bytes_read)))
-			goto error;
+			goto end;
 
 		/* End of stream? */
 		if (!bytes_read) {
 			/* If any, send the line that was at the beginning of the buffer. */
 			if (bytes_parsed) {
 				if (RT_UNLIKELY(!callback(buffer, bytes_parsed, RT_EOL_NONE, context)))
-					goto error;
+					goto end;
 			}
 			break;
 		}
@@ -45,7 +45,7 @@ continue_reading:
 
 						/* Attempt to read the potential LF from the real stream. */
 						if (RT_UNLIKELY(!input_stream->read(input_stream, &buffer[bytes_parsed], buffer_capacity - bytes_parsed, &bytes_read)))
-							goto error;
+							goto end;
 
 						/* Nothing more to read, so we assume no LF. */
 						if (!bytes_read) {
@@ -70,7 +70,7 @@ continue_reading:
 				}
 
 				if (RT_UNLIKELY(!callback(&buffer[line_beginning], i - line_beginning, eol, context)))
-					goto error;
+					goto end;
 				if (eol == RT_EOL_CRLF) {
 					/* Skip he LF. */
 					i++;
@@ -84,7 +84,7 @@ continue_reading:
 		if (RT_UNLIKELY(bytes_parsed == buffer_capacity)) {
 			/* The buffer is full yet no end of line. The buffer is too small. */
 			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-			goto error;
+			goto end;
 		}
 
 		/* Copy the beginning of the current line at the beginning of the buffer. */
@@ -93,10 +93,6 @@ continue_reading:
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

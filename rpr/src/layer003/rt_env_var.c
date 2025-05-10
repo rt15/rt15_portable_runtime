@@ -18,16 +18,16 @@ rt_s rt_env_var_get(const rt_char *name, rt_char *buffer, rt_un buffer_capacity,
 	/* Ensure that the 32 or 64 bits integer will fit into a DWORD. */
 	if (RT_UNLIKELY(buffer_capacity > RT_TYPE_MAX_UN32)) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 	returned_value = GetEnvironmentVariable(name, buffer, (DWORD)buffer_capacity);
 	if (RT_UNLIKELY(!returned_value))
-		goto error;
+		goto end;
 
 	/* If buffer is too small, GetEnvironmentVariable return the required buffer size and buffer is unknown. */
 	if (RT_UNLIKELY(returned_value >= buffer_capacity)) {
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-		goto error;
+		goto end;
 	}
 	*buffer_size = returned_value;
 
@@ -36,14 +36,14 @@ rt_s rt_env_var_get(const rt_char *name, rt_char *buffer, rt_un buffer_capacity,
 	if (RT_UNLIKELY(!returned_value)) {
 		/* The getenv function might not set errno. The only failure reason might be that the variable is not found. */
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	/* Check buffer size. */
 	length = strlen(returned_value);
 	if (RT_UNLIKELY(length + 1 > buffer_capacity)) {
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-		goto error;
+		goto end;
 	}
 
 	/* Copy result to buffer, including zero character. */
@@ -71,7 +71,7 @@ rt_s rt_env_var_set(const rt_char *name, const rt_char *value)
 
 	/* Returns FALSE and sets last error in case of failure. */
 	if (RT_UNLIKELY(!SetEnvironmentVariable(name, value)))
-		goto error;
+		goto end;
 
 #else
 
@@ -79,7 +79,7 @@ rt_s rt_env_var_set(const rt_char *name, const rt_char *value)
 	/* Third parameter is named overwrite, set to nonzero to overwrite possible existing value. */
 	/* Returns -1 and sets errno in case of error. */
 	if (RT_UNLIKELY(setenv(name, value, 1) == -1))
-		goto error;
+		goto end;
 
 #endif
 
@@ -101,13 +101,13 @@ rt_s rt_env_var_delete(const rt_char *name)
 	/* Passing RT_NULL as value remove the variable from the process environment. */
 	/* Returns FALSE and sets last error in case of failure. */
 	if (RT_UNLIKELY(!SetEnvironmentVariable(name, RT_NULL)))
-		goto error;
+		goto end;
 
 #else
 
 	/* Returns -1 and sets errno in case of error. */
 	if (RT_UNLIKELY(unsetenv(name) == -1))
-		goto error;
+		goto end;
 
 #endif
 

@@ -7,7 +7,7 @@ rt_s rt_binary_search_index(const void *area, const void *item, rt_un size, rt_u
 	rt_un upper_bound;
 	rt_un middle;
 	rt_n comparison_result;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (size) {
 		area_chars = area;
@@ -20,7 +20,7 @@ rt_s rt_binary_search_index(const void *area, const void *item, rt_un size, rt_u
 			middle = lower_bound + (upper_bound - lower_bound) / 2;
 
 			if (RT_UNLIKELY(!callback(&area_chars[middle * item_size], item, context, &comparison_result)))
-				goto error;
+				goto end;
 			if (comparison_result < 0) {
 				lower_bound = middle + 1;
 			} else {
@@ -32,7 +32,7 @@ rt_s rt_binary_search_index(const void *area, const void *item, rt_un size, rt_u
 
 		/* Deferred test for equality. */
 		if (RT_UNLIKELY(!callback(&area_chars[lower_bound * item_size], item, context, &comparison_result)))
-			goto error;
+			goto end;
 		if (comparison_result) {
 			*item_index = RT_TYPE_MAX_UN;
 		} else {
@@ -43,12 +43,8 @@ rt_s rt_binary_search_index(const void *area, const void *item, rt_un size, rt_u
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_binary_search_insertion_index(const void *area, const void *item, rt_un size, rt_un item_size, rt_comparison_callback_t callback, void *context, rt_un *insertion_index)
@@ -58,7 +54,7 @@ rt_s rt_binary_search_insertion_index(const void *area, const void *item, rt_un 
 	rt_un upper_bound;
 	rt_un middle;
 	rt_n comparison_result;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (size) {
 		area_chars = area;
@@ -71,7 +67,7 @@ rt_s rt_binary_search_insertion_index(const void *area, const void *item, rt_un 
 			middle = lower_bound + (upper_bound - lower_bound) / 2;
 
 			if (RT_UNLIKELY(!callback(&area_chars[middle * item_size], item, context, &comparison_result)))
-				goto error;
+				goto end;
 			if (comparison_result < 0) {
 				lower_bound = middle + 1;
 			} else {
@@ -79,7 +75,7 @@ rt_s rt_binary_search_insertion_index(const void *area, const void *item, rt_un 
 			}
 		}
 		if (RT_UNLIKELY(!callback(&area_chars[upper_bound * item_size], item, context, &comparison_result)))
-			goto error;
+			goto end;
 		if (comparison_result < 0) {
 			*insertion_index = upper_bound + 1;
 		} else {
@@ -91,10 +87,6 @@ rt_s rt_binary_search_insertion_index(const void *area, const void *item, rt_un 
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

@@ -7,20 +7,20 @@ rt_s rt_hash_table_create(struct rt_hash_table_entry **hash_table, rt_hash_callb
 {
 	struct rt_hash_table_header *header;
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	*hash_table = RT_NULL;
 
 	if (RT_UNLIKELY(!RT_MEMORY_IS_POWER_OF_TWO(initial_capacity))) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 	if (!header_size)
 		header_size = sizeof(struct rt_hash_table_header);
 
 	if (RT_UNLIKELY(!rt_array_create((void**)hash_table, initial_capacity, sizeof(struct rt_hash_table_entry), header_size, heap)))
-		goto error;
+		goto end;
 
 	header = RT_HASH_TABLE_GET_HEADER(*hash_table);
 	header->hash_callback = hash_callback;
@@ -33,13 +33,12 @@ rt_s rt_hash_table_create(struct rt_hash_table_entry **hash_table, rt_hash_callb
 		(*hash_table)[i].key = RT_NULL;
 
 	ret = RT_OK;
-free:
-	return ret;
+end:
+	if (RT_UNLIKELY(!ret)) {
+		rt_hash_table_free(hash_table);
+	}
 
-error:
-	rt_hash_table_free(hash_table);
-	ret = RT_FAILED;
-	goto free;
+	return ret;
 }
 
 static rt_s rt_hash_table_expand(struct rt_hash_table_entry **hash_table)
@@ -61,14 +60,14 @@ static rt_s rt_hash_table_expand(struct rt_hash_table_entry **hash_table)
 	struct rt_hash_table_entry *new_entry;
 
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	header = RT_HASH_TABLE_GET_HEADER(*hash_table);
 	header_size = header->array_header.header_size;
 	array_size = header->array_header.size;
 	new_array_size = array_size * 2;
 
-	if (RT_UNLIKELY(!rt_array_create((void**)&new_hash_table, new_array_size, sizeof(struct rt_hash_table_entry), header_size, header->array_header.heap))) goto error;
+	if (RT_UNLIKELY(!rt_array_create((void**)&new_hash_table, new_array_size, sizeof(struct rt_hash_table_entry), header_size, header->array_header.heap))) goto end;
 
 	new_header = RT_HASH_TABLE_GET_HEADER(new_hash_table);
 
@@ -111,13 +110,12 @@ static rt_s rt_hash_table_expand(struct rt_hash_table_entry **hash_table)
 	/* If it fails, then we do not free the new hash table. */
 	ret = rt_array_free((void**)&old_hash_table);
 
-free:
-	return ret;
+end:
+	if (RT_UNLIKELY(!ret)) {
+		rt_array_free((void**)&new_hash_table);
+	}
 
-error:
-	rt_array_free((void**)&new_hash_table);
-	ret = RT_FAILED;
-	goto free;
+	return ret;
 }
 
 rt_s rt_hash_table_set(struct rt_hash_table_entry **hash_table, const void *key, rt_un key_size, const void *value, void **existing_value)
@@ -128,14 +126,14 @@ rt_s rt_hash_table_set(struct rt_hash_table_entry **hash_table, const void *key,
 	rt_un index;
 	struct rt_hash_table_entry *entry;
 	rt_n comparison_result;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	header = RT_HASH_TABLE_GET_HEADER(*hash_table);
 
 	/* Expand the hash table if it is already more than 50% full. */
 	if (header->size > header->array_header.size / 2) {
 		if (RT_UNLIKELY(!rt_hash_table_expand(hash_table)))
-			goto error;
+			goto end;
 
 		header = RT_HASH_TABLE_GET_HEADER(*hash_table);
 	}
@@ -143,7 +141,7 @@ rt_s rt_hash_table_set(struct rt_hash_table_entry **hash_table, const void *key,
 	array_size = header->array_header.size;
 
 	if (RT_UNLIKELY(!header->hash_callback(key, key_size, header->context, &full_hash)))
-		goto error;
+		goto end;
 
 	index = (full_hash & (array_size - 1));
 	entry = &(*hash_table)[index];
@@ -152,7 +150,7 @@ rt_s rt_hash_table_set(struct rt_hash_table_entry **hash_table, const void *key,
 	while (entry->key) {
 		if (entry->key_hash == full_hash) {
 			if (RT_UNLIKELY(!header->comparison_callback(entry->key, entry->key_size, key, key_size, header->context, &comparison_result)))
-				goto error;
+				goto end;
 			if (!comparison_result) {
 				/* Same key, we will replace the existing value. */
 				break;
@@ -182,12 +180,8 @@ rt_s rt_hash_table_set(struct rt_hash_table_entry **hash_table, const void *key,
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_hash_table_get(struct rt_hash_table_entry *hash_table, const void *key, rt_un key_size, void **value)
@@ -198,7 +192,7 @@ rt_s rt_hash_table_get(struct rt_hash_table_entry *hash_table, const void *key, 
 	rt_un index;
 	struct rt_hash_table_entry *entry;
 	rt_n comparison_result;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	*value = RT_NULL;
 
@@ -206,14 +200,14 @@ rt_s rt_hash_table_get(struct rt_hash_table_entry *hash_table, const void *key, 
 	array_size = header->array_header.size;
 
 	if (RT_UNLIKELY(!header->hash_callback(key, key_size, header->context, &full_hash)))
-		goto error;
+		goto end;
 
 	index = (full_hash & (array_size - 1));
 	entry = &hash_table[index];
 	while (entry->key) {
 		if (entry->key_hash == full_hash) {
 			if (RT_UNLIKELY(!header->comparison_callback(entry->key, entry->key_size, key, key_size, header->context, &comparison_result)))
-				goto error;
+				goto end;
 			if (!comparison_result) {
 				*value = (void*)entry->value;
 				break;
@@ -226,12 +220,8 @@ rt_s rt_hash_table_get(struct rt_hash_table_entry *hash_table, const void *key, 
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_hash_table_delete(struct rt_hash_table_entry **hash_table, const void *key, rt_un key_size, void **existing_value)
@@ -245,7 +235,7 @@ rt_s rt_hash_table_delete(struct rt_hash_table_entry **hash_table, const void *k
 	struct rt_hash_table_entry *delete_entry;
 	struct rt_hash_table_entry *entry;
 	rt_n comparison_result;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (existing_value)
 		*existing_value = RT_NULL;
@@ -254,14 +244,14 @@ rt_s rt_hash_table_delete(struct rt_hash_table_entry **hash_table, const void *k
 	array_size = header->array_header.size;
 
 	if (RT_UNLIKELY(!header->hash_callback(key, key_size, header->context, &full_hash)))
-		goto error;
+		goto end;
 
 	delete_index = (full_hash & (array_size - 1));
 	delete_entry = &(*hash_table)[delete_index];
 	while (delete_entry->key) {
 		if (delete_entry->key_hash == full_hash) {
 			if (RT_UNLIKELY(!header->comparison_callback(delete_entry->key, delete_entry->key_size, key, key_size, header->context, &comparison_result)))
-				goto error;
+				goto end;
 			if (!comparison_result) {
 
 				/* We found the item to delete. */
@@ -313,12 +303,8 @@ rt_s rt_hash_table_delete(struct rt_hash_table_entry **hash_table, const void *k
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_hash_table_free(struct rt_hash_table_entry **hash_table)

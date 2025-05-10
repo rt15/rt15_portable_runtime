@@ -4,23 +4,20 @@ rt_s zz_test_sleep(void)
 {
 	struct rt_chrono chrono;
 	rt_un duration;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_chrono_create(&chrono)))
-		goto error;
+		goto end;
 
 	rt_sleep_sleep(500);
 
 	if (RT_UNLIKELY(!rt_chrono_get_duration(&chrono, &duration)))
-		goto error;
+		goto end;
 
 	if (RT_UNLIKELY(duration < 400000 || duration > 600000))
-		goto error;
+		goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-error:
-	ret = RT_FAILED;
-	goto free;
 }

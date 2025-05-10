@@ -14,7 +14,7 @@ rt_s zz_test_memory_copy(struct rt_output_stream *output_stream)
 	rt_uchar8 source[ZZ_BUFFER_SIZE];
 	rt_uchar8 destination[ZZ_BUFFER_SIZE];
 	rt_n i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* Initialize source buffer. */
 	for (i = 0; i < ZZ_BUFFER_SIZE; i++) {
@@ -23,52 +23,48 @@ rt_s zz_test_memory_copy(struct rt_output_stream *output_stream)
 
 	/* Test memcpy. */
 	if (RT_UNLIKELY(!zz_start_chrono(&chrono)))
-		goto error;
+		goto end;
 	for (i = 0; i < ZZ_TESTS_COUNT; i++) {
 		/* VC is inlining code based on ZZ_BUFFER_SIZE. */
 		memcpy(destination, source, ZZ_BUFFER_SIZE);
 	}
 	if (RT_UNLIKELY(!zz_stop_chrono("memcpy", &chrono, output_stream)))
-		goto error;
+		goto end;
 
 	/* Test memcpy in function. */
 	if (RT_UNLIKELY(!zz_start_chrono(&chrono)))
-		goto error;
+		goto end;
 	for (i = 0; i < ZZ_TESTS_COUNT; i++) {
 		/* Avoid inlining and size prediction, should force CRT usage. */
 		zz_memory_copy(source, destination, ZZ_BUFFER_SIZE);
 	}
 	if (RT_UNLIKELY(!zz_stop_chrono("memcpy in function", &chrono, output_stream)))
-		goto error;
+		goto end;
 
 	/* Test rt_memory_Copy. */
 	if (RT_UNLIKELY(!zz_start_chrono(&chrono)))
-		goto error;
+		goto end;
 	for (i = 0; i < ZZ_TESTS_COUNT; i++) {
 		rt_memory_copy(source, destination, ZZ_BUFFER_SIZE);
 	}
 	if (RT_UNLIKELY(!zz_stop_chrono("rt_memory_copy", &chrono, output_stream)))
-		goto error;
+		goto end;
 
 	/* Test RT_MEMORY_COPY. */
 	if (RT_UNLIKELY(!zz_start_chrono(&chrono)))
-		goto error;
+		goto end;
 	for (i = 0; i < ZZ_TESTS_COUNT; i++) {
 		/* Intrinsic should be used, CRT otherwise. */
 		RT_MEMORY_COPY(source, destination, ZZ_BUFFER_SIZE);
 	}
 	if (RT_UNLIKELY(!zz_stop_chrono("RT_MEMORY_COPY", &chrono, output_stream)))
-		goto error;
+		goto end;
 
 	/* Ensure that destination is used. */
 	if (RT_UNLIKELY(RT_MEMORY_COMPARE(source, destination, ZZ_BUFFER_SIZE)))
-		goto error;
+		goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

@@ -8,7 +8,7 @@ rt_s rt_system_info_get_logical_cpu_count(rt_un *logical_cpu_count)
 	SYSTEM_INFO system_info;
 #else
 	long result;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
@@ -23,16 +23,12 @@ rt_s rt_system_info_get_logical_cpu_count(rt_un *logical_cpu_count)
 	/* sysconf returns -1 and sets errno in case of issue. */
 	result = sysconf(_SC_NPROCESSORS_ONLN);
 	if (result == -1)
-		goto error;
+		goto end;
 
 	*logical_cpu_count = (rt_un)result;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 #endif
 }

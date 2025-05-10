@@ -58,7 +58,7 @@ rt_s rt_file_create(struct rt_file *file, const rt_char *file_path, enum rt_file
 		break;
 	default:
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
-		goto error;
+		goto end;
 	}
 
 #ifdef RT_DEFINE_WINDOWS
@@ -71,12 +71,12 @@ rt_s rt_file_create(struct rt_file *file, const rt_char *file_path, enum rt_file
 				 FILE_ATTRIBUTE_NORMAL,
 				 NULL);
 	if (RT_UNLIKELY(file_handle == INVALID_HANDLE_VALUE))
-		goto error;
+		goto end;
 
 #else
 	file_descriptor = open(file_path, flags, RT_FILE_RIGHTS);
 	if (RT_UNLIKELY(file_descriptor == -1))
-		goto error;
+		goto end;
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
@@ -100,16 +100,16 @@ rt_s rt_file_get_size(struct rt_file *file, rt_un64 *file_size)
 	rt_s ret;
 
 	/* Backup the current position */
-	if (RT_UNLIKELY(!rt_file_get_pointer(file, &old_position))) goto error;
+	if (RT_UNLIKELY(!rt_file_get_pointer(file, &old_position))) goto end;
 
 	/* Go to end of file. */
-	if (RT_UNLIKELY(!rt_file_set_pointer(file, 0, RT_FILE_POSITION_END))) goto error;
+	if (RT_UNLIKELY(!rt_file_set_pointer(file, 0, RT_FILE_POSITION_END))) goto end;
 
 	/* Get the new position which is the file size. */
-	if (RT_UNLIKELY(!rt_file_get_pointer(file, file_size))) goto error;
+	if (RT_UNLIKELY(!rt_file_get_pointer(file, file_size))) goto end;
 
 	/* Go back to original position. */
-	if (RT_UNLIKELY(!rt_file_set_pointer(file, old_position, RT_FILE_POSITION_BEGIN))) goto error;
+	if (RT_UNLIKELY(!rt_file_set_pointer(file, old_position, RT_FILE_POSITION_BEGIN))) goto end;
 
 	ret = RT_OK;
 free:
@@ -169,12 +169,12 @@ rt_s rt_file_get_pointer(struct rt_file *file, rt_un64 *offset)
 #ifdef RT_DEFINE_WINDOWS
 	distance_to_move.QuadPart = 0;
 	/* If the function fails, the return value is zero and last error is set. */
-	if (RT_UNLIKELY(!SetFilePointerEx(file->io_device.handle, distance_to_move, &new_file_pointer, FILE_CURRENT))) goto error;
+	if (RT_UNLIKELY(!SetFilePointerEx(file->io_device.handle, distance_to_move, &new_file_pointer, FILE_CURRENT))) goto end;
 	*offset = new_file_pointer.QuadPart;
 #else
 	returned_value = lseek(file->io_device.file_descriptor, 0, SEEK_CUR);
 	if (RT_UNLIKELY(returned_value < 0))
-		goto error;
+		goto end;
 	*offset = returned_value;
 #endif
 

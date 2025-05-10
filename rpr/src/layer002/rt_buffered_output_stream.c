@@ -21,22 +21,22 @@ rt_s rt_buffered_output_stream_write(struct rt_output_stream *output_stream, con
 	rt_char8 *buffer = buffered_output_stream->buffer;
 	rt_un buffer_capacity = buffered_output_stream->buffer_capacity;
 	rt_un buffer_size = buffered_output_stream->buffer_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (bytes_to_write > buffer_capacity) {
 		/* The buffer is too small, we won't use it. But we must write its content first. */
 		if (buffer_size) {
 			if (RT_UNLIKELY(!real_output_stream->write(real_output_stream, buffer, buffer_size)))
-				goto error;
+				goto end;
 			buffered_output_stream->buffer_size = 0;
 		}
 		if (RT_UNLIKELY(!real_output_stream->write(real_output_stream, data, bytes_to_write)))
-			goto error;
+			goto end;
 	} else {
 		if (bytes_to_write > buffer_capacity - buffer_size) {
 			/* Not enough space left in the buffer, let's write it. */
 			if (RT_UNLIKELY(!real_output_stream->write(real_output_stream, buffer, buffer_size)))
-				goto error;
+				goto end;
 
 			/* The buffer is free, let's use it. */
 			RT_MEMORY_COPY(data, buffer, bytes_to_write);
@@ -49,12 +49,8 @@ rt_s rt_buffered_output_stream_write(struct rt_output_stream *output_stream, con
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_buffered_output_stream_flush(struct rt_output_stream *output_stream)
@@ -63,19 +59,15 @@ rt_s rt_buffered_output_stream_flush(struct rt_output_stream *output_stream)
 	struct rt_output_stream *real_output_stream = buffered_output_stream->real_output_stream;
 	rt_char8 *buffer = buffered_output_stream->buffer;
 	rt_un buffer_size = buffered_output_stream->buffer_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (buffer_size) {
 		if (RT_UNLIKELY(!real_output_stream->write(real_output_stream, buffer, buffer_size)))
-			goto error;
+			goto end;
 		buffered_output_stream->buffer_size = 0;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

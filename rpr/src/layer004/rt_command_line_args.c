@@ -57,7 +57,7 @@ static rt_s rt_command_line_args_analyze(const rt_char *arg, enum rt_command_lin
 {
 	rt_un arg_size = rt_char_get_size(arg);
 	rt_un i;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (arg_size <= 1) {
 		/* Empty string or only one character like 'a' or '-'. */
@@ -84,7 +84,7 @@ static rt_s rt_command_line_args_analyze(const rt_char *arg, enum rt_command_lin
 						/* Copy until equals sign, skipping '--' at the beginning. */
 						*options_buffer_size = i - 2;
 						if (RT_UNLIKELY(!rt_char_copy(&arg[2], *options_buffer_size, options_buffer, options_buffer_capacity)))
-							goto error;
+							goto end;
 
 						/* Value is after equals sign. */
 						*value = &arg[i + 1];
@@ -92,7 +92,7 @@ static rt_s rt_command_line_args_analyze(const rt_char *arg, enum rt_command_lin
 						/* Copy the whole arg without '--'. */
 						*options_buffer_size = arg_size - 2;
 						if (RT_UNLIKELY(!rt_char_copy(&arg[2], *options_buffer_size, options_buffer, options_buffer_capacity)))
-							goto error;
+							goto end;
 
 						/* No value directly concatenated after the option and '='. */
 						*value = RT_NULL;
@@ -105,7 +105,7 @@ static rt_s rt_command_line_args_analyze(const rt_char *arg, enum rt_command_lin
 
 				*options_buffer_size = arg_size - 1;
 				if (RT_UNLIKELY(!rt_char_copy(&arg[1], *options_buffer_size, options_buffer, options_buffer_capacity)))
-					goto error;
+					goto end;
 
 				*value = RT_NULL;
 			}
@@ -117,12 +117,8 @@ static rt_s rt_command_line_args_analyze(const rt_char *arg, enum rt_command_lin
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_line_args_parse_callback_t callback, void *context,
@@ -144,7 +140,7 @@ rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_l
 	rt_un i;
 	rt_un j;
 	rt_un k;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* There might be no non-options. */
 	*non_options_index = RT_TYPE_MAX_UN;
@@ -155,7 +151,7 @@ rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_l
 		if (RT_UNLIKELY(!rt_command_line_args_analyze(argv[i], &arg_type,
 						  options_buffer,   RT_CHAR_HALF_BIG_STRING_SIZE, &options_buffer_size,
 						  &value)))
-			goto error;
+			goto end;
 
 		if (arg_type == RT_COMMAND_LINE_ARGS_TYPE_SHORT) {
 			j = 0;
@@ -205,7 +201,7 @@ rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_l
 				}
 
 				if (RT_UNLIKELY(!callback(arg_type, valid, short_option, RT_NULL, value_cardinality, value, context)))
-					goto error;
+					goto end;
 				j++;
 			}
 		} else if (arg_type == RT_COMMAND_LINE_ARGS_TYPE_LONG) {
@@ -233,7 +229,7 @@ rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_l
 			}
 
 			if (RT_UNLIKELY(!callback(arg_type, valid, 0, options_buffer, value_cardinality, value, context)))
-				goto error;
+				goto end;
 
 		} else if (arg_type == RT_COMMAND_LINE_ARGS_TYPE_NON_OPTION) {
 			/* This is a non-option that can be after all options or that can be between options. */
@@ -251,7 +247,7 @@ rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_l
 					if (RT_UNLIKELY(!rt_command_line_args_analyze(argv[k], &arg_type,
 									  options_buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &options_buffer_size,
 									  &value)))
-						goto error;
+						goto end;
 
 					if (arg_type == RT_COMMAND_LINE_ARGS_TYPE_SHORT) {
 						last_option = k;
@@ -374,10 +370,6 @@ rt_s rt_command_line_args_parse(rt_un *argc, const rt_char *argv[], rt_command_l
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

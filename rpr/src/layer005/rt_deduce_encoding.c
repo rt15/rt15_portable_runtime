@@ -184,27 +184,23 @@ rt_s rt_deduce_encoding_with_file(struct rt_file *file, rt_char8 *buffer, rt_un 
 {
 	rt_un64 old_position;
 	rt_un bytes_read;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* Backup the current position */
-	if (RT_UNLIKELY(!rt_file_get_pointer(file, &old_position))) goto error;
+	if (RT_UNLIKELY(!rt_file_get_pointer(file, &old_position))) goto end;
 
 	/* Go to the beginning of the file. */
-	if (RT_UNLIKELY(!rt_file_set_pointer(file, 0, RT_FILE_POSITION_BEGIN))) goto error;
+	if (RT_UNLIKELY(!rt_file_set_pointer(file, 0, RT_FILE_POSITION_BEGIN))) goto end;
 
 	/* Read the beginning of the file. */
-	if (RT_UNLIKELY(!rt_io_device_read(&file->io_device.input_stream, buffer, buffer_capacity, &bytes_read))) goto error;
+	if (RT_UNLIKELY(!rt_io_device_read(&file->io_device.input_stream, buffer, buffer_capacity, &bytes_read))) goto end;
 
-	if (RT_UNLIKELY(!rt_deduce_encoding(buffer, bytes_read, encoding, bom_size))) goto error;
+	if (RT_UNLIKELY(!rt_deduce_encoding(buffer, bytes_read, encoding, bom_size))) goto end;
 
 	/* Go back to original position. */
-	if (RT_UNLIKELY(!rt_file_set_pointer(file, old_position, RT_FILE_POSITION_BEGIN))) goto error;
+	if (RT_UNLIKELY(!rt_file_set_pointer(file, old_position, RT_FILE_POSITION_BEGIN))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

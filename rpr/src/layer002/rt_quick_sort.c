@@ -15,7 +15,7 @@ static rt_s rt_quick_sort_selection_sort(rt_char8 *low, rt_char8 *high, rt_un it
 	rt_char8 *max;
 	rt_char8 *in_unsorted;
 	rt_n comparison_result;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* While the unsorted array has at least two elements (low and end_of_unsorted). */
 	while (end_of_unsorted > low) {
@@ -23,7 +23,7 @@ static rt_s rt_quick_sort_selection_sort(rt_char8 *low, rt_char8 *high, rt_un it
 		max = low;
 		for (in_unsorted = low + item_size; in_unsorted <= end_of_unsorted; in_unsorted += item_size) {
 			if (RT_UNLIKELY(!callback(in_unsorted, max, context, &comparison_result)))
-				goto error;
+				goto end;
 			if (comparison_result > 0)
 				max = in_unsorted;
 		}
@@ -36,12 +36,8 @@ static rt_s rt_quick_sort_selection_sort(rt_char8 *low, rt_char8 *high, rt_un it
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 /**
@@ -56,23 +52,23 @@ static rt_s rt_quick_sort_partition(rt_char8 *low, rt_char8 *high, rt_un size, r
 	rt_char8 *current_low;
 	rt_char8 *current_high;
 	rt_char8* local_pivot;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* Sort low, middle and high items. */
 	/* As a result, the pivot is chosen from 3 values, and is stored in the middle of the array. */
 
 	if (RT_UNLIKELY(!callback(low, middle, context, &comparison_result)))
-		goto error;
+		goto end;
 	if (comparison_result > 0)
 		rt_memory_swap(low, middle, item_size);
 	
 	if (RT_UNLIKELY(!callback(low, high, context, &comparison_result)))
-		goto error;
+		goto end;
 	if (comparison_result > 0)
 		rt_memory_swap(low, high, item_size);
 
 	if (RT_UNLIKELY(!callback(middle, high, context, &comparison_result)))
-		goto error;
+		goto end;
 	if (comparison_result > 0)
 		rt_memory_swap(middle, high, item_size);
 	
@@ -90,7 +86,7 @@ static rt_s rt_quick_sort_partition(rt_char8 *low, rt_char8 *high, rt_un size, r
 			if (current_low == local_pivot)
 				break;
 			if (RT_UNLIKELY(!callback(current_low, local_pivot, context, &comparison_result)))
-				goto error;
+				goto end;
 			if (comparison_result > 0)
 				break;
 		}
@@ -103,7 +99,7 @@ static rt_s rt_quick_sort_partition(rt_char8 *low, rt_char8 *high, rt_un size, r
 			if (current_high == local_pivot)
 				break;
 			if (RT_UNLIKELY(!callback(current_high, local_pivot, context, &comparison_result)))
-				goto error;
+				goto end;
 			if (comparison_result < 0)
 				break;
 		}
@@ -124,12 +120,8 @@ static rt_s rt_quick_sort_partition(rt_char8 *low, rt_char8 *high, rt_un size, r
 	*pivot = local_pivot;
 			
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_quick_sort(const void *area, rt_un size, rt_un item_size, rt_comparison_callback_t callback, void *context)
@@ -141,7 +133,7 @@ rt_s rt_quick_sort(const void *area, rt_un size, rt_un item_size, rt_comparison_
 	rt_char8 *low_stack[62];
 	rt_char8 *high_stack[62];
 	rt_un stacks_size = 0;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 recurse:
 
@@ -151,12 +143,12 @@ recurse:
 		if (sub_array_size <= 8) {
 	
 			if (RT_UNLIKELY(!rt_quick_sort_selection_sort(low, high, item_size, callback, context)))
-				goto error;
+				goto end;
 
 		} else {
 
 			if (RT_UNLIKELY(!rt_quick_sort_partition(low, high, sub_array_size, item_size, callback, context, &pivot)))
-				goto error;
+				goto end;
 
 			/* We do the smaller partition first to limit the stack size. */
 			if (pivot - low >= high - pivot) {
@@ -194,10 +186,6 @@ recurse:
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

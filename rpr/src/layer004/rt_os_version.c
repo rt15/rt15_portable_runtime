@@ -36,7 +36,7 @@ static rt_s rt_os_version_parse(rt_char *version, rt_un *major, rt_un *minor, rt
 	rt_char *start = version;
 	rt_char *end = version;
 	rt_char end_character;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	*major = 0;
 	*minor = 0;
@@ -47,7 +47,7 @@ static rt_s rt_os_version_parse(rt_char *version, rt_un *major, rt_un *minor, rt
 	end_character = *end;
 	*end = 0;
 	if (RT_UNLIKELY(!rt_char_convert_to_un(start, major)))
-		goto error;
+		goto end;
 	if (end_character == _R('.')) {
 
 		/* Go to next version number. */
@@ -60,7 +60,7 @@ static rt_s rt_os_version_parse(rt_char *version, rt_un *major, rt_un *minor, rt
 			end_character = *end;
 			*end = 0;
 			if (RT_UNLIKELY(!rt_char_convert_to_un(start, minor)))
-				goto error;
+				goto end;
 
 			if (end_character == _R('.')) {
 
@@ -74,19 +74,15 @@ static rt_s rt_os_version_parse(rt_char *version, rt_un *major, rt_un *minor, rt
 					end_character = *end;
 					*end = 0;
 					if (RT_UNLIKELY(!rt_char_convert_to_un(start, patch)))
-						goto error;
+						goto end;
 				}
 			}
 		}
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 #endif
 
@@ -98,7 +94,7 @@ rt_s rt_os_version_get(rt_un *major, rt_un *minor, rt_un *patch)
 	struct utsname uts_name;
 	rt_char version[RT_CHAR_HALF_BIG_STRING_SIZE];
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (rt_fast_initialization_is_required(&rt_os_version_initialization)) {
 
@@ -166,16 +162,12 @@ initialized:
 #else
 		errno = rt_os_version_initialization_error;
 #endif
-		goto error;
+		goto end;
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_os_version_is_greater_or_equal_to(rt_un major, rt_un minor, rt_un patch, rt_b *result)
@@ -183,10 +175,10 @@ rt_s rt_os_version_is_greater_or_equal_to(rt_un major, rt_un minor, rt_un patch,
 	rt_un current_major;
 	rt_un current_minor;
 	rt_un current_patch;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_os_version_get(&current_major, &current_minor, &current_patch)))
-		goto error;
+		goto end;
 
 	if (current_major > major) {
 		*result = RT_TRUE;
@@ -207,10 +199,6 @@ rt_s rt_os_version_is_greater_or_equal_to(rt_un major, rt_un minor, rt_un patch,
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
