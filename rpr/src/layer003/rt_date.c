@@ -31,7 +31,7 @@ rt_s rt_date_add_years(struct rt_date *date, rt_n years)
 {
 	rt_n year = date->year;
 	rt_un days_in_month;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	year += years;
 
@@ -45,12 +45,8 @@ rt_s rt_date_add_years(struct rt_date *date, rt_n years)
 	date->year = (rt_un16)year;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_date_add_months(struct rt_date *date, rt_n months)
@@ -58,7 +54,7 @@ rt_s rt_date_add_months(struct rt_date *date, rt_n months)
 	rt_un year = date->year;
 	rt_n month = date->month;
 	rt_un days_in_month;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (months < 0) {
 		month += months;
@@ -85,12 +81,8 @@ rt_s rt_date_add_months(struct rt_date *date, rt_n months)
 	date->month = (rt_uchar8)month;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_date_add_days(struct rt_date *date, rt_n days)
@@ -100,7 +92,7 @@ rt_s rt_date_add_days(struct rt_date *date, rt_n days)
 	rt_n month = date->month;
 	rt_n day = date->day;
 	rt_un days_in_month;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (local_days > 0) {
 		while (local_days > 0) {
@@ -154,17 +146,13 @@ rt_s rt_date_add_days(struct rt_date *date, rt_n days)
 	date->day = (rt_uchar8)day;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_date_get_days_in_month(rt_un16 year, rt_uchar8 month, rt_un *days)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	switch (month) {
 	case 1:
@@ -194,17 +182,13 @@ rt_s rt_date_get_days_in_month(rt_un16 year, rt_uchar8 month, rt_un *days)
 	}
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_date_get_month_name(rt_un month, const rt_char **name)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (month > 12) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
@@ -214,17 +198,13 @@ rt_s rt_date_get_month_name(rt_un month, const rt_char **name)
 	*name = rt_date_month_names[month - 1];
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_date_get_day_of_week_name(rt_un day_of_week, const rt_char **name)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (day_of_week > 7) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
@@ -234,10 +214,6 @@ rt_s rt_date_get_day_of_week_name(rt_un day_of_week, const rt_char **name)
 	*name = rt_date_day_of_week_names[day_of_week - 1];
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

@@ -12,7 +12,7 @@ rt_s rt_env_var_get(const rt_char *name, rt_char *buffer, rt_un buffer_capacity,
 	char *returned_value;
 	size_t length;
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 	/* Ensure that the 32 or 64 bits integer will fit into a DWORD. */
@@ -52,20 +52,19 @@ rt_s rt_env_var_get(const rt_char *name, rt_char *buffer, rt_un buffer_capacity,
 #endif
 
 	ret = RT_OK;
-free:
-	return ret;
+end:
+	if (RT_UNLIKELY(!ret)) {
+		if (buffer_capacity)
+			buffer[0] = 0;
+		*buffer_size = 0;
+	}
 
-error:
-	if (buffer_capacity)
-		buffer[0] = 0;
-	*buffer_size = 0;
-	ret = RT_FAILED;
-	goto free;
+	return ret;
 }
 
 rt_s rt_env_var_set(const rt_char *name, const rt_char *value)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 
@@ -84,17 +83,13 @@ rt_s rt_env_var_set(const rt_char *name, const rt_char *value)
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_env_var_delete(const rt_char *name)
 {
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 
@@ -112,10 +107,6 @@ rt_s rt_env_var_delete(const rt_char *name)
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }

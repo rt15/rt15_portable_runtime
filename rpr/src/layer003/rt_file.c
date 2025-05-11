@@ -20,7 +20,7 @@ rt_s rt_file_create(struct rt_file *file, const rt_char *file_path, enum rt_file
 	int flags;
 	rt_n32 file_descriptor;
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* Flags determination. */
 	switch (mode) {
@@ -86,18 +86,14 @@ rt_s rt_file_create(struct rt_file *file, const rt_char *file_path, enum rt_file
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_file_get_size(struct rt_file *file, rt_un64 *file_size)
 {
 	rt_un64 old_position;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	/* Backup the current position */
 	if (RT_UNLIKELY(!rt_file_get_pointer(file, &old_position))) goto end;
@@ -112,12 +108,8 @@ rt_s rt_file_get_size(struct rt_file *file, rt_un64 *file_size)
 	if (RT_UNLIKELY(!rt_file_set_pointer(file, old_position, RT_FILE_POSITION_BEGIN))) goto end;
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
 
 rt_s rt_file_set_pointer(struct rt_file *file, rt_n64 offset, enum rt_file_position position)
@@ -164,7 +156,7 @@ rt_s rt_file_get_pointer(struct rt_file *file, rt_un64 *offset)
 #else
 	off_t returned_value;
 #endif
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 	distance_to_move.QuadPart = 0;
@@ -179,10 +171,6 @@ rt_s rt_file_get_pointer(struct rt_file *file, rt_un64 *offset)
 #endif
 
 	ret = RT_OK;
-free:
+end:
 	return ret;
-
-error:
-	ret = RT_FAILED;
-	goto free;
 }
