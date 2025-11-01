@@ -1759,6 +1759,41 @@ end:
 	return ret;
 }
 
+static rt_s zz_test_char8_append_eol_do(const rt_char8 *input, enum rt_eol eol, const rt_char8 *expected)
+{
+	rt_char8 buffer[RT_CHAR8_QUARTER_BIG_STRING_SIZE];
+	rt_un buffer_size;
+	rt_s ret = RT_FAILED;
+
+	buffer_size = rt_char8_get_size(input);
+	if (RT_UNLIKELY(!rt_char8_copy(input, buffer_size, buffer, RT_CHAR8_QUARTER_BIG_STRING_SIZE))) goto end;
+	if (RT_UNLIKELY(!rt_char8_append_eol(eol, buffer, RT_CHAR8_QUARTER_BIG_STRING_SIZE, &buffer_size))) goto end;
+	if (RT_UNLIKELY(rt_char8_get_size(buffer) != buffer_size)) goto end;
+	if (RT_UNLIKELY(!rt_char8_equals(buffer, buffer_size, expected, rt_char8_get_size(expected)))) goto end;
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
+static rt_s zz_test_char8_append_eol(void)
+{
+	rt_s ret = RT_FAILED;
+
+	if (RT_UNLIKELY(!zz_test_char8_append_eol_do("foo", RT_EOL_NONE, "foo"))) goto end;
+	if (RT_UNLIKELY(!zz_test_char8_append_eol_do("foo", RT_EOL_LF, "foo\n"))) goto end;
+	if (RT_UNLIKELY(!zz_test_char8_append_eol_do("foo", RT_EOL_CRLF, "foo\r\n"))) goto end;
+	if (RT_UNLIKELY(!zz_test_char8_append_eol_do("foo", RT_EOL_CR, "foo\r"))) goto end;
+	if (RT_UNLIKELY(!zz_test_char8_append_eol_do("", RT_EOL_NONE, ""))) goto end;
+	if (RT_UNLIKELY(!zz_test_char8_append_eol_do("", RT_EOL_LF, "\n"))) goto end;
+	if (RT_UNLIKELY(!zz_test_char8_append_eol_do("", RT_EOL_CRLF, "\r\n"))) goto end;
+	if (RT_UNLIKELY(!zz_test_char8_append_eol_do("", RT_EOL_CR, "\r"))) goto end;
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
 rt_s zz_test_char8(void)
 {
 	rt_s ret = RT_FAILED;
@@ -1793,6 +1828,7 @@ rt_s zz_test_char8(void)
 	if (RT_UNLIKELY(!zz_test_char8_hash())) goto end;
 	if (RT_UNLIKELY(!zz_test_char8_split())) goto end;
 	if (RT_UNLIKELY(!zz_test_char8_is_empty_or_blank())) goto end;
+	if (RT_UNLIKELY(!zz_test_char8_append_eol())) goto end;
 
 	ret = RT_OK;
 end:

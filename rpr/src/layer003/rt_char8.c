@@ -170,6 +170,7 @@ rt_s rt_char8_append_un(rt_un value, rt_un base, rt_char8 *buffer, rt_un buffer_
 	ret = RT_OK;
 end:
 	if (RT_UNLIKELY(!ret)) {
+		/* Add a zero terminating character if possible. */
 		if (buffer_capacity) {
 			if (*buffer_size >= buffer_capacity)
 				*buffer_size = buffer_capacity - 1;
@@ -1252,7 +1253,7 @@ rt_un rt_char8_count_occurrences_with_size(const rt_char8 *str, rt_un str_size, 
 rt_s RT_CDECL rt_char8_concat(rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size, ...)
 {
 	va_list args_list;
-	rt_s ret = RT_FAILED;
+	rt_s ret;
 
 	va_start(args_list, buffer_size);
 	ret = rt_char8_vconcat(buffer, buffer_capacity, buffer_size, args_list);
@@ -1482,5 +1483,48 @@ rt_b rt_char8_is_empty_or_blank_with_size(const rt_char8 *str, rt_un str_size)
 			break;
 		}
 	}
+	return ret;
+}
+
+rt_s rt_char8_append_eol(enum rt_eol eol, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	rt_char8 *end_of_line;
+	rt_un end_of_line_size;
+	rt_s ret = RT_FAILED;
+
+	switch (eol) {
+	case RT_EOL_NONE:
+		end_of_line = RT_NULL;
+		end_of_line_size = 0;
+		break;
+	case RT_EOL_LF:
+		end_of_line = "\n";
+		end_of_line_size = 1;
+		break;
+	case RT_EOL_CRLF:
+		end_of_line = "\r\n";
+		end_of_line_size = 2;
+		break;
+	case RT_EOL_CR:
+		end_of_line = "\r";
+		end_of_line_size = 1;
+		break;
+	default:
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto end;
+	}
+
+	if (end_of_line) {
+		if (end_of_line_size == 1) {
+			if (RT_UNLIKELY(!rt_char8_append_char(end_of_line[0], buffer, buffer_capacity, buffer_size)))
+				goto end;
+		} else {
+			if (RT_UNLIKELY(!rt_char8_append(end_of_line, end_of_line_size, buffer, buffer_capacity, buffer_size)))
+				goto end;
+		}
+	}
+
+	ret = RT_OK;
+end:
 	return ret;
 }

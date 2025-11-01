@@ -2,6 +2,7 @@
 #define RT_CHAR8_H
 
 #include "layer000/rt_types.h"
+#include "layer001/rt_eol.h"
 
 /**
  * @file
@@ -359,5 +360,16 @@ RT_API rt_s rt_char8_split(rt_char8 *str, const rt_char8 *delimiters, rt_char8 *
 RT_API rt_b rt_char8_is_empty_or_blank(const rt_char8 *str);
 
 RT_API rt_b rt_char8_is_empty_or_blank_with_size(const rt_char8 *str, rt_un str_size);
+
+/**
+ * Append the characters corresponding to given <tt>eol</tt>.
+ * 
+ * <p>
+ * Appends nothing in case of <tt>RT_EOL_NONE</tt>.
+ * </p>
+ * 
+ * @param buffer_size The number of characters in the buffer (in/out parameter).
+ */
+RT_API rt_s rt_char8_append_eol(enum rt_eol eol, rt_char8 *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 #endif /* RT_CHAR8_H */

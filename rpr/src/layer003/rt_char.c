@@ -1485,3 +1485,46 @@ rt_b rt_char_is_empty_or_blank_with_size(const rt_char *str, rt_un str_size)
 	}
 	return ret;
 }
+
+rt_s rt_char_append_eol(enum rt_eol eol, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	rt_char *end_of_line;
+	rt_un end_of_line_size;
+	rt_s ret = RT_FAILED;
+
+	switch (eol) {
+	case RT_EOL_NONE:
+		end_of_line = RT_NULL;
+		end_of_line_size = 0;
+		break;
+	case RT_EOL_LF:
+		end_of_line = _R("\n");
+		end_of_line_size = 1;
+		break;
+	case RT_EOL_CRLF:
+		end_of_line = _R("\r\n");
+		end_of_line_size = 2;
+		break;
+	case RT_EOL_CR:
+		end_of_line = _R("\r");
+		end_of_line_size = 1;
+		break;
+	default:
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto end;
+	}
+
+	if (end_of_line) {
+		if (end_of_line_size == 1) {
+			if (RT_UNLIKELY(!rt_char_append_char(end_of_line[0], buffer, buffer_capacity, buffer_size)))
+				goto end;
+		} else {
+			if (RT_UNLIKELY(!rt_char_append(end_of_line, end_of_line_size, buffer, buffer_capacity, buffer_size)))
+				goto end;
+		}
+	}
+
+	ret = RT_OK;
+end:
+	return ret;
+}
