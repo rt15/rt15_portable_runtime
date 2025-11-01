@@ -60,6 +60,7 @@ extern "C" {
 #include "layer004/rt_memory_output_stream.h"
 #include "layer004/rt_os_version.h"
 #include "layer004/rt_page_heap.h"
+#include "layer004/rt_properties_parser.h"
 #include "layer004/rt_random.h"
 #include "layer004/rt_readers_writer_mutex.h"
 #include "layer004/rt_small_file.h"
