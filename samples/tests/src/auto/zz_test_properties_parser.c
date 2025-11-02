@@ -109,13 +109,75 @@ end:
 	return ret;
 }
 
-rt_s zz_test_properties_parser(void)
+static rt_s zz_test_properties_parser_parse(void)
 {
 	rt_un part_index = 0;
 	rt_char *str = _R("foo\\\\=bar\\\\\n  key  :  value with space  \n\nother_key\\: other_value\\\n  #second\\tline\n  #comment\n!comment too\nwhitespaceStart=\\ \nkey_without_value");
 	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_properties_parser_parse(str, rt_char_get_size(str), &zz_test_properties_parser_callback, &part_index))) goto end;
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
+static rt_s zz_test_properties_parser_parse_part_do(const rt_char *str, const rt_char *expected)
+{
+	rt_char buffer[RT_CHAR_HALF_BIG_STRING_SIZE];
+	rt_un buffer_size;
+	rt_s ret = RT_FAILED;
+
+	/* Test key parsing. */
+	buffer_size = 2;
+	if (RT_UNLIKELY(!rt_char_copy(_R("OO"), buffer_size, buffer, RT_CHAR_HALF_BIG_STRING_SIZE))) goto end;
+	if (RT_UNLIKELY(!rt_properties_parser_parse_key(str, rt_char_get_size(str), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_equals(buffer, buffer_size, expected, rt_char_get_size(expected)))) goto end;
+
+	RT_MEMORY_SET_CHAR(buffer, _R('Z'), RT_CHAR_HALF_BIG_STRING_SIZE);
+
+	/* Test value parsing. */
+	buffer_size = 2;
+	if (RT_UNLIKELY(!rt_char_copy(_R("OO"), buffer_size, buffer, RT_CHAR_HALF_BIG_STRING_SIZE))) goto end;
+	if (RT_UNLIKELY(!rt_properties_parser_parse_value(str, rt_char_get_size(str), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_equals(buffer, buffer_size, expected, rt_char_get_size(expected)))) goto end;
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
+static rt_s zz_test_properties_parser_parse_part(void)
+{
+	rt_s ret = RT_FAILED;
+
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse_part_do(_R("moo"), _R("OOmoo")))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse_part_do(_R("\\moo"), _R("OOmoo")))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse_part_do(_R("m\\oo"), _R("OOmoo")))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse_part_do(_R("m\\o\\o"), _R("OOmoo")))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse_part_do(_R("moo\\"), _R("OOmoo")))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse_part_do(_R("moo\\n"), _R("OOmoo\n")))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse_part_do(_R("mo\\\\o"), _R("OOmo\\o")))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse_part_do(_R("moo\\\n  bar"), _R("OOmoobar")))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse_part_do(_R("moo \\\n bar"), _R("OOmoo bar")))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse_part_do(_R("moo\\\n  \\   bar"), _R("OOmoo   bar")))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse_part_do(_R("\\ "), _R("OO ")))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse_part_do(_R("\\u004D"), _R("OOM")))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse_part_do(_R("\\u004DA"), _R("OOMA")))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse_part_do(_R("A\\u004D"), _R("OOAM")))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse_part_do(_R("A\\u004DA"), _R("OOAMA")))) goto end;
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
+rt_s zz_test_properties_parser(void)
+{
+	rt_s ret = RT_FAILED;
+
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse())) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_parser_parse_part())) goto end;
 
 	ret = RT_OK;
 end:

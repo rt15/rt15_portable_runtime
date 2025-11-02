@@ -45,7 +45,6 @@ rt_s zz_test_encoding(void);
 rt_s zz_test_file_path(void);
 rt_s zz_test_memory_output_stream(void);
 rt_s zz_test_os_version(void);
-rt_s zz_test_properties_parser(void);
 rt_s zz_test_random(void);
 rt_s zz_test_readers_writer_mutex(void);
 rt_s zz_test_small_file(void);
@@ -67,6 +66,7 @@ rt_s zz_test_unicode_code_point(void);
 /* Layer 006. */
 rt_s zz_test_error_message(void);
 rt_s zz_test_properties(void);
+rt_s zz_test_properties_parser(void);
 rt_s zz_test_socket(void);
 
 /* Layer 007. */
@@ -188,8 +188,6 @@ rt_s zz_auto_tests(void)
 	if (RT_UNLIKELY(!zz_test_memory_output_stream())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_os_version", output_stream))) goto end;
 	if (RT_UNLIKELY(!zz_test_os_version())) goto end;
-	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_properties_parser", output_stream))) goto end;
-	if (RT_UNLIKELY(!zz_test_properties_parser())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_random", output_stream))) goto end;
 	if (RT_UNLIKELY(!zz_test_random())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_readers_writer_mutex", output_stream))) goto end;
@@ -228,6 +226,8 @@ rt_s zz_auto_tests(void)
 	if (RT_UNLIKELY(!zz_test_error_message())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_properties", output_stream))) goto end;
 	if (RT_UNLIKELY(!zz_test_properties())) goto end;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_properties_parser", output_stream))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_parser())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_socket", output_stream))) goto end;
 	if (RT_UNLIKELY(!zz_test_socket())) goto end;
 

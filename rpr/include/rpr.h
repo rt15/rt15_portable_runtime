@@ -60,7 +60,6 @@ extern "C" {
 #include "layer004/rt_memory_output_stream.h"
 #include "layer004/rt_os_version.h"
 #include "layer004/rt_page_heap.h"
-#include "layer004/rt_properties_parser.h"
 #include "layer004/rt_random.h"
 #include "layer004/rt_readers_writer_mutex.h"
 #include "layer004/rt_small_file.h"
@@ -86,6 +85,7 @@ extern "C" {
 #include "layer006/rt_error_message.h"
 #include "layer006/rt_process_file.h"
 #include "layer006/rt_properties.h"
+#include "layer006/rt_properties_parser.h"
 #include "layer006/rt_socket.h"
 
 #include "layer007/rt_last_error_message.h"

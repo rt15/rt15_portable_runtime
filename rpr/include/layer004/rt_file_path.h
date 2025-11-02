@@ -177,7 +177,6 @@ RT_API rt_s rt_file_path_get_executable_path(rt_char *buffer, rt_un buffer_capac
  */
 RT_API rt_s rt_file_path_get_name(const rt_char *path, rt_un path_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
-
 /**
  *
  * <p>
