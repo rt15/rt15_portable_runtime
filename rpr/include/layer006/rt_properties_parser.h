@@ -29,6 +29,37 @@ enum rt_properties_parser_part_type {
 
 typedef rt_s (*rt_properties_parser_callback_t)(enum rt_properties_parser_part_type part_type, const rt_char *str, rt_un index, rt_un size, void *context);
 
+/**
+ * Parse <tt>str</tt> as a properties file.
+ *
+ * <p>
+ * The callback is called for each part found in the string.<br>
+ * The parts are provided as found in the file, without any unescaping or processing.<br>
+ * You probably want to use <tt>rt_properties_parser_parse_key</tt> and <tt>rt_properties_parser_parse_value</tt> to unescape keys and values.
+ * </p>
+ */
 RT_API rt_s rt_properties_parser_parse(const rt_char *str, rt_un str_size, rt_properties_parser_callback_t callback, void *context);
+
+/**
+ * Parse a key as found in a properties file into the corresponding unescaped string.
+ * 
+ * <p>
+ * You probably want to call this function in the callback provided to <tt>rt_properties_parser_parse</tt> when a key is found.
+ * </p>
+ *
+ * @param buffer_size The number of characters in the buffer (in/out parameter).
+ */
+RT_API rt_s rt_properties_parser_parse_key(const rt_char *str, rt_un str_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+
+/**
+ * Parse a value as found in a properties file into the corresponding unescaped string.
+ * 
+ * <p>
+ * You probably want to call this function in the callback provided to <tt>rt_properties_parser_parse</tt> when a value is found.
+ * </p>
+ *
+ * @param buffer_size The number of characters in the buffer (in/out parameter).
+ */
+RT_API rt_s rt_properties_parser_parse_value(const rt_char *str, rt_un str_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
 #endif /* RT_PROPERTIES_PARSER_H */
