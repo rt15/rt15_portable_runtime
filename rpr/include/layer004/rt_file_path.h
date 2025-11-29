@@ -173,7 +173,7 @@ RT_API rt_s rt_file_path_get_executable_path(rt_char *buffer, rt_un buffer_capac
  * Under Visual Studio, similar function is <tt>_wsplitpath_s</tt>, but it returns an empty fname for <tt>c:\foo\</tt>, considering it a directory.
  * </p>
  *
- * @param buffer_size The number of characters in the buffer (out parameter).
+ * @param buffer_size The number of characters in the buffer (in/out parameter).
  */
 RT_API rt_s rt_file_path_get_name(const rt_char *path, rt_un path_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 

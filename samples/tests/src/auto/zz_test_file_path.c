@@ -571,6 +571,7 @@ static rt_s zz_test_get_name_do(const rt_char *path, const rt_char *expected)
 	rt_un buffer_size;
 	rt_s ret = RT_FAILED;
 
+	buffer_size = 0;
 	if (RT_UNLIKELY(!rt_file_path_get_name(path, rt_char_get_size(path), buffer, RT_FILE_PATH_SIZE, &buffer_size))) goto end;
 	if (RT_UNLIKELY(rt_char_get_size(buffer) != buffer_size)) goto end;
 	if (RT_UNLIKELY(!rt_char_equals(buffer, buffer_size, expected, rt_char_get_size(expected)))) goto end;

@@ -734,12 +734,12 @@ end:
 
 rt_s rt_file_path_get_name(const rt_char *path, rt_un path_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
+	rt_un initial_buffer_size = *buffer_size;
 	rt_un last_separator_index;
 	rt_un name_last_character_index;
 	rt_s ret = RT_FAILED;
 
 	if (path_size == 0) {
-		*buffer_size = 0;
 		if (RT_UNLIKELY(!rt_char_append_char(_R('.'), buffer, buffer_capacity, buffer_size)))
 			goto end;
 	} else {
@@ -747,24 +747,23 @@ rt_s rt_file_path_get_name(const rt_char *path, rt_un path_size, rt_char *buffer
 		if (last_separator_index == RT_TYPE_MAX_UN) {
 			/* No interesting last separator, copy everything. */
 			*buffer_size = path_size;
-			if (RT_UNLIKELY(!rt_char_copy(path, *buffer_size, buffer, buffer_capacity)))
+			if (RT_UNLIKELY(!rt_char_append(path, path_size, buffer, buffer_capacity, buffer_size)))
 				goto end;
 		} else {
 			/* Copy everything after the last interesting separator. */
-			*buffer_size = path_size - (last_separator_index + 1);
 			/* Because of rt_file_path_get_last_separator_index, there must be characters after the last interesting separator. */
-			if (RT_UNLIKELY(!rt_char_copy(&path[last_separator_index + 1], *buffer_size, buffer, buffer_capacity)))
+			if (RT_UNLIKELY(!rt_char_append(&path[last_separator_index + 1], path_size - (last_separator_index + 1), buffer, buffer_capacity, buffer_size)))
 				goto end;
 		}
 
 		/* Removing trailing separators, but always keep the first character. */
 		name_last_character_index = *buffer_size - 1;
-		while (name_last_character_index != RT_TYPE_MAX_UN && RT_FILE_PATH_IS_SEPARATOR(buffer[name_last_character_index]))
+		while (name_last_character_index != initial_buffer_size - 1 && RT_FILE_PATH_IS_SEPARATOR(buffer[name_last_character_index]))
 			name_last_character_index--;
-		if (name_last_character_index == RT_TYPE_MAX_UN) {
+		if (name_last_character_index == initial_buffer_size - 1) {
 			/* Separators only, keep the first character. */
-			buffer[1] = 0;
-			*buffer_size = 1;
+			buffer[initial_buffer_size + 1] = 0;
+			*buffer_size = initial_buffer_size + 1;
 		} else {
 			/* Cut after the last name character. */
 			buffer[name_last_character_index + 1] = 0;
