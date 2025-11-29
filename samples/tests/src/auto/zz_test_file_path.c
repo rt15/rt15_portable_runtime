@@ -569,11 +569,35 @@ static rt_s zz_test_get_name_do(const rt_char *path, const rt_char *expected)
 {
 	rt_char buffer[RT_FILE_PATH_SIZE];
 	rt_un buffer_size;
+	rt_char expected_buffer[RT_CHAR_QUARTER_BIG_STRING_SIZE];
+	rt_un expected_buffer_size;
 	rt_s ret = RT_FAILED;
 
+	/* Test an empty buffer. */
+	buffer_size = 0;
 	if (RT_UNLIKELY(!rt_file_path_get_name(path, rt_char_get_size(path), buffer, RT_FILE_PATH_SIZE, &buffer_size))) goto end;
 	if (RT_UNLIKELY(rt_char_get_size(buffer) != buffer_size)) goto end;
 	if (RT_UNLIKELY(!rt_char_equals(buffer, buffer_size, expected, rt_char_get_size(expected)))) goto end;
+
+	/* Test a buffer with Os. */
+	RT_MEMORY_SET_CHAR(buffer, _R('O'), RT_FILE_PATH_SIZE);
+	buffer_size = 4;
+	if (RT_UNLIKELY(!rt_file_path_get_name(path, rt_char_get_size(path), buffer, RT_FILE_PATH_SIZE, &buffer_size))) goto end;
+	if (RT_UNLIKELY(rt_char_get_size(buffer) != buffer_size)) goto end;
+	RT_MEMORY_SET_CHAR(expected_buffer, _R('O'), 4);
+	expected_buffer_size = 4;
+	if (RT_UNLIKELY(!rt_char_append(expected, rt_char_get_size(expected), expected_buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &expected_buffer_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_equals(buffer, buffer_size, expected_buffer, expected_buffer_size))) goto end;
+
+	/* Test a buffer with slashes. */
+	RT_MEMORY_SET_CHAR(buffer, _R('/'), RT_FILE_PATH_SIZE);
+	buffer_size = 4;
+	if (RT_UNLIKELY(!rt_file_path_get_name(path, rt_char_get_size(path), buffer, RT_FILE_PATH_SIZE, &buffer_size))) goto end;
+	if (RT_UNLIKELY(rt_char_get_size(buffer) != buffer_size)) goto end;
+	RT_MEMORY_SET_CHAR(expected_buffer, _R('/'), 4);
+	expected_buffer_size = 4;
+	if (RT_UNLIKELY(!rt_char_append(expected, rt_char_get_size(expected), expected_buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &expected_buffer_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_equals(buffer, buffer_size, expected_buffer, expected_buffer_size))) goto end;
 
 	ret = RT_OK;
 end:
