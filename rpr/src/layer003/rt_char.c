@@ -55,7 +55,7 @@ rt_s rt_char_append(const rt_char *suffix, rt_un suffix_size, rt_char *buffer, r
 				buffer[buffer_capacity - 1] = 0;
 				*buffer_size = buffer_capacity - 1;
 			} else {
-				buffer_size = 0;
+				*buffer_size = 0;
 			}
 			goto end;
 		}
