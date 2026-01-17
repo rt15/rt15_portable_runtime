@@ -127,7 +127,6 @@ RT_API rt_b rt_file_path_is_namespaced(const rt_char *path);
  */
 RT_API rt_s rt_file_path_namespace(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size);
 
-
 RT_API rt_s rt_file_path_strip_namespace(rt_char *path, rt_un buffer_capacity, rt_un *buffer_size);
 
 /**
@@ -176,7 +175,6 @@ RT_API rt_s rt_file_path_get_executable_path(rt_char *buffer, rt_un buffer_capac
  * @param buffer_size The number of characters in the buffer (out parameter).
  */
 RT_API rt_s rt_file_path_get_name(const rt_char *path, rt_un path_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
-
 
 /**
  *
