@@ -65,12 +65,12 @@ rt_s zz_test_unicode_code_point(void);
 
 /* Layer 006. */
 rt_s zz_test_error_message(void);
-rt_s zz_test_properties(void);
 rt_s zz_test_properties_parser(void);
 rt_s zz_test_socket(void);
 
 /* Layer 007. */
 rt_s zz_test_process(void);
+rt_s zz_test_properties(void);
 rt_s zz_test_select(void);
 
 static rt_s zz_auto_tests_log(const rt_char8 *test, struct rt_output_stream *output_stream)
@@ -224,8 +224,6 @@ rt_s zz_auto_tests(void)
 	/* Layer 006. */
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_error_message", output_stream))) goto end;
 	if (RT_UNLIKELY(!zz_test_error_message())) goto end;
-	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_properties", output_stream))) goto end;
-	if (RT_UNLIKELY(!zz_test_properties())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_properties_parser", output_stream))) goto end;
 	if (RT_UNLIKELY(!zz_test_properties_parser())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_socket", output_stream))) goto end;
@@ -234,6 +232,8 @@ rt_s zz_auto_tests(void)
 	/* Layer 007. */
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_process", output_stream))) goto end;
 	if (RT_UNLIKELY(!zz_test_process())) goto end;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_properties", output_stream))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_select", output_stream))) goto end;
 	if (RT_UNLIKELY(!zz_test_select())) goto end;
 

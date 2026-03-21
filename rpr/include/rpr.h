@@ -84,12 +84,12 @@ extern "C" {
 #include "layer006/rt_console8.h"
 #include "layer006/rt_error_message.h"
 #include "layer006/rt_process_file.h"
-#include "layer006/rt_properties.h"
 #include "layer006/rt_properties_parser.h"
 #include "layer006/rt_socket.h"
 
 #include "layer007/rt_last_error_message.h"
 #include "layer007/rt_process.h"
+#include "layer007/rt_properties.h"
 #include "layer007/rt_select.h"
 
 #ifdef __cplusplus
