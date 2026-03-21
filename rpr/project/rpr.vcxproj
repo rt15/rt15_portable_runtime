@@ -82,10 +82,11 @@
     <ClCompile Include="..\src\layer006\rt_console8.c" />
     <ClCompile Include="..\src\layer006\rt_error_message.c" />
     <ClCompile Include="..\src\layer006\rt_process_file.c" />
-    <ClCompile Include="..\src\layer006\rt_properties.c" />
+    <ClCompile Include="..\src\layer006\rt_properties_parser.c" />
     <ClCompile Include="..\src\layer006\rt_socket.c" />
     <ClCompile Include="..\src\layer007\rt_last_error_message.c" />
     <ClCompile Include="..\src\layer007\rt_process.c" />
+    <ClCompile Include="..\src\layer007\rt_properties.c" />
     <ClCompile Include="..\src\layer007\rt_select.c" />
     <ClCompile Include="..\src\rpr_internal.c" />
     <ClCompile Include="..\src\rpr_main.c" />
@@ -165,10 +166,11 @@
     <ClInclude Include="..\include\layer006\rt_console8.h" />
     <ClInclude Include="..\include\layer006\rt_error_message.h" />
     <ClInclude Include="..\include\layer006\rt_process_file.h" />
-    <ClInclude Include="..\include\layer006\rt_properties.h" />
+    <ClInclude Include="..\include\layer006\rt_properties_parser.h" />
     <ClInclude Include="..\include\layer006\rt_socket.h" />
     <ClInclude Include="..\include\layer007\rt_last_error_message.h" />
     <ClInclude Include="..\include\layer007\rt_process.h" />
+    <ClInclude Include="..\include\layer007\rt_properties.h" />
     <ClInclude Include="..\include\layer007\rt_select.h" />
     <ClInclude Include="..\include\rpr.h" />
     <ClInclude Include="..\include\rpr_main.h" />

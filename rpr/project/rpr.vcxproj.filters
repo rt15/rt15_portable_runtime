@@ -145,9 +145,6 @@
     <ClCompile Include="..\src\layer005\rt_hash_table.c">
       <Filter>src\layer005</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\layer006\rt_properties.c">
-      <Filter>src\layer006</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\layer005\rt_unicode_code_point.c">
       <Filter>src\layer005</Filter>
     </ClCompile>
@@ -210,6 +207,12 @@
     </ClCompile>
     <ClCompile Include="..\src\layer002\rt_system_info.c">
       <Filter>src\layer002</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer006\rt_properties_parser.c">
+      <Filter>src\layer006</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer007\rt_properties.c">
+      <Filter>src\layer007</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -381,9 +384,6 @@
     <ClInclude Include="..\include\layer005\rt_hash_table.h">
       <Filter>include\layer005</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\layer006\rt_properties.h">
-      <Filter>include\layer006</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\layer005\rt_unicode_code_point.h">
       <Filter>include\layer005</Filter>
     </ClInclude>
@@ -458,6 +458,12 @@
     </ClInclude>
     <ClInclude Include="..\include\layer002\rt_system_info.h">
       <Filter>include\layer002</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer006\rt_properties_parser.h">
+      <Filter>include\layer006</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer007\rt_properties.h">
+      <Filter>include\layer007</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

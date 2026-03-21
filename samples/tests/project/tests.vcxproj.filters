@@ -256,6 +256,12 @@
     <ClCompile Include="..\src\manual\zz_manual_test_system_info.c">
       <Filter>src\manual</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_properties_parser.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\zz_test_perf.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
