@@ -1,12 +1,12 @@
 #include <rpr.h>
 
-static  rt_uchar8 zz_utf8_1[2] = { 0x61, 0x00 };
-static  rt_uchar8 zz_utf8_2[3] = { 0xC3, 0xA9, 0x00 };
-static  rt_uchar8 zz_utf8_3[4] = { 0xE1, 0x85, 0x98, 0x00 };
-static  rt_uchar8 zz_utf8_4[5] = { 0xF0, 0x90, 0x8C, 0xB8, 0x00 };
+static  rt_uchar8 zz_utf8_1[3] = { 0x41, 0x61, 0x00 };
+static  rt_uchar8 zz_utf8_2[4] = { 0x41, 0xC3, 0xA9, 0x00 };
+static  rt_uchar8 zz_utf8_3[5] = { 0x41, 0xE1, 0x85, 0x98, 0x00 };
+static  rt_uchar8 zz_utf8_4[6] = { 0x41, 0xF0, 0x90, 0x8C, 0xB8, 0x00 };
 
-static  rt_un16 zz_utf16_basic_plane[2] = { 0xE9, 0x00 };
-static  rt_un16 zz_utf16_supplementary_plane[3] = { 0xD800, 0xDF38, 0x00 };
+static  rt_un16 zz_utf16_basic_plane[3] = { 0x41, 0xE9, 0x00 };
+static  rt_un16 zz_utf16_supplementary_plane[4] = { 0x41, 0xD800, 0xDF38, 0x00 };
 
 static rt_s zz_test_unicode_code_point_encode_to_utf8(rt_un32 code_point, const rt_char8 *expected)
 {
@@ -16,8 +16,14 @@ static rt_s zz_test_unicode_code_point_encode_to_utf8(rt_un32 code_point, const 
 	rt_un i;
 	rt_s ret = RT_FAILED;
 
+	RT_MEMORY_SET(buffer, 'A', 8);
+	buffer_size = 1;
 	if (RT_UNLIKELY(rt_unicode_code_point_encode_to_utf8(code_point, buffer, expected_size, &buffer_size))) goto end;
+
+	RT_MEMORY_SET(buffer, 'A', 8);
+	buffer_size = 1;
 	if (RT_UNLIKELY(!rt_unicode_code_point_encode_to_utf8(code_point, buffer, expected_size + 1, &buffer_size))) goto end;
+
 	if (RT_UNLIKELY(buffer_size != expected_size)) goto end;
 	/* This loop also checks the terminating zero. */
 	for (i = 0; i <= expected_size; i++) {
@@ -27,10 +33,14 @@ static rt_s zz_test_unicode_code_point_encode_to_utf8(rt_un32 code_point, const 
 
 #ifdef RT_DEFINE_LINUX
 	/* This test assumes that the system encoding is UTF-8. */
-	for (i = 0; i < 8; i++)
-		buffer[i] = 12;
+	RT_MEMORY_SET(buffer, 'A', 8);
+	buffer_size = 1;
 	if (RT_UNLIKELY(rt_unicode_code_point_encode(code_point, buffer, expected_size, &buffer_size))) goto end;
+
+	RT_MEMORY_SET(buffer, 'A', 8);
+	buffer_size = 1;
 	if (RT_UNLIKELY(!rt_unicode_code_point_encode(code_point, buffer, expected_size + 1, &buffer_size))) goto end;
+
 	if (RT_UNLIKELY(buffer_size != expected_size)) goto end;
 	/* This loop also checks the terminating zero. */
 	for (i = 0; i <= expected_size; i++) {
@@ -52,8 +62,14 @@ static rt_s zz_test_unicode_code_point_encode_to_utf16(rt_un32 code_point, const
 	rt_un i;
 	rt_s ret = RT_FAILED;
 
+	rt_memory_set_char16(buffer, 'A', 8);
+	buffer_size = 1;
 	if (RT_UNLIKELY(rt_unicode_code_point_encode_to_utf16(code_point, buffer, expected_size, &buffer_size))) goto end;
+
+	rt_memory_set_char16(buffer, 'A', 8);
+	buffer_size = 1;
 	if (RT_UNLIKELY(!rt_unicode_code_point_encode_to_utf16(code_point, buffer, expected_size + 1, &buffer_size))) goto end;
+
 	if (RT_UNLIKELY(buffer_size != expected_size)) goto end;
 	/* This loop also checks the terminating zero. */
 	for (i = 0; i <= expected_size; i++) {
@@ -62,10 +78,14 @@ static rt_s zz_test_unicode_code_point_encode_to_utf16(rt_un32 code_point, const
 	}
 
 #ifdef RT_DEFINE_WINDOWS
-	for (i = 0; i < 8; i++)
-		buffer[i] = 12;
+	rt_memory_set_char16(buffer, 'A', 8);
+	buffer_size = 1;
 	if (RT_UNLIKELY(rt_unicode_code_point_encode(code_point, buffer, expected_size, &buffer_size))) goto end;
+
+	rt_memory_set_char16(buffer, 'A', 8);
+	buffer_size = 1;
 	if (RT_UNLIKELY(!rt_unicode_code_point_encode(code_point, buffer, expected_size + 1, &buffer_size))) goto end;
+
 	if (RT_UNLIKELY(buffer_size != expected_size)) goto end;
 	/* This loop also checks the terminating zero. */
 	for (i = 0; i <= expected_size; i++) {

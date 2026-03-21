@@ -192,7 +192,6 @@ static rt_s rt_properties_parser_parse_part(const rt_char *str, rt_un str_size, 
 	rt_char new_char;
 	rt_char digit;
 	rt_un code_point;
-	rt_un written_characters;
 	rt_un i, j;
 	rt_s ret = RT_FAILED;
 
@@ -291,9 +290,8 @@ static rt_s rt_properties_parser_parse_part(const rt_char *str, rt_un str_size, 
 					goto end;
 
 				/* Write the corresponding character. */
-				if (RT_UNLIKELY(!rt_unicode_code_point_encode((rt_un32)code_point, &buffer[*buffer_size], buffer_capacity - *buffer_size, &written_characters)))
+				if (RT_UNLIKELY(!rt_unicode_code_point_encode((rt_un32)code_point, buffer, buffer_capacity, buffer_size)))
 					goto end;
-				*buffer_size += written_characters;
 
 				/* Skip the 4 digits. */
 				i += 4;

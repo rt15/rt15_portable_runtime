@@ -169,6 +169,7 @@ static rt_s rt_properties_unicode(rt_char *str, rt_un current_index)
 		goto end;
 
 	/* Overwrite "\uXXXX" with the correct character. */
+	written_characters = 0;
 	if (RT_UNLIKELY(!rt_unicode_code_point_encode((rt_un32)code_point, &str[current_index], 6, &written_characters)))
 		goto end;
 
