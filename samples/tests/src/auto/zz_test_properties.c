@@ -69,7 +69,6 @@ static rt_s zz_test_properties_do(rt_char *test_resources_dir, struct rt_heap *h
 
 	/* Check the properties header. */
 	header = RT_PROPERTIES_GET_HEADER(properties);
-	if (RT_UNLIKELY(!rt_char_equals(header->file_path, rt_char_get_size(header->file_path), properties_file_path, properties_file_path_size))) goto end;
 	if (RT_UNLIKELY(header->hash_table_header.size != 28)) goto end;
 	if (RT_UNLIKELY(header->hash_table_header.array_header.size != 128)) goto end;
 

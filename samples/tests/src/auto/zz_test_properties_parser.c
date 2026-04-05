@@ -1,6 +1,6 @@
 #include <rpr.h>
 
-#define ZZ_TEST_PROPERTIES_PARSER_EXPECTED_PARTS_COUNT 24
+#define ZZ_TEST_PROPERTIES_PARSER_EXPECTED_PARTS_COUNT 28
 
 static const rt_char *const zz_test_properties_parser_expected_parts[ZZ_TEST_PROPERTIES_PARSER_EXPECTED_PARTS_COUNT] = {
 	_R("foo\\\\"),
@@ -26,6 +26,10 @@ static const rt_char *const zz_test_properties_parser_expected_parts[ZZ_TEST_PRO
 	_R("\\ "),
 	_R("\n"),
 	_R("key_without_value"),
+	_R("="),
+	_R(""),
+	_R("\n"),
+	_R("other_key_without_value"),
 	_R("")
 };
 
@@ -47,6 +51,10 @@ static const enum rt_properties_parser_part_type zz_test_properties_parser_expec
 	RT_PROPERTIES_PARSER_PART_TYPE_COMMENT,
 	RT_PROPERTIES_PARSER_PART_TYPE_BLANKS,
 	RT_PROPERTIES_PARSER_PART_TYPE_COMMENT,
+	RT_PROPERTIES_PARSER_PART_TYPE_BLANKS,
+	RT_PROPERTIES_PARSER_PART_TYPE_KEY,
+	RT_PROPERTIES_PARSER_PART_TYPE_SEPARATOR,
+	RT_PROPERTIES_PARSER_PART_TYPE_VALUE,
 	RT_PROPERTIES_PARSER_PART_TYPE_BLANKS,
 	RT_PROPERTIES_PARSER_PART_TYPE_KEY,
 	RT_PROPERTIES_PARSER_PART_TYPE_SEPARATOR,
@@ -112,7 +120,7 @@ end:
 static rt_s zz_test_properties_parser_parse(void)
 {
 	rt_un part_index = 0;
-	rt_char *str = _R("foo\\\\=bar\\\\\n  key  :  value with space  \n\nother_key\\: other_value\\\n  #second\\tline\n  #comment\n!comment too\nwhitespaceStart=\\ \nkey_without_value");
+	rt_char *str = _R("foo\\\\=bar\\\\\n  key  :  value with space  \n\nother_key\\: other_value\\\n  #second\\tline\n  #comment\n!comment too\nwhitespaceStart=\\ \nkey_without_value=\nother_key_without_value");
 	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_properties_parser_parse(str, rt_char_get_size(str), &zz_test_properties_parser_callback, &part_index))) goto end;

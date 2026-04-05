@@ -4,12 +4,12 @@
 #include "layer003/rt_char.h"
 #include "layer005/rt_unicode_code_point.h"
 
-static rt_s rt_properties_parser_read_blanks(const rt_char *str, rt_un str_size, rt_un *index, rt_properties_parser_callback_t callback, void *context)
+static rt_s rt_properties_parser_read_blanks(const rt_char *str, rt_un str_size, rt_un *index, rt_b stop_at_eol, rt_properties_parser_callback_t callback, void *context)
 {
 	rt_un start_index = *index;
 	rt_s ret = RT_FAILED;
 
-	while (*index < str_size && RT_CHAR_IS_BLANK(str[*index])) {
+	while (*index < str_size && RT_CHAR_IS_BLANK(str[*index]) && (!stop_at_eol || (str[*index] != _R('\n') && str[*index] != _R('\r')))) {
 		(*index)++;
 	}
 
@@ -144,7 +144,7 @@ rt_s rt_properties_parser_parse(const rt_char *str, rt_un str_size, rt_propertie
 
 	while (index < str_size) {
 		/* Read blanks until we reach the key  or a comment. */
-		if (RT_UNLIKELY(!rt_properties_parser_read_blanks(str, str_size, &index, callback, context)))
+		if (RT_UNLIKELY(!rt_properties_parser_read_blanks(str, str_size, &index, RT_FALSE, callback, context)))
 			goto end;
 
 		if (index < str_size) {
@@ -162,7 +162,7 @@ rt_s rt_properties_parser_parse(const rt_char *str, rt_un str_size, rt_propertie
 					goto end;
 
 				/* Read blanks between the key and the separator. */
-				if (RT_UNLIKELY(!rt_properties_parser_read_blanks(str, str_size, &index, callback, context)))
+				if (RT_UNLIKELY(!rt_properties_parser_read_blanks(str, str_size, &index, RT_TRUE, callback, context)))
 					goto end;
 				
 				/* Read the separator. */
@@ -170,7 +170,7 @@ rt_s rt_properties_parser_parse(const rt_char *str, rt_un str_size, rt_propertie
 					goto end;
 
 				/* Read blanks between the separator and the value. */
-				if (RT_UNLIKELY(!rt_properties_parser_read_blanks(str, str_size, &index, callback, context)))
+				if (RT_UNLIKELY(!rt_properties_parser_read_blanks(str, str_size, &index, RT_TRUE, callback, context)))
 					goto end;
 
 				/* Read the value. */
