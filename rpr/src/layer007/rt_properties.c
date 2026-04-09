@@ -8,7 +8,7 @@
 #include "layer006/rt_properties_parser.h"
 
 struct rt_properties_context {
-	struct rt_hash_table_entry *properties;
+	struct rt_hash_table_entry *hash_table;
 	rt_char *buffer;
 	rt_un buffer_size;
 	rt_un buffer_capacity;
@@ -40,7 +40,7 @@ static rt_s rt_properties_callback(enum rt_properties_parser_part_type part_type
 
 		current_key_size = rt_char_get_size(current_key);
 
-		if (RT_UNLIKELY(!rt_hash_table_set(&properties_context->properties, current_key, current_key_size, current_value, RT_NULL)))
+		if (RT_UNLIKELY(!rt_hash_table_set(&properties_context->hash_table, current_key, current_key_size, current_value, RT_NULL)))
 			goto end;
 	}
 	ret = RT_OK;
@@ -49,7 +49,7 @@ end:
 	return ret;
 }
 
-rt_s rt_properties_create(struct rt_hash_table_entry **properties, const rt_char *file_path, enum rt_encoding encoding, rt_un initial_capacity, struct rt_heap *heap)
+rt_s rt_properties_create(struct rt_properties *properties, const rt_char *file_path, enum rt_encoding encoding, rt_un initial_capacity, struct rt_heap *heap)
 {
 	void *file_heap_buffer = RT_NULL;
 	rt_un file_heap_buffer_capacity = 0;
@@ -81,13 +81,12 @@ end:
 	return ret;
 }
 
-rt_s rt_properties_create_from_str(struct rt_hash_table_entry **properties, const rt_char *str, rt_un str_size, rt_un initial_capacity, struct rt_heap *heap)
+rt_s rt_properties_create_from_str(struct rt_properties *properties, const rt_char *str, rt_un str_size, rt_un initial_capacity, struct rt_heap *heap)
 {
 	struct rt_properties_context context;
-	struct rt_properties_header *header;
 	rt_s ret = RT_FAILED;
 
-	context.properties = RT_NULL;
+	context.hash_table = RT_NULL;
 	context.buffer = RT_NULL;
 
 	if (RT_UNLIKELY(!heap->alloc(heap, (void**)&context.buffer, str_size * sizeof(rt_char))))
@@ -97,44 +96,38 @@ rt_s rt_properties_create_from_str(struct rt_hash_table_entry **properties, cons
 	context.buffer_capacity = str_size;
 	context.current_key = RT_NULL;
 
-	if (RT_UNLIKELY(!rt_hash_table_create(&context.properties, &rt_char_hash_callback, &rt_char_comparison_with_size_callback, RT_NULL, initial_capacity, sizeof(struct rt_properties_header), heap)))
+	if (RT_UNLIKELY(!rt_hash_table_create(&context.hash_table, &rt_char_hash_callback, &rt_char_comparison_with_size_callback, RT_NULL, initial_capacity, 0, heap)))
 		goto end;
 
 	if (RT_UNLIKELY(!rt_properties_parser_parse(str, str_size, &rt_properties_callback, &context)))
 		goto end;
 
-
-	*properties = context.properties;
-
-	header = RT_PROPERTIES_GET_HEADER(*properties);
-	header->buffer = context.buffer;
-	header->heap = heap;
+	properties->hash_table = context.hash_table;
+	properties->buffer = context.buffer;
+	properties->heap = heap;
 
 	ret = RT_OK;
 end:
 	if (RT_UNLIKELY(!ret)) {
-		rt_hash_table_free(&context.properties);
+		rt_hash_table_free(&context.hash_table);
 		heap->free(heap, (void**)&context.buffer);
 	}
 
 	return ret;
 }
 
-rt_s rt_properties_free(struct rt_hash_table_entry **properties)
+rt_s rt_properties_free(struct rt_properties *properties)
 {
-	struct rt_properties_header *header;
-	struct rt_heap *heap;
+	struct rt_heap *heap = properties->heap;
 	rt_s ret = RT_OK;
 
-	if (*properties) {
-		header = RT_PROPERTIES_GET_HEADER(*properties);
-		heap = header->heap;
-
-		if (RT_UNLIKELY(!heap->free(heap, (void**)&header->buffer)))
-			ret = RT_FAILED;
-		if (RT_UNLIKELY(!rt_hash_table_free(properties)))
+	if (heap) {
+		if (RT_UNLIKELY(!heap->free(heap, (void**)&properties->buffer)))
 			ret = RT_FAILED;
 	}
+
+	if (RT_UNLIKELY(!rt_hash_table_free(&properties->hash_table)))
+		ret = RT_FAILED;
 
 	return ret;
 }
