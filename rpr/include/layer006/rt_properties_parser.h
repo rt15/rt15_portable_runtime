@@ -10,7 +10,7 @@
  * <p>
  * The callback will always be called with a (possibly empty) value after a key.<br>
  * As the separator is optional, the callback might not be called with a separator between a key and a value.<br>
- * The input string is not modified, so escape characters are not removed from keys, unicode sequences are not converted, multi-line values are not merged, etc.
+ * The input string is not modified, so escape characters are not deleted from keys, unicode sequences are not converted, multi-line values are not merged, etc.
  * </p>
  *
  * <p>

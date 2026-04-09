@@ -101,7 +101,7 @@ rt_s zz_test_env_vars(void)
 	if (RT_UNLIKELY(!rt_env_vars_get_env_var(&env_vars2, _R("RT_VAR_NAME"), buffer, 256, &buffer_size))) goto end;
 	if (RT_UNLIKELY(!rt_char_equals(_R("VALUE"), rt_char_get_size(_R("VALUE")), buffer, buffer_size))) goto end;
 
-	/* Remove the variable. */
+	/* Delete the variable. */
 	if (RT_UNLIKELY(!rt_env_var_delete(_R("RT_VAR_NAME")))) goto end;
 
 	/* Check process environment */
@@ -132,16 +132,16 @@ rt_s zz_test_env_vars(void)
 	if (RT_UNLIKELY(!rt_env_vars_get_env_var(&env_vars3, _R("RT_VAR_NAME2"), buffer, 256, &buffer_size))) goto end;
 	if (RT_UNLIKELY(!rt_char_equals(_R(""), rt_char_get_size(_R("")), buffer, buffer_size))) goto end;
 
-	/* Remove PATH from env_vars3. */
-	if (RT_UNLIKELY(!rt_env_vars_remove_env_var(&env_vars3, _R("PATH")))) goto end;
+	/* Delete PATH from env_vars3. */
+	if (RT_UNLIKELY(!rt_env_vars_delete_env_var(&env_vars3, _R("PATH")))) goto end;
 	if (RT_UNLIKELY(!zz_check_env_vars(&env_vars3))) goto end;
 	if (RT_UNLIKELY(!rt_env_vars_contains_env_var(&env_vars3, _R("PATH"), &contains))) goto end;
 	if (RT_UNLIKELY(contains)) goto end;
 	if (RT_UNLIKELY(!rt_env_vars_contains_env_var(&env_vars3, _R("RT_VAR_NAME2"), &contains))) goto end;
 	if (RT_UNLIKELY(!contains)) goto end;
 
-	/* Remove RT_VAR_NAME2 from env_vars3. */
-	if (RT_UNLIKELY(!rt_env_vars_remove_env_var(&env_vars3, _R("RT_VAR_NAME2")))) goto end;
+	/* Delete RT_VAR_NAME2 from env_vars3. */
+	if (RT_UNLIKELY(!rt_env_vars_delete_env_var(&env_vars3, _R("RT_VAR_NAME2")))) goto end;
 	if (RT_UNLIKELY(!zz_check_env_vars(&env_vars3))) goto end;
 	if (RT_UNLIKELY(!rt_env_vars_contains_env_var(&env_vars3, _R("RT_VAR_NAME2"), &contains))) goto end;
 	if (RT_UNLIKELY(contains)) goto end;

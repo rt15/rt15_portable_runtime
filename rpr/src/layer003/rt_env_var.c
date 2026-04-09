@@ -93,7 +93,7 @@ rt_s rt_env_var_delete(const rt_char *name)
 
 #ifdef RT_DEFINE_WINDOWS
 
-	/* Passing RT_NULL as value remove the variable from the process environment. */
+	/* Passing RT_NULL as value delete the variable from the process environment. */
 	/* Returns FALSE and sets last error in case of failure. */
 	if (RT_UNLIKELY(!SetEnvironmentVariable(name, RT_NULL)))
 		goto end;

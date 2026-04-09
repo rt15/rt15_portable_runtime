@@ -13,7 +13,7 @@
  * 
  * <p>
  * Under Linux, a shared memory is created and a robust mutex is stored into it.<br>
- * The shared memory is listed into /dev/shm, and is not removed after all the processes exit, unless one of them calls rt_shared_mutex_destroy.
+ * The shared memory is listed into /dev/shm, and is not deleted after all the processes exit, unless one of them calls rt_shared_mutex_destroy.
  * <p>
  */
 

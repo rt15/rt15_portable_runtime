@@ -10,7 +10,7 @@
  * <p>
  * The main purpose of this structure is to be used as argument in rt_process_create.<br>
  * Corresponds to <tt>__environ</tt> Linux variable and <tt>GetEnvironmentStrings</tt> in Windows.<br>
- * Manage a copy of the environment so variables are added/removed only in given rt_env_vars structure, not in the process environment.
+ * Manage a copy of the environment so variables are added/deleted only in given rt_env_vars structure, not in the process environment.
  * </p>
  *
  * <p>
@@ -79,7 +79,7 @@ RT_API rt_s rt_env_vars_get_env_var(struct rt_env_vars *env_vars, const rt_char 
 
 /**
  * Be sure that the variable does not exist yet.<br>
- * You can use <tt>rt_env_vars_remove_env_var</tt> to ensure that.
+ * You can use <tt>rt_env_vars_delete_env_var</tt> to ensure that.
  *
  * <p>
  * The <tt>rt_env_vars</tt> structure should be considered corrupted in case of failure.
@@ -88,10 +88,10 @@ RT_API rt_s rt_env_vars_get_env_var(struct rt_env_vars *env_vars, const rt_char 
 RT_API rt_s rt_env_vars_add_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name, const rt_char *value);
 
 /**
- * Remove an environment variable of given <tt>rt_env_vars</tt> structure if it exists.<br>
+ * Delete an environment variable of given <tt>rt_env_vars</tt> structure if it exists.<br>
  * Can be used to ensure that an environment variable does not exist before adding it.
  */
-RT_API rt_s rt_env_vars_remove_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name);
+RT_API rt_s rt_env_vars_delete_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name);
 
 /**
  * If the variable already exists, replace the value.<br>

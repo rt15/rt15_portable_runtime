@@ -57,14 +57,14 @@ static rt_s zz_test_empty_dir(const rt_char *tmp_dir, rt_un tmp_dir_size)
 	if (RT_UNLIKELY(rt_file_system_delete_file(empty_dir))) goto end;
 	if (RT_UNLIKELY(rt_file_system_delete_file_if_exists(empty_dir))) goto end;
 
-	/* Remove directory with delete_dir. */
+	/* Delete directory with delete_dir. */
 	if (RT_UNLIKELY(!rt_file_path_get_type(empty_dir, &type))) goto end;
 	if (RT_UNLIKELY(type != RT_FILE_PATH_TYPE_DIR)) goto end;
 	if (RT_UNLIKELY(!rt_file_system_delete_dir(empty_dir))) goto end;
 	if (RT_UNLIKELY(!rt_file_path_get_type(empty_dir, &type))) goto end;
 	if (RT_UNLIKELY(type != RT_FILE_PATH_TYPE_NONE)) goto end;
 
-	/* Remove directory with delete_dir_if_exists. */
+	/* Delete directory with delete_dir_if_exists. */
 	if (RT_UNLIKELY(!rt_file_system_create_dir(empty_dir))) goto end;
 	if (RT_UNLIKELY(!rt_file_path_get_type(empty_dir, &type))) goto end;
 	if (RT_UNLIKELY(type != RT_FILE_PATH_TYPE_DIR)) goto end;

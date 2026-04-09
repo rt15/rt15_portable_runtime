@@ -18,7 +18,7 @@ enum rt_file_mode {
 	RT_FILE_MODE_READ,
 	/* Open an existing file (pointing at the beginning) or create a new file for read/write access. */
 	RT_FILE_MODE_READ_WRITE,
-	/* Remove an existing file if it exists and create a new one with read/write access. */
+	/* Delete an existing file if it exists and create a new one with read/write access. */
 	RT_FILE_MODE_TRUNCATE,
 	/* Create a new file with read/write access. If the file already exists, the function fails. */
 	RT_FILE_MODE_NEW

@@ -218,7 +218,7 @@ RT_API rt_s rt_char_convert_to_f64(const rt_char *str, rt_f64 *result);
 RT_API rt_s rt_char_convert_to_f64_with_size(const rt_char *str, rt_un str_size, rt_f64 *result);
 
 /**
- * Remove characters <= ' ' at the left and/or at the right of the string.
+ * Delete characters <= ' ' at the left and/or at the right of the string.
  *
  * @param buffer_size The number of characters in the buffer (in/out parameter).
  */

@@ -35,7 +35,7 @@ RT_API rt_s rt_env_var_get(const rt_char *name, rt_char *buffer, rt_un buffer_ca
 RT_API rt_s rt_env_var_set(const rt_char *name, const rt_char *value);
 
 /**
- * Remove the environment variable from the process environment.
+ * Delete the environment variable from the process environment.
  *
  * <p>
  * Successful even if the variable does not exist.

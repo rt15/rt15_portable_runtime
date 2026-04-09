@@ -117,7 +117,7 @@ rt_s rt_sortable_array_delete_item_index(void **sortable_array, rt_un item_index
 
 	} else {
 
-		/* Array is not sorted, simply remove it with the classical function. */
+		/* Array is not sorted, simply delete it with the classical function. */
 		if (RT_UNLIKELY(!rt_array_delete_item_index(sortable_array, item_index)))
 			goto end;
 

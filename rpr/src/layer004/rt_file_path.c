@@ -262,7 +262,7 @@ static void rt_file_path_realpath_get_parent(rt_char *dir_path, rt_un *buffer_si
  * Similar to Linux <tt>realpath</tt> function, but works even if the directory or file does not exist.
  * <p>
  * Cleans up the path by resolving references to "." and "..", but does not resolve symbolic links.<br>
- * Removes duplicated slashes.<br>
+ * Deletes duplicated slashes.<br>
  * No trailing slash, except if it is the root.
  * </p>
  *
@@ -369,7 +369,7 @@ static rt_s rt_file_path_realpath(const rt_char *path, rt_un path_size, rt_char 
 		rt_file_path_realpath_get_parent(buffer, buffer_size);
 	}
 
-	/* Remove trailing slash if it is not root. */
+	/* Delete trailing slash if it is not root. */
 	if (*buffer_size > 1 && buffer[*buffer_size - 1] == _R('/')) {
 		(*buffer_size)--;
 		buffer[*buffer_size] = 0;
@@ -555,7 +555,7 @@ rt_s rt_file_path_strip_namespace(RT_LINUX_UNUSED rt_char *path, RT_UNUSED rt_un
 		    path[5] == _R('N') &&
 		    path[6] == _R('C') &&
 		    path[7] == _R('\\')) {
-			/* 8 characters to remove minus the two backslashes at positions 0 and 1. */
+			/* 8 characters to delete minus the two backslashes at positions 0 and 1. */
 			local_buffer_size -= 6;
 			/* Result minus two backslashes plus the terminating zero. */
 			RT_MEMORY_MOVE(&path[8], &path[2], (local_buffer_size - 1) * sizeof(rt_char));

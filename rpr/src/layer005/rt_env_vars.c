@@ -360,7 +360,7 @@ end:
 	return ret;
 }
 
-rt_s rt_env_vars_remove_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name)
+rt_s rt_env_vars_delete_env_var(struct rt_env_vars *env_vars, const rt_char *env_var_name)
 {
 	rt_char *env_var;
 	rt_char *destination;
@@ -374,14 +374,14 @@ rt_s rt_env_vars_remove_env_var(struct rt_env_vars *env_vars, const rt_char *env
 		if (RT_UNLIKELY(!rt_env_vars_get_pointer(env_vars, env_var_name, &env_var)))
 			goto end;
 
-		/* Remove only if it exists. */
+		/* Delete only if it exists. */
 		if (env_var) {
 
 			/* The array will be built back if and when needed. */
 			if (RT_UNLIKELY(!rt_static_heap_free((void**)&env_vars->env_vars_array)))
 				goto end;
 
-			/* We will copy the remaining of the block in place of the variable to remove. */
+			/* We will copy the remaining of the block in place of the variable to delete. */
 			destination = env_var;
 
 			/* Skip the variable name and value. */
@@ -528,7 +528,7 @@ rt_s rt_env_vars_merge_env_var(struct rt_env_vars *env_vars, const rt_char *env_
 	if (RT_UNLIKELY(!rt_env_vars_contains_env_var(env_vars, env_var_name, &contains)))
 		goto end;
 	if (contains) {
-		if (RT_UNLIKELY(!rt_env_vars_remove_env_var(env_vars, env_var_name)))
+		if (RT_UNLIKELY(!rt_env_vars_delete_env_var(env_vars, env_var_name)))
 			goto end;
 	}
 	if (RT_UNLIKELY(!rt_env_vars_add_env_var(env_vars, env_var_name, value)))

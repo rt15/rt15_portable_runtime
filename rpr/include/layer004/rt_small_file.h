@@ -17,7 +17,7 @@
 enum rt_small_file_mode {
 	/* Open an existing or create a new file and append data into it. */
 	RT_SMALL_FILE_MODE_APPEND,
-	/* Remove an existing file if it exists and create a new one. */
+	/* Delete an existing file if it exists and create a new one. */
 	RT_SMALL_FILE_MODE_TRUNCATE,
 	/* Create a new file. If the file already exists, the function fails. */
 	RT_SMALL_FILE_MODE_NEW

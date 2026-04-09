@@ -46,8 +46,8 @@
  * <pre>
  * ps -u, ps u -> Display the user.
  * ps -u root -> Display all processes for root user.
- * rm -dv temp -> Remove temp directory in verbose mode.
- * mkdir temp1 temp2/rm -d temp1 temp2 -> Create and remove to directories.
+ * rm -dv temp -> Delete temp directory in verbose mode.
+ * mkdir temp1 temp2/rm -d temp1 temp2 -> Create and delete two directories.
  * touch -- -name -> Create -name file.
  * rm -r -r -R --recursive foo -> You can use same option several times.
  * ps -u oracle -u root u -> Display processes of root and oracle users with user names.

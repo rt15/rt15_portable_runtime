@@ -61,7 +61,7 @@ end:
 	return ret;
 }
 
-static rt_s zz_generate_char8_remove_macros(rt_char8 *buffer, rt_un *buffer_size)
+static rt_s zz_generate_char8_delete_macros(rt_char8 *buffer, rt_un *buffer_size)
 {
 	rt_un index;
 	rt_char quote;
@@ -112,7 +112,7 @@ static rt_s zz_generate_char8_callback(const rt_char8 *line, rt_un line_size, en
 
 	if (RT_UNLIKELY(!rt_char8_copy(line, line_size, buffer, RT_CHAR8_HALF_BIG_STRING_SIZE))) goto end;
 	if (RT_UNLIKELY(!zz_generate_char8_replace(buffer, &buffer_size))) goto end;
-	if (RT_UNLIKELY(!zz_generate_char8_remove_macros(buffer, &buffer_size))) goto end;
+	if (RT_UNLIKELY(!zz_generate_char8_delete_macros(buffer, &buffer_size))) goto end;
 	if (RT_UNLIKELY(!output_stream->write(output_stream, buffer, buffer_size))) goto end;
 
 	if (eol != RT_EOL_NONE) {
