@@ -78,6 +78,7 @@ end:
 		if (RT_UNLIKELY(!heap->free(heap, &file_heap_buffer)))
 			ret = RT_FAILED;
 	}
+
 	return ret;
 }
 
@@ -114,6 +115,15 @@ end:
 	}
 
 	return ret;
+}
+
+rt_s rt_properties_create_from_hash_table(struct rt_properties *properties, struct rt_hash_table_entry *hash_table, struct rt_heap *heap)
+{
+	properties->hash_table = hash_table;
+	properties->buffer = RT_NULL;
+	properties->heap = heap;
+
+	return RT_OK;
 }
 
 rt_s rt_properties_free(struct rt_properties *properties)

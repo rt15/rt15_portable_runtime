@@ -34,6 +34,12 @@ RT_API rt_s rt_properties_create(struct rt_properties *properties, const rt_char
 RT_API rt_s rt_properties_create_from_str(struct rt_properties *properties, const rt_char *str, rt_un str_size, rt_un initial_capacity, struct rt_heap *heap);
 
 /**
+ * Create a properties structure from given <tt>hash_table</tt>.<br>
+ * The buffer is set to RT_NULL since the hash-table manages the keys and values.
+ */
+RT_API rt_s rt_properties_create_from_hash_table(struct rt_properties *properties, struct rt_hash_table_entry *hash_table, struct rt_heap *heap);
+
+/**
  * Free the buffer with the keys and values then the hash table.
  */
 RT_API rt_s rt_properties_free(struct rt_properties *properties);
