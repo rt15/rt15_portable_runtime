@@ -62,4 +62,18 @@ RT_API rt_s rt_properties_parser_parse_key(const rt_char *str, rt_un str_size, r
  */
 RT_API rt_s rt_properties_parser_parse_value(const rt_char *str, rt_un str_size, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
 
+/**
+ * Format a key so that it can be written into a properties file.
+ * 
+ * @param buffer_size The number of characters in the buffer (in/out parameter).
+ */
+RT_API rt_s rt_properties_parser_format_key(const rt_char *key, rt_un key_size, rt_b encode_non_ascii, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+
+/**
+ * Format a value so that it can be written into a properties file.
+ * 
+ * @param buffer_size The number of characters in the buffer (in/out parameter).
+ */
+RT_API rt_s rt_properties_parser_format_value(const rt_char *value, rt_un value_size, rt_b encode_non_ascii, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+
 #endif /* RT_PROPERTIES_PARSER_H */

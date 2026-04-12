@@ -318,3 +318,86 @@ rt_s rt_properties_parser_parse_value(const rt_char *str, rt_un str_size, rt_cha
 {
 	return rt_properties_parser_parse_part(str, str_size, buffer, buffer_capacity, buffer_size);
 }
+
+static rt_s rt_properties_parser_format_part(const rt_char *part, rt_un part_size, rt_b key, rt_b encode_non_ascii, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	rt_char character;
+	rt_un32 code_point;
+	rt_un characters_read;
+	rt_un i;
+	rt_s ret = RT_FAILED;
+
+	/* If it is a value starting with a blank, we need to protect it with a slash. */
+	if (!key && part_size && RT_CHAR_IS_BLANK(part[0]) && part[0] != _R('\n') && part[0] != _R('\r')) {
+		if (RT_UNLIKELY(!rt_char_append_char(_R('\\'), buffer, buffer_capacity, buffer_size)))
+			goto end;
+	}
+
+	for (i = 0; i < part_size; i++) {
+		character = part[i];
+		switch (character) {
+		case _R('\\'):
+			if (RT_UNLIKELY(!rt_char_append(_R("\\\\"), 2, buffer, buffer_capacity, buffer_size)))
+				goto end;
+			break;
+		case _R('\n'):
+			if (RT_UNLIKELY(!rt_char_append(_R("\\n"), 2, buffer, buffer_capacity, buffer_size)))
+				goto end;
+			break;
+		case _R('\r'):
+			if (RT_UNLIKELY(!rt_char_append(_R("\\r"), 2, buffer, buffer_capacity, buffer_size)))
+				goto end;
+			break;
+		case _R('\t'):
+			if (RT_UNLIKELY(!rt_char_append(_R("\\t"), 2, buffer, buffer_capacity, buffer_size)))
+				goto end;
+			break;
+		case _R('\f'):
+			if (RT_UNLIKELY(!rt_char_append(_R("\\f"), 2, buffer, buffer_capacity, buffer_size)))
+				goto end;
+			break;
+		case _R('='):
+		case _R(':'):
+		case _R(' '):
+			/* In case of a key, we need to escape delimiting characters. */
+			if (key) {
+				if (RT_UNLIKELY(!rt_char_append_char(_R('\\'), buffer, buffer_capacity, buffer_size)))
+					goto end;
+			}
+			if (RT_UNLIKELY(!rt_char_append_char(character, buffer, buffer_capacity, buffer_size)))
+				goto end;
+			break;
+		default:
+			if (encode_non_ascii && character > 127) {
+				if (RT_UNLIKELY(!rt_char_append(_R("\\u"), 2, buffer, buffer_capacity, buffer_size)))
+					goto end;
+				if (RT_UNLIKELY(!rt_unicode_code_point_decode(&part[i], part_size - i, &code_point, &characters_read)))
+					goto end;
+				i += characters_read - 1;
+				if (RT_UNLIKELY(code_point > 0xFFFF)) {
+					rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+					goto end;
+				}
+				if (RT_UNLIKELY(!rt_char_append_hex((rt_char8*)&code_point, 1, 2, RT_NULL, 0, RT_NULL, 0, RT_FALSE, buffer, buffer_capacity, buffer_size)))
+					goto end;
+			} else {
+				if (RT_UNLIKELY(!rt_char_append_char(character, buffer, buffer_capacity, buffer_size)))
+					goto end;
+			}
+		}
+	}
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
+rt_s rt_properties_parser_format_key(const rt_char *key, rt_un key_size, rt_b encode_non_ascii, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	return rt_properties_parser_format_part(key, key_size, RT_TRUE, encode_non_ascii, buffer, buffer_capacity, buffer_size);
+}
+
+rt_s rt_properties_parser_format_value(const rt_char *value, rt_un value_size, rt_b encode_non_ascii, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	return rt_properties_parser_format_part(value, value_size, RT_FALSE, encode_non_ascii, buffer, buffer_capacity, buffer_size);
+}
