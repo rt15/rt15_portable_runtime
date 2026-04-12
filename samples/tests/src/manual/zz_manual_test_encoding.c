@@ -124,10 +124,28 @@ end:
 	return ret;
 }
 
+static rt_s zz_test_encoding_display_system_name(void)
+{
+	rt_char buffer[RT_CHAR_HALF_BIG_STRING_SIZE];
+	rt_un buffer_size;
+	rt_s ret = RT_FAILED;
+
+	buffer_size = 22;
+	if (RT_UNLIKELY(!rt_char_copy(_R("System encoding name: "), buffer_size, buffer, RT_CHAR_HALF_BIG_STRING_SIZE))) goto end;
+	if (RT_UNLIKELY(!rt_encoding_get_system_name(buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append_char(_R('\n'), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto end;
+	if (RT_UNLIKELY(!rt_console_write_str_with_size(buffer, buffer_size))) goto end;
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
 rt_s zz_manual_test_encoding(void)
 {
 	rt_s ret = RT_FAILED;
 
+	if (RT_UNLIKELY(!zz_test_encoding_display_system_name())) goto end;
 	if (RT_UNLIKELY(!zz_test_encoding_get_info())) goto end;
 
 	ret = RT_OK;

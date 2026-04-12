@@ -54,10 +54,21 @@ static rt_uchar8 zz_utf8_3[5] = { 0xC3, 0xA9, 0xC5, 0xA3, 0x00 };
 static rt_s zz_test_encoding_get_system(void)
 {
 	enum rt_encoding encoding;
+	rt_char buffer[RT_CHAR_HALF_BIG_STRING_SIZE];
+	rt_un buffer_size;
+	struct rt_encoding_info encoding_info;
 	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_encoding_get_system(&encoding))) goto end;
 	if (RT_UNLIKELY(encoding >= RT_ENCODING_ENCODINGS_COUNT)) goto end;
+
+	buffer_size = 0;
+	if (RT_UNLIKELY(!rt_encoding_get_system_name(buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size))) goto end;
+	if (RT_UNLIKELY(!buffer_size)) goto end;
+	if (RT_UNLIKELY(rt_char_get_size(buffer) != buffer_size)) goto end;
+
+	if (RT_UNLIKELY(!rt_encoding_get_info(encoding, &encoding_info))) goto end;
+	if (RT_UNLIKELY(!rt_char_equals(buffer, buffer_size, encoding_info.name, rt_char_get_size(encoding_info.name)))) goto end;
 
 	ret = RT_OK;
 end:

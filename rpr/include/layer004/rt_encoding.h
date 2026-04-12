@@ -149,6 +149,17 @@ struct rt_encoding_info {
 RT_API rt_s rt_encoding_get_system(enum rt_encoding *encoding);
 
 /**
+ * Find out the system default encoding name.
+ *
+ * <p>
+ * Under Linux, can work even if the system encoding is not supported by this library.
+ * </p>
+ *
+ * @param buffer_size The number of characters in the buffer (in/out parameter).
+ */
+RT_API rt_s rt_encoding_get_system_name(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+
+/**
  * Retrieve information about given <tt>encoding</tt>.
  *
  * <p>

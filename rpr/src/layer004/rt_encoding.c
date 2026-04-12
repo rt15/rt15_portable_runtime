@@ -393,18 +393,29 @@ static struct rt_fast_initialization rt_encoding_system_initialization = RT_FAST
 
 static enum rt_encoding rt_encoding_system = 0;
 
-#ifdef RT_DEFINE_LINUX
-
 /**
- * Retrieve the Linux system encoding.<br>
- * Make sure to call setlocale(LC_ALL, "") before this function to avoid "C" locale.
+ * Retrieve the system encoding name.<br>
+ * Under Linux, make sure to call setlocale(LC_ALL, "") before this function to avoid "C" locale.
  */
-static rt_s rt_encoding_get_linux_system(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+rt_s rt_encoding_get_system_name(rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
-	rt_char *encoding_name;
+#ifdef RT_DEFINE_WINDOWS
+	enum rt_encoding system_encoding;
+#endif
+	const rt_char *encoding_name;
 	rt_un encoding_name_size;
 	rt_s ret = RT_FAILED;
 
+#ifdef RT_DEFINE_WINDOWS
+
+	if (RT_UNLIKELY(!rt_encoding_get_system(&system_encoding)))
+		goto end;
+	encoding_name = rt_encoding_code_names[system_encoding];
+	encoding_name_size = rt_char_get_size(encoding_name);
+	if (RT_UNLIKELY(!rt_char_append(encoding_name, encoding_name_size, buffer, buffer_capacity, buffer_size)))
+		goto end;
+
+#else
 	encoding_name = nl_langinfo(CODESET);
 	/* There are very few chances that nl_langinfo failed. */
 	/* It may not set errno. */
@@ -413,9 +424,8 @@ static rt_s rt_encoding_get_linux_system(rt_char *buffer, rt_un buffer_capacity,
 		/* There are very few chances that encoding_name is empty. */
 		if (RT_LIKELY(encoding_name_size)) {
 			/* The pointer nl_langinfo is not thread safe so we make a copy really quick. */
-			if (RT_UNLIKELY(!rt_char_copy(encoding_name, encoding_name_size, buffer, buffer_capacity)))
+			if (RT_UNLIKELY(!rt_char_append(encoding_name, encoding_name_size, buffer, buffer_capacity, buffer_size)))
 				goto end;
-			*buffer_size = encoding_name_size;
 		} else {
 			rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
 			goto end;
@@ -424,13 +434,12 @@ static rt_s rt_encoding_get_linux_system(rt_char *buffer, rt_un buffer_capacity,
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
 		goto end;
 	}
-
+#endif
 	ret = RT_OK;
 end:
 	return ret;
 }
 
-#endif
 
 rt_s rt_encoding_get_system(enum rt_encoding *encoding)
 {
@@ -1238,13 +1247,14 @@ static rt_s rt_encoding_iconv_with_encoding(const rt_char8 *input, rt_un input_s
 	rt_un system_encoding_name_size;
 	const rt_char8 *input_encoding_name;
 	const rt_char8 *output_encoding_name;
-	rt_b conversion_descriptor_open = RT_FALSE;
 	iconv_t conversion_descriptor;
+	rt_b conversion_descriptor_open = RT_FALSE;
 	rt_s ret = RT_FAILED;
 
 	/* Retrieve the encoding name as a string. */
 	/* Either input_encoding or output_encoding is RT_ENCODING_SYSTEM_DEFAULT so we will use the result of this function call. */
-	if (RT_UNLIKELY(!rt_encoding_get_linux_system(system_encoding_name, 64, &system_encoding_name_size)))
+	system_encoding_name_size = 0;
+	if (RT_UNLIKELY(!rt_encoding_get_system_name(system_encoding_name, 64, &system_encoding_name_size)))
 		goto end;
 
 	if (input_encoding == RT_ENCODING_SYSTEM_DEFAULT) {
