@@ -753,6 +753,48 @@ end:
 	return ret;
 }
 
+rt_s rt_char_append_hex(const rt_char8 *data, rt_un size, rt_un item_size,
+	const rt_char *prefix, rt_un prefix_size,
+	const rt_char *separator, rt_un separator_size,
+	rt_b uppercase,
+	rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	const rt_char *letters;
+	rt_uchar8 byte;
+	rt_char byte_chars[2];
+	rt_un i, j;
+	rt_s ret = RT_FAILED;
+
+	if (uppercase)
+		letters = _R("0123456789ABCDEF");
+	else
+		letters = _R("0123456789abcdef");
+
+	for (i = 0; i < size; i++) {
+		if (i && separator_size) {
+			if (RT_UNLIKELY(!rt_char_append(separator, separator_size, buffer, buffer_capacity, buffer_size)))
+				goto end;
+		}
+
+		if (prefix_size) {
+			if (RT_UNLIKELY(!rt_char_append(prefix, prefix_size, buffer, buffer_capacity, buffer_size)))
+				goto end;
+		}
+
+		for (j = 0; j < item_size; j++) {
+			byte = data[(i + 1) * item_size - j - 1];
+			byte_chars[0] = letters[byte >> 4];
+			byte_chars[1] = letters[byte & 0x0F];
+			if (RT_UNLIKELY(!rt_char_append(byte_chars, 2, buffer, buffer_capacity, buffer_size)))
+				goto end;
+		}
+	}
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
 rt_s rt_char_convert_to_f32(const rt_char *str, rt_f32 *result)
 {
 	rt_b negative;

@@ -1227,6 +1227,48 @@ end:
 	return ret;
 }
 
+static rt_s zz_test_char_append_hex_do(const rt_char8 *data, rt_un size, rt_un item_size,
+	const rt_char *prefix, rt_un prefix_size,
+	const rt_char *separator, rt_un separator_size,
+	rt_b uppercase, const rt_char *expected)
+{
+	rt_char buffer[RT_CHAR_HALF_BIG_STRING_SIZE];
+	rt_un buffer_size;
+	rt_s ret = RT_FAILED;
+
+	buffer_size = 3;
+	buffer[0] = _R('H');
+	buffer[1] = _R(':');
+	buffer[2] = _R(' ');
+	buffer[3] = _R('\0');
+
+	if (RT_UNLIKELY(!rt_char_append_hex(data, size, item_size, prefix, prefix_size, separator, separator_size, uppercase, buffer, RT_CHAR_BIG_STRING_SIZE, &buffer_size))) goto end;
+	if (RT_UNLIKELY(rt_char_get_size(buffer) != buffer_size)) goto end;
+	if (RT_UNLIKELY(!rt_char_equals(buffer, buffer_size, expected, rt_char_get_size(expected)))) goto end;
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
+static rt_s zz_test_char_append_hex(void)
+{
+	rt_un32 values[2] = {0x12, 0x1FCCE715};
+	rt_s ret = RT_FAILED;
+
+	if (RT_UNLIKELY(!zz_test_char_append_hex_do("A", 1, 1, _R("0x"), 2, _R(", "), 2, RT_TRUE, _R("H: 0x41")))) goto end;
+	if (RT_UNLIKELY(!zz_test_char_append_hex_do("ABCD", 4, 1, _R("0x"), 2, _R(", "), 2, RT_TRUE, _R("H: 0x41, 0x42, 0x43, 0x44")))) goto end;
+	if (RT_UNLIKELY(!zz_test_char_append_hex_do("ABCD", 2, 2, _R("0x"), 2, _R(", "), 2, RT_TRUE, _R("H: 0x4241, 0x4443")))) goto end;
+	if (RT_UNLIKELY(!zz_test_char_append_hex_do("\1\0\0\0", 1, 4, _R("0x"), 2, _R(", "), 2, RT_TRUE, _R("H: 0x00000001")))) goto end;
+	if (RT_UNLIKELY(!zz_test_char_append_hex_do((rt_char8 *)&values, 2, 4, _R("0x"), 2, _R(", "), 2, RT_TRUE, _R("H: 0x00000012, 0x1FCCE715")))) goto end;
+	if (RT_UNLIKELY(!zz_test_char_append_hex_do((rt_char8 *)&values, 2, 4, _R("0x"), 2, _R(", "), 2, RT_FALSE, _R("H: 0x00000012, 0x1fcce715")))) goto end;
+	if (RT_UNLIKELY(!zz_test_char_append_hex_do((rt_char8 *)&values, 2, 4, RT_NULL, 0, RT_NULL, 0, RT_TRUE, _R("H: 000000121FCCE715")))) goto end;
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
 static rt_s zz_test_char_convert_to_f(void)
 {
 	rt_s ret = RT_FAILED;
@@ -1814,6 +1856,7 @@ rt_s zz_test_char(void)
 	if (RT_UNLIKELY(!zz_test_char_convert_to_un())) goto end;
 	if (RT_UNLIKELY(!zz_test_char_convert_to_n())) goto end;
 	if (RT_UNLIKELY(!zz_test_char_convert_hex_to_un())) goto end;
+	if (RT_UNLIKELY(!zz_test_char_append_hex())) goto end;
 	if (RT_UNLIKELY(!zz_test_char_convert_to_f())) goto end;
 	if (RT_UNLIKELY(!zz_test_char_trim())) goto end;
 	if (RT_UNLIKELY(!zz_test_char_left_pad())) goto end;

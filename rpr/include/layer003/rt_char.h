@@ -186,6 +186,22 @@ RT_API rt_s rt_char_convert_hex_to_un(const rt_char *str, rt_un *result);
 RT_API rt_s rt_char_convert_hex_to_un_with_size(const rt_char *str, rt_un str_size, rt_un *result);
 
 /**
+ * Append the hexadecimal representation of some data to a buffer.
+ * 
+ * @param size The number of items to convert.
+ * @param item_size The size of each item to convert, in bytes.
+ * @param prefix Added before each item. Can be RT_NULL if prefix_size is 0.
+ * @param separator Added between items. Can be RT_NULL if separator_size is 0.
+ * @param uppercase If RT_TRUE, then 'A' to 'F' are used for hexadecimal digits, otherwise 'a' to 'f' are used.
+ * @param buffer_size The number of characters in the buffer (in/out parameter).
+ */
+RT_API rt_s rt_char_append_hex(const rt_char8 *data, rt_un size, rt_un item_size,
+	const rt_char *prefix, rt_un prefix_size,
+	const rt_char *separator, rt_un separator_size,
+	rt_b uppercase,
+	rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+
+/**
  *
  * <p>
  * Beware that this function does not check for overflows.

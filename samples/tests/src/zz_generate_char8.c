@@ -25,6 +25,14 @@ static rt_s zz_generate_char8_replace(rt_char8 *buffer, rt_un *buffer_size)
 		goto end;
 
 	temp_buffer_size = 0;
+	if (RT_UNLIKELY(!rt_char8_replace(buffer, *buffer_size, "rt_char88", 9, "rt_char8", 8, temp_buffer, RT_CHAR8_HALF_BIG_STRING_SIZE, &temp_buffer_size)))
+		goto end;
+
+	*buffer_size = 0;
+	if (RT_UNLIKELY(!rt_char8_replace(temp_buffer, temp_buffer_size, "RT_CHAR88", 9, "RT_CHAR8", 8, buffer, RT_CHAR8_HALF_BIG_STRING_SIZE, buffer_size)))
+		goto end;
+
+	temp_buffer_size = 0;
 	if (RT_UNLIKELY(!rt_char8_replace(buffer, *buffer_size, "test_char", 9, "test_char8", 10, temp_buffer, RT_CHAR8_HALF_BIG_STRING_SIZE, &temp_buffer_size)))
 		goto end;
 
