@@ -190,7 +190,7 @@ static rt_s zz_test_read_lines_copy_file_callback(const rt_char8 *line, rt_un li
 	if (RT_UNLIKELY(!output_stream->write(output_stream, line, line_size)))
 		goto end;
 
-	if (RT_UNLIKELY(!rt_process_file_write_eol(eol, output_stream)))
+	if (RT_UNLIKELY(!rt_encoding_write_eol(eol, RT_ENCODING_US_ASCII, output_stream)))
 		goto end;
 
 	ret = RT_OK;

@@ -4,6 +4,7 @@
 #include "layer001/rt_os_headers.h"
 #include "layer002/rt_error.h"
 #include "layer003/rt_char.h"
+#include "layer003/rt_char8.h"
 #include "layer003/rt_fast_initialization.h"
 
 /**
@@ -1426,6 +1427,148 @@ rt_s rt_encoding_decode(const rt_char8 *input, rt_un input_size, enum rt_encodin
 
 		(*output)[0] = 0;
 		*output_size = 0;
+	}
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
+rt_s rt_encoding_write(const rt_char *str, rt_un str_size, enum rt_encoding encoding, struct rt_output_stream *output_stream, struct rt_heap *heap)
+{
+	rt_char8 encoded_buffer[RT_CHAR8_BIG_STRING_SIZE];
+	void *heap_buffer = RT_NULL;
+	rt_un heap_buffer_capacity = 0;
+	rt_char8 *encoded_output;
+	rt_un encoded_output_size;
+	rt_s ret = RT_FAILED;
+
+	if (RT_UNLIKELY(!rt_encoding_encode(str, str_size, encoding, encoded_buffer, RT_CHAR8_BIG_STRING_SIZE, &heap_buffer, &heap_buffer_capacity, &encoded_output, &encoded_output_size, heap)))
+		goto end;
+
+	if (RT_UNLIKELY(!output_stream->write(output_stream, encoded_output, encoded_output_size)))
+		goto end;
+	
+	ret = RT_OK;
+end:
+	if (heap_buffer) {
+		if (RT_UNLIKELY(!heap->free(heap, &heap_buffer)))
+			ret = RT_FAILED;
+	}
+
+	return ret;
+}
+
+rt_s rt_encoding_write_eol(enum rt_eol eol, enum rt_encoding encoding, struct rt_output_stream *output_stream)
+{
+	rt_char8 *end_of_line;
+	rt_un end_of_line_size;
+	rt_s ret = RT_FAILED;
+
+	if (eol != RT_EOL_NONE) {
+
+		switch (encoding) {
+		case RT_ENCODING_UTF_16:
+		case RT_ENCODING_UTF_16LE:
+			switch (eol) {
+			case RT_EOL_LF:
+				end_of_line = "\x0a\x00";
+				end_of_line_size = 2;
+				break;
+			case RT_EOL_CRLF:
+				end_of_line = "\x0d\x00\x0a\x00";
+				end_of_line_size = 4;
+				break;
+			case RT_EOL_CR:
+				end_of_line = "\x0d\x00";
+				end_of_line_size = 2;
+				break;
+			default:
+				rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+				goto end;
+			}
+			break;
+		case RT_ENCODING_UTF_16BE:
+			switch (eol) {
+			case RT_EOL_LF:
+				end_of_line = "\x00\x0a";
+				end_of_line_size = 2;
+				break;
+			case RT_EOL_CRLF:
+				end_of_line = "\x00\x0d\x00\x0a";
+				end_of_line_size = 4;
+				break;
+			case RT_EOL_CR:
+				end_of_line = "\x00\x0d";
+				end_of_line_size = 2;
+				break;
+			default:
+				rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+				goto end;
+			}
+			break;
+		case RT_ENCODING_UTF_32:
+		case RT_ENCODING_UTF_32LE:
+			switch (eol) {
+			case RT_EOL_LF:
+				end_of_line = "\x0a\x00\x00\x00";
+				end_of_line_size = 4;
+				break;
+			case RT_EOL_CRLF:
+				end_of_line = "\x0d\x00\x00\x00\x0a\x00\x00\x00";
+				end_of_line_size = 8;
+				break;
+			case RT_EOL_CR:
+				end_of_line = "\x0d\x00\x00\x00";
+				end_of_line_size = 4;
+				break;
+			default:
+				rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+				goto end;
+			}
+			break;
+		case RT_ENCODING_UTF_32BE:
+			switch (eol) {
+			case RT_EOL_LF:
+				end_of_line = "\x00\x00\x00\x0a";
+				end_of_line_size = 4;
+				break;
+			case RT_EOL_CRLF:
+				end_of_line = "\x00\x00\x00\x0d\x00\x00\x00\x0a";
+				end_of_line_size = 8;
+				break;
+			case RT_EOL_CR:
+				end_of_line = "\x00\x00\x00\x0d";
+				end_of_line_size = 4;
+				break;
+			default:
+				rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+				goto end;
+			}
+			break;
+		default:
+			switch (eol) {
+			case RT_EOL_LF:
+				end_of_line = "\n";
+				end_of_line_size = 1;
+				break;
+			case RT_EOL_CRLF:
+				end_of_line = "\r\n";
+				end_of_line_size = 2;
+				break;
+			case RT_EOL_CR:
+				end_of_line = "\r";
+				end_of_line_size = 1;
+				break;
+			default:
+				rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+				goto end;
+			}
+			break;
+		}
+
+		if (RT_UNLIKELY(!output_stream->write(output_stream, end_of_line, end_of_line_size)))
+			goto end;
 	}
 
 	ret = RT_OK;

@@ -30,6 +30,4 @@ RT_API rt_s rt_process_file(const rt_char *file_path, rt_process_file_callback_t
 
 RT_API rt_s rt_process_file_with_output_file(const rt_char *input_file_path, const rt_char *output_file_path, rt_process_file_callback_t callback, void *context);
 
-RT_API rt_s rt_process_file_write_eol(enum rt_eol eol, struct rt_output_stream *output_stream);
-
 #endif /* RT_PROCESS_FILE_H */

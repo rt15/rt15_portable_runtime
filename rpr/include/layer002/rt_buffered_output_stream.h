@@ -10,7 +10,7 @@
  * The idea is for example to write few characters into the stream without performing a lot of system calls.
  *
  * <p>
- * It is mandatory to call <tt>flush</tt> to ensure that everything is sent to the kernel before closing the stream.
+ * It is mandatory to call <tt>flush</tt> to ensure that everything is sent to the kernel before closing the underlying stream.
  * </p>
  */
 

@@ -2,6 +2,8 @@
 #define RT_ENCODING_H
 
 #include "layer000/rt_types.h"
+#include "layer001/rt_eol.h"
+#include "layer001/rt_output_stream.h"
 #include "layer003/rt_heap.h"
 
 #define RT_ENCODING_ENCODINGS_COUNT 82
@@ -210,6 +212,7 @@ RT_API rt_un rt_encoding_get_size(const rt_char8 *data, rt_un code_unit_size);
  * @param buffer_capacity Buffer capacity, in bytes.
  * @param heap_buffer_capacity Heap buffer capacity, in bytes.
  * @param output_size Output size, in bytes, not including the zero terminating character.
+ * @param heap Can be <tt>RT_NULL</tt>. In that case we rely only on <tt>buffer</tt>
  */
 RT_API rt_s rt_encoding_encode(const rt_char *input, rt_un input_size, enum rt_encoding output_encoding, rt_char8 *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char8 **output, rt_un *output_size, struct rt_heap *heap);
 
@@ -237,7 +240,19 @@ RT_API rt_s rt_encoding_encode(const rt_char *input, rt_un input_size, enum rt_e
  * @param buffer_capacity Buffer capacity, in characters.
  * @param heap_buffer_capacity Heap buffer capacity, in bytes.
  * @param output_size Output size, in characters, not including the zero terminating character.
+ * @param heap Can be <tt>RT_NULL</tt>. In that case we rely only on <tt>buffer</tt>
  */
 RT_API rt_s rt_encoding_decode(const rt_char8 *input, rt_un input_size, enum rt_encoding input_encoding, rt_char *buffer, rt_un buffer_capacity, void **heap_buffer, rt_un *heap_buffer_capacity, rt_char **output, rt_un *output_size, struct rt_heap *heap);
+
+RT_API rt_s rt_encoding_write(const rt_char *str, rt_un str_size, enum rt_encoding encoding, struct rt_output_stream *output_stream, struct rt_heap *heap);
+
+/**
+ * Write the character sequence corresponding to the given <tt>eol</tt> in the given encoding to the output stream.
+ * 
+ * <p>
+ * In case of <tt>RT_EOL_NONE</tt>, nothing is written to the output stream.
+ * </p>
+ */
+RT_API rt_s rt_encoding_write_eol(enum rt_eol eol, enum rt_encoding encoding, struct rt_output_stream *output_stream);
 
 #endif /* RT_ENCODING_H */

@@ -52,18 +52,11 @@ end:
 	return ret;
 }
 
-static rt_s zz_test_properties_do(rt_char *test_resources_dir, struct rt_heap *heap)
+static rt_s zz_test_properties_create(const rt_char *properties_file_path, struct rt_heap *heap)
 {
-	rt_char properties_file_path[RT_FILE_PATH_SIZE];
-	rt_un properties_file_path_size;
 	struct rt_properties properties;
 	struct rt_hash_table_header *hash_table_header;
 	rt_s ret = RT_FAILED;
-
-	properties_file_path_size = rt_char_get_size(test_resources_dir);
-	if (RT_UNLIKELY(!rt_char_copy(test_resources_dir, properties_file_path_size, properties_file_path, RT_FILE_PATH_SIZE))) goto end;
-	if (RT_UNLIKELY(!rt_file_path_append_separator(properties_file_path, RT_FILE_PATH_SIZE, &properties_file_path_size))) goto end;
-	if (RT_UNLIKELY(!rt_char_append(_R("test.properties"), 15, properties_file_path, RT_FILE_PATH_SIZE, &properties_file_path_size))) goto end;
 
 	if (RT_UNLIKELY(!rt_properties_create(&properties, properties_file_path, RT_ENCODING_ISO_8859_1, 128, heap))) goto end;
 
@@ -112,12 +105,98 @@ end:
 	return ret;
 }
 
+static rt_s zz_test_properties_merge(const rt_char * test_resources_dir, const rt_char *properties_file_path, struct rt_heap *heap)
+{
+	rt_char path[RT_FILE_PATH_SIZE];
+	rt_un path_size;
+	struct rt_hash_table_entry *hash_table = RT_NULL;
+	struct rt_properties properties;
+	rt_char ref_file_path[RT_FILE_PATH_SIZE];
+	rt_un ref_file_path_size;
+	rt_s ret = RT_FAILED;
+
+	if (RT_UNLIKELY(!rt_hash_table_create(&hash_table, &rt_char_hash_callback, &rt_char_comparison_with_size_callback, RT_NULL, 32, 0, heap)))
+		goto end;
+
+	if (RT_UNLIKELY(!rt_hash_table_set(&hash_table, _R("my_new_key"), 10, _R("my_new_value"), RT_NULL))) goto end;
+	if (RT_UNLIKELY(!rt_hash_table_set(&hash_table, _R("foo2"), 4, _R("new_foo_value"), RT_NULL))) goto end;
+
+	if (RT_UNLIKELY(!rt_properties_create_from_hash_table(&properties, hash_table, heap)))
+		goto end;
+
+	if (RT_UNLIKELY(!zz_get_tmp_dir(path, RT_FILE_PATH_SIZE, &path_size))) goto end;
+	if (RT_UNLIKELY(!rt_file_path_append_separator(path, RT_FILE_PATH_SIZE, &path_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append(_R("merge.properties"), 16, path, RT_FILE_PATH_SIZE, &path_size))) goto end;
+	if (RT_UNLIKELY(!rt_file_system_delete_file_if_exists(path))) goto end;
+
+	if (RT_UNLIKELY(!rt_properties_merge_into_file(&properties, properties_file_path, path, RT_ENCODING_ISO_8859_1, RT_EOL_CRLF, RT_FALSE)))
+		goto end;
+
+	ref_file_path_size = rt_char_get_size(test_resources_dir);
+	if (RT_UNLIKELY(!rt_char_copy(test_resources_dir, ref_file_path_size, ref_file_path, RT_FILE_PATH_SIZE))) goto end;
+	if (RT_UNLIKELY(!rt_file_path_append_separator(ref_file_path, RT_FILE_PATH_SIZE, &ref_file_path_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append(_R("ref_merge1.properties"), 21, ref_file_path, RT_FILE_PATH_SIZE, &ref_file_path_size))) goto end;
+
+	if (RT_UNLIKELY(!zz_check_same_files_content(path, ref_file_path))) goto end;
+
+	ret = RT_OK;
+end:
+	if (RT_UNLIKELY(!rt_hash_table_free(&hash_table)))
+		ret = RT_FAILED;
+
+	return ret;
+}
+
+static rt_s zz_test_properties_merge_delete_missing_keys(const rt_char * test_resources_dir, const rt_char *properties_file_path, struct rt_heap *heap)
+{
+	rt_char path[RT_FILE_PATH_SIZE];
+	rt_un path_size;
+	struct rt_hash_table_entry *hash_table = RT_NULL;
+	struct rt_properties properties;
+	rt_char ref_file_path[RT_FILE_PATH_SIZE];
+	rt_un ref_file_path_size;
+	rt_s ret = RT_FAILED;
+
+	if (RT_UNLIKELY(!rt_hash_table_create(&hash_table, &rt_char_hash_callback, &rt_char_comparison_with_size_callback, RT_NULL, 32, 0, heap)))
+		goto end;
+
+	if (RT_UNLIKELY(!rt_hash_table_set(&hash_table, _R("my_new_key"), 10, _R("my_new_value"), RT_NULL))) goto end;
+	if (RT_UNLIKELY(!rt_hash_table_set(&hash_table, _R("foo2"), 4, _R("new_foo_value"), RT_NULL))) goto end;
+
+	if (RT_UNLIKELY(!rt_properties_create_from_hash_table(&properties, hash_table, heap)))
+		goto end;
+
+	if (RT_UNLIKELY(!zz_get_tmp_dir(path, RT_FILE_PATH_SIZE, &path_size))) goto end;
+	if (RT_UNLIKELY(!rt_file_path_append_separator(path, RT_FILE_PATH_SIZE, &path_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append(_R("delete_missing_keys_merge.properties"), 36, path, RT_FILE_PATH_SIZE, &path_size))) goto end;
+	if (RT_UNLIKELY(!rt_file_system_delete_file_if_exists(path))) goto end;
+
+	if (RT_UNLIKELY(!rt_properties_merge_into_file(&properties, properties_file_path, path, RT_ENCODING_ISO_8859_1, RT_EOL_CRLF, RT_TRUE)))
+		goto end;
+
+	ref_file_path_size = rt_char_get_size(test_resources_dir);
+	if (RT_UNLIKELY(!rt_char_copy(test_resources_dir, ref_file_path_size, ref_file_path, RT_FILE_PATH_SIZE))) goto end;
+	if (RT_UNLIKELY(!rt_file_path_append_separator(ref_file_path, RT_FILE_PATH_SIZE, &ref_file_path_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append(_R("ref_merge2.properties"), 21, ref_file_path, RT_FILE_PATH_SIZE, &ref_file_path_size))) goto end;
+
+	if (RT_UNLIKELY(!zz_check_same_files_content(path, ref_file_path))) goto end;
+
+	ret = RT_OK;
+end:
+	if (RT_UNLIKELY(!rt_hash_table_free(&hash_table)))
+		ret = RT_FAILED;
+
+	return ret;
+}
+
 rt_s zz_test_properties(void)
 {
 	struct rt_runtime_heap runtime_heap;
 	rt_b runtime_heap_created = RT_FALSE;
 	rt_char test_resources_dir[RT_FILE_PATH_SIZE];
 	rt_un test_resources_dir_size;
+	rt_char properties_file_path[RT_FILE_PATH_SIZE];
+	rt_un properties_file_path_size;
 	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_runtime_heap_create(&runtime_heap)))
@@ -127,8 +206,14 @@ rt_s zz_test_properties(void)
 	if (RT_UNLIKELY(!zz_get_test_resources_dir(test_resources_dir, RT_FILE_PATH_SIZE, &test_resources_dir_size)))
 		goto end;
 
-	if (RT_UNLIKELY(!zz_test_properties_do(test_resources_dir, &runtime_heap.heap)))
-		goto end;
+	properties_file_path_size = rt_char_get_size(test_resources_dir);
+	if (RT_UNLIKELY(!rt_char_copy(test_resources_dir, properties_file_path_size, properties_file_path, RT_FILE_PATH_SIZE))) goto end;
+	if (RT_UNLIKELY(!rt_file_path_append_separator(properties_file_path, RT_FILE_PATH_SIZE, &properties_file_path_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append(_R("test.properties"), 15, properties_file_path, RT_FILE_PATH_SIZE, &properties_file_path_size))) goto end;
+
+	if (RT_UNLIKELY(!zz_test_properties_create(properties_file_path, &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_merge(test_resources_dir, properties_file_path, &runtime_heap.heap))) goto end;
+	if (RT_UNLIKELY(!zz_test_properties_merge_delete_missing_keys(test_resources_dir, properties_file_path, &runtime_heap.heap))) goto end;
 
 	ret = RT_OK;
 end:
