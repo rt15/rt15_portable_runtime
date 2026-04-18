@@ -40,6 +40,22 @@ RT_API rt_s rt_properties_create_from_str(struct rt_properties *properties, cons
 RT_API rt_s rt_properties_create_from_hash_table(struct rt_properties *properties, struct rt_hash_table_entry *hash_table, struct rt_heap *heap);
 
 /**
+ * Copy <tt>input_file_path</tt> into <tt>output_file_path</tt> updated with the properties of <tt>properties</tt>.
+ * 
+ * <p>
+ * If a property key is present in both the input file and the properties, the value from the properties is used.<br>
+ * If a property key is present only in the properties, it is added to the output file.<br>
+ * If a property key is present only in the input file, it is deleted if <tt>delete_missing_keys</tt> is RT_TRUE.
+ * </p>
+ * 
+ * @param input_file_path The file to read the properties from. It must exist. It is not modified.
+ * @param output_file_path The file to write the properties into. It must not exist.
+ * @param encoding The encoding of the input and output files.
+ * @param delete_missing_keys If RT_TRUE, keys that are present in the input file but not in the properties are not copied into the output file.
+ */
+RT_API rt_s rt_properties_merge_into_file(struct rt_properties *properties, const rt_char *input_file_path, const rt_char *output_file_path, enum rt_encoding encoding, rt_b delete_missing_keys);
+
+/**
  * Free the buffer with the keys and values then the hash table.
  */
 RT_API rt_s rt_properties_free(struct rt_properties *properties);

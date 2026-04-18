@@ -3,6 +3,7 @@
 #include "layer001/rt_memory.h"
 #include "layer002/rt_error.h"
 #include "layer003/rt_char.h"
+#include "layer003/rt_char8.h"
 #include "layer004/rt_small_file.h"
 #include "layer005/rt_unicode_code_point.h"
 #include "layer006/rt_properties_parser.h"
@@ -124,6 +125,39 @@ rt_s rt_properties_create_from_hash_table(struct rt_properties *properties, stru
 	properties->heap = heap;
 
 	return RT_OK;
+}
+
+rt_s rt_properties_merge_into_file(struct rt_properties *properties, const rt_char *input_file_path, const rt_char *output_file_path, enum rt_encoding encoding, rt_b delete_missing_keys)
+{
+	struct rt_hash_table_header *hash_table_header = RT_HASH_TABLE_GET_HEADER(properties->hash_table);
+	struct rt_heap *heap = properties->heap;
+	rt_uchar8 key_exists_buffer[RT_CHAR8_HALF_BIG_STRING_SIZE];
+	rt_uchar8 *key_exists_array;
+	void *key_exists_heap_buffer = RT_NULL;
+	rt_un key_exists_heap_buffer_capacity = 0;
+	struct rt_hash_table_entry *key_exists_hash_table = RT_NULL;
+	rt_un i, j;
+	rt_s ret = RT_FAILED;
+
+	/* Allocate an array of booleans to store the values of key exists hash-table. */
+	if (RT_UNLIKELY(!rt_heap_alloc_if_needed(key_exists_buffer, RT_CHAR8_HALF_BIG_STRING_SIZE, &key_exists_heap_buffer, &key_exists_heap_buffer_capacity, (void**)&key_exists_array, hash_table_header->size, heap)))
+		goto end;
+	RT_MEMORY_ZERO(key_exists_array, hash_table_header->size);
+
+	/* Allocate a key exists hash-table with the same callbacks, context and capacity as the initial one. */
+	if (RT_UNLIKELY(!rt_hash_table_create(&key_exists_hash_table, hash_table_header->hash_callback, hash_table_header->comparison_callback, hash_table_header->context, hash_table_header->array_header.size, 0, heap)))
+		goto end;
+
+	/* Loop through the properties hash-table items to fill the key exists hash-table. */
+
+	ret = RT_OK;
+end:
+	if (RT_UNLIKELY(!rt_hash_table_free(&key_exists_hash_table)))
+		ret = RT_FAILED;
+	if (RT_UNLIKELY(!heap->free(heap, &key_exists_heap_buffer)))
+		ret = RT_FAILED;
+
+	return ret;
 }
 
 rt_s rt_properties_free(struct rt_properties *properties)
