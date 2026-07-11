@@ -13,8 +13,8 @@
  * the current one is full.
  */
 
-#define RT_LIST_GET_HEADER(LIST) (struct rt_list_header*)LIST - 1
-#define RT_LIST_GET_CUSTOM_HEADER(LIST, LIST_HEADER) (void*)((rt_uchar8*)LIST - LIST_HEADER->array_header.header_size)
+#define RT_LIST_GET_HEADER(LIST) (struct rt_list_header*)(LIST) - 1
+#define RT_LIST_GET_CUSTOM_HEADER(LIST, LIST_HEADER) (void*)((rt_uchar8*)(LIST) - (LIST_HEADER)->array_header.header_size)
 
 struct rt_list_header {
 	rt_un size;       /* Total number of items. The array header contains the number of chunks. */

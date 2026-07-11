@@ -12,8 +12,8 @@ struct rt_sortable_array_header {
 	struct rt_array_header array_header;
 };
 
-#define RT_SORTABLE_ARRAY_GET_HEADER(SORTABLE_ARRAY) (struct rt_sortable_array_header*)SORTABLE_ARRAY - 1
-#define RT_SORTABLE_ARRAY_GET_CUSTOM_HEADER(SORTABLE_ARRAY, SORTABLE_ARRAY_HEADER) (void*)((rt_uchar8*)SORTABLE_ARRAY - SORTABLE_ARRAY_HEADER->array_header.header_size)
+#define RT_SORTABLE_ARRAY_GET_HEADER(SORTABLE_ARRAY) (struct rt_sortable_array_header*)(SORTABLE_ARRAY) - 1
+#define RT_SORTABLE_ARRAY_GET_CUSTOM_HEADER(SORTABLE_ARRAY, SORTABLE_ARRAY_HEADER) (void*)((rt_uchar8*)(SORTABLE_ARRAY) - (SORTABLE_ARRAY_HEADER)->array_header.header_size)
 
 /**
  *

@@ -20,8 +20,8 @@ struct rt_array_header {
 	struct rt_heap *heap;
 };
 
-#define RT_ARRAY_GET_HEADER(ARRAY) (struct rt_array_header*)ARRAY - 1
-#define RT_ARRAY_GET_CUSTOM_HEADER(ARRAY, ARRAY_HEADER) (void*)((rt_uchar8*)ARRAY - ARRAY_HEADER->header_size)
+#define RT_ARRAY_GET_HEADER(ARRAY) (struct rt_array_header*)(ARRAY) - 1
+#define RT_ARRAY_GET_CUSTOM_HEADER(ARRAY, ARRAY_HEADER) (void*)((rt_uchar8*)(ARRAY) - (ARRAY_HEADER)->header_size)
 
 /**
  * Create a new array of specified <tt>size</tt>.

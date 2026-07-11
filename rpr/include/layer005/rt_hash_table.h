@@ -22,8 +22,8 @@
  * </p>
  */
 
-#define RT_HASH_TABLE_GET_HEADER(HASH_TABLE) (struct rt_hash_table_header*)HASH_TABLE - 1
-#define RT_HASH_TABLE_GET_CUSTOM_HEADER(HASH_TABLE, HASH_TABLE_HEADER) (void*)((rt_uchar8*)HASH_TABLE - HASH_TABLE_HEADER->array_header.header_size)
+#define RT_HASH_TABLE_GET_HEADER(HASH_TABLE) (struct rt_hash_table_header*)(HASH_TABLE) - 1
+#define RT_HASH_TABLE_GET_CUSTOM_HEADER(HASH_TABLE, HASH_TABLE_HEADER) (void*)((rt_uchar8*)(HASH_TABLE) - (HASH_TABLE_HEADER)->array_header.header_size)
 
 struct rt_hash_table_header {
 	rt_hash_callback_t hash_callback;
