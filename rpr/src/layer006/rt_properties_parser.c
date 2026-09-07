@@ -321,7 +321,7 @@ rt_s rt_properties_parser_parse_value(const rt_char *str, rt_un str_size, rt_cha
 
 static rt_s rt_properties_parser_format_part(const rt_char *part, rt_un part_size, rt_b key, rt_b encode_non_ascii, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
 {
-	rt_char character;
+	rt_uchar character;
 	rt_un32 code_point;
 	rt_un characters_read;
 	rt_un i;

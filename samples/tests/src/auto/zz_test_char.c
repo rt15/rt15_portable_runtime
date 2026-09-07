@@ -1,6 +1,8 @@
 #include <rpr.h>
 
+#ifndef RT_DEFINE_LINUX
 #define ZZ_TEST_CHAR_ACCENTED_CHARACTERS_CASE 1
+#endif
 
 static rt_s zz_test_char_is_do(rt_char character, rt_b blank, rt_b lower_alpha, rt_b upper_alpha, rt_b alpha, rt_b num, rt_b alphanum)
 {

@@ -141,7 +141,7 @@ rt_s rt_unicode_code_point_decode(const rt_char *str, rt_un str_size, rt_un32 *c
 	iconv_t conversion_descriptor;
 	rt_b conversion_descriptor_open = RT_FALSE;
 	size_t result;
-	rt_char8 *iconv_input = str;
+	rt_char8 *iconv_input = (rt_char8*)str;
 	size_t iconv_input_size = str_size;
 	rt_char8 *iconv_output = (rt_char8*)code_point;
 	size_t iconv_output_size = 4;

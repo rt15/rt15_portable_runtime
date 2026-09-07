@@ -466,7 +466,8 @@ rt_s rt_encoding_get_system(enum rt_encoding *encoding)
 		}
 #else
 		/* Retrieve the encoding name as a string. */
-		if (RT_UNLIKELY(!rt_encoding_get_linux_system(system_encoding_name, 64, &system_encoding_name_size))) {
+		system_encoding_name_size = 0;
+		if (RT_UNLIKELY(!rt_encoding_get_system_name(system_encoding_name, 64, &system_encoding_name_size))) {
 			rt_fast_initialization_notify_done(&rt_encoding_system_initialization);
 			goto end;
 		}
