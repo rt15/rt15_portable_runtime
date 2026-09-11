@@ -26,6 +26,7 @@ struct rt_properties_merge_context {
 	enum rt_eol eol;
 	rt_b delete_missing_keys;
 	rt_b skip_next_value;
+	rt_b was_eol;
 	struct rt_heap *heap;
 };
 
@@ -198,6 +199,8 @@ static rt_s rt_properties_merge_callback(enum rt_properties_parser_part_type par
 	rt_un buffer_size;
 	rt_char *properties_value;
 	rt_uchar8 *key_exists;
+	rt_un eol_count;
+	rt_un i;
 	rt_s ret = RT_FAILED;
 
 	switch (part_type) {
@@ -229,6 +232,8 @@ static rt_s rt_properties_merge_callback(enum rt_properties_parser_part_type par
 			/* We have used the value from the properties so we skip the next value from the file. */
 			properties_merge_context->skip_next_value = RT_TRUE;
 
+			properties_merge_context->was_eol = RT_FALSE;
+
 		} else if (delete_missing_keys) {
 
 			/* The key from the file is not part of the properties so we discard it. */
@@ -243,6 +248,8 @@ static rt_s rt_properties_merge_callback(enum rt_properties_parser_part_type par
 			/* Recopy the value from the file. */
 			properties_merge_context->skip_next_value = RT_FALSE;
 
+			properties_merge_context->was_eol = RT_FALSE;
+
 		}
 		break;
 	case RT_PROPERTIES_PARSER_PART_TYPE_SEPARATOR:
@@ -252,13 +259,27 @@ static rt_s rt_properties_merge_callback(enum rt_properties_parser_part_type par
 			/* Write the value and a end of line. */
 			if (RT_UNLIKELY(!rt_encoding_write(&str[index], size, encoding, output_stream, heap))) goto end;
 			if (RT_UNLIKELY(!rt_encoding_write_eol(eol, encoding, output_stream))) goto end;
+			properties_merge_context->was_eol = RT_FALSE;
 		}
 		break;
 	case RT_PROPERTIES_PARSER_PART_TYPE_BLANKS:
+		if (!properties_merge_context->was_eol) {
+			eol_count = 0;
+			for (i = 0; i < size; i++) {
+				if (str[i + index] == _R('\n'))
+					eol_count++;
+			}
+			if (eol_count >= 2) {
+				if (RT_UNLIKELY(!rt_encoding_write_eol(eol, encoding, output_stream)))
+					goto end;
+				properties_merge_context->was_eol = RT_TRUE;
+			}
+		}
 		break;
 	case RT_PROPERTIES_PARSER_PART_TYPE_COMMENT:
 		if (RT_UNLIKELY(!rt_encoding_write(&str[index], size, encoding, output_stream, heap))) goto end;
 		if (RT_UNLIKELY(!rt_encoding_write_eol(eol, encoding, output_stream))) goto end;
+		properties_merge_context->was_eol = RT_FALSE;
 		break;
 	default:
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
@@ -317,6 +338,7 @@ static rt_s rt_properties_merge_into_file_with_buffer(struct rt_properties *prop
 	context.eol = eol;
 	context.delete_missing_keys = delete_missing_keys;
 	context.skip_next_value = RT_FALSE;
+	context.was_eol = RT_FALSE;
 	context.heap = heap;
 
 	if (RT_UNLIKELY(!rt_properties_parser_parse(input_buffer, input_buffer_size, &rt_properties_merge_callback, &context)))
