@@ -22,6 +22,7 @@ rt_s zz_test_virtual_memory(void);
 /* Layer 003. */
 rt_s zz_test_char(void);
 rt_s zz_test_char8(void);
+rt_s zz_test_condition_variable(void);
 rt_s zz_test_date(void);
 rt_s zz_test_env_var(void);
 rt_s zz_test_fast_initialization(void);
@@ -144,6 +145,8 @@ rt_s zz_auto_tests(void)
 	if (RT_UNLIKELY(!zz_test_char())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_char8", output_stream))) goto end;
 	if (RT_UNLIKELY(!zz_test_char8())) goto end;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_condition_variable", output_stream))) goto end;
+	if (RT_UNLIKELY(!zz_test_condition_variable())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_date", output_stream))) goto end;
 	if (RT_UNLIKELY(!zz_test_date())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_env_var", output_stream))) goto end;

@@ -262,6 +262,9 @@
     <ClCompile Include="..\src\zz_test_perf.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_condition_variable.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

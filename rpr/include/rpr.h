@@ -37,6 +37,7 @@ extern "C" {
 
 #include "layer003/rt_char.h"
 #include "layer003/rt_char8.h"
+#include "layer003/rt_condition_variable.h"
 #include "layer003/rt_date.h"
 #include "layer003/rt_env_var.h"
 #include "layer003/rt_fast_initialization.h"

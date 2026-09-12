@@ -3,6 +3,7 @@
 #include "layer001/rt_os_headers.h"
 #include "layer002/rt_chrono.h"
 #include "layer002/rt_critical_section.h"
+#include "layer003/rt_condition_variable.h"
 #include "layer003/rt_thread.h"
 #include "layer004/rt_time.h"
 #include "layer004/rt_uuid.h"
@@ -275,6 +276,23 @@ end:
 	return ret;
 }
 
+static rt_s rt_check_condition_variable(void)
+{
+#ifdef RT_DEFINE_WINDOWS
+	return RT_OK;
+#else
+	struct rt_condition_variable condition_variable;
+	rt_s ret = RT_FAILED;
+
+	/* __SIZEOF_PTHREAD_COND_T from /usr/include/bits/pthreadtypes.h. */
+	if (RT_UNLIKELY(sizeof(condition_variable.data) != sizeof(pthread_cond_t))) goto end;
+
+	ret = RT_OK;
+end:
+	return ret;
+#endif
+}
+
 rt_s rt_check_rpr(void)
 {
 	rt_s ret = RT_FAILED;
@@ -285,6 +303,7 @@ rt_s rt_check_rpr(void)
 	if (RT_UNLIKELY(!rt_check_thread())) goto end;
 	if (RT_UNLIKELY(!rt_check_chrono())) goto end;
 	if (RT_UNLIKELY(!rt_check_critical_section())) goto end;
+	if (RT_UNLIKELY(!rt_check_condition_variable())) goto end;
 
 	ret = RT_OK;
 end:
