@@ -6,7 +6,9 @@
 #include "layer003/rt_char.h"
 #include "layer003/rt_char8.h"
 #include "layer003/rt_file.h"
+#include "layer004/rt_file_path.h"
 #include "layer004/rt_small_file.h"
+#include "layer005/rt_file_system.h"
 #include "layer005/rt_unicode_code_point.h"
 #include "layer006/rt_properties_parser.h"
 
@@ -427,6 +429,25 @@ end:
 			ret = RT_FAILED;
 	}
 
+	return ret;
+}
+
+rt_s rt_properties_update_file(struct rt_properties *properties, const rt_char *file_path, enum rt_encoding encoding, enum rt_eol eol, rt_b delete_missing_keys)
+{
+	rt_char tmp_file_path[RT_FILE_PATH_SIZE];
+	rt_un tmp_file_path_size = rt_char_get_size(file_path);
+	rt_s ret = RT_FAILED;
+
+	if (RT_UNLIKELY(!rt_char_copy(file_path, tmp_file_path_size, tmp_file_path, RT_FILE_PATH_SIZE))) goto end;
+	if (RT_UNLIKELY(!rt_char_append(_R(".tmp"), 4, tmp_file_path, RT_FILE_PATH_SIZE, &tmp_file_path_size))) goto end;
+
+	if (RT_UNLIKELY(!rt_properties_merge_into_file(properties, file_path, tmp_file_path, encoding, eol, delete_missing_keys))) goto end;
+
+	if (RT_UNLIKELY(!rt_file_system_delete_file(file_path))) goto end;
+	if (RT_UNLIKELY(!rt_file_system_move_file(tmp_file_path, file_path))) goto end;
+
+	ret = RT_OK;
+end:
 	return ret;
 }
 

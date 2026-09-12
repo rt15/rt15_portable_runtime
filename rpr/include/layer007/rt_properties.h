@@ -57,6 +57,20 @@ RT_API rt_s rt_properties_create_from_hash_table(struct rt_properties *propertie
 RT_API rt_s rt_properties_merge_into_file(struct rt_properties *properties, const rt_char *input_file_path, const rt_char *output_file_path, enum rt_encoding encoding, enum rt_eol eol, rt_b delete_missing_keys);
 
 /**
+ * Update <tt>file_path</tt> in place with the properties of <tt>properties</tt>.
+ *
+ * <p>
+ * Internally calls <tt>rt_properties_merge_into_file</tt> with a temporary output file,
+ * then deletes the original file and renames the temporary file.
+ * </p>
+ *
+ * @param file_path The file to update. It must exist.
+ * @param encoding The encoding of the file.
+ * @param delete_missing_keys If RT_TRUE, keys that are present in the file but not in the properties are deleted.
+ */
+RT_API rt_s rt_properties_update_file(struct rt_properties *properties, const rt_char *file_path, enum rt_encoding encoding, enum rt_eol eol, rt_b delete_missing_keys);
+
+/**
  * Free the buffer with the keys and values then the hash table.
  */
 RT_API rt_s rt_properties_free(struct rt_properties *properties);
