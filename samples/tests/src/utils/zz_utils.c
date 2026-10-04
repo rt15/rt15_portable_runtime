@@ -220,3 +220,90 @@ rt_s zz_comparison_callback(const void *item1, const void *item2, void *context,
 end:
 	return ret;
 }
+
+static rt_s zz_append_two_digits(rt_un value, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	rt_s ret = RT_FAILED;
+
+	if (value < 10) {
+		if (RT_UNLIKELY(!rt_char_append_char(_R('0'), buffer, buffer_capacity, buffer_size)))
+			goto end;
+	}
+
+	if (RT_UNLIKELY(!rt_char_append_un(value, 10, buffer, buffer_capacity, buffer_size)))
+		goto end;
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
+static rt_s zz_append_three_digits(rt_un value, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	rt_s ret = RT_FAILED;
+
+	if (value < 10) {
+		if (RT_UNLIKELY(!rt_char_append(_R("00"), 2, buffer, buffer_capacity, buffer_size)))
+			goto end;
+	} else if (value < 100) {
+		if (RT_UNLIKELY(!rt_char_append_char(_R('0'), buffer, buffer_capacity, buffer_size)))
+			goto end;
+	}
+
+	if (RT_UNLIKELY(!rt_char_append_un(value, 10, buffer, buffer_capacity, buffer_size)))
+		goto end;
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
+rt_s zz_append_time_info(struct rt_time_info *time_info, rt_un *milliseconds, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
+{
+	rt_s ret = RT_FAILED;
+
+	if (RT_UNLIKELY(!rt_char_append_un(time_info->year, 10, buffer, buffer_capacity, buffer_size)))
+		goto end;
+
+	if (RT_UNLIKELY(!rt_char_append_char(_R('-'), buffer, buffer_capacity, buffer_size)))
+		goto end;
+
+	if (RT_UNLIKELY(!zz_append_two_digits(time_info->month, buffer, buffer_capacity, buffer_size)))
+		goto end;
+
+	if (RT_UNLIKELY(!rt_char_append_char(_R('-'), buffer, buffer_capacity, buffer_size)))
+		goto end;
+
+	if (RT_UNLIKELY(!zz_append_two_digits(time_info->day, buffer, buffer_capacity, buffer_size)))
+		goto end;
+
+	if (RT_UNLIKELY(!rt_char_append_char(_R(' '), buffer, buffer_capacity, buffer_size)))
+		goto end;
+
+	if (RT_UNLIKELY(!zz_append_two_digits(time_info->hours, buffer, buffer_capacity, buffer_size)))
+		goto end;
+
+	if (RT_UNLIKELY(!rt_char_append_char(_R(':'), buffer, buffer_capacity, buffer_size)))
+		goto end;
+
+	if (RT_UNLIKELY(!zz_append_two_digits(time_info->minutes, buffer, buffer_capacity, buffer_size)))
+		goto end;
+
+	if (RT_UNLIKELY(!rt_char_append_char(_R(':'), buffer, buffer_capacity, buffer_size)))
+		goto end;
+
+	if (RT_UNLIKELY(!zz_append_two_digits(time_info->seconds, buffer, buffer_capacity, buffer_size)))
+		goto end;
+
+	if (milliseconds) {
+		if (RT_UNLIKELY(!rt_char_append_char(_R('.'), buffer, buffer_capacity, buffer_size)))
+			goto end;
+
+		if (RT_UNLIKELY(!zz_append_three_digits(*milliseconds, buffer, buffer_capacity, buffer_size)))
+			goto end;
+	}
+
+	ret = RT_OK;
+end:
+	return ret;
+}

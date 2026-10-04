@@ -1,44 +1,10 @@
 #include <rpr.h>
 
-static rt_s zz_manual_test_time_append_two_digits(rt_un value, rt_un base, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
-{
-	rt_s ret = RT_FAILED;
-
-	if (value < 10) {
-		if (RT_UNLIKELY(!rt_char_append_char(_R('0'), buffer, buffer_capacity, buffer_size)))
-			goto end;
-	}
-
-	if (RT_UNLIKELY(!rt_char_append_un(value, base, buffer, buffer_capacity, buffer_size)))
-		goto end;
-
-	ret = RT_OK;
-end:
-	return ret;
-}
-
-static rt_s zz_manual_test_time_append_three_digits(rt_un value, rt_un base, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size)
-{
-	rt_s ret = RT_FAILED;
-
-	if (value < 10) {
-		if (RT_UNLIKELY(!rt_char_append(_R("00"), 2, buffer, buffer_capacity, buffer_size)))
-			goto end;
-	} else if (value < 100) {
-		if (RT_UNLIKELY(!rt_char_append_char(_R('0'), buffer, buffer_capacity, buffer_size)))
-			goto end;
-	}
-
-	if (RT_UNLIKELY(!rt_char_append_un(value, base, buffer, buffer_capacity, buffer_size)))
-		goto end;
-
-	ret = RT_OK;
-end:
-	return ret;
-}
+#include "zz_utils.h"
 
 /**
- * yyyy-MM-dd HH:mm:ss
+ * yyyy-MM-dd HH:mm:ss<br>
+ * yyyy-MM-dd HH:mm:ss.SSS if <tt>milliseconds</tt> is not RT_NULL.
  */
 static rt_s zz_manual_test_time_display_time_info(struct rt_time_info *time_info, rt_un *milliseconds)
 {
@@ -50,46 +16,8 @@ static rt_s zz_manual_test_time_display_time_info(struct rt_time_info *time_info
 	if (RT_UNLIKELY(!rt_char_copy(_R("Local time = "), buffer_size, buffer, RT_CHAR_HALF_BIG_STRING_SIZE)))
 		goto end;
 
-	if (RT_UNLIKELY(!rt_char_append_un(time_info->year, 10, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
+	if (RT_UNLIKELY(!zz_append_time_info(time_info, milliseconds, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
 		goto end;
-
-	if (RT_UNLIKELY(!rt_char_append_char(_R('-'), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
-		goto end;
-
-	if (RT_UNLIKELY(!zz_manual_test_time_append_two_digits(time_info->month, 10, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
-		goto end;
-
-	if (RT_UNLIKELY(!rt_char_append_char(_R('-'), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
-		goto end;
-
-	if (RT_UNLIKELY(!zz_manual_test_time_append_two_digits(time_info->day, 10, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
-		goto end;
-
-	if (RT_UNLIKELY(!rt_char_append_char(_R(' '), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
-		goto end;
-
-	if (RT_UNLIKELY(!zz_manual_test_time_append_two_digits(time_info->hours, 10, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
-		goto end;
-
-	if (RT_UNLIKELY(!rt_char_append_char(_R(':'), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
-		goto end;
-
-	if (RT_UNLIKELY(!zz_manual_test_time_append_two_digits(time_info->minutes, 10, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
-		goto end;
-
-	if (RT_UNLIKELY(!rt_char_append_char(_R(':'), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
-		goto end;
-
-	if (RT_UNLIKELY(!zz_manual_test_time_append_two_digits(time_info->seconds, 10, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
-		goto end;
-
-	if (milliseconds) {
-		if (RT_UNLIKELY(!rt_char_append_char(_R('.'), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
-			goto end;
-
-		if (RT_UNLIKELY(!zz_manual_test_time_append_three_digits(*milliseconds, 10, buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
-			goto end;
-	}
 
 	if (RT_UNLIKELY(!rt_char_append_char(_R('\n'), buffer, RT_CHAR_HALF_BIG_STRING_SIZE, &buffer_size)))
 		goto end;

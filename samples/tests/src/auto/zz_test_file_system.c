@@ -483,10 +483,14 @@ end:
 
 static rt_s zz_test_file_info(const rt_char *tmp_dir, rt_un tmp_dir_size)
 {
+	rt_n current_time;
+	rt_n before_time;
+	rt_n after_time;
 	rt_char file_path[RT_FILE_PATH_SIZE];
 	rt_un file_path_size;
 	rt_un64 file_size;
 	rt_b read_only;
+	rt_n modification_time;
 	rt_s ret = RT_FAILED;
 
 	file_path_size = tmp_dir_size;
@@ -497,6 +501,10 @@ static rt_s zz_test_file_info(const rt_char *tmp_dir, rt_un tmp_dir_size)
 	/* Write the file, replacing possible file from previous test. */
 	if (RT_UNLIKELY(!rt_small_file_write(file_path, RT_SMALL_FILE_MODE_TRUNCATE, "Hello, world!", 13))) goto end;
 
+	if (RT_UNLIKELY(!rt_time_get_unix_time(&current_time))) goto end;
+	before_time = current_time - 5;
+	after_time = current_time + 5;
+
 	/* Check the size of the file. */
 	if (RT_UNLIKELY(!rt_file_system_get_file_size(file_path, &file_size))) goto end;
 	if (RT_UNLIKELY(file_size != 13)) goto end;
@@ -505,10 +513,16 @@ static rt_s zz_test_file_info(const rt_char *tmp_dir, rt_un tmp_dir_size)
 	if (RT_UNLIKELY(!rt_file_system_is_read_only(file_path, &read_only))) goto end;
 	if (RT_UNLIKELY(read_only)) goto end;
 
-	/* Both functions must fail on a non-existing file. */
+	/* Check modification date and time. */
+	if (RT_UNLIKELY(!rt_file_system_get_modification_time(file_path, &modification_time))) goto end;
+	if (RT_UNLIKELY(modification_time < before_time)) goto end;
+	if (RT_UNLIKELY(modification_time > after_time)) goto end;
+
+	/* Functions must fail on a non-existing file. */
 	if (RT_UNLIKELY(!rt_file_system_delete_file(file_path))) goto end;
 	if (RT_UNLIKELY(rt_file_system_get_file_size(file_path, &file_size))) goto end;
 	if (RT_UNLIKELY(rt_file_system_is_read_only(file_path, &read_only))) goto end;
+	if (RT_UNLIKELY(rt_file_system_get_modification_time(file_path, &modification_time))) goto end;
 
 	ret = RT_OK;
 end:

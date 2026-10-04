@@ -233,7 +233,7 @@ rt_s rt_file_system_create_empty_file(const rt_char *file_path, rt_b truncate)
 end:
 	if (file_created) {
 		if (RT_UNLIKELY(!rt_io_device_free(&file.io_device)))
-			ret = RT_FAILED;	
+			ret = RT_FAILED;
 	}
 
 	return ret;
@@ -355,7 +355,7 @@ rt_s rt_file_system_is_read_only(const rt_char *file_path, rt_b *read_only)
 
 	*read_only = (file_info.dwFileAttributes & FILE_ATTRIBUTE_READONLY) ? RT_TRUE : RT_FALSE;
 
-#else /* RT_DEFINE_WINDOWS */
+#else
 
 	/* stat returns zero in case of success, -1 in case of failure and sets errno. */
 	if (RT_UNLIKELY(stat(file_path, &file_info)))
@@ -363,6 +363,40 @@ rt_s rt_file_system_is_read_only(const rt_char *file_path, rt_b *read_only)
 
 	/* Read-only if nobody has the write permission, like after chmod a-w. */
 	*read_only = (file_info.st_mode & (S_IWUSR | S_IWGRP | S_IWOTH)) ? RT_FALSE : RT_TRUE;
+
+#endif
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
+rt_s rt_file_system_get_modification_time(const rt_char *file_path, rt_n *modification_time)
+{
+#ifdef RT_DEFINE_WINDOWS
+	WIN32_FILE_ATTRIBUTE_DATA file_info;
+	LARGE_INTEGER large_integer;
+#else
+	struct stat file_info;
+#endif
+	rt_s ret = RT_FAILED;
+
+#ifdef RT_DEFINE_WINDOWS
+
+	if (RT_UNLIKELY(!rt_file_system_get_file_info(file_path, &file_info)))
+		goto end;
+
+	large_integer.HighPart = file_info.ftLastWriteTime.dwHighDateTime;
+	large_integer.LowPart = file_info.ftLastWriteTime.dwLowDateTime;
+	*modification_time = (rt_n)((large_integer.QuadPart - 116444736000000000) / 10000000);
+
+#else
+
+	/* stat returns zero in case of success, -1 in case of failure and sets errno. */
+	if (RT_UNLIKELY(stat(file_path, &file_info)))
+		goto end;
+
+	*modification_time = file_info.st_mtim.tv_sec;
 
 #endif
 

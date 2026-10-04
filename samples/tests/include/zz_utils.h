@@ -55,4 +55,13 @@ rt_s zz_read_text_file(const rt_char *file_path, enum rt_encoding encoding, rt_c
  */
 rt_s zz_comparison_callback(const void *item1, const void *item2, void *context, rt_n *comparison_result);
 
+/**
+ * Append <tt>time_info</tt> to <tt>buffer</tt>:<br>
+ * yyyy-MM-dd HH:mm:ss<br>
+ * yyyy-MM-dd HH:mm:ss.SSS if <tt>milliseconds</tt> is not RT_NULL.
+ *
+ * @param buffer_size The number of characters in the buffer (in/out parameter).
+ */
+rt_s zz_append_time_info(struct rt_time_info *time_info, rt_un *milliseconds, rt_char *buffer, rt_un buffer_capacity, rt_un *buffer_size);
+
 #endif /* ZZ_UTILS_H */

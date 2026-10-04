@@ -19,6 +19,7 @@ rt_s zz_manual_test_url(void);
 
 /* Layer 005. */
 rt_s zz_manual_test_console(void);
+rt_s zz_manual_test_file_system(void);
 rt_s zz_manual_test_temp_file(void);
 
 /* Layer 006. */
@@ -51,6 +52,7 @@ rt_s zz_manual_tests(void)
 
 	/* Layer 005. */
 	if (RT_UNLIKELY(!zz_manual_test_console())) goto end;
+	if (RT_UNLIKELY(!zz_manual_test_file_system())) goto end;
 	if (RT_UNLIKELY(!zz_manual_test_temp_file())) goto end;
 
 	/* Layer 006. */

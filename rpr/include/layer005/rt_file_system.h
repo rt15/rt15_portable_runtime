@@ -121,6 +121,13 @@ RT_API rt_s rt_file_system_get_file_size(const rt_char *file_path, rt_un64 *file
 RT_API rt_s rt_file_system_is_read_only(const rt_char *file_path, rt_b *read_only);
 
 /**
+ * Retrieves the date and time of the last modification of a file or directory.
+ *
+ * @param modification_time Number of seconds since 1970-01-01 00:00:00 UTC. Can be converted with <tt>rt_time_info_create_local</tt>.
+ */
+RT_API rt_s rt_file_system_get_modification_time(const rt_char *file_path, rt_n *modification_time);
+
+/**
  * Copy a file.
  *
  * @param overwrite Overwrite existing file. Otherwise, fail if the file already exists.
