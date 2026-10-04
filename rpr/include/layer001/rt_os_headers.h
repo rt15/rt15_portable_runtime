@@ -131,6 +131,7 @@
 #include <netdb.h>
 #include <dlfcn.h>
 #include <semaphore.h>
+#include <signal.h>
 
 /* yum install libuuid libuuid-devel */
 #include <uuid/uuid.h>

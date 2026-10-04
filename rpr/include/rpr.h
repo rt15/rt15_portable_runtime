@@ -63,6 +63,7 @@ extern "C" {
 #include "layer004/rt_page_heap.h"
 #include "layer004/rt_random.h"
 #include "layer004/rt_readers_writer_mutex.h"
+#include "layer004/rt_signal.h"
 #include "layer004/rt_small_file.h"
 #include "layer004/rt_static_heap.h"
 #include "layer004/rt_time.h"

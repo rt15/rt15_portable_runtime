@@ -110,6 +110,7 @@
     <ClCompile Include="..\src\zz_parse_args.c" />
     <ClCompile Include="..\src\zz_read_line.c" />
     <ClCompile Include="..\src\zz_shared_memory_chat.c" />
+    <ClCompile Include="..\src\zz_signals.c" />
     <ClCompile Include="..\src\zz_test_perf.c" />
   </ItemGroup>
   <ItemGroup>

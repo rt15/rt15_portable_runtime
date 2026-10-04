@@ -63,6 +63,7 @@
     <ClCompile Include="..\src\layer004\rt_page_heap.c" />
     <ClCompile Include="..\src\layer004\rt_random.c" />
     <ClCompile Include="..\src\layer004\rt_readers_writer_mutex.c" />
+    <ClCompile Include="..\src\layer004\rt_signal.c" />
     <ClCompile Include="..\src\layer004\rt_small_file.c" />
     <ClCompile Include="..\src\layer004\rt_static_heap.c" />
     <ClCompile Include="..\src\layer004\rt_time.c" />
@@ -148,6 +149,7 @@
     <ClInclude Include="..\include\layer004\rt_page_heap.h" />
     <ClInclude Include="..\include\layer004\rt_random.h" />
     <ClInclude Include="..\include\layer004\rt_readers_writer_mutex.h" />
+    <ClInclude Include="..\include\layer004\rt_signal.h" />
     <ClInclude Include="..\include\layer004\rt_small_file.h" />
     <ClInclude Include="..\include\layer004\rt_static_heap.h" />
     <ClInclude Include="..\include\layer004\rt_time.h" />
