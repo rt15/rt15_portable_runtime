@@ -105,6 +105,22 @@ RT_API rt_s rt_file_system_rename_dir(const rt_char *source_dir_path, const rt_c
 RT_API rt_s rt_file_system_get_file_size(const rt_char *file_path, rt_un64 *file_size);
 
 /**
+ * Find out whether a file is read-only without opening it.
+ *
+ * <p>
+ * Under Windows, the file is read-only if it has the <tt>FILE_ATTRIBUTE_READONLY</tt> attribute.<br>
+ * Under Linux, the file is read-only if nobody has the write permission (user, group and others).
+ * </p>
+ *
+ * <p>
+ * This function checks the file attributes/permissions, not whether the current user can write the file.<br>
+ * For example, under Linux, root can write a read-only file and a user can be unable to write a file that is not read-only.<br>
+ * Under Windows, the read-only attribute of a directory is ignored by the system.
+ * </p>
+ */
+RT_API rt_s rt_file_system_is_read_only(const rt_char *file_path, rt_b *read_only);
+
+/**
  * Copy a file.
  *
  * @param overwrite Overwrite existing file. Otherwise, fail if the file already exists.

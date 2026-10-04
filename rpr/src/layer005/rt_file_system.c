@@ -274,20 +274,17 @@ end:
 	return ret;
 }
 
-rt_s rt_file_system_get_file_size(const rt_char *file_path, rt_un64 *file_size)
-{
 #ifdef RT_DEFINE_WINDOWS
-	const rt_char *actual_path;
-	rt_char namespaced_path[RT_FILE_PATH_SIZE];
-	rt_un buffer_size;
-	WIN32_FILE_ATTRIBUTE_DATA file_info;
-	LARGE_INTEGER large_integer;
-#else
-	struct stat file_info;
-#endif
-	rt_s ret = RT_FAILED;
 
-#ifdef RT_DEFINE_WINDOWS
+/**
+ * Calls GetFileAttributesEx and fills <tt>file_info</tt> with the result.
+ */
+static rt_s rt_file_system_get_file_info(const rt_char *file_path, WIN32_FILE_ATTRIBUTE_DATA *file_info)
+{
+	const rt_char *actual_path;
+	rt_un buffer_size;
+	rt_char namespaced_path[RT_FILE_PATH_SIZE];
+	rt_s ret = RT_FAILED;
 
 	if (rt_file_path_is_namespaced(file_path)) {
 		actual_path = file_path;
@@ -299,7 +296,29 @@ rt_s rt_file_system_get_file_size(const rt_char *file_path, rt_un64 *file_size)
 	}
 
 	/* GetFileAttributesEx returns 0 and use SetLastError in case of error. */
-	if (RT_UNLIKELY(!GetFileAttributesEx(actual_path, GetFileExInfoStandard, &file_info)))
+	if (RT_UNLIKELY(!GetFileAttributesEx(actual_path, GetFileExInfoStandard, file_info)))
+		goto end;
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
+#endif
+
+rt_s rt_file_system_get_file_size(const rt_char *file_path, rt_un64 *file_size)
+{
+#ifdef RT_DEFINE_WINDOWS
+	WIN32_FILE_ATTRIBUTE_DATA file_info;
+	LARGE_INTEGER large_integer;
+#else
+	struct stat file_info;
+#endif
+	rt_s ret = RT_FAILED;
+
+#ifdef RT_DEFINE_WINDOWS
+
+	if (RT_UNLIKELY(!rt_file_system_get_file_info(file_path, &file_info)))
 		goto end;
 
 	large_integer.HighPart = file_info.nFileSizeHigh;
@@ -312,6 +331,38 @@ rt_s rt_file_system_get_file_size(const rt_char *file_path, rt_un64 *file_size)
 	if (RT_UNLIKELY(stat(file_path, &file_info)))
 		goto end;
 	*file_size = file_info.st_size;
+
+#endif
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
+rt_s rt_file_system_is_read_only(const rt_char *file_path, rt_b *read_only)
+{
+#ifdef RT_DEFINE_WINDOWS
+	WIN32_FILE_ATTRIBUTE_DATA file_info;
+#else
+	struct stat file_info;
+#endif
+	rt_s ret = RT_FAILED;
+
+#ifdef RT_DEFINE_WINDOWS
+
+	if (RT_UNLIKELY(!rt_file_system_get_file_info(file_path, &file_info)))
+		goto end;
+
+	*read_only = (file_info.dwFileAttributes & FILE_ATTRIBUTE_READONLY) ? RT_TRUE : RT_FALSE;
+
+#else /* RT_DEFINE_WINDOWS */
+
+	/* stat returns zero in case of success, -1 in case of failure and sets errno. */
+	if (RT_UNLIKELY(stat(file_path, &file_info)))
+		goto end;
+
+	/* Read-only if nobody has the write permission, like after chmod a-w. */
+	*read_only = (file_info.st_mode & (S_IWUSR | S_IWGRP | S_IWOTH)) ? RT_FALSE : RT_TRUE;
 
 #endif
 

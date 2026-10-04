@@ -481,6 +481,40 @@ end:
 	return ret;
 }
 
+static rt_s zz_test_file_info(const rt_char *tmp_dir, rt_un tmp_dir_size)
+{
+	rt_char file_path[RT_FILE_PATH_SIZE];
+	rt_un file_path_size;
+	rt_un64 file_size;
+	rt_b read_only;
+	rt_s ret = RT_FAILED;
+
+	file_path_size = tmp_dir_size;
+	if (RT_UNLIKELY(!rt_char_copy(tmp_dir, file_path_size, file_path, RT_FILE_PATH_SIZE))) goto end;
+	if (RT_UNLIKELY(!rt_file_path_append_separator(file_path, RT_FILE_PATH_SIZE, &file_path_size))) goto end;
+	if (RT_UNLIKELY(!rt_char_append(_R("file_info.txt"), 13, file_path, RT_FILE_PATH_SIZE, &file_path_size))) goto end;
+
+	/* Write the file, replacing possible file from previous test. */
+	if (RT_UNLIKELY(!rt_small_file_write(file_path, RT_SMALL_FILE_MODE_TRUNCATE, "Hello, world!", 13))) goto end;
+
+	/* Check the size of the file. */
+	if (RT_UNLIKELY(!rt_file_system_get_file_size(file_path, &file_size))) goto end;
+	if (RT_UNLIKELY(file_size != 13)) goto end;
+
+	/* A newly created file should not be read-only. */
+	if (RT_UNLIKELY(!rt_file_system_is_read_only(file_path, &read_only))) goto end;
+	if (RT_UNLIKELY(read_only)) goto end;
+
+	/* Both functions must fail on a non-existing file. */
+	if (RT_UNLIKELY(!rt_file_system_delete_file(file_path))) goto end;
+	if (RT_UNLIKELY(rt_file_system_get_file_size(file_path, &file_size))) goto end;
+	if (RT_UNLIKELY(rt_file_system_is_read_only(file_path, &read_only))) goto end;
+
+	ret = RT_OK;
+end:
+	return ret;
+}
+
 rt_s zz_test_file_system(void)
 {
 	rt_char tmp_dir[RT_FILE_PATH_SIZE];
@@ -495,6 +529,7 @@ rt_s zz_test_file_system(void)
 	if (RT_UNLIKELY(!zz_test_rename_dir(tmp_dir, tmp_dir_size))) goto end;
 	if (RT_UNLIKELY(!zz_test_move_dir(tmp_dir, tmp_dir_size))) goto end;
 	if (RT_UNLIKELY(!zz_test_copy_dir(tmp_dir, tmp_dir_size))) goto end;
+	if (RT_UNLIKELY(!zz_test_file_info(tmp_dir, tmp_dir_size))) goto end;
 
 	ret = RT_OK;
 end:
