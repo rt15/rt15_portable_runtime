@@ -45,6 +45,7 @@ rt_s zz_test_command_line_args(void);
 rt_s zz_test_encoding(void);
 rt_s zz_test_file_path(void);
 rt_s zz_test_memory_output_stream(void);
+rt_s zz_test_monotonic_clock(void);
 rt_s zz_test_os_version(void);
 rt_s zz_test_random(void);
 rt_s zz_test_readers_writer_mutex(void);
@@ -189,6 +190,8 @@ rt_s zz_auto_tests(void)
 	if (RT_UNLIKELY(!zz_test_file_path())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_memory_output_stream", output_stream))) goto end;
 	if (RT_UNLIKELY(!zz_test_memory_output_stream())) goto end;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_monotonic_clock", output_stream))) goto end;
+	if (RT_UNLIKELY(!zz_test_monotonic_clock())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_os_version", output_stream))) goto end;
 	if (RT_UNLIKELY(!zz_test_os_version())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_random", output_stream))) goto end;

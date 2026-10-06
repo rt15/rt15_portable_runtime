@@ -10,9 +10,6 @@
     <ClCompile Include="..\src\layer001\rt_memory.c">
       <Filter>src\layer001</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\layer002\rt_chrono.c">
-      <Filter>src\layer002</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\layer002\rt_critical_section.c">
       <Filter>src\layer002</Filter>
     </ClCompile>
@@ -220,6 +217,12 @@
     <ClCompile Include="..\src\layer004\rt_signal.c">
       <Filter>src\layer004</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer004\rt_monotonic_clock.c">
+      <Filter>src\layer004</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layer005\rt_chrono.c">
+      <Filter>src\layer005</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -248,9 +251,6 @@
     </ClInclude>
     <ClInclude Include="..\include\layer001\rt_output_stream.h">
       <Filter>include\layer001</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\layer002\rt_chrono.h">
-      <Filter>include\layer002</Filter>
     </ClInclude>
     <ClInclude Include="..\include\layer002\rt_critical_section.h">
       <Filter>include\layer002</Filter>
@@ -476,6 +476,12 @@
     </ClInclude>
     <ClInclude Include="..\include\layer004\rt_signal.h">
       <Filter>include\layer004</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer004\rt_monotonic_clock.h">
+      <Filter>include\layer004</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer005\rt_chrono.h">
+      <Filter>include\layer005</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

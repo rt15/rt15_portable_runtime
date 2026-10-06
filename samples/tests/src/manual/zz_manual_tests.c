@@ -13,6 +13,7 @@ rt_s zz_manual_test_env_var(void);
 /* Layer 004. */
 rt_s zz_manual_test_encoding(void);
 rt_s zz_manual_test_file_path(void);
+rt_s zz_manual_test_monotonic_clock(void);
 rt_s zz_manual_test_os_version(void);
 rt_s zz_manual_test_time(void);
 rt_s zz_manual_test_url(void);
@@ -46,6 +47,7 @@ rt_s zz_manual_tests(void)
 	/* Layer 004. */
 	if (RT_UNLIKELY(!zz_manual_test_encoding())) goto end;
 	if (RT_UNLIKELY(!zz_manual_test_file_path())) goto end;
+	if (RT_UNLIKELY(!zz_manual_test_monotonic_clock())) goto end;
 	if (RT_UNLIKELY(!zz_manual_test_os_version())) goto end;
 	if (RT_UNLIKELY(!zz_manual_test_time())) goto end;
 	if (RT_UNLIKELY(!zz_manual_test_url())) goto end;

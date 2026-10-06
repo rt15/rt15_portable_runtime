@@ -1,7 +1,6 @@
 #include "layer005/rt_check_rpr.h"
 
 #include "layer001/rt_os_headers.h"
-#include "layer002/rt_chrono.h"
 #include "layer002/rt_critical_section.h"
 #include "layer003/rt_condition_variable.h"
 #include "layer003/rt_thread.h"
@@ -222,30 +221,6 @@ end:
 	return ret;
 }
 
-static rt_s rt_check_chrono(void)
-{
-	rt_s ret = RT_FAILED;
-	struct rt_chrono chrono;
-#ifdef RT_DEFINE_WINDOWS
-	LARGE_INTEGER ref_chrono;
-#else
-	struct timespec ref_chrono;
-#endif
-
-#ifdef RT_DEFINE_WINDOWS
-	if (RT_UNLIKELY(sizeof(chrono.start_counter) != sizeof(ref_chrono))) goto end;
-	if (RT_UNLIKELY(sizeof(chrono) != sizeof(LARGE_INTEGER))) goto end;
-#else
-	if (RT_UNLIKELY(sizeof(chrono.seconds) != sizeof(ref_chrono.tv_sec))) goto end;
-	if (RT_UNLIKELY(sizeof(chrono.nano_seconds) != sizeof(ref_chrono.tv_nsec))) goto end;
-	if (RT_UNLIKELY(sizeof(chrono) != sizeof(struct timespec))) goto end;
-#endif
-
-	ret = RT_OK;
-end:
-	return ret;
-}
-
 static rt_s rt_check_critical_section(void)
 {
 	rt_s ret = RT_FAILED;
@@ -301,7 +276,6 @@ rt_s rt_check_rpr(void)
 	if (RT_UNLIKELY(!rt_check_types())) goto end;
 	if (RT_UNLIKELY(!rt_check_signedness())) goto end;
 	if (RT_UNLIKELY(!rt_check_thread())) goto end;
-	if (RT_UNLIKELY(!rt_check_chrono())) goto end;
 	if (RT_UNLIKELY(!rt_check_critical_section())) goto end;
 	if (RT_UNLIKELY(!rt_check_condition_variable())) goto end;
 

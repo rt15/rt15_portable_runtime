@@ -18,7 +18,6 @@ extern "C" {
 #include "layer002/rt_binary_search.h"
 #include "layer002/rt_buffered_input_stream.h"
 #include "layer002/rt_buffered_output_stream.h"
-#include "layer002/rt_chrono.h"
 #include "layer002/rt_critical_section.h"
 #include "layer002/rt_double.h"
 #include "layer002/rt_error.h"
@@ -59,6 +58,7 @@ extern "C" {
 #include "layer004/rt_encoding.h"
 #include "layer004/rt_file_path.h"
 #include "layer004/rt_memory_output_stream.h"
+#include "layer004/rt_monotonic_clock.h"
 #include "layer004/rt_os_version.h"
 #include "layer004/rt_page_heap.h"
 #include "layer004/rt_random.h"
@@ -71,6 +71,7 @@ extern "C" {
 #include "layer004/rt_uuid.h"
 
 #include "layer005/rt_check_rpr.h"
+#include "layer005/rt_chrono.h"
 #include "layer005/rt_console.h"
 #include "layer005/rt_deduce_encoding.h"
 #include "layer005/rt_env_vars.h"

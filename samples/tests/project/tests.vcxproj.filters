@@ -271,6 +271,12 @@
     <ClCompile Include="..\src\zz_signals.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\manual\zz_manual_test_monotonic_clock.c">
+      <Filter>src\manual</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_monotonic_clock.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

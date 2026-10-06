@@ -23,7 +23,6 @@
     <ClCompile Include="..\src\layer002\rt_binary_search.c" />
     <ClCompile Include="..\src\layer002\rt_buffered_input_stream.c" />
     <ClCompile Include="..\src\layer002\rt_buffered_output_stream.c" />
-    <ClCompile Include="..\src\layer002\rt_chrono.c" />
     <ClCompile Include="..\src\layer002\rt_critical_section.c" />
     <ClCompile Include="..\src\layer002\rt_error.c" />
     <ClCompile Include="..\src\layer002\rt_event.c" />
@@ -59,6 +58,7 @@
     <ClCompile Include="..\src\layer004\rt_encoding.c" />
     <ClCompile Include="..\src\layer004\rt_file_path.c" />
     <ClCompile Include="..\src\layer004\rt_memory_output_stream.c" />
+    <ClCompile Include="..\src\layer004\rt_monotonic_clock.c" />
     <ClCompile Include="..\src\layer004\rt_os_version.c" />
     <ClCompile Include="..\src\layer004\rt_page_heap.c" />
     <ClCompile Include="..\src\layer004\rt_random.c" />
@@ -70,6 +70,7 @@
     <ClCompile Include="..\src\layer004\rt_url.c" />
     <ClCompile Include="..\src\layer004\rt_uuid.c" />
     <ClCompile Include="..\src\layer005\rt_check_rpr.c" />
+    <ClCompile Include="..\src\layer005\rt_chrono.c" />
     <ClCompile Include="..\src\layer005\rt_console.c" />
     <ClCompile Include="..\src\layer005\rt_deduce_encoding.c" />
     <ClCompile Include="..\src\layer005\rt_env_vars.c" />
@@ -106,7 +107,6 @@
     <ClInclude Include="..\include\layer002\rt_binary_search.h" />
     <ClInclude Include="..\include\layer002\rt_buffered_input_stream.h" />
     <ClInclude Include="..\include\layer002\rt_buffered_output_stream.h" />
-    <ClInclude Include="..\include\layer002\rt_chrono.h" />
     <ClInclude Include="..\include\layer002\rt_critical_section.h" />
     <ClInclude Include="..\include\layer002\rt_double.h" />
     <ClInclude Include="..\include\layer002\rt_error.h" />
@@ -145,6 +145,7 @@
     <ClInclude Include="..\include\layer004\rt_encoding.h" />
     <ClInclude Include="..\include\layer004\rt_file_path.h" />
     <ClInclude Include="..\include\layer004\rt_memory_output_stream.h" />
+    <ClInclude Include="..\include\layer004\rt_monotonic_clock.h" />
     <ClInclude Include="..\include\layer004\rt_os_version.h" />
     <ClInclude Include="..\include\layer004\rt_page_heap.h" />
     <ClInclude Include="..\include\layer004\rt_random.h" />
@@ -156,6 +157,7 @@
     <ClInclude Include="..\include\layer004\rt_url.h" />
     <ClInclude Include="..\include\layer004\rt_uuid.h" />
     <ClInclude Include="..\include\layer005\rt_check_rpr.h" />
+    <ClInclude Include="..\include\layer005\rt_chrono.h" />
     <ClInclude Include="..\include\layer005\rt_console.h" />
     <ClInclude Include="..\include\layer005\rt_deduce_encoding.h" />
     <ClInclude Include="..\include\layer005\rt_env_vars.h" />
