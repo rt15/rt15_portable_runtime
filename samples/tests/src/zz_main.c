@@ -14,6 +14,7 @@ rt_s zz_acquire_shared_semaphore(void);
 rt_s zz_shared_memory_chat(void);
 rt_s zz_test_perf(void);
 rt_s zz_signals(const rt_char *sleep_str);
+rt_s zz_timers(void);
 
 static rt_s zz_display_help(rt_s ret)
 {
@@ -44,6 +45,8 @@ static rt_s zz_display_help(rt_s ret)
 	if (!rt_console_write(_R("tests <--test-perf|-t>\n"), error))
 		ret = RT_FAILED;
 	if (!rt_console_write(_R("tests <--signals|-s> SLEEP_SECONDS\n"), error))
+		ret = RT_FAILED;
+	if (!rt_console_write(_R("tests <--timers|-i>\n"), error))
 		ret = RT_FAILED;
 
 	return ret;
@@ -149,6 +152,12 @@ static rt_s zz_main(rt_un argc, const rt_char *argv[])
 				   rt_char_equals(argv[1], arg_size, _R("-t"), 2)) {
 
 				if (RT_UNLIKELY(!zz_test_perf()))
+					goto end;
+
+			} else if (rt_char_equals(argv[1], arg_size, _R("--timers"), 8) ||
+				   rt_char_equals(argv[1], arg_size, _R("-i"), 2)) {
+
+				if (RT_UNLIKELY(!zz_timers()))
 					goto end;
 
 			} else {

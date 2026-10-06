@@ -77,6 +77,7 @@
     <ClCompile Include="..\src\auto\zz_test_static_heap.c" />
     <ClCompile Include="..\src\auto\zz_test_thread.c" />
     <ClCompile Include="..\src\auto\zz_test_time.c" />
+    <ClCompile Include="..\src\auto\zz_test_timer.c" />
     <ClCompile Include="..\src\auto\zz_test_unicode_code_point.c" />
     <ClCompile Include="..\src\auto\zz_test_url.c" />
     <ClCompile Include="..\src\auto\zz_test_uuid.c" />
@@ -114,6 +115,7 @@
     <ClCompile Include="..\src\zz_shared_memory_chat.c" />
     <ClCompile Include="..\src\zz_signals.c" />
     <ClCompile Include="..\src\zz_test_perf.c" />
+    <ClCompile Include="..\src\zz_timers.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\zz_utils.h" />

@@ -223,6 +223,9 @@
     <ClCompile Include="..\src\layer005\rt_chrono.c">
       <Filter>src\layer005</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layer006\rt_timer.c">
+      <Filter>src\layer006</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\rpr.h">
@@ -482,6 +485,9 @@
     </ClInclude>
     <ClInclude Include="..\include\layer005\rt_chrono.h">
       <Filter>include\layer005</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\layer006\rt_timer.h">
+      <Filter>include\layer006</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
