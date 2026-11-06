@@ -60,13 +60,25 @@ rt_s rt_thread_create(struct rt_thread *thread, rt_thread_callback_t thread_call
 
 rt_s rt_thread_join(struct rt_thread *thread)
 {
-#ifdef RT_DEFINE_LINUX
+#ifdef RT_DEFINE_WINDOWS
+	DWORD returned_value;
+#else
 	int error;
 #endif
 	rt_s ret;
 
 #ifdef RT_DEFINE_WINDOWS
-	ret = (WaitForSingleObject(thread->thread_handle, INFINITE) != WAIT_FAILED);
+	returned_value = WaitForSingleObject(thread->thread_handle, INFINITE);
+	if (RT_UNLIKELY(returned_value != WAIT_OBJECT_0)) {
+		/* If returned value is WAIT_FAILED, then last error is set. */
+		if (RT_UNLIKELY(returned_value != WAIT_FAILED)) {
+			/* Set an arbitrary last error for WAIT_TIMEOUT/WAIT_ABANDONED cases. */
+			rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
+		}
+		ret = RT_FAILED;
+	} else {
+		ret = RT_OK;
+	}
 #else
 
 	/* The pthread_join function returns an errno. */
@@ -109,11 +121,13 @@ rt_s rt_thread_get_exit_code(struct rt_thread *thread, rt_un32 *exit_code)
 	ret = GetExitCodeThread(thread->thread_handle, exit_code);
 #else
 
-	ret = thread->exit_code_set;
-	if (ret)
+	if (thread->exit_code_set) {
 		*exit_code = thread->exit_code;
-	else
+		ret = RT_OK;
+	} else {
 		errno = ENODATA;
+		ret = RT_FAILED;
+	}
 #endif
 	return ret;
 }

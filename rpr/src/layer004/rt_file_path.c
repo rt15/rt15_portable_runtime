@@ -575,7 +575,7 @@ rt_s rt_file_path_strip_namespace(RT_LINUX_UNUSED rt_char *path, RT_UNUSED rt_un
 #endif
 }
 
-rt_b rt_file_path_get_type(const rt_char *path, enum rt_file_path_type *type)
+rt_s rt_file_path_get_type(const rt_char *path, enum rt_file_path_type *type)
 {
 #ifdef RT_DEFINE_WINDOWS
 	const rt_char *actual_path;

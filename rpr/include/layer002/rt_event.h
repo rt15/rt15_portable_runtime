@@ -40,6 +40,18 @@ RT_API rt_s rt_event_signal(struct rt_event *event);
 RT_API rt_s rt_event_wait(struct rt_event *event);
 
 /**
+ * Wait for the event to be signaled or the timeout to be reached.
+ *
+ * <p>
+ * Automatically update the event to not signaled.
+ * </p>
+ *
+ * @param timeout_milliseconds Timeout in milliseconds. Zero means check without blocking. RT_TYPE_MAX_UN32 means wait forever.
+ * @param signaled Set to RT_TRUE if the event has been signaled, RT_FALSE in case of timeout. Undefined if the function fails.
+ */
+RT_API rt_s rt_event_wait_with_timeout(struct rt_event *event, rt_un32 timeout_milliseconds, rt_b *signaled);
+
+/**
  * Can be used to discard a signal.
  * 
  * <p>

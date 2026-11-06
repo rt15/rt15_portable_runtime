@@ -121,14 +121,24 @@ end:
 
 rt_s rt_shared_mutex_acquire(struct rt_shared_mutex *shared_mutex)
 {
-#ifdef RT_DEFINE_LINUX
+#ifdef RT_DEFINE_WINDOWS
+	DWORD returned_value;
+#else
 	int error;
 #endif
 	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
-	if (RT_UNLIKELY(WaitForSingleObject(shared_mutex->handle, INFINITE) == WAIT_FAILED))
+	returned_value = WaitForSingleObject(shared_mutex->handle, INFINITE);
+	/* WAIT_ABANDONED means that the owner of the mutex died. We own the mutex, like in the EOWNERDEAD case under Linux. */
+	if (RT_UNLIKELY(returned_value != WAIT_OBJECT_0 && returned_value != WAIT_ABANDONED)) {
+		/* If returned value is WAIT_FAILED, then last error is set. */
+		if (RT_UNLIKELY(returned_value != WAIT_FAILED)) {
+			/* Set an arbitrary last error for WAIT_TIMEOUT case. */
+			SetLastError(ERROR_INVALID_FUNCTION);
+		}
 		goto end;
+	}
 #else
 	/* pthread_mutex_lock returns an errno in case of error. */
 	error = pthread_mutex_lock(shared_mutex->mutex);

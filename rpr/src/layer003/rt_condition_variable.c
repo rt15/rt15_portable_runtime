@@ -88,7 +88,7 @@ rt_s rt_condition_variable_wait(struct rt_condition_variable *condition_variable
 
 	/* Wait on the semaphore. Signal/broadcast will release it. */
 	returned_value = WaitForSingleObject(condition_variable->semaphore_handle, INFINITE);
-	if (returned_value != WAIT_OBJECT_0) {
+	if (RT_UNLIKELY(returned_value != WAIT_OBJECT_0)) {
 		/* If returned value is WAIT_FAILED, then last error is set. */
 		if (RT_UNLIKELY(returned_value != WAIT_FAILED)) {
 			/* Set an arbitrary last error for WAIT_TIMEOUT/WAIT_ABANDONED cases. */

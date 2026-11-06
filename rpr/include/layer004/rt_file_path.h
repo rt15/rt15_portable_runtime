@@ -132,7 +132,7 @@ RT_API rt_s rt_file_path_strip_namespace(rt_char *path, rt_un buffer_capacity, r
 /**
  * Determine if <tt>path</tt> is referencing a file, a directory, or nothing.
  */
-RT_API rt_b rt_file_path_get_type(const rt_char *path, enum rt_file_path_type *type);
+RT_API rt_s rt_file_path_get_type(const rt_char *path, enum rt_file_path_type *type);
 
 /**
  * Find index of the last interesting separator.<br>

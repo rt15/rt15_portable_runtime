@@ -742,7 +742,7 @@ rt_s rt_process_join(struct rt_process *process)
 
 #ifdef RT_DEFINE_WINDOWS
 	returned_value = WaitForSingleObject(process->process_handle, INFINITE);
-	if (returned_value != WAIT_OBJECT_0) {
+	if (RT_UNLIKELY(returned_value != WAIT_OBJECT_0)) {
 		/* If returned value is WAIT_FAILED, then last error is set. */
 		if (RT_UNLIKELY(returned_value != WAIT_FAILED)) {
 			/* Set an arbitrary last error for WAIT_TIMEOUT/WAIT_ABANDONED cases. */

@@ -114,6 +114,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/eventfd.h>
+#include <poll.h>
 #include <sys/wait.h>
 #include <sys/utsname.h>
 #include <unistd.h>
