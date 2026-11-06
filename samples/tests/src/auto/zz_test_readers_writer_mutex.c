@@ -61,9 +61,9 @@ static rt_s zz_test_multiple_reads(void)
 			goto end;
 	}
 	
-	if (readers_writer_mutex.readers_count != 4)
+	if (RT_UNLIKELY(readers_writer_mutex.readers_count != 4))
 		goto end;
-	if (readers_writer_mutex.writer)
+	if (RT_UNLIKELY(readers_writer_mutex.writer))
 		goto end;
 
 	if (RT_UNLIKELY(!rt_thread_create(&thread, &zz_test_read_callback, &readers_writer_mutex)))
@@ -76,9 +76,9 @@ static rt_s zz_test_multiple_reads(void)
 	if (RT_UNLIKELY(read_state != 2))
 		goto end;
 
-	if (readers_writer_mutex.readers_count != 4)
+	if (RT_UNLIKELY(readers_writer_mutex.readers_count != 4))
 		goto end;
-	if (readers_writer_mutex.writer)
+	if (RT_UNLIKELY(readers_writer_mutex.writer))
 		goto end;
 
 	for (i = 0; i < 4; i++) {
@@ -86,9 +86,9 @@ static rt_s zz_test_multiple_reads(void)
 			goto end;
 	}
 
-	if (readers_writer_mutex.readers_count)
+	if (RT_UNLIKELY(readers_writer_mutex.readers_count))
 		goto end;
-	if (readers_writer_mutex.writer)
+	if (RT_UNLIKELY(readers_writer_mutex.writer))
 		goto end;
 
 	ret = RT_OK;
@@ -120,9 +120,9 @@ static rt_s zz_test_read_during_write(void)
 	if (RT_UNLIKELY(!rt_readers_writer_mutex_acquire_write(&readers_writer_mutex)))
 		goto end;
 	
-	if (readers_writer_mutex.readers_count)
+	if (RT_UNLIKELY(readers_writer_mutex.readers_count))
 		goto end;
-	if (!readers_writer_mutex.writer)
+	if (RT_UNLIKELY(!readers_writer_mutex.writer))
 		goto end;
 
 	if (RT_UNLIKELY(!rt_thread_create(&thread, &zz_test_read_callback, &readers_writer_mutex)))
@@ -146,9 +146,9 @@ static rt_s zz_test_read_during_write(void)
 	if (RT_UNLIKELY(!rt_thread_join(&thread)))
 		goto end;
 	
-	if (readers_writer_mutex.readers_count)
+	if (RT_UNLIKELY(readers_writer_mutex.readers_count))
 		goto end;
-	if (readers_writer_mutex.writer)
+	if (RT_UNLIKELY(readers_writer_mutex.writer))
 		goto end;
 
 	ret = RT_OK;
@@ -183,9 +183,9 @@ static rt_s zz_test_write_during_read(void)
 			goto end;
 	}
 	
-	if (readers_writer_mutex.readers_count != 4)
+	if (RT_UNLIKELY(readers_writer_mutex.readers_count != 4))
 		goto end;
-	if (readers_writer_mutex.writer)
+	if (RT_UNLIKELY(readers_writer_mutex.writer))
 		goto end;
 
 	if (RT_UNLIKELY(!rt_thread_create(&thread, &zz_test_write_callback, &readers_writer_mutex)))
@@ -198,9 +198,9 @@ static rt_s zz_test_write_during_read(void)
 	if (RT_UNLIKELY(write_state != 1))
 		goto end;
 
-	if (readers_writer_mutex.readers_count != 4)
+	if (RT_UNLIKELY(readers_writer_mutex.readers_count != 4))
 		goto end;
-	if (!readers_writer_mutex.writer)
+	if (RT_UNLIKELY(!readers_writer_mutex.writer))
 		goto end;
 
 	for (i = 0; i < 4; i++) {
@@ -216,9 +216,9 @@ static rt_s zz_test_write_during_read(void)
 	if (RT_UNLIKELY(!rt_thread_join(&thread)))
 		goto end;
 	
-	if (readers_writer_mutex.readers_count)
+	if (RT_UNLIKELY(readers_writer_mutex.readers_count))
 		goto end;
-	if (readers_writer_mutex.writer)
+	if (RT_UNLIKELY(readers_writer_mutex.writer))
 		goto end;
 
 	ret = RT_OK;

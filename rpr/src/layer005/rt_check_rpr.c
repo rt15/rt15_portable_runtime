@@ -200,13 +200,13 @@ end:
 
 static rt_s rt_check_thread(void)
 {
-	rt_s ret = RT_FAILED;
 	struct rt_thread thread;
 #ifdef RT_DEFINE_WINDOWS
 	HANDLE ref_thread;
 #else
 	pthread_t ref_thread;
 #endif
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 	if (RT_UNLIKELY(sizeof(thread.thread_handle) != sizeof(ref_thread))) goto end;
@@ -223,13 +223,13 @@ end:
 
 static rt_s rt_check_critical_section(void)
 {
-	rt_s ret = RT_FAILED;
 	struct rt_critical_section critical_section;
 #ifdef RT_DEFINE_WINDOWS
 	CRITICAL_SECTION ref_critical_section;
 #else
 	pthread_mutex_t ref_critical_section;
 #endif
+	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
 	if (RT_UNLIKELY(sizeof(critical_section.debug_info) != sizeof(ref_critical_section.DebugInfo))) goto end;

@@ -170,20 +170,19 @@ rt_s rt_last_error_message_cleanup_thread_buffer(void)
 		if (RT_UNLIKELY(!rt_thread_local_storage_get(&rt_last_error_message_storage, &local_storage)))
 			goto end;
 
-		ret = RT_OK;
-
 		if (local_storage) {
-			if (RT_UNLIKELY(!rt_thread_local_storage_set(&rt_last_error_message_storage, RT_NULL)))
-				ret = RT_FAILED;
+			if (RT_UNLIKELY(!rt_thread_local_storage_set(&rt_last_error_message_storage, RT_NULL))) {
+				/* Free the buffer anyway. */
+				rt_page_heap_free(&local_storage);
+				goto end;
+			}
 
 			if (RT_UNLIKELY(!rt_page_heap_free(&local_storage)))
-				ret = RT_FAILED;
+				goto end;
 		}
-
-	} else {
-		ret = RT_OK;
 	}
 
+	ret = RT_OK;
 end:
 	return ret;
 }

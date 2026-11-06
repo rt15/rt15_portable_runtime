@@ -530,7 +530,7 @@ handle_child_error:
 		if (RT_UNLIKELY(!rt_process_get_exit_code(&intermediate_process, &intermediate_process_exit_code)))
 			goto end;
 
-		if (intermediate_process_exit_code) {
+		if (RT_UNLIKELY(intermediate_process_exit_code)) {
 			/* Something went wrong at some point in the intermediate process. */
 
 			/* Synchronously read errno or zero bytes (should not happen) from created intermediate. */

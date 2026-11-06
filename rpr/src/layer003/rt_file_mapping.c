@@ -83,7 +83,7 @@ rt_s rt_file_mapping_create(struct rt_file_mapping *file_mapping, const rt_char 
 
 	/* open returns -1 and sets errno in case of issue. */
 	file_descriptor = open(file_path, open_flags);
-	if (file_descriptor == -1)
+	if (RT_UNLIKELY(file_descriptor == -1))
 		goto end;
 	file_descriptor_created = RT_TRUE;
 
@@ -120,7 +120,7 @@ rt_s rt_file_mapping_set_file_size(struct rt_file_mapping *file_mapping, rt_un s
 	rt_s ret = RT_FAILED;
 
 #ifdef RT_DEFINE_WINDOWS
-	if (size > file_mapping->max_size) {
+	if (RT_UNLIKELY(size > file_mapping->max_size)) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto end;
 	}

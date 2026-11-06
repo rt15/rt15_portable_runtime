@@ -11,13 +11,13 @@ static rt_un32 RT_STDCALL zz_test_spinlock_callback64(RT_UNUSED void *parameter)
 	struct rt_event *event = (struct rt_event*)parameter;
 	rt_s ret = RT_FAILED;
 
-	if (counter64) goto end;
+	if (RT_UNLIKELY(counter64)) goto end;
 
 	if (RT_UNLIKELY(!rt_event_signal(event))) goto end;
 
 	RT_SPINLOCK_ACQUIRE(spinlock64);
 
-	if (counter64 != 1) {
+	if (RT_UNLIKELY(counter64 != 1)) {
 		RT_SPINLOCK_RELEASE(spinlock64);
 		rt_event_signal(event);
 		goto end;
@@ -33,7 +33,7 @@ static rt_un32 RT_STDCALL zz_test_spinlock_callback64(RT_UNUSED void *parameter)
 	/* We keep the lock for a while. */
 	rt_sleep_sleep(100);
 
-	if (counter64 != 2) {
+	if (RT_UNLIKELY(counter64 != 2)) {
 		RT_SPINLOCK_RELEASE(spinlock64);
 		goto end;
 	}
@@ -71,7 +71,7 @@ static rt_s zz_test_spinlock64(void)
 	/* We keep the lock for a while. */
 	rt_sleep_sleep(100);
 
-	if (counter64) {
+	if (RT_UNLIKELY(counter64)) {
 		RT_SPINLOCK_RELEASE(spinlock64);
 		goto end;
 	}
@@ -82,7 +82,7 @@ static rt_s zz_test_spinlock64(void)
 	if (RT_UNLIKELY(!rt_event_wait(&event))) goto end;
 
 	RT_SPINLOCK_ACQUIRE(spinlock64);
-	if (counter64 != 3) {
+	if (RT_UNLIKELY(counter64 != 3)) {
 		RT_SPINLOCK_RELEASE(spinlock64);
 		goto end;
 	}
@@ -109,13 +109,13 @@ static rt_un32 RT_STDCALL zz_test_spinlock_callback32(RT_UNUSED void *parameter)
 	struct rt_event *event = (struct rt_event*)parameter;
 	rt_s ret = RT_FAILED;
 
-	if (counter32) goto end;
+	if (RT_UNLIKELY(counter32)) goto end;
 
 	if (RT_UNLIKELY(!rt_event_signal(event))) goto end;
 
 	RT_SPINLOCK_ACQUIRE32(spinlock32);
 
-	if (counter32 != 1) {
+	if (RT_UNLIKELY(counter32 != 1)) {
 		RT_SPINLOCK_RELEASE32(spinlock32);
 		rt_event_signal(event);
 		goto end;
@@ -131,7 +131,7 @@ static rt_un32 RT_STDCALL zz_test_spinlock_callback32(RT_UNUSED void *parameter)
 	/* We keep the lock for a while. */
 	rt_sleep_sleep(100);
 
-	if (counter32 != 2) {
+	if (RT_UNLIKELY(counter32 != 2)) {
 		RT_SPINLOCK_RELEASE32(spinlock32);
 		goto end;
 	}
@@ -169,7 +169,7 @@ static rt_s zz_test_spinlock32(void)
 	/* We keep the lock for a while. */
 	rt_sleep_sleep(100);
 
-	if (counter32) {
+	if (RT_UNLIKELY(counter32)) {
 		RT_SPINLOCK_RELEASE32(spinlock32);
 		goto end;
 	}
@@ -180,7 +180,7 @@ static rt_s zz_test_spinlock32(void)
 	if (RT_UNLIKELY(!rt_event_wait(&event))) goto end;
 
 	RT_SPINLOCK_ACQUIRE32(spinlock32);
-	if (counter32 != 3) {
+	if (RT_UNLIKELY(counter32 != 3)) {
 		RT_SPINLOCK_RELEASE32(spinlock32);
 		goto end;
 	}

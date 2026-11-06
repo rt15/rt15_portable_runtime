@@ -30,7 +30,7 @@ static rt_un32 RT_STDCALL zz_test_semaphore_callback(void *parameter)
 	rt_sleep_sleep(100);
 
 	/* Check that the main threads waited. */
-	if (zz_test_semaphore_main_thread_done)
+	if (RT_UNLIKELY(zz_test_semaphore_main_thread_done))
 		goto end;
 
 	/* Let some time for the other thread to finish. */

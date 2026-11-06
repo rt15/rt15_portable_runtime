@@ -64,7 +64,7 @@ rt_s rt_date_add_months(struct rt_date *date, rt_n months)
 		}
 	} else {
 		month += months;
-		if (month > 12) {
+		if (RT_UNLIKELY(month > 12)) {
 			year += month / 12;
 			month = month % 12;
 		}
@@ -206,7 +206,7 @@ rt_s rt_date_get_day_of_week_name(rt_un day_of_week, const rt_char **name)
 {
 	rt_s ret = RT_FAILED;
 
-	if (day_of_week > 7) {
+	if (RT_UNLIKELY(day_of_week > 7)) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto end;
 	}

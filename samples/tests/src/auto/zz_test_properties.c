@@ -4,23 +4,19 @@
 
 static rt_s zz_test_properties_display(struct rt_properties *properties)
 {
-	struct rt_hash_table_entry *hash_table = properties->hash_table;
+	struct rt_hash_table_entry *entries = (struct rt_hash_table_entry*)properties->hash_table.entries.items;
+	rt_un array_size = properties->hash_table.entries.size;
 	rt_char buffer[RT_CHAR_QUARTER_BIG_STRING_SIZE];
 	rt_un buffer_size;
-	struct rt_array_header *array_header;
-	rt_un array_size;
 	rt_char *key_chars;
 	rt_char *value_chars;
 	rt_un i;
 	rt_s ret = RT_FAILED;
 
-	array_header = RT_ARRAY_GET_HEADER(hash_table);
-	array_size = array_header->size;
-
 	for (i = 0; i < array_size; i++) {
-		key_chars = (rt_char*)hash_table[i].key;
+		key_chars = (rt_char*)entries[i].key;
 		if (key_chars) {
-			value_chars = (rt_char*)hash_table[i].value;
+			value_chars = (rt_char*)entries[i].value;
 			buffer_size = 0;
 			if (RT_UNLIKELY(!rt_char_append_char(_R('"'), buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &buffer_size))) goto end;
 			if (RT_UNLIKELY(!rt_char_append(key_chars, rt_char_get_size(key_chars), buffer, RT_CHAR_QUARTER_BIG_STRING_SIZE, &buffer_size))) goto end;
@@ -40,11 +36,10 @@ end:
 
 static rt_s zz_test_properties_check_value(struct rt_properties *properties, const rt_char *key, const rt_char *expected_value)
 {
-	struct rt_hash_table_entry *hash_table = properties->hash_table;
 	rt_char *value;
 	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_hash_table_get(hash_table, key, rt_char_get_size(key), (void**)&value))) goto end;
+	if (RT_UNLIKELY(!rt_hash_table_get(&properties->hash_table, key, rt_char_get_size(key), (void**)&value))) goto end;
 	if (RT_UNLIKELY(!rt_char_equals(value, rt_char_get_size(value), expected_value, rt_char_get_size(expected_value)))) goto end;
 
 	ret = RT_OK;
@@ -55,17 +50,17 @@ end:
 static rt_s zz_test_properties_create(const rt_char *properties_file_path, struct rt_heap *heap)
 {
 	struct rt_properties properties;
-	struct rt_hash_table_header *hash_table_header;
+	rt_b properties_created = RT_FALSE;
 	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_properties_create(&properties, properties_file_path, RT_ENCODING_ISO_8859_1, 128, heap))) goto end;
+	properties_created = RT_TRUE;
 
 	if (RT_UNLIKELY(!zz_test_properties_display(&properties))) goto end;
 
-	/* Check the properties header. */
-	hash_table_header = RT_HASH_TABLE_GET_HEADER(properties.hash_table);
-	if (RT_UNLIKELY(hash_table_header->size != 28)) goto end;
-	if (RT_UNLIKELY(hash_table_header->array_header.size != 128)) goto end;
+	/* Check the properties hash table. */
+	if (RT_UNLIKELY(properties.hash_table.size != 28)) goto end;
+	if (RT_UNLIKELY(properties.hash_table.entries.size != 128)) goto end;
 
 	/* Check the hash table content. */
 	if (RT_UNLIKELY(!zz_test_properties_check_value(&properties, _R("foo1"),                        _R("FOO1"))))                  goto end;
@@ -99,8 +94,10 @@ static rt_s zz_test_properties_create(const rt_char *properties_file_path, struc
 
 	ret = RT_OK;
 end:
-	if (RT_UNLIKELY(!rt_properties_free(&properties)))
-		ret = RT_FAILED;
+	if (properties_created) {
+		if (RT_UNLIKELY(!rt_properties_free(&properties)))
+			ret = RT_FAILED;
+	}
 
 	return ret;
 }
@@ -109,20 +106,26 @@ static rt_s zz_test_properties_merge(const rt_char * test_resources_dir, const r
 {
 	rt_char path[RT_FILE_PATH_SIZE];
 	rt_un path_size;
-	struct rt_hash_table_entry *hash_table = RT_NULL;
+	struct rt_hash_table hash_table;
+	rt_b hash_table_created = RT_FALSE;
 	struct rt_properties properties;
+	rt_b properties_created = RT_FALSE;
 	rt_char ref_file_path[RT_FILE_PATH_SIZE];
 	rt_un ref_file_path_size;
 	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_hash_table_create(&hash_table, &rt_char_hash_callback, &rt_char_comparison_with_size_callback, RT_NULL, 32, 0, heap)))
+	if (RT_UNLIKELY(!rt_hash_table_create(&hash_table, &rt_char_hash_callback, &rt_char_comparison_with_size_callback, RT_NULL, 32, heap)))
 		goto end;
+	hash_table_created = RT_TRUE;
 
 	if (RT_UNLIKELY(!rt_hash_table_set(&hash_table, _R("my_new_key"), 10, _R("my_new_value"), RT_NULL))) goto end;
 	if (RT_UNLIKELY(!rt_hash_table_set(&hash_table, _R("foo2"), 4, _R("new_foo_value"), RT_NULL))) goto end;
 
-	if (RT_UNLIKELY(!rt_properties_create_from_hash_table(&properties, hash_table, heap)))
+	/* The properties take the ownership of the hash table. */
+	if (RT_UNLIKELY(!rt_properties_create_from_hash_table(&properties, &hash_table, heap)))
 		goto end;
+	hash_table_created = RT_FALSE;
+	properties_created = RT_TRUE;
 
 	if (RT_UNLIKELY(!zz_get_tmp_dir(path, RT_FILE_PATH_SIZE, &path_size))) goto end;
 	if (RT_UNLIKELY(!rt_file_path_append_separator(path, RT_FILE_PATH_SIZE, &path_size))) goto end;
@@ -141,8 +144,14 @@ static rt_s zz_test_properties_merge(const rt_char * test_resources_dir, const r
 
 	ret = RT_OK;
 end:
-	if (RT_UNLIKELY(!rt_hash_table_free(&hash_table)))
-		ret = RT_FAILED;
+	if (properties_created) {
+		if (RT_UNLIKELY(!rt_properties_free(&properties)))
+			ret = RT_FAILED;
+	}
+	if (hash_table_created) {
+		if (RT_UNLIKELY(!rt_hash_table_free(&hash_table)))
+			ret = RT_FAILED;
+	}
 
 	return ret;
 }
@@ -151,20 +160,26 @@ static rt_s zz_test_properties_update(const rt_char * test_resources_dir, const 
 {
 	rt_char path[RT_FILE_PATH_SIZE];
 	rt_un path_size;
-	struct rt_hash_table_entry *hash_table = RT_NULL;
+	struct rt_hash_table hash_table;
+	rt_b hash_table_created = RT_FALSE;
 	struct rt_properties properties;
+	rt_b properties_created = RT_FALSE;
 	rt_char ref_file_path[RT_FILE_PATH_SIZE];
 	rt_un ref_file_path_size;
 	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_hash_table_create(&hash_table, &rt_char_hash_callback, &rt_char_comparison_with_size_callback, RT_NULL, 32, 0, heap)))
+	if (RT_UNLIKELY(!rt_hash_table_create(&hash_table, &rt_char_hash_callback, &rt_char_comparison_with_size_callback, RT_NULL, 32, heap)))
 		goto end;
+	hash_table_created = RT_TRUE;
 
 	if (RT_UNLIKELY(!rt_hash_table_set(&hash_table, _R("my_new_key"), 10, _R("my_new_value"), RT_NULL))) goto end;
 	if (RT_UNLIKELY(!rt_hash_table_set(&hash_table, _R("foo2"), 4, _R("new_foo_value"), RT_NULL))) goto end;
 
-	if (RT_UNLIKELY(!rt_properties_create_from_hash_table(&properties, hash_table, heap)))
+	/* The properties take the ownership of the hash table. */
+	if (RT_UNLIKELY(!rt_properties_create_from_hash_table(&properties, &hash_table, heap)))
 		goto end;
+	hash_table_created = RT_FALSE;
+	properties_created = RT_TRUE;
 
 	if (RT_UNLIKELY(!zz_get_tmp_dir(path, RT_FILE_PATH_SIZE, &path_size))) goto end;
 	if (RT_UNLIKELY(!rt_file_path_append_separator(path, RT_FILE_PATH_SIZE, &path_size))) goto end;
@@ -183,8 +198,14 @@ static rt_s zz_test_properties_update(const rt_char * test_resources_dir, const 
 
 	ret = RT_OK;
 end:
-	if (RT_UNLIKELY(!rt_hash_table_free(&hash_table)))
-		ret = RT_FAILED;
+	if (properties_created) {
+		if (RT_UNLIKELY(!rt_properties_free(&properties)))
+			ret = RT_FAILED;
+	}
+	if (hash_table_created) {
+		if (RT_UNLIKELY(!rt_hash_table_free(&hash_table)))
+			ret = RT_FAILED;
+	}
 
 	return ret;
 }

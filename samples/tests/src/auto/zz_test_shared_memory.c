@@ -24,7 +24,7 @@ static rt_s zz_test_shared_memory_do(enum rt_shared_memory_right shared_memory_r
 
 	/* Check that the memory has been initialized to zero. */
 	for (i = 0; i < ZZ_TEST_SHARED_MEMORY_SIZE; i++)
-		if (area[i])
+		if (RT_UNLIKELY(area[i]))
 			goto end;
 
 	/* Write in the memory, if possible. */
@@ -40,7 +40,7 @@ static rt_s zz_test_shared_memory_do(enum rt_shared_memory_right shared_memory_r
 
 	/* Check the checksum. */
 	if (shared_memory_right == RT_SHARED_MEMORY_RIGHT_READ_WRITE || shared_memory_right == RT_SHARED_MEMORY_RIGHT_EXECUTE_READ_WRITE) {
-		if (sum != ZZ_TEST_SHARED_MEMORY_EXPECTED_SUM)
+		if (RT_UNLIKELY(sum != ZZ_TEST_SHARED_MEMORY_EXPECTED_SUM))
 			goto end;
 	}
 

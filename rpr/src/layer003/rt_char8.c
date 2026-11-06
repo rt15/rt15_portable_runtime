@@ -38,15 +38,13 @@ rt_s rt_char8_append(const rt_char8 *suffix, rt_un suffix_size, rt_char8 *buffer
 {
 	rt_un local_buffer_size = *buffer_size;
 	rt_un copy_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (local_buffer_size + suffix_size + 1 <= buffer_capacity) {
-		ret = RT_OK;
 		copy_size = suffix_size;
 
 	} else {
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-		ret = RT_FAILED;
 		if (buffer_capacity > local_buffer_size + 1) {
 			copy_size = buffer_capacity - (local_buffer_size + 1);
 		} else {
@@ -66,6 +64,11 @@ rt_s rt_char8_append(const rt_char8 *suffix, rt_un suffix_size, rt_char8 *buffer
 	buffer[local_buffer_size] = 0;
 	*buffer_size = local_buffer_size;
 
+	/* The suffix has been truncated. */
+	if (RT_UNLIKELY(copy_size != suffix_size))
+		goto end;
+
+	ret = RT_OK;
 end:
 	return ret;
 }
@@ -95,15 +98,13 @@ rt_s rt_char8_append_char(rt_char8 character, rt_char8 *buffer, rt_un buffer_cap
 rt_s rt_char8_copy(const rt_char8 *str, rt_un str_size, rt_char8 *buffer, rt_un buffer_capacity)
 {
 	rt_un copy_size;
-	rt_s ret;
+	rt_s ret = RT_FAILED;
 
 	if (str_size + 1 <= buffer_capacity) {
-		ret = RT_OK;
 		copy_size = str_size;
 
 	} else {
 		rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
-		ret = RT_FAILED;
 		if (buffer_capacity > 1) {
 			copy_size = buffer_capacity - 1;
 		} else {
@@ -117,6 +118,11 @@ rt_s rt_char8_copy(const rt_char8 *str, rt_un str_size, rt_char8 *buffer, rt_un 
 	RT_MEMORY_COPY(str, buffer, copy_size * sizeof(rt_char8));
 	buffer[copy_size] = 0;
 
+	/* The string has been truncated. */
+	if (RT_UNLIKELY(copy_size != str_size))
+		goto end;
+
+	ret = RT_OK;
 end:
 	return ret;
 }
@@ -859,7 +865,7 @@ rt_s rt_char8_convert_to_f32_with_size(const rt_char8 *str, rt_un str_size, rt_f
 	rt_un i;
 	rt_s ret = RT_FAILED;
 
-	if (!str_size) {
+	if (RT_UNLIKELY(!str_size)) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto end;
 	}
@@ -976,7 +982,7 @@ rt_s rt_char8_convert_to_f64_with_size(const rt_char8 *str, rt_un str_size, rt_f
 	rt_un i;
 	rt_s ret = RT_FAILED;
 
-	if (!str_size) {
+	if (RT_UNLIKELY(!str_size)) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto end;
 	}
@@ -1477,7 +1483,7 @@ rt_s rt_char8_split(rt_char8 *str, const rt_char8 *delimiters, rt_char8 **parts,
 			in_delimiters = RT_TRUE;
 		} else {
 			if (in_delimiters) {
-				if (*parts_size == parts_capacity) {
+				if (RT_UNLIKELY(*parts_size == parts_capacity)) {
 					rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
 					goto end;
 				}

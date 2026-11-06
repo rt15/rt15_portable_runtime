@@ -267,11 +267,11 @@ static rt_s zz_test_full(void)
 {
 	rt_char buffer[RT_FILE_PATH_SIZE];
 	rt_un buffer_size;
-	rt_s ret = RT_FAILED;
 #ifdef RT_DEFINE_WINDOWS
 	rt_char variable_name[8];
 	rt_char path[RT_FILE_PATH_SIZE];
 #endif
+	rt_s ret = RT_FAILED;
 	if (RT_UNLIKELY(!rt_file_path_get_current_dir(buffer, RT_FILE_PATH_SIZE, &buffer_size))) goto end;
 	if (RT_UNLIKELY(!zz_test_full_do(buffer, buffer))) goto end;
 	if (RT_UNLIKELY(!zz_test_full_do(_R(""), buffer))) goto end;

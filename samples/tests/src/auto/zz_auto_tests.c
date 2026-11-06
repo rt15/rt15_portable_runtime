@@ -94,9 +94,9 @@ end:
 
 rt_s zz_auto_tests(void)
 {
-	rt_s ret = RT_FAILED;
 	struct rt_io_device io_device;
 	struct rt_output_stream *output_stream = RT_NULL;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!rt_io_device_create_from_std_output(&io_device)))
 		goto end;

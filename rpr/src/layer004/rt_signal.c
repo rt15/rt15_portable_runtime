@@ -199,8 +199,8 @@ rt_s rt_signal_wait(enum rt_signal_event *signal_event)
 {
 	rt_char8 byte;
 	rt_un bytes_read;
-	rt_s ret = RT_FAILED;
 	struct rt_input_stream *input_stream = &rt_signal_pipe.input_io_device.input_stream;
+	rt_s ret = RT_FAILED;
 
 	if (RT_UNLIKELY(!input_stream->read(input_stream, &byte, 1, &bytes_read)))
 		goto end;

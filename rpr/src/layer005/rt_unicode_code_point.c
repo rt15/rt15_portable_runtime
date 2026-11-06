@@ -199,7 +199,7 @@ rt_s rt_unicode_code_point_decode_from_utf8(const rt_char8 *str, rt_un str_size,
 	rt_uchar8 first_byte;
 	rt_s ret = RT_FAILED;
 
-	if (!str_size) {
+	if (RT_UNLIKELY(!str_size)) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto end;
 	}
@@ -248,7 +248,7 @@ rt_s rt_unicode_code_point_decode_from_utf16(const rt_un16 *str, rt_un str_size,
 	rt_un16 first_word;
 	rt_s ret = RT_FAILED;
 
-	if (!str_size) {
+	if (RT_UNLIKELY(!str_size)) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto end;
 	}

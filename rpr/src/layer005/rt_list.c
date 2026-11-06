@@ -3,36 +3,31 @@
 #include "layer001/rt_memory.h"
 #include "layer002/rt_error.h"
 
-rt_s rt_list_create(void **list, rt_un size, rt_un item_size, rt_un chunk_size, rt_un header_size, struct rt_heap *heap)
+rt_s rt_list_create(struct rt_list *list, rt_un size, rt_un item_size, rt_un chunk_size, struct rt_heap *heap)
 {
 	rt_un chunks_count;
-	struct rt_list_header *header;
-	void **chunks = RT_NULL;
+	void **chunks;
 	rt_un chunk_allocation_size = chunk_size * item_size;
 	rt_un i;
+	rt_b chunks_created = RT_FALSE;
 	rt_s ret = RT_FAILED;
-
-	*list = RT_NULL;
 
 	if (RT_UNLIKELY(!RT_MEMORY_IS_POWER_OF_TWO(chunk_size))) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto end;
 	}
 
+	list->size = 0;
+	list->item_size = item_size;
+	list->chunk_size = chunk_size;
+
 	chunks_count = RT_MEMORY_GET_CHUNKS_COUNT(size, chunk_size);
 
-	if (header_size == 0)
-		header_size = sizeof(struct rt_list_header);
-
-	if (RT_UNLIKELY(!rt_array_create(list, chunks_count, sizeof(void*), header_size, heap)))
+	if (RT_UNLIKELY(!rt_array_create(&list->chunks, chunks_count, sizeof(void*), heap)))
 		goto end;
+	chunks_created = RT_TRUE;
 
-	chunks = (void**)*list;
-
-	header = RT_LIST_GET_HEADER(*list);
-	header->size = size;
-	header->item_size = item_size;
-	header->chunk_size = chunk_size;
+	chunks = (void**)list->chunks.items;
 
 	/* Makes sure that the complete array is clean to ensure avoiding to try to free a garbage pointer in cleanup code. */
 	for (i = 0; i < chunks_count; i++)
@@ -44,61 +39,49 @@ rt_s rt_list_create(void **list, rt_un size, rt_un item_size, rt_un chunk_size, 
 			goto end;
 	}
 
+	list->size = size;
+
 	ret = RT_OK;
 end:
-	if (RT_UNLIKELY(!ret))
+	if (RT_UNLIKELY(!ret && chunks_created))
 		rt_list_free(list);
 
 	return ret;
 }
 
-rt_s rt_list_get_item(void *list, rt_un item_index, void **item)
+rt_s rt_list_get_item(struct rt_list *list, rt_un item_index, void **item)
 {
-	struct rt_list_header *header;
-	rt_un chunk_size;
-	rt_un item_size;
+	rt_un chunk_size = list->chunk_size;
 	rt_un chunk_index;
-	void **chunks = (void**)list;
+	void **chunks = (void**)list->chunks.items;
 	rt_uchar8 *chunk;
 	rt_un item_index_in_chunk;
-
-	header = RT_LIST_GET_HEADER(list);
-	chunk_size = header->chunk_size;
-	item_size = header->item_size;
 
 	chunk_index = item_index / chunk_size;
 	chunk = (rt_uchar8*)chunks[chunk_index];
 
 	item_index_in_chunk = RT_MEMORY_MODULO_POWER_OF_TWO(item_index, chunk_size);
 
-	*item = chunk + item_index_in_chunk * item_size;
+	*item = chunk + item_index_in_chunk * list->item_size;
 
 	return RT_OK;
 }
 
-rt_s rt_list_set_size(void **list, rt_un size)
+rt_s rt_list_set_size(struct rt_list *list, rt_un size)
 {
-	struct rt_list_header *header;
-	rt_un chunk_size;
-	rt_un chunks_count;
-	rt_un item_size;
-	struct rt_heap *heap;
+	rt_un chunk_size = list->chunk_size;
+	rt_un chunks_count = list->chunks.size;
+	struct rt_heap *heap = list->chunks.heap;
 	rt_un new_chunks_count;
 	void **chunks;
 	rt_un chunk_allocation_size;
 	rt_un i;
 	rt_s ret = RT_FAILED;
 
-	header = RT_LIST_GET_HEADER(*list);
-	chunk_size = header->chunk_size;
-	chunks_count = header->array_header.size;
-	item_size = header->item_size;
-	heap = header->array_header.heap;
-
 	new_chunks_count = RT_MEMORY_GET_CHUNKS_COUNT(size, chunk_size);
 	if (new_chunks_count < chunks_count) {
 
-		chunks = (void**)*list;
+		chunks = (void**)list->chunks.items;
 
 		/* Free the excess chunks at the end of the array. */
 		/* If it fails, there will be some null pointers in the array. */
@@ -108,23 +91,23 @@ rt_s rt_list_set_size(void **list, rt_un size)
 		}
 
 		/* Resize the array. If it fails, there will be some null pointers at the end of the array. */
-		if (RT_UNLIKELY(!rt_array_set_size(list, new_chunks_count)))
+		if (RT_UNLIKELY(!rt_array_set_size(&list->chunks, new_chunks_count)))
 			goto end;
 
 	} else if (new_chunks_count > chunks_count) {
 
 		/* Attempt to allocate some space at the end of the array. */
 		/* If it fails, the array remains the same. */
-		if (RT_UNLIKELY(!rt_array_set_size(list, new_chunks_count)))
+		if (RT_UNLIKELY(!rt_array_set_size(&list->chunks, new_chunks_count)))
 			goto end;
 
-		chunks = (void**)*list;
+		chunks = (void**)list->chunks.items;
 
 		/* Make sure to have null pointers in the array if one of the further allocations fails. */
 		for (i = chunks_count; i < new_chunks_count; i++)
 			chunks[i] = RT_NULL;
 
-		chunk_allocation_size = chunk_size * item_size;
+		chunk_allocation_size = chunk_size * list->item_size;
 
 		/* Try to allocate the chunks. */
 		/* If an allocation fails, there will be some null pointers at the end of the array. */
@@ -135,38 +118,31 @@ rt_s rt_list_set_size(void **list, rt_un size)
 	}
 
 	/* Put the new size. */
-	header = RT_LIST_GET_HEADER(*list);
-	header->size = size;
+	list->size = size;
 
 	ret = RT_OK;
 end:
 	return ret;
 }
 
-rt_s rt_list_delete_item_index(void **list, rt_un item_index)
+rt_s rt_list_delete_item_index(struct rt_list *list, rt_un item_index)
 {
-	struct rt_list_header *header;
-	rt_un size;
-	rt_un item_size;
+	rt_un size = list->size;
 	rt_un last_item_index;
 	void *item;
 	void *last_item;
 	rt_s ret = RT_FAILED;
 
-	header = RT_LIST_GET_HEADER(*list);
-	size = header->size;
-	item_size = header->item_size;
-
 	last_item_index = size - 1;
 
 	if (item_index != last_item_index) {
-		if (RT_UNLIKELY(!rt_list_get_item(*list, item_index, &item)))
+		if (RT_UNLIKELY(!rt_list_get_item(list, item_index, &item)))
 			goto end;
-		if (RT_UNLIKELY(!rt_list_get_item(*list, last_item_index, &last_item)))
+		if (RT_UNLIKELY(!rt_list_get_item(list, last_item_index, &last_item)))
 			goto end;
 
 		/* Copy the last item into the item to delete. */
-		RT_MEMORY_COPY(last_item, item, item_size);
+		RT_MEMORY_COPY(last_item, item, list->item_size);
 	}
 
 	if (RT_UNLIKELY(!rt_list_set_size(list, size - 1)))
@@ -177,19 +153,15 @@ end:
 	return ret;
 }
 
-rt_s rt_list_new_item(void **list, void **item)
+rt_s rt_list_new_item(struct rt_list *list, void **item)
 {
-	struct rt_list_header *header;
-	rt_un size;
+	rt_un size = list->size;
 	rt_s ret = RT_FAILED;
-
-	header = RT_LIST_GET_HEADER(*list);
-	size = header->size;
 
 	if (RT_UNLIKELY(!rt_list_set_size(list, size + 1)))
 		goto end;
 
-	if (RT_UNLIKELY(!rt_list_get_item(*list, size, item)))
+	if (RT_UNLIKELY(!rt_list_get_item(list, size, item)))
 		goto end;
 
 	ret = RT_OK;
@@ -197,14 +169,10 @@ end:
 	return ret;
 }
 
-rt_s rt_list_new_item_index(void **list, rt_un *item_index)
+rt_s rt_list_new_item_index(struct rt_list *list, rt_un *item_index)
 {
-	struct rt_list_header *header;
-	rt_un size;
+	rt_un size = list->size;
 	rt_s ret = RT_FAILED;
-
-	header = RT_LIST_GET_HEADER(*list);
-	size = header->size;
 
 	if (RT_UNLIKELY(!rt_list_set_size(list, size + 1)))
 		goto end;
@@ -216,32 +184,25 @@ end:
 	return ret;
 }
 
-rt_s rt_list_free(void **list)
+rt_s rt_list_free(struct rt_list *list)
 {
-	struct rt_list_header *header;
-	rt_un chunks_count;
-	struct rt_heap *heap;
-	void **chunks;
+	rt_un chunks_count = list->chunks.size;
+	struct rt_heap *heap = list->chunks.heap;
+	void **chunks = (void**)list->chunks.items;
 	rt_un i;
 	rt_s ret = RT_OK;
 
-	if (*list) {
-		header = RT_LIST_GET_HEADER(*list);
-		chunks_count = header->array_header.size;
-		heap = header->array_header.heap;
-
-		chunks = (void**)*list;
-
-		/* Free all chunks. */
-		for (i = 0; i < chunks_count; i++) {
-			if (!heap->free(heap, &chunks[i]))
-				ret = RT_FAILED;
-		}
-
-		/* Free the array of pointers. */
-		if (!rt_array_free(list))
+	/* Free all chunks. */
+	for (i = 0; i < chunks_count; i++) {
+		if (!heap->free(heap, &chunks[i]))
 			ret = RT_FAILED;
 	}
+
+	/* Free the array of pointers. */
+	if (!rt_array_free(&list->chunks))
+		ret = RT_FAILED;
+
+	list->size = 0;
 
 	return ret;
 }

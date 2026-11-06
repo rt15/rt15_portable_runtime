@@ -27,7 +27,7 @@ rt_s rt_uuid_parse(struct rt_uuid *uuid, const rt_char *str)
 {
 	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(UuidFromString((rt_char*)str, (UUID*)uuid)) != RPC_S_OK) {
+	if (RT_UNLIKELY(UuidFromString((rt_char*)str, (UUID*)uuid) != RPC_S_OK)) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto end;
 	}
@@ -71,7 +71,7 @@ rt_s rt_uuid_parse8(struct rt_uuid *uuid, const rt_char8 *str)
 {
 	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(UuidFromStringA((rt_uchar8*)str, (UUID*)uuid)) != RPC_S_OK) {
+	if (RT_UNLIKELY(UuidFromStringA((rt_uchar8*)str, (UUID*)uuid) != RPC_S_OK)) {
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
 		goto end;
 	}

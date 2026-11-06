@@ -12,7 +12,7 @@
  */
 
 struct rt_properties {
-	struct rt_hash_table_entry *hash_table;
+	struct rt_hash_table hash_table;
 	rt_char *buffer;
 	struct rt_heap *heap;
 };
@@ -37,8 +37,13 @@ RT_API rt_s rt_properties_create_from_str(struct rt_properties *properties, cons
 /**
  * Create a properties structure from given <tt>hash_table</tt>.<br>
  * The buffer is set to RT_NULL since the hash-table manages the keys and values.
+ *
+ * <p>
+ * The ownership of <tt>hash_table</tt> is transferred to <tt>properties</tt>.<br>
+ * <tt>hash_table</tt> must not be used nor freed afterward, <tt>rt_properties_free</tt> must be called instead.
+ * </p>
  */
-RT_API rt_s rt_properties_create_from_hash_table(struct rt_properties *properties, struct rt_hash_table_entry *hash_table, struct rt_heap *heap);
+RT_API rt_s rt_properties_create_from_hash_table(struct rt_properties *properties, struct rt_hash_table *hash_table, struct rt_heap *heap);
 
 /**
  * Copy <tt>input_file_path</tt> into <tt>output_file_path</tt> updated with the properties of <tt>properties</tt>.

@@ -126,14 +126,23 @@ end:
 
 rt_s rt_quick_sort(const void *area, rt_un size, rt_un item_size, rt_comparison_callback_t callback, void *context)
 {
-	rt_char8 *low = (rt_char8*)area;
-	rt_char8 *high = (rt_char8*)area + (size - 1) * item_size;
+	rt_char8 *low;
+	rt_char8 *high;
 	rt_un sub_array_size;
 	rt_char8 *pivot;
 	rt_char8 *low_stack[62];
 	rt_char8 *high_stack[62];
 	rt_un stacks_size = 0;
 	rt_s ret = RT_FAILED;
+
+	/* Nothing to sort. Also avoids computing high before area if size is zero. */
+	if (size < 2) {
+		ret = RT_OK;
+		goto end;
+	}
+
+	low = (rt_char8*)area;
+	high = (rt_char8*)area + (size - 1) * item_size;
 
 recurse:
 

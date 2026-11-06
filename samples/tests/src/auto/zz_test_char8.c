@@ -102,9 +102,9 @@ end:
 
 static rt_s zz_test_char8_append_ok(const rt_char8 *prefix, const rt_char8 *suffix, const rt_char8 *expected)
 {
-	rt_s ret = RT_FAILED;
 	rt_char8 buffer[200];
 	rt_un buffer_size = 0;
+	rt_s ret = RT_FAILED;
 
 	RT_MEMORY_SET(buffer, 'a', 200);
 
@@ -122,9 +122,9 @@ end:
 
 static rt_s zz_test_char8_append_failed(const rt_char8 *prefix, const rt_char8 *suffix, const rt_char8 *expected)
 {
-	rt_s ret = RT_FAILED;
 	rt_char8 buffer[200];
 	rt_un buffer_size = 0;
+	rt_s ret = RT_FAILED;
 
 	RT_MEMORY_SET(buffer, 'a', 200);
 
@@ -172,8 +172,8 @@ static rt_s zz_test_char8_append_char_do(rt_s status, rt_un buffer_size, const r
 {
 	rt_char8 buffer[10];
 	rt_un local_buffer_size = buffer_size;
-	rt_s ret = RT_FAILED;
 	rt_s result;
+	rt_s ret = RT_FAILED;
 
 	RT_MEMORY_SET(buffer, 'a', 10);
 
@@ -211,9 +211,9 @@ end:
 
 static rt_s zz_test_char8_copy_ok(const rt_char8 *str)
 {
-	rt_s ret = RT_FAILED;
 	rt_char8 buffer[6];
 	rt_un buffer_size = 0;
+	rt_s ret = RT_FAILED;
 
 	RT_MEMORY_SET(buffer, 'a', 6);
 
@@ -235,9 +235,9 @@ end:
 
 static rt_s zz_test_char8_copy_failed(const rt_char8 *str, const rt_char8 *expected)
 {
-	rt_s ret = RT_FAILED;
 	rt_char8 buffer[6];
 	rt_un buffer_size = 0;
+	rt_s ret = RT_FAILED;
 
 	RT_MEMORY_SET(buffer, 'a', 6);
 

@@ -23,7 +23,6 @@ static rt_un32 RT_STDCALL rt_timer_thread_callback(void *parameter)
 	struct rt_timer_manager *timer_manager = (struct rt_timer_manager*)parameter;
 	rt_un32 timeout = RT_TYPE_MAX_UN32;
 	rt_b signaled;
-	struct rt_sortable_array_header* sortable_array_header;
 	struct rt_timer *timer;
 	rt_un64 current_clock_value;
 	rt_un64 timeout_milliseconds;
@@ -42,16 +41,14 @@ static rt_un32 RT_STDCALL rt_timer_thread_callback(void *parameter)
 
 		/* Consume all timers which are waiting for an execution. */
 		while (RT_TRUE) {
-			sortable_array_header = RT_SORTABLE_ARRAY_GET_HEADER(timer_manager->sortable_array);
-
 			/* If the array is empty, wait for a new timer to be added. */
-			if (!sortable_array_header->array_header.size) {
+			if (!timer_manager->sortable_array.array.size) {
 				timeout = RT_TYPE_MAX_UN32;
 				break;
 			}
 
 			/* Retrieve the first timer of the array. */
-			timer = *(struct rt_timer**)timer_manager->sortable_array;
+			timer = *(struct rt_timer**)timer_manager->sortable_array.array.items;
 
 			if (RT_UNLIKELY(!rt_monotonic_clock_get(&current_clock_value))) {
 				rt_critical_section_leave(&timer_manager->critical_section);
@@ -110,7 +107,7 @@ rt_s rt_timer_manager_create(struct rt_timer_manager *timer_manager, struct rt_h
 
 	timer_manager->stop = RT_FALSE;
 
-	if (RT_UNLIKELY(!rt_sortable_array_create(&timer_manager->sortable_array, 0, sizeof(struct rt_timer*), 0, heap, &rt_timer_comparison_callback, RT_NULL)))
+	if (RT_UNLIKELY(!rt_sortable_array_create(&timer_manager->sortable_array, 0, sizeof(struct rt_timer*), heap, &rt_timer_comparison_callback, RT_NULL)))
 		goto end;
 	sortable_array_created = RT_TRUE;
 
@@ -139,7 +136,7 @@ end:
 			rt_critical_section_free(&timer_manager->critical_section);
 
 		if (sortable_array_created)
-			rt_array_free(&timer_manager->sortable_array);
+			rt_sortable_array_free(&timer_manager->sortable_array);
 	}
 
 	return ret;
@@ -188,8 +185,8 @@ end:
 rt_s rt_timer_free(struct rt_timer *timer)
 {
 	struct rt_timer_manager *timer_manager = timer->timer_manager;
-	struct rt_sortable_array_header *sortable_array_header;
 	struct rt_timer **timers;
+	rt_un timers_count;
 	rt_un item_index;
 	rt_s ret = RT_FAILED;
 
@@ -197,13 +194,13 @@ rt_s rt_timer_free(struct rt_timer *timer)
 		goto end;
 
 	/* Search the timer by address. */
-	sortable_array_header = RT_SORTABLE_ARRAY_GET_HEADER(timer_manager->sortable_array);
-	timers = (struct rt_timer**)timer_manager->sortable_array;
-	for (item_index = 0; item_index < sortable_array_header->array_header.size; item_index++) {
+	timers = (struct rt_timer**)timer_manager->sortable_array.array.items;
+	timers_count = timer_manager->sortable_array.array.size;
+	for (item_index = 0; item_index < timers_count; item_index++) {
 		if (timers[item_index] == timer)
 			break;
 	}
-	if (RT_UNLIKELY(item_index == sortable_array_header->array_header.size)) {
+	if (RT_UNLIKELY(item_index == timers_count)) {
 		/* The timer is not managed by its manager, maybe already freed. */
 		rt_critical_section_leave(&timer_manager->critical_section);
 		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
@@ -246,7 +243,7 @@ rt_s rt_timer_manager_free(struct rt_timer_manager *timer_manager)
 	if (RT_UNLIKELY(!rt_critical_section_free(&timer_manager->critical_section)))
 		ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_array_free(&timer_manager->sortable_array)))
+	if (RT_UNLIKELY(!rt_sortable_array_free(&timer_manager->sortable_array)))
 		ret = RT_FAILED;
 	
 	return ret;

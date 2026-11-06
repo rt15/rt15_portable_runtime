@@ -26,7 +26,7 @@
 typedef rt_s (*rt_timer_callback_t)(void *parameter);
 
 struct rt_timer_manager {
-	void *sortable_array;
+	struct rt_sortable_array sortable_array;
 	struct rt_critical_section critical_section;
 	struct rt_thread thread;
 	rt_b stop;

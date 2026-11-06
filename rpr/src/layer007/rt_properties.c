@@ -13,7 +13,7 @@
 #include "layer006/rt_properties_parser.h"
 
 struct rt_properties_create_context {
-	struct rt_hash_table_entry *hash_table;
+	struct rt_hash_table hash_table;
 	rt_char *buffer;
 	rt_un buffer_size;
 	rt_un buffer_capacity;
@@ -21,8 +21,8 @@ struct rt_properties_create_context {
 };
 
 struct rt_properties_merge_context {
-	struct rt_hash_table_entry *properties_hash_table;
-	struct rt_hash_table_entry *key_exists_hash_table;
+	struct rt_hash_table *properties_hash_table;
+	struct rt_hash_table *key_exists_hash_table;
 	struct rt_output_stream *output_stream;
 	enum rt_encoding encoding;
 	enum rt_eol eol;
@@ -61,7 +61,6 @@ static rt_s rt_properties_create_callback(enum rt_properties_parser_part_type pa
 			goto end;
 	}
 	ret = RT_OK;
-
 end:
 	return ret;
 }
@@ -102,9 +101,9 @@ end:
 rt_s rt_properties_create_from_str(struct rt_properties *properties, const rt_char *str, rt_un str_size, rt_un initial_capacity, struct rt_heap *heap)
 {
 	struct rt_properties_create_context context;
+	rt_b hash_table_created = RT_FALSE;
 	rt_s ret = RT_FAILED;
 
-	context.hash_table = RT_NULL;
 	context.buffer = RT_NULL;
 
 	if (RT_UNLIKELY(!heap->alloc(heap, (void**)&context.buffer, str_size * sizeof(rt_char))))
@@ -114,29 +113,31 @@ rt_s rt_properties_create_from_str(struct rt_properties *properties, const rt_ch
 	context.buffer_capacity = str_size;
 	context.current_key = RT_NULL;
 
-	if (RT_UNLIKELY(!rt_hash_table_create(&context.hash_table, &rt_char_hash_callback, &rt_char_comparison_with_size_callback, RT_NULL, initial_capacity, 0, heap)))
+	if (RT_UNLIKELY(!rt_hash_table_create(&context.hash_table, &rt_char_hash_callback, &rt_char_comparison_with_size_callback, RT_NULL, initial_capacity, heap)))
 		goto end;
+	hash_table_created = RT_TRUE;
 
 	if (RT_UNLIKELY(!rt_properties_parser_parse(str, str_size, &rt_properties_create_callback, &context)))
 		goto end;
 
-	properties->hash_table = context.hash_table;
+	RT_MEMORY_COPY(&context.hash_table, &properties->hash_table, sizeof(struct rt_hash_table));
 	properties->buffer = context.buffer;
 	properties->heap = heap;
 
 	ret = RT_OK;
 end:
 	if (RT_UNLIKELY(!ret)) {
-		rt_hash_table_free(&context.hash_table);
+		if (hash_table_created)
+			rt_hash_table_free(&context.hash_table);
 		heap->free(heap, (void**)&context.buffer);
 	}
 
 	return ret;
 }
 
-rt_s rt_properties_create_from_hash_table(struct rt_properties *properties, struct rt_hash_table_entry *hash_table, struct rt_heap *heap)
+rt_s rt_properties_create_from_hash_table(struct rt_properties *properties, struct rt_hash_table *hash_table, struct rt_heap *heap)
 {
-	properties->hash_table = hash_table;
+	RT_MEMORY_COPY(hash_table, &properties->hash_table, sizeof(struct rt_hash_table));
 	properties->buffer = RT_NULL;
 	properties->heap = heap;
 
@@ -190,8 +191,8 @@ end:
 static rt_s rt_properties_merge_callback(enum rt_properties_parser_part_type part_type, const rt_char *str, rt_un index, rt_un size, void *context)
 {
 	struct rt_properties_merge_context *properties_merge_context = (struct rt_properties_merge_context*)context;
-	struct rt_hash_table_entry *properties_hash_table = properties_merge_context->properties_hash_table;
-	struct rt_hash_table_entry *key_exists_hash_table = properties_merge_context->key_exists_hash_table;
+	struct rt_hash_table *properties_hash_table = properties_merge_context->properties_hash_table;
+	struct rt_hash_table *key_exists_hash_table = properties_merge_context->key_exists_hash_table;
 	struct rt_output_stream *output_stream = properties_merge_context->output_stream;
 	enum rt_encoding encoding = properties_merge_context->encoding;
 	enum rt_eol eol = properties_merge_context->eol;
@@ -295,13 +296,15 @@ end:
 
 static rt_s rt_properties_merge_into_file_with_buffer(struct rt_properties *properties, const rt_char *input_buffer, rt_un input_buffer_size, struct rt_output_stream *output_stream, enum rt_encoding encoding, enum rt_eol eol, rt_b delete_missing_keys)
 {
-	struct rt_hash_table_header *hash_table_header = RT_HASH_TABLE_GET_HEADER(properties->hash_table);
+	struct rt_hash_table *hash_table = &properties->hash_table;
+	struct rt_hash_table_entry *hash_table_entries;
 	struct rt_heap *heap = properties->heap;
 	rt_uchar8 key_exists_array_buffer[RT_CHAR8_HALF_BIG_STRING_SIZE];
 	rt_uchar8 *key_exists_array;
 	void *key_exists_array_heap_buffer = RT_NULL;
 	rt_un key_exists_array_heap_buffer_capacity = 0;
-	struct rt_hash_table_entry *key_exists_hash_table = RT_NULL;
+	struct rt_hash_table key_exists_hash_table;
+	rt_b key_exists_hash_table_created = RT_FALSE;
 	rt_un index_in_hash_table;
 	struct rt_hash_table_entry *hash_table_entry;
 	const void *key;
@@ -312,17 +315,19 @@ static rt_s rt_properties_merge_into_file_with_buffer(struct rt_properties *prop
 	rt_s ret = RT_FAILED;
 
 	/* Allocate an array of booleans to store the values of key exists hash-table. */
-	if (RT_UNLIKELY(!rt_heap_alloc_if_needed(key_exists_array_buffer, RT_CHAR8_HALF_BIG_STRING_SIZE, &key_exists_array_heap_buffer, &key_exists_array_heap_buffer_capacity, (void**)&key_exists_array, hash_table_header->size, heap)))
+	if (RT_UNLIKELY(!rt_heap_alloc_if_needed(key_exists_array_buffer, RT_CHAR8_HALF_BIG_STRING_SIZE, &key_exists_array_heap_buffer, &key_exists_array_heap_buffer_capacity, (void**)&key_exists_array, hash_table->size, heap)))
 		goto end;
-	RT_MEMORY_ZERO(key_exists_array, hash_table_header->size);
+	RT_MEMORY_ZERO(key_exists_array, hash_table->size);
 
 	/* Allocate a key exists hash-table with the same callbacks, context and capacity as the initial one. */
-	if (RT_UNLIKELY(!rt_hash_table_create(&key_exists_hash_table, hash_table_header->hash_callback, hash_table_header->comparison_callback, hash_table_header->context, hash_table_header->array_header.size, 0, heap)))
+	if (RT_UNLIKELY(!rt_hash_table_create(&key_exists_hash_table, hash_table->hash_callback, hash_table->comparison_callback, hash_table->context, hash_table->entries.size, heap)))
 		goto end;
+	key_exists_hash_table_created = RT_TRUE;
 
 	/* Loop through the properties hash-table items to fill the key exists hash-table, initializing it as if none exist. */
-	for (index_in_hash_table = 0; index_in_hash_table < hash_table_header->array_header.size; index_in_hash_table++) {
-		hash_table_entry = &properties->hash_table[index_in_hash_table];
+	hash_table_entries = (struct rt_hash_table_entry*)hash_table->entries.items;
+	for (index_in_hash_table = 0; index_in_hash_table < hash_table->entries.size; index_in_hash_table++) {
+		hash_table_entry = &hash_table_entries[index_in_hash_table];
 		key = hash_table_entry->key;
 		if (key) {
 			key_size = hash_table_entry->key_size;
@@ -333,8 +338,8 @@ static rt_s rt_properties_merge_into_file_with_buffer(struct rt_properties *prop
 		}
 	}
 
-	context.properties_hash_table = properties->hash_table;
-	context.key_exists_hash_table = key_exists_hash_table;
+	context.properties_hash_table = hash_table;
+	context.key_exists_hash_table = &key_exists_hash_table;
 	context.output_stream = output_stream;
 	context.encoding = encoding;
 	context.eol = eol;
@@ -347,12 +352,12 @@ static rt_s rt_properties_merge_into_file_with_buffer(struct rt_properties *prop
 		goto end;
 
 	/* Write the keys/values from the properties but absent from the input file. */
-	for (index_in_hash_table = 0; index_in_hash_table < hash_table_header->array_header.size; index_in_hash_table++) {
-		hash_table_entry = &properties->hash_table[index_in_hash_table];
+	for (index_in_hash_table = 0; index_in_hash_table < hash_table->entries.size; index_in_hash_table++) {
+		hash_table_entry = &hash_table_entries[index_in_hash_table];
 		key = hash_table_entry->key;
 		if (key) {
 			key_size = hash_table_entry->key_size;
-			if (RT_UNLIKELY(!rt_hash_table_get(key_exists_hash_table, key, key_size, (void**)&key_exists)))
+			if (RT_UNLIKELY(!rt_hash_table_get(&key_exists_hash_table, key, key_size, (void**)&key_exists)))
 				goto end;
 			if (!*key_exists) {
 				/* Write the key and the separator. */
@@ -371,8 +376,10 @@ static rt_s rt_properties_merge_into_file_with_buffer(struct rt_properties *prop
 
 	ret = RT_OK;
 end:
-	if (RT_UNLIKELY(!rt_hash_table_free(&key_exists_hash_table)))
-		ret = RT_FAILED;
+	if (key_exists_hash_table_created) {
+		if (RT_UNLIKELY(!rt_hash_table_free(&key_exists_hash_table)))
+			ret = RT_FAILED;
+	}
 	if (RT_UNLIKELY(!heap->free(heap, &key_exists_array_heap_buffer)))
 		ret = RT_FAILED;
 

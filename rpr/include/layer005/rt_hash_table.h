@@ -22,15 +22,12 @@
  * </p>
  */
 
-#define RT_HASH_TABLE_GET_HEADER(HASH_TABLE) (struct rt_hash_table_header*)(HASH_TABLE) - 1
-#define RT_HASH_TABLE_GET_CUSTOM_HEADER(HASH_TABLE, HASH_TABLE_HEADER) (void*)((rt_uchar8*)(HASH_TABLE) - (HASH_TABLE_HEADER)->array_header.header_size)
-
-struct rt_hash_table_header {
+struct rt_hash_table {
 	rt_hash_callback_t hash_callback;
 	rt_comparison_with_size_callback_t comparison_callback;
 	void *context;
-	rt_un size;
-	struct rt_array_header array_header;
+	rt_un size;              /* Number of used entries. */
+	struct rt_array entries; /* Array of struct rt_hash_table_entry. */
 };
 
 struct rt_hash_table_entry {
@@ -44,13 +41,13 @@ struct rt_hash_table_entry {
  * Create an empty hashtable with given initial capacity.
  *
  * <p>
- * Do not forget to call <tt>rt_hash_table_free</tt> once you are done with the hash table.
+ * Do not forget to call <tt>rt_hash_table_free</tt> once you are done with the hash table.<br>
+ * In case of failure, <tt>rt_hash_table_free</tt> must not be called.
  * </p>
  *
  * @param initial_capacity Should be at least twice the initial number of entries and must be a power of two.
- * @param header_size Can be zero to use the default header size.
  */
-RT_API rt_s rt_hash_table_create(struct rt_hash_table_entry **hash_table, rt_hash_callback_t hash_callback, rt_comparison_with_size_callback_t comparison_callback, void *context, rt_un initial_capacity, rt_un header_size, struct rt_heap *heap);
+RT_API rt_s rt_hash_table_create(struct rt_hash_table *hash_table, rt_hash_callback_t hash_callback, rt_comparison_with_size_callback_t comparison_callback, void *context, rt_un initial_capacity, struct rt_heap *heap);
 
 /**
  * Add or set the entry of given <tt>key</tt> with associated given <tt>value</tt>.
@@ -61,14 +58,14 @@ RT_API rt_s rt_hash_table_create(struct rt_hash_table_entry **hash_table, rt_has
  *
  * @param existing_value Out parameter. If not RT_NULL, receives the existing value if the key was already used.
  */
-RT_API rt_s rt_hash_table_set(struct rt_hash_table_entry **hash_table, const void *key, rt_un key_size, const void *value, void **existing_value);
+RT_API rt_s rt_hash_table_set(struct rt_hash_table *hash_table, const void *key, rt_un key_size, const void *value, void **existing_value);
 
 /**
  * Retrieve the value for given <tt>key</tt>.
  *
  * @param value Will receive RT_NULL if the entry is not found.
  */
-RT_API rt_s rt_hash_table_get(struct rt_hash_table_entry *hash_table, const void *key, rt_un key_size, void **value);
+RT_API rt_s rt_hash_table_get(struct rt_hash_table *hash_table, const void *key, rt_un key_size, void **value);
 
 /**
  * Delete the entry with given <tt>key</tt>.
@@ -79,16 +76,15 @@ RT_API rt_s rt_hash_table_get(struct rt_hash_table_entry *hash_table, const void
  *
  * @param existing_value Out parameter. If not RT_NULL, receives the existing value if the key was used.
  */
-RT_API rt_s rt_hash_table_delete(struct rt_hash_table_entry **hash_table, const void *key, rt_un key_size, void **existing_value);
+RT_API rt_s rt_hash_table_delete(struct rt_hash_table *hash_table, const void *key, rt_un key_size, void **existing_value);
 
 /**
  * Same as <tt>rt_array_free</tt>.
  *
  * <p>
- * Set <tt>*hash_table</tt> to RT_NULL.<br>
- * Does nothing if <tt>*hash_table</tt> is RT_NULL.
+ * It is safe to call this function several times on the same hash table.
  * </p>
  */
-RT_API rt_s rt_hash_table_free(struct rt_hash_table_entry **hash_table);
+RT_API rt_s rt_hash_table_free(struct rt_hash_table *hash_table);
 
 #endif /* RT_HASH_TABLE_H */

@@ -22,7 +22,7 @@ rt_s rt_system_info_get_logical_cpu_count(rt_un *logical_cpu_count)
 
 	/* sysconf returns -1 and sets errno in case of issue. */
 	result = sysconf(_SC_NPROCESSORS_ONLN);
-	if (result == -1)
+	if (RT_UNLIKELY(result == -1))
 		goto end;
 
 	*logical_cpu_count = (rt_un)result;

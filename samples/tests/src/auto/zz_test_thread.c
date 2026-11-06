@@ -31,13 +31,13 @@ static rt_un32 RT_STDCALL zz_test_thread_callback(void *parameter)
 		goto end;
 
 	rt_sleep_sleep(500);
-	if (local_parameter->value != 12)
+	if (RT_UNLIKELY(local_parameter->value != 12))
 		goto end;
 
 	if (RT_UNLIKELY(!rt_thread_local_storage_get(local_parameter->thread_local_storage, &data)))
 		goto end;
 
-	if (data)
+	if (RT_UNLIKELY(data))
 		goto end;
 
 	if (RT_UNLIKELY(!rt_thread_local_storage_set(local_parameter->thread_local_storage, (void*)2)))
@@ -46,7 +46,7 @@ static rt_un32 RT_STDCALL zz_test_thread_callback(void *parameter)
 	if (RT_UNLIKELY(!rt_thread_local_storage_get(local_parameter->thread_local_storage, &data)))
 		goto end;
 
-	if ((rt_un)data != 2)
+	if (RT_UNLIKELY((rt_un)data != 2))
 		goto end;
 
 	if (RT_UNLIKELY(!zz_test_thread_check_last_error_message(_R("Second last error message."))))
@@ -86,7 +86,7 @@ rt_s zz_test_thread(void)
 	if (RT_UNLIKELY(!rt_thread_local_storage_get(&thread_local_storage, &data)))
 		goto end;
 
-	if (data)
+	if (RT_UNLIKELY(data))
 		goto end;
 
 	if (RT_UNLIKELY(!rt_thread_local_storage_set(&thread_local_storage, (void*)1)))
@@ -117,7 +117,7 @@ rt_s zz_test_thread(void)
 	if (RT_UNLIKELY(!rt_thread_local_storage_get(&thread_local_storage, &data)))
 		goto end;
 
-	if ((rt_un)data != 1)
+	if (RT_UNLIKELY((rt_un)data != 1))
 		goto end;
 
 	if (RT_UNLIKELY(!zz_test_thread_check_last_error_message(_R("Last error message."))))

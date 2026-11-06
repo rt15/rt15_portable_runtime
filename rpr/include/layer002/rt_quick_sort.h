@@ -13,6 +13,10 @@
  * <p>
  * Can fail only if the comparison callback fails.
  * </p>
+ *
+ * <p>
+ * <tt>size</tt> can be zero, in which case <tt>area</tt> can be RT_NULL.
+ * </p>
  */
 RT_API rt_s rt_quick_sort(const void *area, rt_un size, rt_un item_size, rt_comparison_callback_t callback, void *context);
 

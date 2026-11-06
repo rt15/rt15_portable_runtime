@@ -4,72 +4,58 @@
 #include "layer002/rt_binary_search.h"
 #include "layer002/rt_quick_sort.h"
 
-rt_s rt_sortable_array_create(void **sortable_array, rt_un size, rt_un item_size, rt_un header_size, struct rt_heap *heap, rt_comparison_callback_t callback, void *context)
+rt_s rt_sortable_array_create(struct rt_sortable_array *sortable_array, rt_un size, rt_un item_size, struct rt_heap *heap, rt_comparison_callback_t callback, void *context)
 {
-	struct rt_sortable_array_header *header;
 	rt_s ret = RT_FAILED;
 
-	if (!header_size)
-		header_size = sizeof(struct rt_sortable_array_header);
-
-	if (RT_UNLIKELY(!rt_array_create(sortable_array, size, item_size, header_size, heap)))
-		goto end;
-
-	header = RT_SORTABLE_ARRAY_GET_HEADER(*sortable_array);
-	header->callback = callback;
-	header->context = context;
+	sortable_array->callback = callback;
+	sortable_array->context = context;
 	if (size) {
 		/* The array is not initialized, we do not consider it sorted. */
-		header->sorted = RT_FALSE;
+		sortable_array->sorted = RT_FALSE;
 	} else {
 		/* The array is empty, we consider it sorted. */
-		header->sorted = RT_TRUE;
+		sortable_array->sorted = RT_TRUE;
 	}
+
+	if (RT_UNLIKELY(!rt_array_create(&sortable_array->array, size, item_size, heap)))
+		goto end;
 
 	ret = RT_OK;
 end:
 	return ret;
 }
 
-rt_s rt_sortable_array_add_item(void **sortable_array, const void *new_item, rt_un *item_index)
+rt_s rt_sortable_array_add_item(struct rt_sortable_array *sortable_array, const void *new_item, rt_un *item_index)
 {
-	struct rt_sortable_array_header *header;
 	rt_un new_item_index;
-	rt_un size;
-	rt_un item_size;
-	rt_comparison_callback_t callback;
-	void *context;
+	rt_un size = sortable_array->array.size;
+	rt_un item_size = sortable_array->array.item_size;
 	rt_un insertion_index;
 	void *insertion_address;
 	void *after_insertion_address;
 	rt_s ret = RT_FAILED;
 
-	header = RT_SORTABLE_ARRAY_GET_HEADER(*sortable_array);
-	size = header->array_header.size;
-	item_size = header->array_header.item_size;
-
-	if (!size || !header->sorted) {
+	if (!size || !sortable_array->sorted) {
 		/* Allocate a new item. */
-		if (RT_UNLIKELY(!rt_array_new_item_index(sortable_array, &new_item_index)))
+		if (RT_UNLIKELY(!rt_array_new_item_index(&sortable_array->array, &new_item_index)))
 			goto end;
 
 		/* Put the new item at the end of the array. */
-		RT_MEMORY_COPY(new_item, (rt_char8*)*sortable_array + new_item_index * item_size, item_size);
+		RT_MEMORY_COPY(new_item, (rt_char8*)sortable_array->array.items + new_item_index * item_size, item_size);
 		*item_index = new_item_index;
 	} else {
 		/* Search for the insertion index. */
-		callback = header->callback;
-		context = header->context;
-		if (RT_UNLIKELY(!rt_binary_search_insertion_index(*sortable_array, new_item, size, item_size, callback, context, &insertion_index)))
+		if (RT_UNLIKELY(!rt_binary_search_insertion_index(sortable_array->array.items, new_item, size, item_size, sortable_array->callback, sortable_array->context, &insertion_index)))
 			goto end;
 
 		/* Allocate a new item at the end of the array. */
-		if (RT_UNLIKELY(!rt_array_new_item_index(sortable_array, &new_item_index)))
+		if (RT_UNLIKELY(!rt_array_new_item_index(&sortable_array->array, &new_item_index)))
 			goto end;
 		size++;
 
 		/* Compute insertion address. */
-		insertion_address = ((rt_uchar8*)*sortable_array) + item_size * insertion_index;
+		insertion_address = ((rt_uchar8*)sortable_array->array.items) + item_size * insertion_index;
 
 		/* If an hole is necessary. */
 		if (insertion_index < size - 1) {
@@ -88,37 +74,34 @@ end:
 	return ret;
 }
 
-rt_s rt_sortable_array_delete_item_index(void **sortable_array, rt_un item_index)
+rt_s rt_sortable_array_delete_item_index(struct rt_sortable_array *sortable_array, rt_un item_index)
 {
-	struct rt_sortable_array_header *header;
 	rt_un size;
 	rt_un item_size;
 	void *source;
 	void *destination;
 	rt_s ret = RT_FAILED;
 
-	header = RT_SORTABLE_ARRAY_GET_HEADER(*sortable_array);
+	if (sortable_array->sorted) {
 
-	if (header->sorted) {
-
-		size = header->array_header.size;
+		size = sortable_array->array.size;
 
 		/* If it is not the last item of the array. */
 		if (item_index < size - 1) {
 			/* Overwrite the item to delete with the end of the array. */
-			item_size = header->array_header.item_size;
-			source = ((rt_uchar8*)*sortable_array) + item_size * (item_index + 1);
-			destination = ((rt_uchar8*)*sortable_array) + item_size * item_index;
+			item_size = sortable_array->array.item_size;
+			source = ((rt_uchar8*)sortable_array->array.items) + item_size * (item_index + 1);
+			destination = ((rt_uchar8*)sortable_array->array.items) + item_size * item_index;
 			RT_MEMORY_MOVE(source, destination, item_size * (size - (item_index + 1)));
 		}
 
-		if (RT_UNLIKELY(!rt_array_set_size(sortable_array, size - 1)))
+		if (RT_UNLIKELY(!rt_array_set_size(&sortable_array->array, size - 1)))
 			goto end;
 
 	} else {
 
 		/* Array is not sorted, simply delete it with the classical function. */
-		if (RT_UNLIKELY(!rt_array_delete_item_index(sortable_array, item_index)))
+		if (RT_UNLIKELY(!rt_array_delete_item_index(&sortable_array->array, item_index)))
 			goto end;
 
 	}
@@ -128,17 +111,14 @@ end:
 	return ret;
 }
 
-rt_s rt_sortable_array_sort(void *sortable_array)
+rt_s rt_sortable_array_sort(struct rt_sortable_array *sortable_array)
 {
-	struct rt_sortable_array_header *header;
 	rt_s ret = RT_FAILED;
 
-	header = RT_SORTABLE_ARRAY_GET_HEADER(sortable_array);
-
-	if (!header->sorted) {
-		if (RT_UNLIKELY(!rt_quick_sort(sortable_array, header->array_header.size, header->array_header.item_size, header->callback, header->context)))
+	if (!sortable_array->sorted) {
+		if (RT_UNLIKELY(!rt_quick_sort(sortable_array->array.items, sortable_array->array.size, sortable_array->array.item_size, sortable_array->callback, sortable_array->context)))
 			goto end;
-		header->sorted = RT_TRUE;
+		sortable_array->sorted = RT_TRUE;
 	}
 
 	ret = RT_OK;
@@ -146,22 +126,24 @@ end:
 	return ret;
 }
 
-rt_s rt_sortable_array_search_item_index(void *sortable_array, const void *item, rt_un *item_index)
+rt_s rt_sortable_array_search_item_index(struct rt_sortable_array *sortable_array, const void *item, rt_un *item_index)
 {
-	struct rt_sortable_array_header *header;
 	rt_s ret = RT_FAILED;
 
-	header = RT_SORTABLE_ARRAY_GET_HEADER(sortable_array);
-
-	if (!header->sorted) {
+	if (!sortable_array->sorted) {
 		if (RT_UNLIKELY(!rt_sortable_array_sort(sortable_array)))
 			goto end;
 	}
 
-	if (RT_UNLIKELY(!rt_binary_search_index(sortable_array, item, header->array_header.size, header->array_header.item_size, header->callback, header->context, item_index)))
+	if (RT_UNLIKELY(!rt_binary_search_index(sortable_array->array.items, item, sortable_array->array.size, sortable_array->array.item_size, sortable_array->callback, sortable_array->context, item_index)))
 		goto end;
 
 	ret = RT_OK;
 end:
 	return ret;
+}
+
+rt_s rt_sortable_array_free(struct rt_sortable_array *sortable_array)
+{
+	return rt_array_free(&sortable_array->array);
 }

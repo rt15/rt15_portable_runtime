@@ -104,9 +104,9 @@ end:
 
 static rt_s zz_test_char_append_ok(const rt_char *prefix, const rt_char *suffix, const rt_char *expected)
 {
-	rt_s ret = RT_FAILED;
 	rt_char buffer[200];
 	rt_un buffer_size = 0;
+	rt_s ret = RT_FAILED;
 
 	RT_MEMORY_SET_CHAR(buffer, _R('a'), 200);
 
@@ -124,9 +124,9 @@ end:
 
 static rt_s zz_test_char_append_failed(const rt_char *prefix, const rt_char *suffix, const rt_char *expected)
 {
-	rt_s ret = RT_FAILED;
 	rt_char buffer[200];
 	rt_un buffer_size = 0;
+	rt_s ret = RT_FAILED;
 
 	RT_MEMORY_SET_CHAR(buffer, _R('a'), 200);
 
@@ -174,8 +174,8 @@ static rt_s zz_test_char_append_char_do(rt_s status, rt_un buffer_size, const rt
 {
 	rt_char buffer[10];
 	rt_un local_buffer_size = buffer_size;
-	rt_s ret = RT_FAILED;
 	rt_s result;
+	rt_s ret = RT_FAILED;
 
 	RT_MEMORY_SET_CHAR(buffer, _R('a'), 10);
 
@@ -213,9 +213,9 @@ end:
 
 static rt_s zz_test_char_copy_ok(const rt_char *str)
 {
-	rt_s ret = RT_FAILED;
 	rt_char buffer[6];
 	rt_un buffer_size = 0;
+	rt_s ret = RT_FAILED;
 
 	RT_MEMORY_SET_CHAR(buffer, _R('a'), 6);
 
@@ -237,9 +237,9 @@ end:
 
 static rt_s zz_test_char_copy_failed(const rt_char *str, const rt_char *expected)
 {
-	rt_s ret = RT_FAILED;
 	rt_char buffer[6];
 	rt_un buffer_size = 0;
+	rt_s ret = RT_FAILED;
 
 	RT_MEMORY_SET_CHAR(buffer, _R('a'), 6);
 

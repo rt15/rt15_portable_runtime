@@ -474,7 +474,7 @@ end:
 		read_bytes = read(source_file_descriptor, buffer, BUFSIZ);
 		if (!read_bytes) {
 			break;
-		} else if (read_bytes == -1) {
+		} else if (RT_UNLIKELY(read_bytes == -1)) {
 			goto end;
 		} else {
 			if (RT_UNLIKELY(write(destination_file_descriptor, buffer, read_bytes) == -1)) {

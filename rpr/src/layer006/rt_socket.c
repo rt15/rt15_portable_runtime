@@ -740,7 +740,7 @@ rt_s rt_socket_send(struct rt_socket *socket, void *data, rt_un data_size, enum 
 #else
 	/* Returns -1 in case of issue and sets errno. */
 	send_result = send(socket->io_device.file_descriptor, data, data_size, actual_flags);
-	if (send_result < 0) {
+	if (RT_UNLIKELY(send_result < 0)) {
 		if (RT_LIKELY(errno == EAGAIN))
 			errno = EWOULDBLOCK;
 		goto end;
@@ -774,7 +774,7 @@ rt_s rt_socket_receive(struct rt_socket *socket, void *buffer, rt_un buffer_capa
 #else
 	/* Returns -1 in case of issue and sets errno. */
 	recv_result = recv(socket->io_device.file_descriptor, buffer, buffer_capacity, actual_flags);
-	if (recv_result < 0) {
+	if (RT_UNLIKELY(recv_result < 0)) {
 		if (RT_UNLIKELY(errno == EAGAIN))
 			errno = EWOULDBLOCK;
 		goto end;

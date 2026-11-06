@@ -166,7 +166,7 @@ rt_s rt_select_wait_for_ready_to_read(struct rt_socket *socket, rt_un timeout_mi
 		goto end;
 	}
 
-	if (RT_UNLIKELY(RT_UNLIKELY(!read_item.ready))) {
+	if (RT_UNLIKELY(!read_item.ready)) {
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
 		goto end;
 	}
@@ -212,7 +212,7 @@ rt_s rt_select_wait_for_ready_to_write(struct rt_socket *socket, rt_un timeout_m
 		goto end;
 	}
 
-	if (RT_UNLIKELY(RT_UNLIKELY(!write_item.ready))) {
+	if (RT_UNLIKELY(!write_item.ready)) {
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
 		goto end;
 	}
