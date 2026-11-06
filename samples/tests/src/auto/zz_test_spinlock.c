@@ -63,7 +63,7 @@ static rt_s zz_test_spinlock64(void)
 	if (RT_UNLIKELY(!rt_thread_create(&thread, &zz_test_spinlock_callback64, &event))) goto end;
 	thread_created = RT_TRUE;
 
-	if (RT_UNLIKELY(!rt_event_wait_for(&event))) {
+	if (RT_UNLIKELY(!rt_event_wait(&event))) {
 		RT_SPINLOCK_RELEASE(spinlock64);
 		goto end;
 	}
@@ -79,7 +79,7 @@ static rt_s zz_test_spinlock64(void)
 
 	RT_SPINLOCK_RELEASE(spinlock64);
 
-	if (RT_UNLIKELY(!rt_event_wait_for(&event))) goto end;
+	if (RT_UNLIKELY(!rt_event_wait(&event))) goto end;
 
 	RT_SPINLOCK_ACQUIRE(spinlock64);
 	if (counter64 != 3) {
@@ -161,7 +161,7 @@ static rt_s zz_test_spinlock32(void)
 	if (RT_UNLIKELY(!rt_thread_create(&thread, &zz_test_spinlock_callback32, &event))) goto end;
 	thread_created = RT_TRUE;
 
-	if (RT_UNLIKELY(!rt_event_wait_for(&event))) {
+	if (RT_UNLIKELY(!rt_event_wait(&event))) {
 		RT_SPINLOCK_RELEASE32(spinlock32);
 		goto end;
 	}
@@ -177,7 +177,7 @@ static rt_s zz_test_spinlock32(void)
 
 	RT_SPINLOCK_RELEASE32(spinlock32);
 
-	if (RT_UNLIKELY(!rt_event_wait_for(&event))) goto end;
+	if (RT_UNLIKELY(!rt_event_wait(&event))) goto end;
 
 	RT_SPINLOCK_ACQUIRE32(spinlock32);
 	if (counter32 != 3) {

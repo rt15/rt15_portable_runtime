@@ -227,7 +227,7 @@ rt_s rt_condition_variable_broadcast(struct rt_condition_variable *condition_var
 		}
 
 		/* The last released waiter signals the event. */
-		if (RT_UNLIKELY(!rt_event_wait_for(&condition_variable->waiters_done_event))) {
+		if (RT_UNLIKELY(!rt_event_wait(&condition_variable->waiters_done_event))) {
 			condition_variable->was_broadcast = RT_FALSE;
 			goto end;
 		}

@@ -84,7 +84,7 @@ rt_s zz_test_semaphore_do(const rt_char *name)
 
 	/* Wait for the threads to acquire the semaphore. */
 	for (i = 0; i < ZZ_TEST_SEMAPHORE_THREADS_COUNT; i++) {
-		if (RT_UNLIKELY(!rt_event_wait_for(&event[i])))
+		if (RT_UNLIKELY(!rt_event_wait(&event[i])))
 			goto end;
 	}
 

@@ -147,7 +147,7 @@ static rt_s zz_test_select_do(void)
 	if (RT_UNLIKELY(!rt_thread_create(&thread, &zz_test_select_server_callback, &server_parameter))) goto end;
 	thread_created = RT_TRUE;
 
-	if (RT_UNLIKELY(!rt_event_wait_for(&server_parameter.event))) goto end;
+	if (RT_UNLIKELY(!rt_event_wait(&server_parameter.event))) goto end;
 
 	/* Let some time for the server socket to be ready to accept connections. */
 	rt_sleep_sleep(10);

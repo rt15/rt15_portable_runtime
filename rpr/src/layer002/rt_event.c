@@ -46,7 +46,7 @@ end:
 	return ret;
 }
 
-rt_s rt_event_wait_for(struct rt_event *event)
+rt_s rt_event_wait(struct rt_event *event)
 {
 #ifdef RT_DEFINE_LINUX
 	uint64_t value;

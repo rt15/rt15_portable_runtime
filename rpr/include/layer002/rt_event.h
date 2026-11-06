@@ -7,8 +7,8 @@
  * @file
  * Simple events usable within a single process.<br>
  * Only a single thread can wait for a single event.<br>
- * The event can be reused by multiple sequential calls to <tt>rt_event_wait_for</tt>/<tt>rt_event_signal</tt>.<br>
- * You can call <tt>rt_event_signal</tt> before <tt>rt_event_wait_for</tt>. In that case <tt>rt_event_wait_for</tt> will not block.
+ * The event can be reused by multiple sequential calls to <tt>rt_event_wait</tt>/<tt>rt_event_signal</tt>.<br>
+ * You can call <tt>rt_event_signal</tt> before <tt>rt_event_wait</tt>. In that case <tt>rt_event_wait</tt> will not block.
  */
 
 struct rt_event {
@@ -37,7 +37,7 @@ RT_API rt_s rt_event_signal(struct rt_event *event);
  * Automatically update the event to not signaled.
  * </p>
  */
-RT_API rt_s rt_event_wait_for(struct rt_event *event);
+RT_API rt_s rt_event_wait(struct rt_event *event);
 
 /**
  * Can be used to discard a signal.

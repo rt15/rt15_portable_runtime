@@ -9,7 +9,7 @@ static rt_un32 RT_STDCALL zz_test_fast_initialization_thread_callback(RT_UNUSED 
 {
 	rt_s ret = RT_FAILED;
 
-	if (RT_UNLIKELY(!rt_event_wait_for(&event))) goto end;
+	if (RT_UNLIKELY(!rt_event_wait(&event))) goto end;
 	if (RT_UNLIKELY(rt_fast_initialization_is_required(&fast_initialization))) goto end;
 	if (RT_UNLIKELY(!rt_fast_initialization_is_done(&fast_initialization))) goto end;
 

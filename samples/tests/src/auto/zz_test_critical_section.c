@@ -52,7 +52,7 @@ static rt_un32 RT_STDCALL zz_test_critical_section_thread_callback(void *paramet
 		goto end;
 
 	/* Wait for the main thread to enter the critical section. */
-	if (RT_UNLIKELY(!rt_event_wait_for(&event)))
+	if (RT_UNLIKELY(!rt_event_wait(&event)))
 		goto end;
 
 	if (RT_UNLIKELY(!rt_critical_section_enter(&critical_section)))
@@ -97,7 +97,7 @@ static rt_s zz_test_critical_section_with_thread(rt_b recursive)
 	thread_created = RT_TRUE;
 
 	/* Wait for the thread to enter the critical section. */
-	if (RT_UNLIKELY(!rt_event_wait_for(&event)))
+	if (RT_UNLIKELY(!rt_event_wait(&event)))
 		goto end;
 
 	/* Wait for the thread to leave the critical section. */

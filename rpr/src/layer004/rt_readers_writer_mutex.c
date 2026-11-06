@@ -102,7 +102,7 @@ rt_s rt_readers_writer_mutex_acquire_write(struct rt_readers_writer_mutex *reade
 
 	if (wait) {
 		/* Wait for the last reader to signal that it is finished. */
-		if (RT_UNLIKELY(!rt_event_wait_for(&readers_writer_mutex->event))) {
+		if (RT_UNLIKELY(!rt_event_wait(&readers_writer_mutex->event))) {
 			rt_critical_section_leave(&readers_writer_mutex->critical_section);
 			goto end;
 		}

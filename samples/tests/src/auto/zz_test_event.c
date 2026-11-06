@@ -15,12 +15,12 @@ static rt_un32 RT_STDCALL zz_test_event_thread_callback(void *parameter)
 
 	event = (struct rt_event*)parameter;
 
-	if (RT_UNLIKELY(!rt_event_wait_for(event)))
+	if (RT_UNLIKELY(!rt_event_wait(event)))
 		goto end;
 
 	thread_status = ZZ_THREAD_STATUS_SIGNAL_1;
 
-	if (RT_UNLIKELY(!rt_event_wait_for(event)))
+	if (RT_UNLIKELY(!rt_event_wait(event)))
 		goto end;
 
 	thread_status = ZZ_THREAD_STATUS_SIGNAL_2;
