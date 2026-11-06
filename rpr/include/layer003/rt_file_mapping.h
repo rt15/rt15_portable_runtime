@@ -1,7 +1,7 @@
 #ifndef RT_FILE_MAPPING_H
 #define RT_FILE_MAPPING_H
 
-#include <layer000/rt_types.h>
+#include "layer000/rt_types.h"
 
 struct rt_file_mapping {
 #ifdef RT_DEFINE_WINDOWS

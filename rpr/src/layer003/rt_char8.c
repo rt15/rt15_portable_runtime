@@ -1,9 +1,9 @@
 #include "layer003/rt_char8.h"
 
+#include "layer001/rt_double.h"
+#include "layer001/rt_float.h"
 #include "layer001/rt_memory.h"
-#include "layer002/rt_double.h"
 #include "layer002/rt_error.h"
-#include "layer002/rt_float.h"
 
 #ifdef RT_DEFINE_32
 #define RT_CHAR8_FNV_OFFSET_BASIS 2166136261u

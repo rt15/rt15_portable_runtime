@@ -1,7 +1,7 @@
 #ifndef RT_DOUBLE_H
 #define RT_DOUBLE_H
 
-#include <layer000/rt_types.h>
+#include "layer000/rt_types.h"
 
 #define RT_DOUBLE_EPSILON 1e-10
 

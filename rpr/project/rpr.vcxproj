@@ -98,7 +98,9 @@
     <ClInclude Include="..\include\layer000\rt_types.h" />
     <ClInclude Include="..\include\layer001\rt_atomic.h" />
     <ClInclude Include="..\include\layer001\rt_comparison.h" />
+    <ClInclude Include="..\include\layer001\rt_double.h" />
     <ClInclude Include="..\include\layer001\rt_eol.h" />
+    <ClInclude Include="..\include\layer001\rt_float.h" />
     <ClInclude Include="..\include\layer001\rt_hash.h" />
     <ClInclude Include="..\include\layer001\rt_input_stream.h" />
     <ClInclude Include="..\include\layer001\rt_memory.h" />
@@ -108,10 +110,8 @@
     <ClInclude Include="..\include\layer002\rt_buffered_input_stream.h" />
     <ClInclude Include="..\include\layer002\rt_buffered_output_stream.h" />
     <ClInclude Include="..\include\layer002\rt_critical_section.h" />
-    <ClInclude Include="..\include\layer002\rt_double.h" />
     <ClInclude Include="..\include\layer002\rt_error.h" />
     <ClInclude Include="..\include\layer002\rt_event.h" />
-    <ClInclude Include="..\include\layer002\rt_float.h" />
     <ClInclude Include="..\include\layer002\rt_get_process_id.h" />
     <ClInclude Include="..\include\layer002\rt_io_device.h" />
     <ClInclude Include="..\include\layer002\rt_memory_input_stream.h" />
