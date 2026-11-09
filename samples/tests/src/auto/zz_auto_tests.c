@@ -61,6 +61,7 @@ rt_s zz_test_env_vars(void);
 rt_s zz_test_file_system(void);
 rt_s zz_test_hash_table(void);
 rt_s zz_test_list(void);
+rt_s zz_test_ring(void);
 rt_s zz_test_socket_address(void);
 rt_s zz_test_sortable_array(void);
 rt_s zz_test_unicode_code_point(void);
@@ -221,6 +222,8 @@ rt_s zz_auto_tests(void)
 	if (RT_UNLIKELY(!zz_test_hash_table())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_list", output_stream))) goto end;
 	if (RT_UNLIKELY(!zz_test_list())) goto end;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_ring", output_stream))) goto end;
+	if (RT_UNLIKELY(!zz_test_ring())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_socket_address", output_stream))) goto end;
 	if (RT_UNLIKELY(!zz_test_socket_address())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_sortable_array", output_stream))) goto end;
