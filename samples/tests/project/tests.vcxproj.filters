@@ -286,6 +286,9 @@
     <ClCompile Include="..\src\auto\zz_test_ring.c">
       <Filter>src\auto</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\auto\zz_test_thread_safe_ring.c">
+      <Filter>src\auto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

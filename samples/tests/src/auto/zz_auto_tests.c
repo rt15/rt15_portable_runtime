@@ -70,6 +70,7 @@ rt_s zz_test_unicode_code_point(void);
 rt_s zz_test_error_message(void);
 rt_s zz_test_properties_parser(void);
 rt_s zz_test_socket(void);
+rt_s zz_test_thread_safe_ring(void);
 rt_s zz_test_timer(void);
 
 /* Layer 007. */
@@ -238,6 +239,8 @@ rt_s zz_auto_tests(void)
 	if (RT_UNLIKELY(!zz_test_properties_parser())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_socket", output_stream))) goto end;
 	if (RT_UNLIKELY(!zz_test_socket())) goto end;
+	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_thread_safe_ring", output_stream))) goto end;
+	if (RT_UNLIKELY(!zz_test_thread_safe_ring())) goto end;
 	if (RT_UNLIKELY(!zz_auto_tests_log("zz_test_timer", output_stream))) goto end;
 	if (RT_UNLIKELY(!zz_test_timer())) goto end;
 

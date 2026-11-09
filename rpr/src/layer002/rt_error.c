@@ -3,7 +3,7 @@
 #include "layer001/rt_os_headers.h"
 
 /* The count of errors types defined in rt_eror.h. */
-#define RT_ERROR_ERRORS_COUNT 12
+#define RT_ERROR_ERRORS_COUNT 13
 
 #ifdef RT_DEFINE_WINDOWS
 static const rt_un32 rt_error_os_errors[RT_ERROR_ERRORS_COUNT] = { ERROR_SUCCESS,
@@ -17,7 +17,8 @@ static const rt_un32 rt_error_os_errors[RT_ERROR_ERRORS_COUNT] = { ERROR_SUCCESS
 								   ERROR_IO_PENDING,
 								   WSAEWOULDBLOCK,
 								   ERROR_FILE_NOT_FOUND,
-								   ERROR_PATH_NOT_FOUND
+								   ERROR_PATH_NOT_FOUND,
+								   ERROR_CANCELLED
 								 };
 #else
 static const rt_n32 rt_error_os_errors[RT_ERROR_ERRORS_COUNT] = { 0,
@@ -31,7 +32,8 @@ static const rt_n32 rt_error_os_errors[RT_ERROR_ERRORS_COUNT] = { 0,
 								  EWOULDBLOCK,
 								  EWOULDBLOCK,
 								  ENOENT,
-								  ENOENT
+								  ENOENT,
+								  ECANCELED
 								};
 #endif
 
@@ -93,6 +95,9 @@ void rt_error_set_last_from_errno(rt_n32 errno_value)
 		break;
 	case ENOENT:
 		rt_error_set_last(RT_ERROR_FILE_NOT_FOUND);
+		break;
+	case ECANCELED:
+		rt_error_set_last(RT_ERROR_CANCELED);
 		break;
 	default:
 		rt_error_set_last(RT_ERROR_FUNCTION_FAILED);

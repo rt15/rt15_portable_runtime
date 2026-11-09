@@ -88,6 +88,7 @@
     <ClCompile Include="..\src\layer006\rt_process_file.c" />
     <ClCompile Include="..\src\layer006\rt_properties_parser.c" />
     <ClCompile Include="..\src\layer006\rt_socket.c" />
+    <ClCompile Include="..\src\layer006\rt_thread_safe_ring.c" />
     <ClCompile Include="..\src\layer006\rt_timer.c" />
     <ClCompile Include="..\src\layer007\rt_last_error_message.c" />
     <ClCompile Include="..\src\layer007\rt_process.c" />
@@ -177,6 +178,7 @@
     <ClInclude Include="..\include\layer006\rt_process_file.h" />
     <ClInclude Include="..\include\layer006\rt_properties_parser.h" />
     <ClInclude Include="..\include\layer006\rt_socket.h" />
+    <ClInclude Include="..\include\layer006\rt_thread_safe_ring.h" />
     <ClInclude Include="..\include\layer006\rt_timer.h" />
     <ClInclude Include="..\include\layer007\rt_last_error_message.h" />
     <ClInclude Include="..\include\layer007\rt_process.h" />

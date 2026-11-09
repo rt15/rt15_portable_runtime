@@ -90,6 +90,7 @@ extern "C" {
 #include "layer006/rt_process_file.h"
 #include "layer006/rt_properties_parser.h"
 #include "layer006/rt_socket.h"
+#include "layer006/rt_thread_safe_ring.h"
 #include "layer006/rt_timer.h"
 
 #include "layer007/rt_last_error_message.h"

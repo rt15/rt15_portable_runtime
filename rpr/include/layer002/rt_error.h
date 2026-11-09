@@ -37,7 +37,9 @@ enum rt_error {
 	/* A file has not been found. */
 	RT_ERROR_FILE_NOT_FOUND,
 	/* A directory has not been found. */
-	RT_ERROR_DIR_NOT_FOUND
+	RT_ERROR_DIR_NOT_FOUND,
+	/* The operation has been canceled. */
+	RT_ERROR_CANCELED
 };
 
 

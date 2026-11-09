@@ -8,6 +8,11 @@ rt_s rt_ring_create(struct rt_ring *ring, rt_un capacity, rt_un item_size, struc
 	rt_b array_created = RT_FALSE;
 	rt_s ret = RT_FAILED;
 
+	if (RT_UNLIKELY(!capacity)) {
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto end;
+	}
+
 	if (RT_UNLIKELY(!rt_array_create(array, capacity, item_size, heap)))
 		goto end;
 	array_created = RT_TRUE;
