@@ -48,17 +48,19 @@
 
 /* Ensure that other threads will read written value if they use RT_ATOMIC_LOAD. */
 /* We must use __sync_synchronize as __sync_lock_test_and_set doesn't implement a full memory barrier. */
-#define RT_ATOMIC_STORE(VAR, VALUE) __sync_synchronize(); __sync_lock_test_and_set(&VAR, VALUE)
+#define RT_ATOMIC_STORE(VAR, VALUE) (__sync_synchronize(), __sync_lock_test_and_set(&VAR, VALUE))
 
 /* Return 1 to first thread and zero to others. */
 #define RT_ATOMIC_TRY_TO_ACQUIRE(VAR) !__sync_val_compare_and_swap(&VAR, 0, 1)
 
-/* Restore a token acquired with RT_ATOMIC_TRY_TO_ACQUIRE to zero. */
+/* Atomically increment VAR and return the new value. */
+#define RT_ATOMIC_INCREMENT_AND_GET(VAR) __sync_add_and_fetch(&VAR, 1)
 
 /* 32 bits versions. The gcc built-in functions are type size independent. */
 #define RT_ATOMIC_LOAD32 RT_ATOMIC_LOAD
 #define RT_ATOMIC_STORE32 RT_ATOMIC_STORE
 #define RT_ATOMIC_TRY_TO_ACQUIRE32 RT_ATOMIC_TRY_TO_ACQUIRE
+#define RT_ATOMIC_INCREMENT_AND_GET32 RT_ATOMIC_INCREMENT_AND_GET
 
 #else
 
@@ -66,6 +68,7 @@
 #define RT_ATOMIC_LOAD32(VAR) _InterlockedOr((rt_n32*)&VAR, 0)
 #define RT_ATOMIC_STORE32(VAR, VALUE) _InterlockedExchange((rt_n32*)&VAR, VALUE)
 #define RT_ATOMIC_TRY_TO_ACQUIRE32(VAR) !_InterlockedCompareExchange((rt_n32*)&VAR, 1, 0)
+#define RT_ATOMIC_INCREMENT_AND_GET32(VAR) _InterlockedIncrement((rt_n32*)&VAR)
 
 #ifdef RT_DEFINE_64
 
@@ -73,6 +76,7 @@
 #define RT_ATOMIC_LOAD(VAR) _InterlockedOr64(&VAR, 0)
 #define RT_ATOMIC_STORE(VAR, VALUE) _InterlockedExchange64(&VAR, VALUE)
 #define RT_ATOMIC_TRY_TO_ACQUIRE(VAR) !_InterlockedCompareExchange64(&VAR, 1, 0)
+#define RT_ATOMIC_INCREMENT_AND_GET(VAR) _InterlockedIncrement64(&VAR)
 
 #else /* NOT RT_DEFINE_64 */
 
@@ -80,12 +84,13 @@
 #define RT_ATOMIC_LOAD RT_ATOMIC_LOAD32
 #define RT_ATOMIC_STORE RT_ATOMIC_STORE32
 #define RT_ATOMIC_TRY_TO_ACQUIRE RT_ATOMIC_TRY_TO_ACQUIRE32
+#define RT_ATOMIC_INCREMENT_AND_GET RT_ATOMIC_INCREMENT_AND_GET32
 
 #endif
 
 #endif
 
-#define RT_ATOMIC_RELEASE(VAR) RT_ATOMIC_STORE(VAR, 0);
-#define RT_ATOMIC_RELEASE32(VAR) RT_ATOMIC_STORE32(VAR, 0);
+#define RT_ATOMIC_RELEASE(VAR) RT_ATOMIC_STORE(VAR, 0)
+#define RT_ATOMIC_RELEASE32(VAR) RT_ATOMIC_STORE32(VAR, 0)
 
 #endif /* RT_ATOMIC_H */
